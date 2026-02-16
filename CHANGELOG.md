@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.1] - 2026-02-17
+
+### 🐛 Fixed
+
+**CRITICAL: Marketplace Installation Issues**
+- **Removed invalid skills array from plugin.json** — Plugin declared 7 skills but only 3 existed (`contentforge`, `batch-process`, `content-refresh`), causing marketplace validation failures and installation issues in Cowork
+- **Removed non-standard plugin.json fields** — `capabilities`, `requirements`, `target_users`, `use_cases`, `performance` were not part of the official Claude Code plugin schema and may have caused validation issues
+- **Skills now auto-discovered** — Following official plugin architecture, skills are discovered from `skills/` directory without explicit declaration
+
+### ✨ Added
+
+- **hooks.json configuration** — Added SessionStart banner and PreToolUse hallucination detection (scans for fabricated statistics, placeholder URLs, unsubstantiated claims)
+- **Proper plugin structure** — Now follows official Claude Code plugin reference exactly
+
+### 🧹 Cleaned
+
+- Removed legacy `SKILL.md` at root (skills should only be in `skills/` subdirectories)
+- Removed backup files (`.mcp.json.example.backup`)
+- Removed temporary release files (`release-notes-v2.0.0.md`)
+
+### 📝 Technical Notes
+
+This patch release resolves the core installation and management issues reported in Cowork:
+- "Manage Plugin" redirecting instead of opening management UI ✅ FIXED
+- Marketplace showing plugin but installation failing ✅ FIXED
+- Plugin asking to install again after already installed ✅ FIXED
+
+**Root Cause:** Plugin manifest declared skills that didn't exist as files, violating marketplace validation rules.
+
+---
+
 ## [2.0.0] - 2026-02-17
 
 ### 🚀 Major Release: Phases B-E Implementation
