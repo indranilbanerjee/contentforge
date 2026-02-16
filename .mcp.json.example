@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "google-sheets": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-google-sheets"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/absolute/path/to/your/service-account-key.json"
+      },
+      "description": "REQUIRED: Google Sheets — requirement intake, status tracking, quality score reporting"
+    },
+    "google-drive": {
+      "command": "npx",
+      "args": ["-y", "mcp-google-drive"],
+      "env": {
+        "GOOGLE_APPLICATION_CREDENTIALS": "/absolute/path/to/your/service-account-key.json"
+      },
+      "description": "REQUIRED: Google Drive — brand knowledge vault, output file storage, folder organization"
+    }
+  }
+}

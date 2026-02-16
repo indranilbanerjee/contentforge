@@ -1,0 +1,112 @@
+# ContentForge .gitignore
+
+# ===========================
+# Credentials & Secrets
+# ===========================
+.mcp.json
+*.json.local
+credentials.json
+token.json
+service-account-key.json
+.env
+.env.local
+.env.*.local
+
+# ===========================
+# Brand Profiles & Cache
+# ===========================
+*-profile-cache.json
+.brand-cache/
+.contentforge-cache/
+
+# ===========================
+# Output Files
+# ===========================
+*.docx
+output/
+.tmp/
+temp/
+generated/
+
+# ===========================
+# Logs
+# ===========================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ===========================
+# OS Generated Files
+# ===========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ===========================
+# IDE & Editor Files
+# ===========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ===========================
+# Node.js
+# ===========================
+node_modules/
+npm-debug.log
+package-lock.json
+yarn.lock
+
+# ===========================
+# Python (if any scripts)
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+ENV/
+
+# ===========================
+# Testing
+# ===========================
+.pytest_cache/
+.coverage
+htmlcov/
+test-output/
+
+# ===========================
+# Claude Plugin System
+# ===========================
+.claude/
+.claude-plugin-cache/
+
+# ===========================
+# Backup Files
+# ===========================
+*.bak
+*.backup
+*-backup
+
+# ===========================
+# Exceptions (DO commit these)
+# ===========================
+# Example config files should be tracked:
+!.mcp.json.example
+!config/*.json
+
+# Template files should be tracked:
+!templates/**/*.md
+!templates/**/*.json

@@ -1,0 +1,365 @@
+{
+  "_description": "ContentForge Trusted Data Sources Registry — Master list of authoritative sources per industry/brand",
+  "_instructions": "Maintain this registry in Google Sheets for easier updates. ContentForge will reference this when conducting research and fact-checking.",
+  "source_types": {
+    "academic_journal": {
+      "description": "Peer-reviewed academic publications",
+      "reliability_score_range": "9-10",
+      "examples": ["Nature", "Science", "JAMA", "The Lancet"]
+    },
+    "government_database": {
+      "description": "Official government data sources",
+      "reliability_score_range": "9-10",
+      "examples": ["CDC", "NIH", "FDA", "Bureau of Labor Statistics"]
+    },
+    "industry_report": {
+      "description": "Research from recognized industry bodies",
+      "reliability_score_range": "7-9",
+      "examples": ["Gartner", "Forrester", "McKinsey", "BCG"]
+    },
+    "news_tier_1": {
+      "description": "Major, reputable news outlets",
+      "reliability_score_range": "7-8",
+      "examples": ["Wall Street Journal", "New York Times", "Reuters", "Bloomberg"]
+    },
+    "news_tier_2": {
+      "description": "Secondary news sources",
+      "reliability_score_range": "5-7",
+      "examples": ["TechCrunch", "Forbes", "Inc", "Fast Company"]
+    },
+    "company_official": {
+      "description": "Official company announcements, filings, press releases",
+      "reliability_score_range": "6-8",
+      "examples": ["Company IR pages", "SEC filings", "Official blogs"]
+    },
+    "encyclopedia": {
+      "description": "Reference works (use sparingly, not as primary source)",
+      "reliability_score_range": "5-6",
+      "examples": ["Britannica", "Specialized encyclopedias"]
+    }
+  },
+  "global_trusted_sources": [
+    {
+      "name": "PubMed / MEDLINE",
+      "url": "https://pubmed.ncbi.nlm.nih.gov",
+      "type": "academic_journal",
+      "industry": ["pharma", "healthcare", "medical"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "Primary source for medical/pharmaceutical content. Peer-reviewed only."
+    },
+    {
+      "name": "Google Scholar",
+      "url": "https://scholar.google.com",
+      "type": "academic_journal",
+      "industry": ["all"],
+      "priority": "high",
+      "reliability_score": 9,
+      "notes": "Broad academic search. Verify source quality individually."
+    },
+    {
+      "name": "CDC (Centers for Disease Control)",
+      "url": "https://www.cdc.gov",
+      "type": "government_database",
+      "industry": ["healthcare", "pharma"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "U.S. health data, disease statistics, public health guidance."
+    },
+    {
+      "name": "WHO (World Health Organization)",
+      "url": "https://www.who.int",
+      "type": "government_database",
+      "industry": ["healthcare", "pharma"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "Global health data and guidelines."
+    },
+    {
+      "name": "FDA (Food and Drug Administration)",
+      "url": "https://www.fda.gov",
+      "type": "government_database",
+      "industry": ["pharma", "healthcare", "food"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "Drug approvals, safety alerts, regulatory guidance."
+    },
+    {
+      "name": "SEC (Securities and Exchange Commission)",
+      "url": "https://www.sec.gov",
+      "type": "government_database",
+      "industry": ["bfsi", "finance", "legal"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "Company filings (10-K, 10-Q, 8-K), financial disclosures."
+    },
+    {
+      "name": "Bureau of Labor Statistics",
+      "url": "https://www.bls.gov",
+      "type": "government_database",
+      "industry": ["all"],
+      "priority": "high",
+      "reliability_score": 10,
+      "notes": "Employment data, wage statistics, economic indicators."
+    },
+    {
+      "name": "Pew Research Center",
+      "url": "https://www.pewresearch.org",
+      "type": "industry_report",
+      "industry": ["all"],
+      "priority": "high",
+      "reliability_score": 9,
+      "notes": "Public opinion, demographic trends, social science research."
+    },
+    {
+      "name": "Gartner Research",
+      "url": "https://www.gartner.com",
+      "type": "industry_report",
+      "industry": ["technology", "b2b_saas"],
+      "priority": "high",
+      "reliability_score": 8,
+      "notes": "Technology market analysis, Magic Quadrants. Often paywalled."
+    },
+    {
+      "name": "Forrester Research",
+      "url": "https://www.forrester.com",
+      "type": "industry_report",
+      "industry": ["technology", "b2b_saas"],
+      "priority": "high",
+      "reliability_score": 8,
+      "notes": "Technology and business research. Often paywalled."
+    },
+    {
+      "name": "McKinsey & Company Insights",
+      "url": "https://www.mckinsey.com/featured-insights",
+      "type": "industry_report",
+      "industry": ["all"],
+      "priority": "high",
+      "reliability_score": 8,
+      "notes": "Management consulting insights, industry reports."
+    },
+    {
+      "name": "Harvard Business Review",
+      "url": "https://hbr.org",
+      "type": "industry_report",
+      "industry": ["business", "b2b"],
+      "priority": "medium",
+      "reliability_score": 8,
+      "notes": "Management and business strategy. Partially paywalled."
+    },
+    {
+      "name": "Statista",
+      "url": "https://www.statista.com",
+      "type": "industry_report",
+      "industry": ["all"],
+      "priority": "medium",
+      "reliability_score": 7,
+      "notes": "Statistics aggregator. Verify original sources. Often paywalled."
+    },
+    {
+      "name": "Wall Street Journal",
+      "url": "https://www.wsj.com",
+      "type": "news_tier_1",
+      "industry": ["bfsi", "finance", "business"],
+      "priority": "high",
+      "reliability_score": 8,
+      "notes": "Financial and business news. Paywalled."
+    },
+    {
+      "name": "Reuters",
+      "url": "https://www.reuters.com",
+      "type": "news_tier_1",
+      "industry": ["all"],
+      "priority": "high",
+      "reliability_score": 8,
+      "notes": "International news, business, finance."
+    },
+    {
+      "name": "Bloomberg",
+      "url": "https://www.bloomberg.com",
+      "type": "news_tier_1",
+      "industry": ["bfsi", "finance"],
+      "priority": "high",
+      "reliability_score": 8,
+      "notes": "Financial news and data. Partially paywalled."
+    },
+    {
+      "name": "The New York Times",
+      "url": "https://www.nytimes.com",
+      "type": "news_tier_1",
+      "industry": ["all"],
+      "priority": "medium",
+      "reliability_score": 7,
+      "notes": "General news. Paywalled. Verify for political neutrality."
+    },
+    {
+      "name": "Nature",
+      "url": "https://www.nature.com",
+      "type": "academic_journal",
+      "industry": ["science", "pharma", "healthcare"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "Premier scientific journal. Paywalled."
+    },
+    {
+      "name": "Science (AAAS)",
+      "url": "https://www.science.org",
+      "type": "academic_journal",
+      "industry": ["science", "pharma", "healthcare"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "Top-tier scientific publication. Paywalled."
+    },
+    {
+      "name": "The Lancet",
+      "url": "https://www.thelancet.com",
+      "type": "academic_journal",
+      "industry": ["healthcare", "pharma"],
+      "priority": "highest",
+      "reliability_score": 10,
+      "notes": "Leading medical journal. Paywalled."
+    }
+  ],
+  "industry_specific_sources": {
+    "pharma": [
+      {
+        "name": "ClinicalTrials.gov",
+        "url": "https://clinicaltrials.gov",
+        "type": "government_database",
+        "reliability_score": 10,
+        "notes": "Registry of clinical trials. Publicly accessible."
+      },
+      {
+        "name": "European Medicines Agency (EMA)",
+        "url": "https://www.ema.europa.eu",
+        "type": "government_database",
+        "reliability_score": 10,
+        "notes": "EU drug regulation and approvals."
+      },
+      {
+        "name": "Pharmaceutical Research and Manufacturers of America (PhRMA)",
+        "url": "https://www.phrma.org",
+        "type": "industry_report",
+        "reliability_score": 7,
+        "notes": "Pharma industry association. Consider industry bias."
+      }
+    ],
+    "bfsi": [
+      {
+        "name": "Federal Reserve Economic Data (FRED)",
+        "url": "https://fred.stlouisfed.org",
+        "type": "government_database",
+        "reliability_score": 10,
+        "notes": "Economic data from the Federal Reserve Bank of St. Louis."
+      },
+      {
+        "name": "Bank for International Settlements (BIS)",
+        "url": "https://www.bis.org",
+        "type": "government_database",
+        "reliability_score": 10,
+        "notes": "International banking and financial statistics."
+      },
+      {
+        "name": "FDIC",
+        "url": "https://www.fdic.gov",
+        "type": "government_database",
+        "reliability_score": 10,
+        "notes": "U.S. banking regulation and data."
+      }
+    ],
+    "real_estate": [
+      {
+        "name": "U.S. Census Bureau",
+        "url": "https://www.census.gov",
+        "type": "government_database",
+        "reliability_score": 10,
+        "notes": "Population, housing, demographic data."
+      },
+      {
+        "name": "National Association of Realtors (NAR)",
+        "url": "https://www.nar.realtor",
+        "type": "industry_report",
+        "reliability_score": 8,
+        "notes": "Real estate market data and trends."
+      },
+      {
+        "name": "Zillow Research",
+        "url": "https://www.zillow.com/research",
+        "type": "company_official",
+        "reliability_score": 7,
+        "notes": "Housing market data. Company-produced, verify independently."
+      }
+    ],
+    "technology": [
+      {
+        "name": "Stack Overflow Developer Survey",
+        "url": "https://insights.stackoverflow.com/survey",
+        "type": "industry_report",
+        "reliability_score": 8,
+        "notes": "Annual developer trends survey."
+      },
+      {
+        "name": "GitHub Octoverse",
+        "url": "https://octoverse.github.com",
+        "type": "industry_report",
+        "reliability_score": 7,
+        "notes": "Open source and developer trends."
+      },
+      {
+        "name": "IEEE Xplore",
+        "url": "https://ieeexplore.ieee.org",
+        "type": "academic_journal",
+        "reliability_score": 9,
+        "notes": "Electrical engineering and computer science research. Paywalled."
+      }
+    ]
+  },
+  "prohibited_sources": [
+    {
+      "name": "Wikipedia",
+      "reason": "Not a primary source. Use only for initial research, never cite directly.",
+      "alternative": "Follow Wikipedia's citations to original sources"
+    },
+    {
+      "name": "Personal blogs (unknown authors)",
+      "reason": "Unverified expertise. Use only if author credentials are established."
+    },
+    {
+      "name": "Content farms (e.g., eHow, About.com clones)",
+      "reason": "Low editorial standards, often outdated or inaccurate."
+    },
+    {
+      "name": "Social media posts",
+      "reason": "Unverified. Use only if from official company/expert accounts and clearly marked."
+    },
+    {
+      "name": "Press release aggregators",
+      "reason": "Not independent sources. Go to original company press release if needed."
+    }
+  ],
+  "citation_verification_rules": {
+    "url_accessibility": {
+      "must_be_live": true,
+      "allow_paywall": true,
+      "allow_archive_org": true,
+      "handle_404": "flag_for_replacement"
+    },
+    "source_age": {
+      "max_age_years_default": 2,
+      "max_age_years_pharma": 1,
+      "max_age_years_technology": 1,
+      "max_age_years_legal": 5,
+      "evergreen_topics_exception": true
+    },
+    "source_diversity": {
+      "min_unique_sources": 5,
+      "max_single_source_reliance": 0.3,
+      "prefer_independent_sources": true
+    },
+    "cross_reference": {
+      "require_corroboration": true,
+      "min_corroborating_sources": 2,
+      "handle_contradictions": "flag_for_human_review"
+    }
+  }
+}

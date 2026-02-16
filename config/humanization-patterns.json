@@ -1,0 +1,237 @@
+{
+  "_description": "ContentForge Humanization Patterns — AI writing signatures to detect and remove",
+  "ai_telltale_phrases": {
+    "overused_verbs": [
+      "delve",
+      "leverage",
+      "utilize",
+      "harness",
+      "unlock",
+      "empower",
+      "revolutionize",
+      "transform",
+      "optimize",
+      "streamline",
+      "facilitate"
+    ],
+    "filler_phrases": [
+      "it's important to note that",
+      "it's worth noting that",
+      "it should be noted that",
+      "it goes without saying",
+      "needless to say",
+      "at the end of the day",
+      "in today's world",
+      "in today's digital age",
+      "in the modern era",
+      "when it comes to"
+    ],
+    "overused_transitions": [
+      "moreover",
+      "furthermore",
+      "additionally",
+      "consequently",
+      "therefore",
+      "thus",
+      "hence",
+      "in conclusion",
+      "to sum up",
+      "in summary"
+    ],
+    "ai_hedging_phrases": [
+      "may potentially",
+      "could possibly",
+      "might potentially",
+      "seems to suggest",
+      "appears to indicate",
+      "tends to show"
+    ],
+    "robotic_sentence_starters": [
+      "It is important to",
+      "It is essential to",
+      "It is crucial to",
+      "It is vital to",
+      "One must",
+      "One should",
+      "Businesses must",
+      "Companies should",
+      "Organizations need to"
+    ],
+    "generic_descriptors": [
+      "cutting-edge",
+      "state-of-the-art",
+      "world-class",
+      "best-in-class",
+      "industry-leading",
+      "next-generation",
+      "innovative solution",
+      "comprehensive solution",
+      "robust framework",
+      "seamless integration"
+    ]
+  },
+  "sentence_structure_patterns": {
+    "too_uniform": {
+      "description": "AI often creates sentences of similar length. Human writing varies.",
+      "detection_threshold": 0.7,
+      "fix": "Mix short punchy sentences with longer flowing ones. Vary rhythm."
+    },
+    "too_balanced": {
+      "description": "AI loves perfectly balanced clauses. Humans don't.",
+      "example": "X is important, Y is crucial, and Z is essential.",
+      "fix": "Break symmetry. One short. Another long and winding with clauses."
+    },
+    "overuse_of_lists": {
+      "description": "AI defaults to bulleted lists. Humans mix formats.",
+      "detection_threshold": "More than 40% of content as lists",
+      "fix": "Convert some lists to narrative paragraphs with connective tissue."
+    },
+    "predictable_structure": {
+      "description": "AI follows intro-body-conclusion rigidly.",
+      "fix": "Start with your main point. Open with a story. Put best idea first."
+    }
+  },
+  "humanization_techniques": {
+    "sentence_variety": {
+      "short_sentence_ratio": 0.2,
+      "medium_sentence_ratio": 0.5,
+      "long_sentence_ratio": 0.3,
+      "description": "Vary sentence length: 20% short (5-10 words), 50% medium (11-20), 30% long (21+)"
+    },
+    "conversational_elements": {
+      "questions": {
+        "recommended_frequency": "1-2 per 500 words",
+        "placement": "After making a point, to engage reader"
+      },
+      "direct_address": {
+        "use_you": true,
+        "avoid_one": true,
+        "description": "Use 'you' instead of 'one' or passive voice"
+      },
+      "contractions": {
+        "appropriate_contexts": ["blog", "article"],
+        "avoid_in": ["whitepaper", "research_paper"],
+        "examples": ["it's", "you're", "we'll", "don't"]
+      }
+    },
+    "natural_imperfections": {
+      "sentence_fragments": {
+        "appropriate": true,
+        "frequency": "Sparingly (1-2 per 1000 words)",
+        "example": "Just for emphasis.",
+        "placement": "After a complete thought. For punch."
+      },
+      "dashes_and_parentheticals": {
+        "appropriate": true,
+        "example": "Use a dash — like this — to add extra thought",
+        "frequency": "2-3 per 500 words"
+      },
+      "starting_with_and_or_but": {
+        "appropriate_in": ["blog", "article"],
+        "avoid_in": ["research_paper", "whitepaper"],
+        "example": "But here's the thing. And that's not all."
+      }
+    },
+    "brand_personality_injection": {
+      "witty": {
+        "techniques": ["Subtle wordplay", "Unexpected comparisons", "Self-aware asides"],
+        "example": "SEO isn't rocket science. (Though rocket scientists probably do SEO.)"
+      },
+      "authoritative": {
+        "techniques": ["Data-first sentences", "Definitive statements", "Expert citations"],
+        "example": "The data is clear: 73% of marketers see ROI within 90 days."
+      },
+      "warm": {
+        "techniques": ["Personal anecdotes", "Inclusive language", "Empathetic framing"],
+        "example": "We've all been there — staring at a blank page, deadline looming."
+      },
+      "professional": {
+        "techniques": ["Industry terminology", "Measured tone", "Formal structure"],
+        "avoid": ["Contractions", "Slang", "Excessive personality"]
+      },
+      "educational": {
+        "techniques": ["Step-by-step breakdowns", "Clear definitions", "Analogies"],
+        "example": "Think of it like this: SEO is a marathon, not a sprint."
+      }
+    },
+    "rhythm_and_flow": {
+      "read_aloud_test": {
+        "description": "Read draft aloud. If you stumble, rewrite that phrase.",
+        "check_for": ["Tongue twisters", "Awkward phrasing", "Unnatural pauses"]
+      },
+      "transition_smoothness": {
+        "avoid_overuse": "Moreover, furthermore, additionally",
+        "prefer": "Natural bridges",
+        "examples": [
+          "Here's why that matters.",
+          "But there's more to it.",
+          "Let's dig deeper.",
+          "So what does this mean for you?"
+        ]
+      },
+      "paragraph_flow": {
+        "vary_length": true,
+        "short_paragraph_ratio": 0.3,
+        "description": "Mix 1-2 sentence paragraphs with 4-5 sentence ones"
+      }
+    }
+  },
+  "ai_detection_evasion": {
+    "burstiness": {
+      "description": "Perplexity (word choice variety) and burstiness (sentence length variety) are key AI detection signals",
+      "target_burstiness_score": 0.7,
+      "technique": "Intentionally vary sentence length dramatically"
+    },
+    "unexpected_word_choices": {
+      "description": "AI uses statistically probable words. Humans occasionally choose unexpected synonyms.",
+      "technique": "Replace 10-15% of common words with less common but accurate synonyms"
+    },
+    "personal_touches": {
+      "first_person": {
+        "appropriate_in": ["blog", "article", "case study"],
+        "examples": ["I found that", "We discovered", "In my experience"]
+      },
+      "specific_examples": {
+        "description": "AI generalizes. Humans cite specific instances.",
+        "example": "Instead of 'companies', say 'We worked with a SaaS startup that...'"
+      }
+    }
+  },
+  "quality_preservation": {
+    "seo_keyword_protection": {
+      "description": "Humanization must NOT reduce keyword density below threshold",
+      "monitor": ["Primary keyword placement", "Secondary keyword density"],
+      "fallback": "If SEO score drops, loop back to Phase 6"
+    },
+    "factual_accuracy_protection": {
+      "description": "Humanization must NOT alter facts, citations, or data",
+      "immutable_elements": ["Statistics", "Citations", "Proper nouns", "Technical terms"]
+    },
+    "brand_voice_protection": {
+      "description": "Humanization must enhance (not replace) brand voice",
+      "preserve": ["Brand-specific terminology", "Required disclaimers", "Tone formality"]
+    }
+  },
+  "scoring_criteria": {
+    "ai_pattern_removal": {
+      "weight": 0.3,
+      "measure": "Percentage of telltale phrases removed"
+    },
+    "sentence_variety": {
+      "weight": 0.25,
+      "measure": "Burstiness score (variance in sentence length)"
+    },
+    "readability_improvement": {
+      "weight": 0.2,
+      "measure": "Flesch-Kincaid score maintained or improved"
+    },
+    "brand_personality_integration": {
+      "weight": 0.15,
+      "measure": "Presence of brand personality traits"
+    },
+    "seo_preservation": {
+      "weight": 0.1,
+      "measure": "SEO scorecard unchanged or improved"
+    }
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "_description": "ContentForge Quality Scoring Thresholds — Configurable per brand/industry",
+  "default": {
+    "minimum_pass_score": 7.0,
+    "human_review_threshold": 5.0,
+    "excellent_threshold": 8.5,
+    "dimension_weights": {
+      "content_quality": 0.30,
+      "citation_integrity": 0.25,
+      "brand_compliance": 0.20,
+      "seo_performance": 0.15,
+      "readability": 0.10
+    },
+    "quality_gates": {
+      "phase_1_research": {
+        "min_sources": 5,
+        "min_competitor_analysis": 5,
+        "require_content_angle": true,
+        "require_outline": true
+      },
+      "phase_2_fact_check": {
+        "max_flagged_items": 0,
+        "min_verified_percentage": 80,
+        "require_live_urls": true,
+        "max_source_age_years": 2
+      },
+      "phase_3_draft": {
+        "word_count_tolerance_percent": 10,
+        "min_citations_per_300_words": 1,
+        "require_all_outline_sections": true
+      },
+      "phase_4_validation": {
+        "max_hallucinations": 0,
+        "max_unsourced_claims": 0,
+        "min_accuracy_confidence": 0.85,
+        "max_validation_loops": 2
+      },
+      "phase_5_structure": {
+        "max_grammar_errors": 0,
+        "require_brand_compliance_pass": true,
+        "min_readability_score": 60,
+        "max_readability_score": 80
+      },
+      "phase_6_seo": {
+        "require_keyword_in_title": true,
+        "require_keyword_in_h1": true,
+        "require_keyword_in_first_100_words": true,
+        "primary_keyword_density_min": 0.015,
+        "primary_keyword_density_max": 0.025,
+        "meta_title_max_chars": 60,
+        "meta_description_max_chars": 155,
+        "max_seo_loops": 1
+      },
+      "phase_6_5_humanizer": {
+        "min_sentence_variety_score": 0.7,
+        "max_ai_detection_score": 0.3,
+        "require_brand_personality": true,
+        "preserve_seo_keywords": true,
+        "readability_must_not_degrade": true
+      },
+      "phase_7_review": {
+        "min_content_quality": 6.0,
+        "min_citation_integrity": 7.0,
+        "min_brand_compliance": 7.0,
+        "min_seo_performance": 6.0,
+        "min_readability": 6.0
+      }
+    },
+    "feedback_loop_limits": {
+      "phase_4_to_3": 2,
+      "phase_6_to_5": 1,
+      "phase_7_to_any": 2,
+      "max_total_loops": 5
+    }
+  },
+  "industry_overrides": {
+    "pharma": {
+      "minimum_pass_score": 8.0,
+      "dimension_weights": {
+        "content_quality": 0.25,
+        "citation_integrity": 0.35,
+        "brand_compliance": 0.25,
+        "seo_performance": 0.10,
+        "readability": 0.05
+      },
+      "quality_gates": {
+        "phase_2_fact_check": {
+          "min_sources": 8,
+          "min_verified_percentage": 95,
+          "max_source_age_years": 1,
+          "require_peer_reviewed": true
+        },
+        "phase_4_validation": {
+          "max_hallucinations": 0,
+          "max_unsourced_claims": 0,
+          "min_accuracy_confidence": 0.95
+        },
+        "phase_7_review": {
+          "min_citation_integrity": 8.5,
+          "min_brand_compliance": 8.0
+        }
+      }
+    },
+    "bfsi": {
+      "minimum_pass_score": 7.5,
+      "dimension_weights": {
+        "content_quality": 0.25,
+        "citation_integrity": 0.25,
+        "brand_compliance": 0.30,
+        "seo_performance": 0.15,
+        "readability": 0.05
+      },
+      "quality_gates": {
+        "phase_4_validation": {
+          "require_regulatory_compliance": true
+        },
+        "phase_5_structure": {
+          "require_disclaimers": true
+        },
+        "phase_7_review": {
+          "min_brand_compliance": 8.0,
+          "min_citation_integrity": 7.5
+        }
+      }
+    },
+    "real_estate": {
+      "minimum_pass_score": 7.0,
+      "dimension_weights": {
+        "content_quality": 0.30,
+        "citation_integrity": 0.15,
+        "brand_compliance": 0.20,
+        "seo_performance": 0.25,
+        "readability": 0.10
+      },
+      "quality_gates": {
+        "phase_6_seo": {
+          "require_local_keywords": true,
+          "primary_keyword_density_max": 0.03
+        }
+      }
+    },
+    "healthcare": {
+      "minimum_pass_score": 8.0,
+      "dimension_weights": {
+        "content_quality": 0.25,
+        "citation_integrity": 0.35,
+        "brand_compliance": 0.25,
+        "seo_performance": 0.10,
+        "readability": 0.05
+      },
+      "quality_gates": {
+        "phase_2_fact_check": {
+          "require_medical_sources": true,
+          "max_source_age_years": 2
+        },
+        "phase_5_structure": {
+          "require_medical_disclaimers": true
+        }
+      }
+    },
+    "legal": {
+      "minimum_pass_score": 8.0,
+      "dimension_weights": {
+        "content_quality": 0.30,
+        "citation_integrity": 0.30,
+        "brand_compliance": 0.30,
+        "seo_performance": 0.05,
+        "readability": 0.05
+      },
+      "quality_gates": {
+        "phase_2_fact_check": {
+          "require_legal_sources": true,
+          "verify_case_law": true
+        },
+        "phase_5_structure": {
+          "require_legal_disclaimers": true
+        }
+      }
+    }
+  }
+}

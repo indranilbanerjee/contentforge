@@ -1,0 +1,292 @@
+{
+  "_description": "ContentForge Brand Profile Template — Complete schema for brand knowledge",
+  "_instructions": "Copy this template and fill in values for each brand. Store in Google Drive as {Brand-Name}-profile.json",
+  "brand_name": "Example Brand",
+  "industry": "pharma | bfsi | real_estate | healthcare | legal | technology | ecommerce | b2b_saas | consumer_goods | education",
+  "company_info": {
+    "legal_name": "Example Corporation Inc.",
+    "founded": "2020",
+    "headquarters": "San Francisco, CA",
+    "website": "https://example.com",
+    "target_markets": ["North America", "Europe", "APAC"]
+  },
+  "voice": {
+    "tone": "professional | conversational | authoritative | warm | witty | educational | inspirational",
+    "formality": "formal | business_casual | casual",
+    "personality_traits": [
+      "helpful",
+      "trustworthy",
+      "innovative",
+      "data-driven"
+    ],
+    "brand_adjectives": [
+      "reliable",
+      "cutting-edge",
+      "customer-focused"
+    ],
+    "writing_style": {
+      "sentence_length": "short | medium | long | mixed",
+      "paragraph_length": "short | medium | long | mixed",
+      "use_questions": true,
+      "use_contractions": true,
+      "use_exclamations": false,
+      "active_vs_passive": "active_voice_preferred",
+      "technical_depth": "beginner | intermediate | advanced | expert"
+    }
+  },
+  "terminology": {
+    "preferred_terms": {
+      "customer": "client",
+      "product": "solution",
+      "feature": "capability",
+      "buy": "invest in"
+    },
+    "prohibited_terms": [
+      "cheap",
+      "revolutionary",
+      "game-changing",
+      "disruptive"
+    ],
+    "industry_specific_jargon": {
+      "use_technical_terms": true,
+      "always_explain_acronyms": false,
+      "assumed_knowledge_level": "intermediate"
+    },
+    "required_terminology": {
+      "company_name_format": "Example Brand™",
+      "product_names": {
+        "Product A": "Example Product A®",
+        "Product B": "Example Product B™"
+      }
+    }
+  },
+  "citation_rules": {
+    "format": "APA | MLA | Chicago | IEEE | Custom",
+    "min_citations_per_300_words": 1,
+    "min_citations_total": 5,
+    "preferred_source_types": [
+      "peer_reviewed_journals",
+      "government_databases",
+      "industry_reports",
+      "company_official"
+    ],
+    "required_sources": [
+      "https://www.example-trusted-source.com"
+    ],
+    "prohibited_sources": [
+      "wikipedia.org",
+      "unreliable-news.com"
+    ],
+    "inline_citation_format": "numbered | author_year | footnote",
+    "bibliography_required": true,
+    "link_citations_to_sources": true
+  },
+  "guardrails": {
+    "prohibited_claims": [
+      "We are the best",
+      "Number one in the industry",
+      "Guaranteed results",
+      "No side effects"
+    ],
+    "required_disclaimers": [
+      "Results may vary. Consult a professional before use.",
+      "This content is for informational purposes only."
+    ],
+    "compliance_notes": "All content must comply with FDA regulations for medical claims. No health guarantees allowed.",
+    "sensitive_topics": {
+      "avoid": [
+        "political statements",
+        "religious references",
+        "competitor bashing"
+      ],
+      "handle_with_care": [
+        "pricing comparisons",
+        "clinical data",
+        "patient testimonials"
+      ]
+    },
+    "regulatory_requirements": {
+      "industry_body": "FDA | SEC | FTC | HIPAA | None",
+      "disclosure_requirements": [
+        "Sponsored content must be labeled",
+        "Material connections must be disclosed"
+      ],
+      "review_required_for": [
+        "medical claims",
+        "financial advice",
+        "legal statements"
+      ]
+    }
+  },
+  "content_patterns": {
+    "typical_structure": "intro_hook | problem_agitate | solution | benefits | cta | conclusion",
+    "avg_word_count_by_type": {
+      "blog": 1200,
+      "article": 1800,
+      "whitepaper": 3000,
+      "faq": 800,
+      "research_paper": 5000
+    },
+    "preferred_heading_style": "Title Case | Sentence case | ALL CAPS",
+    "use_subheadings": true,
+    "use_bullet_lists": true,
+    "use_numbered_lists": true,
+    "use_callout_boxes": false,
+    "use_statistics": true,
+    "use_case_studies": true,
+    "use_expert_quotes": true
+  },
+  "seo_preferences": {
+    "primary_keyword_density_target": 0.02,
+    "secondary_keyword_density_target": 0.01,
+    "keyword_placement_priority": [
+      "title",
+      "h1",
+      "first_100_words",
+      "h2_tags",
+      "conclusion",
+      "meta_description"
+    ],
+    "meta_title_format": "{Primary Keyword} | {Brand Name}",
+    "meta_description_format": "Learn about {topic}. {Value proposition}. {CTA}.",
+    "url_slug_format": "lowercase-with-hyphens",
+    "internal_linking": {
+      "min_internal_links": 2,
+      "max_internal_links": 5,
+      "link_to_pillar_content": true
+    },
+    "schema_markup_types": [
+      "Article",
+      "FAQPage",
+      "HowTo",
+      "Organization"
+    ]
+  },
+  "target_audience": {
+    "primary_persona": {
+      "title": "Marketing Director",
+      "industry": "B2B SaaS",
+      "company_size": "50-200 employees",
+      "pain_points": [
+        "Content production bottlenecks",
+        "Brand consistency at scale",
+        "Citation verification challenges"
+      ],
+      "goals": [
+        "Increase content output 3x",
+        "Maintain quality standards",
+        "Reduce production costs"
+      ],
+      "reading_level": "College graduate (12-14 Flesch-Kincaid)",
+      "preferred_content_length": "1200-1800 words",
+      "content_consumption_context": "Desk research during work hours"
+    },
+    "secondary_personas": [
+      {
+        "title": "Content Lead",
+        "focus": "Operational efficiency"
+      },
+      {
+        "title": "Brand Manager",
+        "focus": "Brand compliance"
+      }
+    ]
+  },
+  "quality_thresholds": {
+    "minimum_quality_score": 7.0,
+    "dimension_minimums": {
+      "content_quality": 6.5,
+      "citation_integrity": 7.5,
+      "brand_compliance": 7.0,
+      "seo_performance": 6.0,
+      "readability": 6.5
+    },
+    "readability_range": {
+      "min_flesch_kincaid_grade": 8,
+      "max_flesch_kincaid_grade": 12
+    },
+    "auto_approve_threshold": 8.5,
+    "human_review_required_below": 6.0
+  },
+  "knowledge_vault_config": {
+    "drive_folder_id": "GOOGLE_DRIVE_FOLDER_ID",
+    "brand_guidelines_folder": "Brand-Guidelines/",
+    "reference_content_folder": "Reference-Content/",
+    "guardrails_folder": "Guardrails/",
+    "cache_file_name": "brand-profile-cache.json",
+    "source_docs_hash": "SHA256_HASH_OF_SOURCE_DOCS",
+    "last_updated": "2026-02-16T18:00:00Z"
+  },
+  "data_sources": {
+    "trusted_sources_registry": [
+      {
+        "name": "PubMed",
+        "url": "https://pubmed.ncbi.nlm.nih.gov",
+        "type": "academic_journal",
+        "priority": "highest",
+        "reliability_score": 10,
+        "applicable_topics": ["medical", "pharma", "healthcare"]
+      },
+      {
+        "name": "Google Scholar",
+        "url": "https://scholar.google.com",
+        "type": "academic_journal",
+        "priority": "high",
+        "reliability_score": 9,
+        "applicable_topics": ["all"]
+      },
+      {
+        "name": "Industry Association Reports",
+        "url": "https://industry-association.org",
+        "type": "industry_report",
+        "priority": "high",
+        "reliability_score": 8,
+        "applicable_topics": ["industry_specific"]
+      }
+    ],
+    "competitor_content_urls": [
+      "https://competitor1.com/blog",
+      "https://competitor2.com/resources"
+    ]
+  },
+  "output_preferences": {
+    "file_format": "docx",
+    "include_toc": true,
+    "include_executive_summary": false,
+    "include_appendix": true,
+    "appendix_includes": [
+      "seo_scorecard",
+      "quality_report",
+      "citation_list"
+    ],
+    "header_footer": {
+      "header": "{Brand Name} | {Content Type}",
+      "footer": "Generated by ContentForge | {Date} | Quality Score: {Score}/10"
+    },
+    "watermark": null,
+    "brand_colors": {
+      "primary": "#0066CC",
+      "secondary": "#FF6600"
+    },
+    "font_preferences": {
+      "heading_font": "Arial",
+      "body_font": "Georgia",
+      "code_font": "Courier New"
+    }
+  },
+  "notification_preferences": {
+    "send_completion_notification": true,
+    "send_human_review_alert": true,
+    "notification_email": "marketing@example.com",
+    "slack_webhook": null
+  },
+  "metadata": {
+    "created_date": "2026-02-16",
+    "created_by": "Neel Banerjee",
+    "last_modified_date": "2026-02-16",
+    "last_modified_by": "Neel Banerjee",
+    "version": "1.0",
+    "active": true,
+    "notes": "Pilot brand for ContentForge testing"
+  }
+}
