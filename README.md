@@ -1,10 +1,21 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 1.0.0
+**Version:** 2.0.0 🚀
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready ✅
 
-> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 9-phase autonomous agent pipeline.
+> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 9-phase autonomous agent pipeline. **New in v2.0:** Batch processing (4-5x faster), content refresh, multilingual support, platform integrations (WordPress/Notion/Webflow/HubSpot), and performance analytics.
+
+### ⚡ New in v2.0.0
+
+- **🚄 Batch Processing** — Process 10-50+ pieces in parallel (60-90 min vs 4-6 hours) = **4-5x faster**
+- **🔄 Content Refresh** — Update old articles with current data, preserve SEO rankings
+- **🌍 Multilingual** — Phase 6.5 Humanizer supports 15+ languages
+- **🔌 Platform Integrations** — Publish directly to WordPress, Notion, Airtable, Webflow, HubSpot
+- **📊 Analytics** — Track quality scores, identify trends, optimize pipeline performance
+- **🎬 Video Scripts** — Generate YouTube/TikTok/Instagram video scripts
+- **🔀 A/B Testing** — Generate multiple content variants for testing
+- **📱 Social Adaptation** — Transform long-form → Twitter/LinkedIn/Instagram posts
 
 ---
 

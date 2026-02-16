@@ -15,6 +15,50 @@
         "GOOGLE_APPLICATION_CREDENTIALS": "/absolute/path/to/your/service-account-key.json"
       },
       "description": "REQUIRED: Google Drive — brand knowledge vault, output file storage, folder organization"
+    },
+    "notion": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/mcp-notion"],
+      "env": {
+        "NOTION_API_KEY": "secret_YOUR_NOTION_INTEGRATION_TOKEN"
+      },
+      "description": "OPTIONAL: Notion — direct publishing to Notion databases, content knowledge base"
+    },
+    "airtable": {
+      "command": "npx",
+      "args": ["-y", "mcp-airtable"],
+      "env": {
+        "AIRTABLE_API_KEY": "patYOUR_AIRTABLE_TOKEN",
+        "AIRTABLE_BASE_ID": "appXXXXXXXXXXXXXX"
+      },
+      "description": "OPTIONAL: Airtable — content calendar management, requirement tracking"
+    },
+    "wordpress": {
+      "command": "npx",
+      "args": ["-y", "mcp-wordpress"],
+      "env": {
+        "WORDPRESS_SITE_URL": "https://yourdomain.com",
+        "WORDPRESS_USERNAME": "your_username",
+        "WORDPRESS_APP_PASSWORD": "your_app_password"
+      },
+      "description": "OPTIONAL: WordPress — direct post publishing, draft creation"
+    },
+    "webflow": {
+      "command": "npx",
+      "args": ["-y", "mcp-webflow"],
+      "env": {
+        "WEBFLOW_API_TOKEN": "your_webflow_api_token",
+        "WEBFLOW_SITE_ID": "your_site_id"
+      },
+      "description": "OPTIONAL: Webflow — CMS item creation, blog publishing"
+    },
+    "hubspot": {
+      "command": "npx",
+      "args": ["-y", "mcp-hubspot"],
+      "env": {
+        "HUBSPOT_ACCESS_TOKEN": "your_hubspot_token"
+      },
+      "description": "OPTIONAL: HubSpot — blog post publishing, landing page creation"
     }
   }
 }
