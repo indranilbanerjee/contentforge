@@ -1,6 +1,6 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 2.0.0 🚀
+**Version:** 2.0.1 🚀
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready ✅
 
@@ -91,6 +91,20 @@ Phase 8: Output Manager
 ---
 
 ## Installation
+
+### ⚠️ MCP Server Configuration Required
+
+ContentForge integrates with Google Sheets (for requirement intake and status tracking) and Google Drive (for brand knowledge storage and content delivery) via MCP servers. **MCP integrations are opt-in** and require manual setup:
+
+1. Install the plugin first (see installation steps below)
+2. Set up Google Cloud Project with Drive and Sheets APIs enabled
+3. Configure `GOOGLE_APPLICATION_CREDENTIALS` environment variable
+4. Add MCP server configuration to Claude Desktop's config file
+5. Restart Claude Desktop to activate integrations
+
+**The plugin works without MCP servers** — you can still run the content pipeline and get output locally. However, you'll need MCP configuration for the full workflow (requirement intake from Sheets, brand knowledge from Drive, and automated output delivery).
+
+See the [MCP Setup Guide](#mcp-server-setup) below for detailed instructions.
 
 ### Prerequisites
 
