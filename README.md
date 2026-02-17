@@ -92,19 +92,22 @@ Phase 8: Output Manager
 
 ## Installation
 
-### ⚠️ MCP Server Configuration Required
+### ⚠️ MCP Server Configuration (Optional - Opt-In Only)
 
-ContentForge integrates with Google Sheets (for requirement intake and status tracking) and Google Drive (for brand knowledge storage and content delivery) via MCP servers. **MCP integrations are opt-in** and require manual setup:
+ContentForge integrates with Google Sheets (for requirement intake and status tracking) and Google Drive (for brand knowledge storage and content delivery) via MCP servers. **MCP integrations are 100% opt-in** and require manual configuration:
+
+**To enable MCP integrations:**
 
 1. Install the plugin first (see installation steps below)
-2. Set up Google Cloud Project with Drive and Sheets APIs enabled
-3. Configure `GOOGLE_APPLICATION_CREDENTIALS` environment variable
-4. Add MCP server configuration to Claude Desktop's config file
-5. Restart Claude Desktop to activate integrations
+2. Navigate to the plugin directory: `~/.claude/plugins/contentforge/` (or your installation path)
+3. Copy the example MCP config: `cp .mcp.json.example .mcp.json`
+4. Edit `.mcp.json` and configure your `GOOGLE_APPLICATION_CREDENTIALS` path
+5. Set up Google Cloud Project with Drive and Sheets APIs enabled
+6. Restart Claude Desktop to activate integrations
 
-**The plugin works without MCP servers** — you can still run the content pipeline and get output locally. However, you'll need MCP configuration for the full workflow (requirement intake from Sheets, brand knowledge from Drive, and automated output delivery).
+**The plugin works fully WITHOUT MCP servers** — you can run the complete content pipeline and get output locally. MCP is ONLY needed for the full workflow (requirement intake from Sheets, brand knowledge from Drive, and automated output delivery). Most users will not need MCP configuration.
 
-See the [MCP Setup Guide](#mcp-server-setup) below for detailed instructions.
+See Step 2 below for detailed MCP configuration instructions.
 
 ### Prerequisites
 
@@ -136,9 +139,15 @@ mv contentforge ~/.claude/plugins/
 mv contentforge %USERPROFILE%\.claude\plugins\
 ```
 
-### Step 2: Configure MCP Servers
+### Step 2: Configure MCP Servers (Optional)
 
-**Edit `contentforge/.mcp.json`:**
+**First, copy the example config:**
+```bash
+cd ~/.claude/plugins/contentforge
+cp .mcp.json.example .mcp.json
+```
+
+**Then edit `.mcp.json`:**
 
 ```json
 {
