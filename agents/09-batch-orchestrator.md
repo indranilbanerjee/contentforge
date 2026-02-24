@@ -1,5 +1,5 @@
 ---
-name: Batch Orchestrator
+name: batch-orchestrator
 description: "Orchestrates multi-content production pipelines, managing parallel content creation workflows."
 ---
 

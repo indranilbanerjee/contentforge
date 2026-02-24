@@ -1,7 +1,6 @@
 ---
 name: contentforge
 description: Generate publication-ready, fact-checked, brand-compliant, SEO-optimized content through 9-phase autonomous pipeline with zero hallucinations
-skill_type: command
 ---
 
 # ContentForge — Enterprise Content Production

@@ -1,5 +1,5 @@
 ---
-name: Reviewer
+name: reviewer
 description: "Reviews content against quality standards, brief requirements, and brand guidelines before final output."
 ---
 

@@ -1,36 +1,8 @@
 {
   "name": "contentforge",
-  "version": "2.0.2",
-  "description": "Enterprise multi-agent content production platform with batch processing, content refresh, multilingual support, platform integrations (WordPress/Notion/Airtable/Webflow/HubSpot), analytics, and A/B testing. Transform requirements into publication-ready content in 20-30 minutes through 10-agent autonomous pipeline with zero hallucinations.",
+  "version": "2.1.0",
+  "description": "Transform content requirements into publication-ready articles through a 10-agent autonomous production pipeline. Research, draft, edit, and deliver with brand compliance, fact-checking, and platform-ready formatting.",
   "author": {
-    "name": "Indranil 'Neel' Banerjee",
-    "email": "indranilbanerjee21@gmail.com",
-    "url": "https://www.linkedin.com/in/askneelnow/"
-  },
-  "homepage": "https://github.com/indranilbanerjee/contentforge",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/indranilbanerjee/contentforge"
-  },
-  "license": "MIT",
-  "keywords": [
-    "content-generation",
-    "content-production",
-    "research",
-    "seo",
-    "citation-verification",
-    "fact-checking",
-    "brand-compliance",
-    "multi-agent",
-    "enterprise",
-    "quality-control",
-    "batch-processing",
-    "multilingual",
-    "content-refresh",
-    "analytics",
-    "cms-integration",
-    "claude-code",
-    "claude-plugin"
-  ],
-  "category": "productivity"
+    "name": "Indranil Banerjee"
+  }
 }

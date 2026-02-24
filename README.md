@@ -1,8 +1,8 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 2.0.1 🚀
+**Version:** 2.1.0
 **Platform:** Claude Code & Cowork
-**Status:** Production-Ready ✅
+**Status:** Production-Ready
 
 > Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 9-phase autonomous agent pipeline. **New in v2.0:** Batch processing (4-5x faster), content refresh, multilingual support, platform integrations (WordPress/Notion/Webflow/HubSpot), and performance analytics.
 
@@ -92,22 +92,19 @@ Phase 8: Output Manager
 
 ## Installation
 
-### ⚠️ MCP Server Configuration (Optional - Opt-In Only)
+### Connectors (MCP Integrations)
 
-ContentForge integrates with Google Sheets (for requirement intake and status tracking) and Google Drive (for brand knowledge storage and content delivery) via MCP servers. **MCP integrations are 100% opt-in** and require manual configuration:
+ContentForge ships with **6 HTTP connectors** that work in both Cowork and Claude Code — Notion (knowledge base), Canva (design), Webflow (publishing), Slack (notifications), Gmail (delivery), and Google Calendar (scheduling).
 
-**To enable MCP integrations:**
+**The plugin works fully WITHOUT any connectors** — you can run the complete content pipeline and get output locally. Connectors are only needed for platform integrations.
 
-1. Install the plugin first (see installation steps below)
-2. Navigate to the plugin directory: `~/.claude/plugins/contentforge/` (or your installation path)
-3. Copy the example MCP config: `cp .mcp.json.example .mcp.json`
-4. Edit `.mcp.json` and configure your `GOOGLE_APPLICATION_CREDENTIALS` path
-5. Set up Google Cloud Project with Drive and Sheets APIs enabled
-6. Restart Claude Desktop to activate integrations
+**Claude Code users** who need Google Sheets (requirement intake) and Google Drive (brand knowledge vault) can use the advanced setup:
 
-**The plugin works fully WITHOUT MCP servers** — you can run the complete content pipeline and get output locally. MCP is ONLY needed for the full workflow (requirement intake from Sheets, brand knowledge from Drive, and automated output delivery). Most users will not need MCP configuration.
+```bash
+cp .mcp.json.example .mcp.json
+```
 
-See Step 2 below for detailed MCP configuration instructions.
+See [CONNECTORS.md](CONNECTORS.md) for the full connector reference.
 
 ### Prerequisites
 

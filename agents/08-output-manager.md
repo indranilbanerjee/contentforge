@@ -1,5 +1,5 @@
 ---
-name: Output Manager
+name: output-manager
 description: "Handles final content formatting, delivery to output channels, and tracking sheet updates."
 ---
 

@@ -3,7 +3,8 @@
 # ===========================
 # Credentials & Secrets
 # ===========================
-.mcp.json
+# Note: .mcp.json is NOT ignored — it contains HTTP connector URLs (no credentials)
+# User-specific npx configs should use .mcp.json.local
 *.json.local
 credentials.json
 token.json

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.1.0] - 2026-02-25
+
+### Changed — HTTP Connector Architecture
+
+Rebuilds the MCP integration layer to follow Anthropic's official plugin pattern — HTTP-only connectors that work in both Cowork and Claude Code.
+
+- **New `.mcp.json` with 6 HTTP connectors**: Notion, Canva, Webflow, Slack, Gmail, Google Calendar — all `"type": "http"`, all work through Cowork's VM NAT
+- **New `CONNECTORS.md`** documenting connector categories with `~~category` placeholder pattern
+- **`.mcp.json.example` preserved** for Claude Code users who need Google Sheets and Google Drive (npx only)
+- **Minimal `plugin.json`** — stripped to 4 fields (name, version, description, author) matching Anthropic's official format. Removed `category`, `homepage`, `repository`, `license`, `keywords`
+
+### Fixed
+
+- **Agent names normalized to kebab-case** — all 10 agents now use lowercase kebab-case names (e.g., "content-drafter" instead of "Content Drafter") for proper Cowork routing
+- **Removed non-standard `skill_type: command`** from all 3 skill frontmatter files — field is not in the official plugin spec
+
 ## [2.0.2] - 2026-02-24
 
 ### Fixed — Cowork Compatibility & Agent Accuracy

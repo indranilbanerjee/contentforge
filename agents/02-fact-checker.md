@@ -1,5 +1,5 @@
 ---
-name: Fact Checker
+name: fact-checker
 description: "Verifies all claims, statistics, citations, and factual assertions for accuracy before content moves to drafting."
 ---
 

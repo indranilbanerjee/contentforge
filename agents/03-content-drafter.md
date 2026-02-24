@@ -1,5 +1,5 @@
 ---
-name: Content Drafter
+name: content-drafter
 description: "Creates initial content drafts from research findings and content brief, establishing structure and narrative flow."
 ---
 

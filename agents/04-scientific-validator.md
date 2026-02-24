@@ -1,5 +1,5 @@
 ---
-name: Scientific Validator
+name: scientific-validator
 description: "Validates scientific accuracy, evidence quality, and methodological soundness of technical and scientific content."
 ---
 

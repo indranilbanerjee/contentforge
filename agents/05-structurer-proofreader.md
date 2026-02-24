@@ -1,5 +1,5 @@
 ---
-name: Structurer & Proofreader
+name: structurer-proofreader
 description: "Optimizes content structure for readability and engagement, and catches grammar, spelling, and formatting errors."
 ---
 

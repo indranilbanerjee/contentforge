@@ -1,7 +1,6 @@
 ---
 name: batch-process
 description: Process multiple content pieces in parallel with queue management, priority scheduling, and progress tracking
-skill_type: command
 ---
 
 # Batch Content Processing
