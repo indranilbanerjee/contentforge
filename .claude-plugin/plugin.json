@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "2.0.1",
-  "description": "Enterprise multi-agent content production platform with batch processing, content refresh, multilingual support, platform integrations (WordPress/Notion/Airtable/Webflow/HubSpot), analytics, and A/B testing. Transform requirements into publication-ready content in 20-30 minutes through 9-phase autonomous pipeline with zero hallucinations.",
+  "version": "2.0.2",
+  "description": "Enterprise multi-agent content production platform with batch processing, content refresh, multilingual support, platform integrations (WordPress/Notion/Airtable/Webflow/HubSpot), analytics, and A/B testing. Transform requirements into publication-ready content in 20-30 minutes through 10-agent autonomous pipeline with zero hallucinations.",
   "author": {
     "name": "Indranil 'Neel' Banerjee",
     "email": "indranilbanerjee21@gmail.com",

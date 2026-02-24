@@ -1,3 +1,8 @@
+---
+name: Batch Orchestrator
+description: "Orchestrates multi-content production pipelines, managing parallel content creation workflows."
+---
+
 # Agent: Batch Orchestrator
 
 **Purpose:** Manage parallel execution of multiple ContentForge pipelines with queue management, priority scheduling, progress tracking, and error handling.

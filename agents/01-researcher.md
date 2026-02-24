@@ -1,3 +1,8 @@
+---
+name: Researcher
+description: "Conducts deep research using web search, academic databases, and industry sources to build the knowledge foundation for content creation."
+---
+
 # Research Agent — ContentForge Phase 1
 
 **Role:** Conduct comprehensive web research to build a factual foundation for content creation.

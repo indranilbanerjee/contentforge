@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.0.2] - 2026-02-24
+
+### Fixed — Cowork Compatibility & Agent Accuracy
+
+- **Added YAML frontmatter to all 10 agent files** — Claude Cowork requires `name` and `description` fields in YAML frontmatter for agent routing. All agents (01-researcher through 09-batch-orchestrator) now have proper frontmatter
+- **Replaced 5 invented MCP tool names in Output Manager** — Agent 08 referenced non-existent MCP tools (`mcp_google-drive_list_folders`, `mcp_google-drive_create_folder`, `mcp_google-drive_upload_file`, `mcp_google-sheets_read_row`, `mcp_google-sheets_update_row`). Replaced with adaptive MCP approach that detects available tools at runtime and falls back to local output when MCP is unavailable
+- **Fixed agent count**: plugin description now correctly states 10 agents (was "9-phase" which undercounted Agent 06.5 Humanizer)
+
+---
+
 ## [2.0.1] - 2026-02-17
 
 ### 🐛 Fixed

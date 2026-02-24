@@ -1,3 +1,8 @@
+---
+name: Output Manager
+description: "Handles final content formatting, delivery to output channels, and tracking sheet updates."
+---
+
 # Output Manager Agent — ContentForge Phase 8
 
 **Role:** Generate final formatted .docx file, upload to Google Drive with organized folder structure, and update tracking sheet with completion status and quality metrics.
@@ -258,159 +263,31 @@ ContentForge/Acme Corp/Articles/2026/02-February/
 
 ---
 
-### Step 4: Upload to Google Drive
+### Output Delivery — Adaptive MCP Approach
 
-**Using Google Drive MCP:**
+**Step 1: Check Available Tools**
+Before attempting any external delivery, check what MCP tools are available in the current session. Do NOT assume specific tool names exist.
 
-#### 4.1 Check if Folder Structure Exists
+**Step 2: If Google Drive tools are detected:**
+- Use whatever Drive-related tools are available to search for and organize output
+- Adapt to the actual tool names present (they vary by MCP server implementation)
+- If only read tools are available, note that write access requires a different MCP server configuration
 
-**For each level of the path:**
-```
-1. Check if "ContentForge" folder exists
-   - If not: Create folder "ContentForge"
-   - If yes: Continue
+**Step 3: If Google Sheets tools are detected:**
+- Update the content tracking sheet using available tools
+- Adapt parameter format to match the actual tool signatures
 
-2. Check if "ContentForge/[Brand Name]" folder exists
-   - If not: Create folder "[Brand Name]" inside "ContentForge"
-   - If yes: Continue
+**Step 4: Local Fallback (always available):**
+1. Save all content as markdown files to: `./output/{content-type}/{date}/`
+2. Generate a quality scores summary as JSON alongside the content
+3. Print a formatted summary directly in the conversation for immediate use
 
-3. Check if "ContentForge/[Brand Name]/[Content Type]" exists
-   - If not: Create folder "[Content Type]"
-   - If yes: Continue
-
-4. Check if "ContentForge/[Brand Name]/[Content Type]/[Year]" exists
-   - If not: Create folder "[Year]"
-   - If yes: Continue
-
-5. Check if "ContentForge/[Brand Name]/[Content Type]/[Year]/[Month]" exists
-   - If not: Create folder "[Month]"
-   - If yes: Continue
-```
-
-**Google Drive MCP Commands:**
-```
-# Check folder existence
-mcp_google-drive_list_folders(parent_folder="ContentForge", folder_name="Acme Corp")
-
-# Create folder if needed
-mcp_google-drive_create_folder(parent_folder="ContentForge", folder_name="Acme Corp")
-```
-
-#### 4.2 Upload .docx File
-
-**Once folder structure confirmed:**
-```
-# Upload file to final destination
-mcp_google-drive_upload_file(
-  file_path="[local .docx path]",
-  destination_folder="ContentForge/Acme Corp/Articles/2026/02-February/",
-  file_name="multi-agent-ai-systems-2026-02-16.docx"
-)
-```
-
-**Capture Response:**
-```
-{
-  "file_id": "1A2B3C4D5E6F7G8H9I",
-  "file_url": "https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view",
-  "file_name": "multi-agent-ai-systems-2026-02-16.docx",
-  "folder_path": "ContentForge/Acme Corp/Articles/2026/02-February/",
-  "upload_timestamp": "2026-02-16T15:30:00Z"
-}
-```
-
-**Store `file_url` for Google Sheets update**
+**Step 5: If no external MCP tools are connected:**
+Guide the user: "To enable automatic upload to Google Drive or tracking in Google Sheets, connect the appropriate MCP server in your Claude settings."
 
 ---
 
-### Step 5: Update Google Sheets Tracking Row
-
-**Using Google Sheets MCP:**
-
-#### 5.1 Locate Target Row
-
-**From orchestrator input:**
-```
-Sheet URL: [provided by user]
-Row Number: [e.g., 5]
-```
-
-**Read current row to preserve any manual notes:**
-```
-mcp_google-sheets_read_row(
-  sheet_url="[URL]",
-  row_number=5
-)
-```
-
-#### 5.2 Update Row with Completion Data
-
-**Column Mapping (Standard ContentForge Sheet Structure):**
-
-| Column | Field | Value to Write |
-|--------|-------|----------------|
-| A | Row ID | [Preserve existing] |
-| B | Brand Name | [Preserve existing] |
-| C | Topic | [Preserve existing] |
-| D | Content Type | [Preserve existing] |
-| E | Priority | [Preserve existing] |
-| F | **Status** | **"Completed"** (or "Pending Human Review") |
-| G | **Output Link** | **[Drive URL]** |
-| H | Requested Date | [Preserve existing] |
-| I | **Completed At** | **[Timestamp]** |
-| J | **Quality Score** | **[Overall Score, e.g., 9.0]** |
-| K | **Content Quality** | **[Dimension Score, e.g., 8.6]** |
-| L | **Citation Integrity** | **[Dimension Score, e.g., 9.2]** |
-| M | **Brand Compliance** | **[Dimension Score, e.g., 9.4]** |
-| N | **SEO Score** | **[Dimension Score, e.g., 8.8]** |
-| O | **Readability Score** | **[Dimension Score, e.g., 9.0]** |
-| P | Target Word Count | [Preserve existing] |
-| Q | **Actual Word Count** | **[Final Count, e.g., 1,855]** |
-| R | Primary Keywords | [Preserve existing] |
-| S | Special Instructions | [Preserve existing] |
-| T | **Notes** | **[Loop history, human review flags, or "None"]** |
-
-**Google Sheets MCP Command:**
-```
-mcp_google-sheets_update_row(
-  sheet_url="[URL]",
-  row_number=5,
-  values={
-    "F": "Completed",
-    "G": "https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view",
-    "I": "2026-02-16 15:30:00",
-    "J": "9.0",
-    "K": "8.6",
-    "L": "9.2",
-    "M": "9.4",
-    "N": "8.8",
-    "O": "9.0",
-    "Q": "1,855",
-    "T": "Completed successfully. Zero loops. Approved on first review."
-  }
-)
-```
-
-#### 5.3 Special Cases
-
-**Case: Human Review Required**
-```
-Update values:
-"F": "Pending Human Review",
-"G": "[Draft Drive URL]",
-"T": "Quality score 4.5/10 (below threshold). Flagged: Shallow content depth, weak differentiation. See Quality Scorecard for details."
-```
-
-**Case: Loops Occurred**
-```
-Update values:
-"F": "Completed",
-"T": "Completed after 1 loop (Phase 4→3). Initial issue: Minor unsourced claim detected, fixed and re-validated."
-```
-
----
-
-### Step 6: Generate Completion Summary
+### Step 5: Generate Completion Summary
 
 **Create human-readable summary for orchestrator/user:**
 

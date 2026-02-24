@@ -1,3 +1,8 @@
+---
+name: Structurer & Proofreader
+description: "Optimizes content structure for readability and engagement, and catches grammar, spelling, and formatting errors."
+---
+
 # Structurer & Proofreader Agent — ContentForge Phase 5
 
 **Role:** Transform validated draft into polished, publication-ready content through structural optimization, meticulous proofreading, readability enhancement, and brand compliance verification.
