@@ -39,7 +39,7 @@ Runs your content through **9 specialized agents** with quality gates at each ph
 **Minimum Required:**
 - **Topic/Title** — What the content is about (e.g., "AI in Healthcare: 2026 Trends")
 - **Content Type** — article, blog, whitepaper, faq, research_paper
-- **Brand** — Which brand profile to use (must exist, create with `/brand-setup`)
+- **Brand** — Which brand profile to use (create with `/cf:style-guide` if new brand)
 
 **Optional:**
 - **Target Audience** — Who this content is for (e.g., "Healthcare CIOs")
@@ -129,9 +129,9 @@ Reads requirement from Row 5 of the sheet.
   - **Brand Compliance (20%):** Voice, terminology, guardrails, style
   - **SEO Performance (15%):** Keyword optimization, meta tags, structure
   - **Readability (10%):** Grade level, sentence variety, flow
-- Calculates composite score (1-10, needs ≥5.0 to pass)
-- **Quality Gate:** Score ≥5.0, all dimensions pass, zero critical violations
-- **If <5.0:** Loops back to failing phase with specific feedback (max 2 loops)
+- Calculates composite score (1-10, needs ≥7.0 to pass)
+- **Quality Gate:** Score ≥7.0, all dimensions pass, zero critical violations
+- **If <7.0:** Loops back to failing phase with specific feedback (max 2 loops)
 
 ### Phase 8: Output Manager (1-2 minutes)
 - Generates .docx file with proper formatting
@@ -187,8 +187,12 @@ Google Drive: ContentForge Output/AcmeMed/AI-in-Healthcare-2026-Trends_v1.0.docx
 **Before using ContentForge**, create a brand profile:
 
 ```
-/brand-setup AcmeMed
+/cf:style-guide
 ```
+
+Provide your brand name, industry, voice guidelines (or share existing documents/URLs), and ContentForge generates the profile JSON automatically.
+
+**Alternatively**, copy `config/brand-registry-template.json` and fill in manually.
 
 **Brand Profile Includes:**
 - Voice & Tone (authoritative, conversational, technical, witty)
@@ -196,8 +200,11 @@ Google Drive: ContentForge Output/AcmeMed/AI-in-Healthcare-2026-Trends_v1.0.docx
 - Style Guide (formatting preferences, citation style)
 - Guardrails (topics to avoid, compliance requirements)
 - Industry Context (Pharma, BFSI, Healthcare, Legal)
+- Personality Profile (new in v3.0: authoritative, conversational, technical, witty)
 
 **Brand profiles are cached** (SHA256 hash) for 95% time savings on repeat runs.
+
+See the [User Guide](../../docs/USER-GUIDE.md#4-setting-up-your-brand-profile) for detailed setup instructions.
 
 ## Quality Assurance
 
@@ -246,26 +253,33 @@ Content is flagged for human review if:
 ## Integration with Other Skills
 
 **Before ContentForge:**
-- `/brand-setup` — Create brand profile if new brand
+- `/cf:style-guide` — Create brand profile if new brand
+- `/cf:brief` — Generate research-backed content brief with keyword analysis
 
 **Instead of ContentForge (for scale):**
 - `/batch-process` — Process 10-50+ pieces in parallel (4-5x faster)
 
 **After ContentForge:**
 - `/content-refresh` — Update content 6-12 months later with fresh data
-- `/generate-variants` — Create A/B test variations
-- `/publish-content` — Publish to WordPress, Notion, Webflow, HubSpot
+- `/cf:variants` — Create A/B test headline/hook/CTA variations
+- `/cf:publish` — Publish to Webflow or WordPress via MCP
+- `/cf:social-adapt` — Transform article into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
+- `/cf:translate` — Translate preserving brand voice (15+ languages)
+- `/cf:video-script` — Generate timestamped video scripts from the article
+- `/cf:analytics` — Record quality scores for trend tracking
 
 ## Requirements
 
-### MCP Integrations (Required)
-- **Google Sheets** — Requirement intake (optional for interactive mode)
-- **Google Drive** — Brand profile storage, output file storage
+### MCP Integrations (Optional)
+- **Google Sheets** — Requirement intake for batch processing, quality tracking
+- **Google Drive** — Brand knowledge vault, output .docx storage
+- **Webflow/WordPress** — Direct CMS publishing via `/cf:publish`
+
+Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` for setup guides.
 
 ### Environment
 - Claude Code or Cowork (latest version)
-- Google Cloud Project with Drive + Sheets APIs enabled
-- Service Account with Editor permissions
+- Internet connection (for Phase 1 web research)
 
 ## Troubleshooting
 
@@ -293,9 +307,9 @@ Content is flagged for human review if:
 
 ### Step 1: Create Brand Profile (One-Time Setup)
 ```
-/brand-setup AcmeMed
+/cf:style-guide
 ```
-Provide: Industry (Healthcare), Voice (Authoritative), Tone (Professional), Terminology, Guardrails
+Provide: Brand name (AcmeMed), Industry (Healthcare), Voice (Authoritative), Tone (Professional), Terminology, Guardrails
 
 ### Step 2: Generate Content
 ```
@@ -310,7 +324,7 @@ Provide: Industry (Healthcare), Voice (Authoritative), Tone (Professional), Term
 
 ### Step 4: Publish
 ```
-/publish-content AcmeMed/AI-Powered-Diagnostics_v1.0.docx --platform=wordpress --status=publish
+/cf:publish --platform=webflow
 ```
 
 **Total Time:** 25 minutes (setup once, then 20-30 min per piece)
@@ -318,20 +332,23 @@ Provide: Industry (Healthcare), Voice (Authoritative), Tone (Professional), Term
 ## Limitations
 
 - **Sequential processing** (for parallel, use `/batch-process`)
-- **English content only** in v2.0 (multilingual coming in v2.1)
-- **Requires Google Drive/Sheets** (no alternative storage yet)
 - **20-30 min per piece** (cannot be rushed without compromising quality)
+- **Best with brand profile** — works without one but uses generic defaults
 
 ## Related Skills
 
 - **[/batch-process](../batch-process/SKILL.md)** — Process 10-50+ pieces in parallel (4-5x faster)
 - **[/content-refresh](../content-refresh/SKILL.md)** — Update old content with fresh data
-- **[/generate-variants](../generate-variants/SKILL.md)** — A/B test multiple variations
-- **[/content-analytics](../content-analytics/SKILL.md)** — Track quality scores and performance
+- **[/cf:variants](../cf-variants/SKILL.md)** — A/B test headline/hook/CTA variations
+- **[/cf:analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance
+- **[/cf:social-adapt](../cf-social-adapt/SKILL.md)** — Transform article into social media posts
+- **[/cf:publish](../cf-publish/SKILL.md)** — Publish to Webflow/WordPress
+- **[/cf:translate](../cf-translate/SKILL.md)** — Translate preserving brand voice
+- **[/cf:brief](../cf-brief/SKILL.md)** — Generate research-backed content briefs
 
 ---
 
-**Version:** 2.0.0
-**Agents:** All 9 agents (Research, Fact Checker, Drafter, Validator, Structurer, SEO Optimizer, Humanizer, Reviewer, Output Manager)
+**Version:** 3.0.0
+**Agents:** 12 agents (Research, Fact Checker, Drafter, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
 **Processing Time:** 20-30 minutes avg
 **Quality Guarantee:** ≥8.5/10 avg score, zero hallucinations, 95%+ citation accuracy
