@@ -654,6 +654,95 @@ TechCorp case study details, and strengthen implementation framework in Section 
 
 ---
 
+## EXTENDED OUTPUT FORMATS (v3.0)
+
+In addition to the standard .docx delivery, the Output Manager supports these additional formats when requested:
+
+### Format: Medium Article
+
+**When:** User specifies `--format=medium` or content is destined for Medium publication.
+
+**Formatting Rules:**
+- Convert to clean markdown optimized for Medium's editor
+- Use `##` for section headers (Medium uses H3 for sections)
+- Insert `---` separators between major sections
+- Add pull quotes using `> ` for key statistics or insights
+- Format code blocks with language tags
+- Add estimated reading time at top: `*X min read*`
+- Place featured image suggestion at top with alt text
+- Remove any internal links that won't work on Medium
+
+**Output:** `{title}-medium.md` ready for copy-paste into Medium editor
+
+---
+
+### Format: Substack Post
+
+**When:** User specifies `--format=substack` or content targets newsletter subscribers.
+
+**Formatting Rules:**
+- Convert to email-friendly HTML with inline styles
+- Use single-column layout (max-width: 600px)
+- Replace complex tables with simplified lists
+- Add subscriber-specific CTA at bottom ("If you found this valuable...")
+- Include "Share" suggestion with pre-written tweet text
+- Ensure images have fallback alt text for email clients
+- Strip JavaScript and complex CSS (email clients don't support them)
+- Add preview text (first 90 characters of content)
+
+**Output:** `{title}-substack.html` with email-friendly formatting
+
+---
+
+### Format: Email Newsletter
+
+**When:** User specifies `--format=newsletter` or content is for email distribution.
+
+**Formatting Rules:**
+- Responsive HTML email template (works on mobile + desktop)
+- Header with brand logo, newsletter title, date
+- Executive summary (3-4 sentences) at top before full content
+- Inline CSS only (no external stylesheets)
+- Image width max 580px with alt text
+- Footer with unsubscribe link placeholder, address placeholder
+- CTA button (rounded, brand color) for primary action
+- "Read on web" fallback link at top
+
+**Output:** `{title}-newsletter.html` ready for email sending platform
+
+---
+
+### Format: PDF Export
+
+**When:** User specifies `--format=pdf` or content needs offline distribution.
+
+**Formatting Rules:**
+- Professional document layout with brand header/footer
+- Table of contents generated from H2/H3 headers
+- Page numbers in footer
+- Citation list formatted as endnotes with clickable URLs
+- Quality scorecard as appendix (optional, if `--include-scorecard`)
+- Cover page with title, brand, date, word count, quality grade
+- Print-optimized: no background colors, high contrast text
+
+**Output:** `{title}.pdf` generated via markdown-to-PDF conversion
+
+---
+
+### Format: Social Media Package
+
+**When:** User specifies `--format=social` or content should be repurposed for social.
+
+**Process:**
+1. Call the Social Adapter Agent (Agent 10) with the approved content
+2. Social Adapter extracts 10-15 key points and generates platform-specific posts
+3. Package includes posts for: LinkedIn, Twitter/X, Instagram, Facebook, Threads
+4. Each post has: text, character count, hashtag suggestions, image specs
+
+**Output:** `{title}-social-package.md` containing all social posts organized by platform
+
+---
+
 **Output Manager Agent — Phase 8 Complete**
 
-**Final Deliverable:** Formatted .docx in Google Drive + Updated tracking sheet + Completion summary
+**Final Deliverable:** Formatted .docx in Google Drive + Updated tracking sheet + Completion summary + Optional extended formats

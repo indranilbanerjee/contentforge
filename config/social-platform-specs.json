@@ -1,0 +1,361 @@
+{
+  "_description": "ContentForge Social Platform Specifications — Character limits, hashtag norms, voice guidelines, image specs, best posting times, and supported post types per platform. Used by the Social Adapter Agent (10-social-adapter) and cf-social-adapt skill.",
+  "linkedin": {
+    "character_limit": 3000,
+    "ideal_length": {
+      "min": 800,
+      "max": 1500,
+      "sweet_spot": 1200
+    },
+    "hashtags": {
+      "count_min": 3,
+      "count_max": 5,
+      "style": "professional",
+      "placement": "end_of_post",
+      "notes": "Use industry-specific terms. Avoid overly generic hashtags. CamelCase for readability."
+    },
+    "voice": {
+      "tone": "professional",
+      "formality": "high",
+      "personality": ["insightful", "authoritative", "data-backed"],
+      "avoid": ["slang", "excessive emojis", "clickbait phrasing", "all caps"],
+      "notes": "Write like a knowledgeable peer, not a press release. Conversational authority."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "double_newline_between_paragraphs",
+      "list_style": "-- (em dash prefix)",
+      "emojis": "minimal_or_none",
+      "link_placement": "end_of_post_or_first_comment",
+      "truncation_point": 210,
+      "truncation_note": "LinkedIn shows ~210 characters before 'see more'. Hook must be in first 2 lines."
+    },
+    "image_specs": {
+      "feed": {
+        "width": 1200,
+        "height": 627,
+        "ratio": "1.91:1",
+        "formats": ["PNG", "JPG", "GIF"],
+        "max_size_mb": 10
+      },
+      "carousel": {
+        "width": 1080,
+        "height": 1080,
+        "ratio": "1:1",
+        "max_slides": 20,
+        "formats": ["PDF", "PNG", "JPG"]
+      }
+    },
+    "best_times": [
+      {"day": "Tuesday", "times": ["08:00", "10:00"]},
+      {"day": "Wednesday", "times": ["09:00", "12:00"]},
+      {"day": "Thursday", "times": ["08:00", "10:00"]}
+    ],
+    "worst_times": ["weekends", "after 17:00"],
+    "post_types": [
+      "thought_leadership",
+      "data_analysis",
+      "how_to",
+      "industry_commentary",
+      "case_study",
+      "carousel_document",
+      "poll"
+    ],
+    "algorithm_notes": "External links may reduce reach. Consider putting link in first comment. Native documents (carousels) get higher distribution."
+  },
+  "twitter": {
+    "character_limit": 280,
+    "ideal_length": {
+      "min": 200,
+      "max": 270,
+      "sweet_spot": 240
+    },
+    "hashtags": {
+      "count_min": 1,
+      "count_max": 2,
+      "style": "concise",
+      "placement": "end_of_post",
+      "notes": "Hashtags consume character budget. Use only high-value, specific hashtags. Never in mid-sentence."
+    },
+    "voice": {
+      "tone": "concise",
+      "formality": "medium",
+      "personality": ["punchy", "direct", "witty"],
+      "avoid": ["verbose phrasing", "corporate jargon", "multiple paragraphs", "filler words"],
+      "notes": "Every word must earn its place. One idea per tweet. Be sharp."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "single_newline_for_emphasis",
+      "list_style": "numbered (1/ 2/ 3/) for threads",
+      "emojis": "sparingly",
+      "link_placement": "end_of_post",
+      "link_character_cost": 23,
+      "truncation_note": "URLs always count as 23 characters regardless of actual length."
+    },
+    "image_specs": {
+      "feed": {
+        "width": 1200,
+        "height": 675,
+        "ratio": "16:9",
+        "formats": ["PNG", "JPG", "GIF", "WebP"],
+        "max_size_mb": 5
+      }
+    },
+    "best_times": [
+      {"day": "Monday", "times": ["08:00", "11:00"]},
+      {"day": "Tuesday", "times": ["09:00", "10:00"]},
+      {"day": "Wednesday", "times": ["09:00", "11:00"]},
+      {"day": "Thursday", "times": ["09:00", "12:00"]},
+      {"day": "Friday", "times": ["08:00", "10:00"]}
+    ],
+    "worst_times": ["late_night", "early_morning_before_7"],
+    "post_types": [
+      "stat_lead",
+      "hot_take",
+      "thread_starter",
+      "question",
+      "quote",
+      "link_share"
+    ],
+    "algorithm_notes": "Replies and quote tweets boost distribution. Images increase engagement by ~35%. Threads get more sustained visibility than single tweets."
+  },
+  "instagram": {
+    "character_limit": 2200,
+    "ideal_length": {
+      "min": 300,
+      "max": 800,
+      "sweet_spot": 500
+    },
+    "hashtags": {
+      "count_min": 8,
+      "count_max": 12,
+      "style": "mixed_tiers",
+      "placement": "end_of_caption_or_first_comment",
+      "tier_mix": {
+        "broad": 2,
+        "specific": 4,
+        "niche": 4,
+        "branded": 2
+      },
+      "notes": "Mix broad reach hashtags with niche discovery hashtags. Avoid banned hashtags. Can go in first comment to keep caption clean."
+    },
+    "voice": {
+      "tone": "conversational",
+      "formality": "low_to_medium",
+      "personality": ["visual-first", "accessible", "inspiring", "relatable"],
+      "avoid": ["dense text blocks", "academic language", "no visual component", "link-heavy posts"],
+      "notes": "The visual does the heavy lifting. Caption adds context and personality. Write like you are talking to a friend who is interested in the topic."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "double_newline_for_readability",
+      "list_style": "emoji bullets or line breaks",
+      "emojis": "moderate",
+      "link_placement": "link_in_bio_only",
+      "truncation_point": 125,
+      "truncation_note": "Instagram shows ~125 characters before 'more'. First line is critical."
+    },
+    "image_specs": {
+      "feed_square": {
+        "width": 1080,
+        "height": 1080,
+        "ratio": "1:1",
+        "formats": ["PNG", "JPG"],
+        "max_size_mb": 30
+      },
+      "feed_landscape": {
+        "width": 1080,
+        "height": 566,
+        "ratio": "1.91:1",
+        "formats": ["PNG", "JPG"],
+        "max_size_mb": 30
+      },
+      "feed_portrait": {
+        "width": 1080,
+        "height": 1350,
+        "ratio": "4:5",
+        "formats": ["PNG", "JPG"],
+        "max_size_mb": 30
+      },
+      "story_reel": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "9:16",
+        "formats": ["PNG", "JPG", "MP4"],
+        "max_size_mb": 250,
+        "max_duration_seconds": 90
+      },
+      "carousel": {
+        "width": 1080,
+        "height": 1080,
+        "ratio": "1:1",
+        "max_slides": 10,
+        "formats": ["PNG", "JPG"]
+      }
+    },
+    "best_times": [
+      {"day": "Monday", "times": ["11:00", "14:00"]},
+      {"day": "Wednesday", "times": ["11:00", "18:00"]},
+      {"day": "Thursday", "times": ["12:00", "18:00"]}
+    ],
+    "worst_times": ["01:00-04:00"],
+    "post_types": [
+      "carousel",
+      "single_image",
+      "reel",
+      "story",
+      "infographic",
+      "quote_card"
+    ],
+    "algorithm_notes": "Carousels get highest engagement. Saves and shares weight more than likes. Reels get broader distribution than feed posts. Alt text improves accessibility and may boost SEO."
+  },
+  "facebook": {
+    "character_limit": 63206,
+    "ideal_length": {
+      "min": 400,
+      "max": 800,
+      "sweet_spot": 600
+    },
+    "hashtags": {
+      "count_min": 1,
+      "count_max": 3,
+      "style": "minimal",
+      "placement": "end_of_post",
+      "notes": "Hashtags are less important on Facebook. Use 1-3 relevant ones. Do not overdo it."
+    },
+    "voice": {
+      "tone": "community-oriented",
+      "formality": "low_to_medium",
+      "personality": ["accessible", "conversational", "storytelling", "inclusive"],
+      "avoid": ["excessive jargon", "cold corporate tone", "hashtag stuffing", "engagement bait"],
+      "notes": "Write for a broad audience. Stories and questions outperform link dumps. Make people feel invited to participate."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "double_newline_between_paragraphs",
+      "list_style": "dash or bullet emoji",
+      "emojis": "moderate",
+      "link_placement": "end_of_post",
+      "truncation_note": "Facebook truncates around 477 characters with 'See more'. Hook in first paragraph."
+    },
+    "image_specs": {
+      "feed": {
+        "width": 1200,
+        "height": 630,
+        "ratio": "1.91:1",
+        "formats": ["PNG", "JPG", "GIF"],
+        "max_size_mb": 10
+      },
+      "story": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "9:16",
+        "formats": ["PNG", "JPG", "MP4"],
+        "max_size_mb": 250
+      }
+    },
+    "best_times": [
+      {"day": "Tuesday", "times": ["09:00", "11:00"]},
+      {"day": "Thursday", "times": ["10:00", "14:00"]},
+      {"day": "Saturday", "times": ["09:00", "11:00"]}
+    ],
+    "worst_times": ["late_night", "early_morning_before_7"],
+    "post_types": [
+      "link_share",
+      "question_poll",
+      "story_narrative",
+      "community_discussion",
+      "native_video",
+      "photo_post"
+    ],
+    "algorithm_notes": "Comments weight heavily in algorithm. Questions and polls drive comments. Native images and video outperform external links. Engagement bait ('tag a friend') is penalized."
+  },
+  "threads": {
+    "character_limit": 500,
+    "ideal_length": {
+      "min": 150,
+      "max": 350,
+      "sweet_spot": 250
+    },
+    "hashtags": {
+      "count_min": 1,
+      "count_max": 3,
+      "style": "casual",
+      "placement": "end_of_post",
+      "notes": "Threads culture is less hashtag-driven. Keep it natural. 1-3 relevant hashtags max."
+    },
+    "voice": {
+      "tone": "casual",
+      "formality": "low",
+      "personality": ["conversational", "opinionated", "authentic", "relatable"],
+      "avoid": ["corporate speak", "formal language", "press release style", "excessive hashtags"],
+      "notes": "Write like texting a smart colleague. Hot takes, quick insights, and genuine questions perform best. Authenticity over polish."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "single_newline_for_emphasis",
+      "list_style": "none or minimal",
+      "emojis": "sparingly",
+      "link_placement": "end_of_post_if_needed",
+      "truncation_note": "No truncation at 500 chars. Full post visible."
+    },
+    "image_specs": {
+      "feed": {
+        "width": 1080,
+        "height": 1080,
+        "ratio": "1:1",
+        "formats": ["PNG", "JPG"],
+        "max_size_mb": 10
+      }
+    },
+    "best_times": [
+      {"day": "Monday", "times": ["07:00", "17:00"]},
+      {"day": "Tuesday", "times": ["08:00", "18:00"]},
+      {"day": "Wednesday", "times": ["07:00", "17:00"]},
+      {"day": "Thursday", "times": ["08:00", "18:00"]},
+      {"day": "Friday", "times": ["07:00", "17:00"]}
+    ],
+    "worst_times": ["midday_12_to_14"],
+    "post_types": [
+      "hot_take",
+      "quick_tip",
+      "question",
+      "conversation_starter",
+      "reply_chain_thread",
+      "opinion"
+    ],
+    "algorithm_notes": "Replies and conversation threads get amplified. Text-only posts perform well. Images optional but not required. Authenticity and opinion drive engagement."
+  },
+  "hashtag_tiers": {
+    "_description": "Hashtag categorization framework used across all platforms",
+    "tier_1_broad": {
+      "description": "High volume, high competition industry hashtags",
+      "examples": ["#AI", "#Healthcare", "#Technology", "#Innovation", "#Marketing", "#Business"],
+      "use_case": "Brand visibility, broad reach"
+    },
+    "tier_2_specific": {
+      "description": "Medium volume, medium competition topic hashtags",
+      "examples": ["#AIinHealthcare", "#HealthTech", "#DigitalHealth", "#ContentMarketing", "#SaaS"],
+      "use_case": "Topic discovery, relevant audience targeting"
+    },
+    "tier_3_niche": {
+      "description": "Low volume, low competition, high relevance hashtags",
+      "examples": ["#AIdiagnostics", "#PrecisionMedicine", "#ClinicalAI", "#RadiologyAI"],
+      "use_case": "Niche audience engagement, thought leadership positioning"
+    },
+    "tier_4_branded": {
+      "description": "Brand-owned hashtags for campaign tracking",
+      "examples": ["#AcmeMedInsights", "#ContentForgeResults"],
+      "use_case": "Campaign attribution, community building"
+    }
+  },
+  "post_frameworks": {
+    "_description": "Five core post frameworks referenced by templates/social-post-templates.md",
+    "announcement": "Announce a key finding or trend with context and CTA",
+    "data_driven_insight": "Lead with a specific statistic, provide analysis, end with implication",
+    "how_to_tip": "Practical step-by-step value the reader can act on immediately",
+    "quote_highlight": "Feature a quotable line with attribution and commentary",
+    "story_case_study": "Narrative arc: problem, solution, result with real-world proof"
+  }
+}

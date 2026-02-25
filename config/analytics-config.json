@@ -1,0 +1,110 @@
+{
+  "_description": "Analytics configuration for ContentForge performance tracking",
+  "quality_thresholds": {
+    "excellent": 9.0,
+    "good": 7.0,
+    "acceptable": 5.0,
+    "needs_review": 3.0
+  },
+  "timing_benchmarks": {
+    "_description": "Expected processing time per content type in minutes",
+    "article": 25,
+    "blog": 18,
+    "whitepaper": 35,
+    "faq": 15,
+    "research_paper": 40,
+    "video_script": 20
+  },
+  "alert_rules": {
+    "quality_decline": {
+      "_description": "Trigger when N consecutive pieces from same brand score below threshold",
+      "consecutive_count": 3,
+      "score_threshold": 7.0,
+      "severity": "high"
+    },
+    "phase_slowdown": {
+      "_description": "Trigger when any phase averages more than multiplier x benchmark time",
+      "multiplier": 1.5,
+      "severity": "medium"
+    },
+    "citation_drop": {
+      "_description": "Trigger when citation density falls below content-type minimum",
+      "min_citations_per_300_words": 1.0,
+      "severity": "medium"
+    },
+    "loop_spike": {
+      "_description": "Trigger when average loops per piece exceeds threshold for any content type",
+      "max_avg_loops": 2.0,
+      "severity": "high"
+    },
+    "score_floor": {
+      "_description": "Trigger when any piece scores below absolute minimum",
+      "min_composite_score": 5.0,
+      "severity": "critical"
+    },
+    "volume_gap": {
+      "_description": "Warn when fewer than min_data_points records exist in analysis window",
+      "min_data_points": 10,
+      "severity": "info"
+    }
+  },
+  "trend_analysis": {
+    "window_days": 30,
+    "min_data_points": 10,
+    "outlier_threshold": 2.0,
+    "trend_direction_labels": {
+      "improving": "slope > +0.05",
+      "stable": "slope between -0.05 and +0.05",
+      "declining": "slope < -0.05"
+    }
+  },
+  "dashboard_defaults": {
+    "time_period": 30,
+    "charts": [
+      "quality_trend",
+      "timing_breakdown",
+      "brand_comparison"
+    ],
+    "max_brands_displayed": 10,
+    "max_recent_alerts": 5
+  },
+  "score_components": {
+    "_description": "Five quality dimensions and their default weights (must sum to 1.0)",
+    "content_quality": {
+      "weight": 0.30,
+      "label": "Content Quality",
+      "measures": "Depth, originality, value, clarity"
+    },
+    "citation_integrity": {
+      "weight": 0.25,
+      "label": "Citation Integrity",
+      "measures": "Accuracy, relevance, authority, freshness"
+    },
+    "brand_compliance": {
+      "weight": 0.20,
+      "label": "Brand Compliance",
+      "measures": "Voice, terminology, guardrails, style"
+    },
+    "seo_performance": {
+      "weight": 0.15,
+      "label": "SEO Performance",
+      "measures": "Keyword optimization, meta tags, structure"
+    },
+    "readability": {
+      "weight": 0.10,
+      "label": "Readability",
+      "measures": "Grade level, sentence variety, flow"
+    }
+  },
+  "data_sources": {
+    "primary": "google_sheets",
+    "fallback": "local_csv",
+    "local_csv_path": "~/.claude-marketing/contentforge-tracking.csv",
+    "sheet_tab_name": "ContentForge Tracking"
+  },
+  "export": {
+    "formats": ["json", "csv"],
+    "include_raw_data": false,
+    "anonymize_brands": false
+  }
+}

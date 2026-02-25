@@ -1,0 +1,722 @@
+{
+  "_description": "Multilingual content production patterns — brand voice mapping, cultural adaptation, SEO by language",
+  "supported_languages": [
+    { "code": "es", "name": "Spanish", "direction": "ltr" },
+    { "code": "fr", "name": "French", "direction": "ltr" },
+    { "code": "de", "name": "German", "direction": "ltr" },
+    { "code": "pt", "name": "Portuguese", "direction": "ltr" },
+    { "code": "it", "name": "Italian", "direction": "ltr" },
+    { "code": "nl", "name": "Dutch", "direction": "ltr" },
+    { "code": "ja", "name": "Japanese", "direction": "ltr" },
+    { "code": "zh", "name": "Chinese (Simplified)", "direction": "ltr" },
+    { "code": "ko", "name": "Korean", "direction": "ltr" },
+    { "code": "ar", "name": "Arabic", "direction": "rtl" },
+    { "code": "hi", "name": "Hindi", "direction": "ltr" },
+    { "code": "ru", "name": "Russian", "direction": "ltr" },
+    { "code": "pl", "name": "Polish", "direction": "ltr" },
+    { "code": "tr", "name": "Turkish", "direction": "ltr" },
+    { "code": "vi", "name": "Vietnamese", "direction": "ltr" }
+  ],
+  "brand_voice_mapping": {
+    "authoritative": {
+      "es": {
+        "equivalent": "Formal, datos primero",
+        "characteristics": ["Definitive statements", "Statistics lead paragraphs", "Formal usted register"],
+        "avoid": ["Informal tuteo in professional context", "Colloquial filler", "Hedging language"]
+      },
+      "fr": {
+        "equivalent": "Assertif, ton expert",
+        "characteristics": ["Confident declarations", "Data-backed claims", "Formal vous register"],
+        "avoid": ["Informal tu", "Overly casual phrasing", "Vague qualifiers"]
+      },
+      "de": {
+        "equivalent": "Sachlich, faktenbasiert",
+        "characteristics": ["Objective, fact-first sentences", "Precise terminology", "Formal Sie register"],
+        "avoid": ["Informal du in professional text", "Exaggeration", "Emotional appeals without data"]
+      },
+      "pt": {
+        "equivalent": "Formal, baseado em dados",
+        "characteristics": ["Data-driven assertions", "Professional register", "Clear structure"],
+        "avoid": ["Slang", "Informal contractions", "Hedging phrases"]
+      },
+      "it": {
+        "equivalent": "Autorevole, basato sui dati",
+        "characteristics": ["Confident phrasing", "Evidence-first structure", "Formal Lei register"],
+        "avoid": ["Informal tu in professional context", "Hyperbole without evidence"]
+      },
+      "ja": {
+        "equivalent": "Formal keigo, data-driven",
+        "characteristics": ["Formal keigo (honorific language)", "Data opens paragraphs", "Understated confidence"],
+        "avoid": ["Casual desu/masu in professional context", "Direct self-promotion", "Overly bold claims"]
+      },
+      "zh": {
+        "equivalent": "Formal, evidence-led",
+        "characteristics": ["Data-first structure", "Academic register", "Measured confidence"],
+        "avoid": ["Informal internet slang", "Excessive exclamation", "Unsubstantiated superlatives"]
+      },
+      "ko": {
+        "equivalent": "Formal hapshoche, data-driven",
+        "characteristics": ["Formal hapshoche endings", "Statistics lead", "Respectful authority"],
+        "avoid": ["Casual banmal", "Informal contractions", "Direct commands"]
+      },
+      "ar": {
+        "equivalent": "Formal, evidence-based eloquence",
+        "characteristics": ["Eloquent formal Arabic", "Data integrated into flowing prose", "Classical register"],
+        "avoid": ["Dialectal Arabic", "Overly casual constructions", "Direct informal address"]
+      },
+      "hi": {
+        "equivalent": "Formal, data-pradhaan",
+        "characteristics": ["Formal Hindi with Sanskritized vocabulary", "Statistics prominent", "Respectful tone"],
+        "avoid": ["Colloquial Hinglish", "Informal pronouns", "Slang"]
+      }
+    },
+    "conversational": {
+      "es": {
+        "equivalent": "Cercano, tuteo",
+        "characteristics": ["Informal tu register", "Questions to reader", "Relatable examples"],
+        "avoid": ["Overly formal usted", "Academic jargon", "Stiff sentence structure"]
+      },
+      "fr": {
+        "equivalent": "Decontracte, tutoiement",
+        "characteristics": ["Informal tu", "Direct reader address", "Light tone"],
+        "avoid": ["Stiff formal vous", "Complex subordinate clauses", "Bureaucratic phrasing"]
+      },
+      "de": {
+        "equivalent": "Locker, Du-Form",
+        "characteristics": ["Informal du", "Short sentences", "Direct address"],
+        "avoid": ["Formal Sie", "Long compound sentences", "Bureaucratic German"]
+      },
+      "pt": {
+        "equivalent": "Informal, proximo",
+        "characteristics": ["Informal voce", "Conversational flow", "Reader engagement"],
+        "avoid": ["Overly formal register", "Academic tone", "Distant phrasing"]
+      },
+      "it": {
+        "equivalent": "Colloquiale, tu",
+        "characteristics": ["Informal tu", "Engaging questions", "Natural flow"],
+        "avoid": ["Formal Lei", "Stiff academic register"]
+      },
+      "ja": {
+        "equivalent": "Casual desu/masu",
+        "characteristics": ["Polite but casual desu/masu form", "Reader questions", "Relatable examples"],
+        "avoid": ["Stiff keigo", "Academic register", "Overly indirect phrasing"]
+      },
+      "zh": {
+        "equivalent": "Qinqie, informal",
+        "characteristics": ["Friendly register", "Reader engagement", "Simple sentence structure"],
+        "avoid": ["Academic formality", "Classical Chinese phrasing"]
+      },
+      "ko": {
+        "equivalent": "Chondaenmal, friendly",
+        "characteristics": ["Polite chondaenmal", "Reader questions", "Warm examples"],
+        "avoid": ["Stiff hapshoche", "Cold formal register"]
+      },
+      "ar": {
+        "equivalent": "Wuddi, approachable",
+        "characteristics": ["Friendly Modern Standard Arabic", "Reader engagement", "Accessible vocabulary"],
+        "avoid": ["Classical formal register", "Complex rhetorical structures"]
+      },
+      "hi": {
+        "equivalent": "Sahaj, aap-form friendly",
+        "characteristics": ["Friendly aap register", "Simple Hindi", "Relatable examples"],
+        "avoid": ["Heavy Sanskritized vocabulary", "Formal tum/aap distinctions"]
+      }
+    },
+    "technical": {
+      "es": {
+        "equivalent": "Preciso, terminologia exacta",
+        "characteristics": ["Industry terminology preserved", "Precise definitions", "Structured explanations"],
+        "avoid": ["Vague approximations", "Casual rewording of technical terms"]
+      },
+      "fr": {
+        "equivalent": "Technique, jargon specialise",
+        "characteristics": ["French technical terminology (not anglicisms where French term exists)", "Precise definitions", "Logical structure"],
+        "avoid": ["Unnecessary anglicisms", "Oversimplification"]
+      },
+      "de": {
+        "equivalent": "Fachsprachlich, Komposita",
+        "characteristics": ["German compound words for technical concepts", "Precise Fachsprache", "DIN standards awareness"],
+        "avoid": ["Unnecessary English loanwords", "Imprecise paraphrasing"]
+      },
+      "pt": {
+        "equivalent": "Tecnico, terminologia precisa",
+        "characteristics": ["Technical Portuguese", "Industry-standard terms", "Clear definitions"],
+        "avoid": ["Casual paraphrasing of technical concepts"]
+      },
+      "it": {
+        "equivalent": "Tecnico, terminologia specifica",
+        "characteristics": ["Italian technical vocabulary", "Precise definitions"],
+        "avoid": ["Oversimplification of technical concepts"]
+      },
+      "ja": {
+        "equivalent": "Senmon-teki, katakana loanwords",
+        "characteristics": ["Technical katakana terms where standard", "Precise Japanese equivalents where they exist", "Clear definitions for specialized terms"],
+        "avoid": ["Mixing register levels", "Overly casual explanations of technical concepts"]
+      },
+      "zh": {
+        "equivalent": "Zhuanye, precise terminology",
+        "characteristics": ["Standard Chinese technical terms", "Clear definitions", "Structured explanations"],
+        "avoid": ["Internet slang for technical concepts", "Ambiguous phrasing"]
+      },
+      "ko": {
+        "equivalent": "Jeonmun-jeok, precise",
+        "characteristics": ["Korean technical vocabulary with Hanja-origin terms", "Clear definitions"],
+        "avoid": ["Casual paraphrasing", "Unnecessary English mixing"]
+      },
+      "ar": {
+        "equivalent": "Tiqni, mustalahat daqiqa",
+        "characteristics": ["Arabized technical terminology", "Precise definitions", "Structured presentation"],
+        "avoid": ["Dialectal simplification", "Inconsistent terminology"]
+      },
+      "hi": {
+        "equivalent": "Takneeki, paribhashit shabd",
+        "characteristics": ["Hindi technical terms (Sanskritized where standard)", "Clear definitions"],
+        "avoid": ["Inconsistent term usage", "Unnecessary English mixing"]
+      }
+    },
+    "witty": {
+      "es": {
+        "equivalent": "Ingenioso, juegos de palabras",
+        "characteristics": ["Wordplay where natural", "Light irony", "Clever observations"],
+        "avoid": ["Forced humor", "Cultural jokes that don't translate"]
+      },
+      "fr": {
+        "equivalent": "Spirituel, jeux de mots",
+        "characteristics": ["Elegant wordplay", "Irony (French strength)", "Sophisticated humor"],
+        "avoid": ["Slapstick references", "Anglophone cultural jokes"]
+      },
+      "de": {
+        "equivalent": "Geistreich, Wortspiel",
+        "characteristics": ["Dry wit", "Compound word humor", "Understatement"],
+        "avoid": ["Slapstick", "Over-the-top humor in professional context"]
+      },
+      "pt": {
+        "equivalent": "Espirituoso, trocadilhos",
+        "characteristics": ["Light humor", "Clever phrasing", "Relatable wit"],
+        "avoid": ["Offensive humor", "Cultural references that don't cross borders"]
+      },
+      "it": {
+        "equivalent": "Arguto, giochi di parole",
+        "characteristics": ["Elegant wit", "Double meanings", "Cultural cleverness"],
+        "avoid": ["Heavy sarcasm in professional context"]
+      },
+      "ja": {
+        "equivalent": "Light irony only",
+        "characteristics": ["Subtle understatement", "Gentle self-deprecation", "Wordplay (dajare) only if brand allows"],
+        "avoid": ["Direct sarcasm (reads as rude)", "Bold humor in professional/medical context", "Western-style jokes"]
+      },
+      "zh": {
+        "equivalent": "Qiaoqi, subtle humor",
+        "characteristics": ["Understated cleverness", "Cultural idiom play", "Gentle irony"],
+        "avoid": ["Sarcasm (easily misread)", "Political humor", "Overly casual jokes"]
+      },
+      "ko": {
+        "equivalent": "Jaemi, gentle wit",
+        "characteristics": ["Light observational humor", "Wordplay (where natural)", "Self-aware tone"],
+        "avoid": ["Aggressive sarcasm", "Humor at others' expense"]
+      },
+      "ar": {
+        "equivalent": "Zarif, light elegance",
+        "characteristics": ["Elegant wordplay", "Proverb references", "Subtle irony"],
+        "avoid": ["Sarcasm (reads as disrespectful)", "Humor about sensitive topics"]
+      },
+      "hi": {
+        "equivalent": "Haasyapoorn, light humor",
+        "characteristics": ["Gentle wit", "Relatable observations", "Wordplay"],
+        "avoid": ["Aggressive sarcasm", "Humor that crosses regional sensitivities"]
+      }
+    }
+  },
+  "cultural_adaptations": {
+    "es": {
+      "date_format": "DD/MM/YYYY",
+      "currency_symbol": "EUR (Spain) / varies (LatAm)",
+      "number_format": { "decimal": ",", "thousands": "." },
+      "formality_default": "usted (formal)",
+      "humor_style": "Light irony, wordplay acceptable",
+      "greeting_conventions": "Formal salutations in business context"
+    },
+    "fr": {
+      "date_format": "DD/MM/YYYY",
+      "currency_symbol": "EUR",
+      "number_format": { "decimal": ",", "thousands": " " },
+      "formality_default": "vous (formal)",
+      "humor_style": "Irony and elegant wit valued",
+      "greeting_conventions": "Formal with Monsieur/Madame in business"
+    },
+    "de": {
+      "date_format": "DD.MM.YYYY",
+      "currency_symbol": "EUR",
+      "number_format": { "decimal": ",", "thousands": "." },
+      "formality_default": "Sie (formal)",
+      "humor_style": "Dry, understated humor acceptable",
+      "greeting_conventions": "Formal with Herr/Frau and professional titles"
+    },
+    "pt": {
+      "date_format": "DD/MM/YYYY",
+      "currency_symbol": "BRL (Brazil) / EUR (Portugal)",
+      "number_format": { "decimal": ",", "thousands": "." },
+      "formality_default": "voce (neutral-formal)",
+      "humor_style": "Warm, relatable humor",
+      "greeting_conventions": "Varies significantly between Brazil and Portugal"
+    },
+    "it": {
+      "date_format": "DD/MM/YYYY",
+      "currency_symbol": "EUR",
+      "number_format": { "decimal": ",", "thousands": "." },
+      "formality_default": "Lei (formal)",
+      "humor_style": "Expressive, warm wit",
+      "greeting_conventions": "Formal with professional titles valued"
+    },
+    "nl": {
+      "date_format": "DD-MM-YYYY",
+      "currency_symbol": "EUR",
+      "number_format": { "decimal": ",", "thousands": "." },
+      "formality_default": "u (formal) / je (informal)",
+      "humor_style": "Direct, dry humor",
+      "greeting_conventions": "Less formal than German, more direct"
+    },
+    "ja": {
+      "date_format": "YYYY/MM/DD",
+      "currency_symbol": "JPY",
+      "number_format": { "decimal": ".", "thousands": "," },
+      "formality_default": "desu/masu (polite) or keigo (honorific)",
+      "humor_style": "Understatement and gentle self-deprecation; avoid bold humor",
+      "greeting_conventions": "Highly formal, hierarchical awareness critical"
+    },
+    "zh": {
+      "date_format": "YYYY/MM/DD",
+      "currency_symbol": "CNY",
+      "number_format": { "decimal": ".", "thousands": "," },
+      "formality_default": "Formal written Chinese",
+      "humor_style": "Subtle, cultural idiom references",
+      "greeting_conventions": "Formal with appropriate honorifics"
+    },
+    "ko": {
+      "date_format": "YYYY/MM/DD",
+      "currency_symbol": "KRW",
+      "number_format": { "decimal": ".", "thousands": "," },
+      "formality_default": "hapshoche (formal) or chondaenmal (polite)",
+      "humor_style": "Gentle observational humor",
+      "greeting_conventions": "Honorific level must match audience seniority"
+    },
+    "ar": {
+      "date_format": "DD/MM/YYYY",
+      "currency_symbol": "varies by country (SAR, AED, EGP)",
+      "number_format": { "decimal": ".", "thousands": "," },
+      "formality_default": "Formal Modern Standard Arabic",
+      "humor_style": "Proverb-based wit, elegant wordplay; avoid sarcasm",
+      "greeting_conventions": "Formal greetings with religious/cultural phrases common"
+    },
+    "hi": {
+      "date_format": "DD/MM/YYYY",
+      "currency_symbol": "INR",
+      "number_format": { "decimal": ".", "thousands": "," },
+      "formality_default": "aap (respectful)",
+      "humor_style": "Warm, relatable observations",
+      "greeting_conventions": "Respectful address, Namaste in formal context"
+    },
+    "ru": {
+      "date_format": "DD.MM.YYYY",
+      "currency_symbol": "RUB",
+      "number_format": { "decimal": ",", "thousands": " " },
+      "formality_default": "vy (formal)",
+      "humor_style": "Dry irony, intellectual humor",
+      "greeting_conventions": "Formal with patronymic in business context"
+    },
+    "pl": {
+      "date_format": "DD.MM.YYYY",
+      "currency_symbol": "PLN",
+      "number_format": { "decimal": ",", "thousands": " " },
+      "formality_default": "Pan/Pani (formal)",
+      "humor_style": "Dry, self-deprecating humor",
+      "greeting_conventions": "Formal with Pan/Pani and professional titles"
+    },
+    "tr": {
+      "date_format": "DD.MM.YYYY",
+      "currency_symbol": "TRY",
+      "number_format": { "decimal": ",", "thousands": "." },
+      "formality_default": "siz (formal)",
+      "humor_style": "Warm, conversational wit",
+      "greeting_conventions": "Formal with Bey/Hanim honorifics"
+    },
+    "vi": {
+      "date_format": "DD/MM/YYYY",
+      "currency_symbol": "VND",
+      "number_format": { "decimal": ",", "thousands": "." },
+      "formality_default": "Formal pronouns (anh/chi/em based on context)",
+      "humor_style": "Gentle, relatable humor",
+      "greeting_conventions": "Pronoun selection based on age/relationship"
+    }
+  },
+  "seo_considerations": {
+    "es": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Consider Spain vs LatAm search terms. LatAm has 5x the search volume for most topics. Use neutral Spanish when targeting both."
+    },
+    "fr": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "France vs Quebec: different vocabulary (ordinateur vs ordi). French text is typically 15-20% longer than English."
+    },
+    "de": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Compound words are common and often used as search terms (e.g., Suchmaschinenoptimierung). German text is typically 20-30% longer than English; may need to shorten meta tags."
+    },
+    "pt": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Brazil vs Portugal: significant vocabulary differences. Brazilian Portuguese has ~10x the search volume. Use pt-br by default unless targeting Portugal specifically."
+    },
+    "it": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Italian text tends to be 10-15% longer than English. Watch meta tag length."
+    },
+    "nl": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Small market but high-value. Consider Belgium (Flemish) vs Netherlands vocabulary."
+    },
+    "ja": {
+      "meta_title_max_chars": 32,
+      "meta_description_max_chars": 120,
+      "keyword_research_notes": "Mix of katakana loanwords (AI) and native terms (jinkou chinou). Shorter character limits due to wider characters. Full-width vs half-width matters."
+    },
+    "zh": {
+      "meta_title_max_chars": 30,
+      "meta_description_max_chars": 120,
+      "keyword_research_notes": "Simplified for mainland China (Baidu SEO differs from Google). Traditional for Taiwan/HK. Shorter limits due to character width."
+    },
+    "ko": {
+      "meta_title_max_chars": 32,
+      "meta_description_max_chars": 120,
+      "keyword_research_notes": "Mix of Korean and English terms common in tech/business. Naver SEO differs from Google SEO for Korean market."
+    },
+    "ar": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Modern Standard Arabic for broad reach. Dialectal terms rarely searched. RTL meta tags display correctly in most search engines."
+    },
+    "hi": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Many Indian users search in English or Hinglish. Pure Hindi keywords have lower volume but higher intent. Devanagari script supported by Google."
+    },
+    "ru": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Yandex SEO differs from Google. Russian text similar length to English. Cyrillic indexing works well on both engines."
+    },
+    "pl": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Polish inflection means keywords have multiple word forms. Target the nominative form primarily."
+    },
+    "tr": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Turkish agglutination creates long compound words. Target root forms in keywords. Growing digital market."
+    },
+    "vi": {
+      "meta_title_max_chars": 60,
+      "meta_description_max_chars": 155,
+      "keyword_research_notes": "Vietnamese uses diacritics that must be preserved in keywords. Search behavior increasingly in Vietnamese rather than English."
+    }
+  },
+  "readability_benchmarks": {
+    "es": {
+      "metric": "Fernandez-Huerta",
+      "article_target": { "min": 55, "max": 70 },
+      "blog_target": { "min": 70, "max": 80 },
+      "whitepaper_target": { "min": 40, "max": 55 },
+      "grade_level_equivalent": "Scale inverted vs Flesch; higher = easier"
+    },
+    "fr": {
+      "metric": "Kandel-Moles",
+      "article_target": { "min": 55, "max": 70 },
+      "blog_target": { "min": 70, "max": 80 },
+      "whitepaper_target": { "min": 40, "max": 55 },
+      "grade_level_equivalent": "Similar scale to Flesch Reading Ease"
+    },
+    "de": {
+      "metric": "Flesch (German adaptation)",
+      "article_target": { "min": 40, "max": 60 },
+      "blog_target": { "min": 60, "max": 70 },
+      "whitepaper_target": { "min": 30, "max": 45 },
+      "grade_level_equivalent": "German text naturally scores lower due to compound words"
+    },
+    "pt": {
+      "metric": "Flesch (Portuguese adaptation)",
+      "article_target": { "min": 50, "max": 65 },
+      "blog_target": { "min": 65, "max": 80 },
+      "whitepaper_target": { "min": 35, "max": 50 },
+      "grade_level_equivalent": "Similar to Spanish benchmarks"
+    },
+    "it": {
+      "metric": "Gulpease Index",
+      "article_target": { "min": 45, "max": 60 },
+      "blog_target": { "min": 60, "max": 75 },
+      "whitepaper_target": { "min": 35, "max": 50 },
+      "grade_level_equivalent": "Higher = easier (0-100 scale)"
+    },
+    "ja": {
+      "metric": "Sentence length (chars)",
+      "article_target": { "min": 35, "max": 45, "unit": "chars_per_sentence" },
+      "blog_target": { "min": 25, "max": 35, "unit": "chars_per_sentence" },
+      "whitepaper_target": { "min": 40, "max": 55, "unit": "chars_per_sentence" },
+      "grade_level_equivalent": "No standard Flesch equivalent; use sentence length as proxy"
+    },
+    "zh": {
+      "metric": "Sentence length (chars)",
+      "article_target": { "min": 30, "max": 40, "unit": "chars_per_sentence" },
+      "blog_target": { "min": 20, "max": 30, "unit": "chars_per_sentence" },
+      "whitepaper_target": { "min": 35, "max": 50, "unit": "chars_per_sentence" },
+      "grade_level_equivalent": "Character-based; shorter sentences = easier reading"
+    },
+    "ko": {
+      "metric": "Sentence length (syllables)",
+      "article_target": { "min": 40, "max": 55, "unit": "syllables_per_sentence" },
+      "blog_target": { "min": 30, "max": 40, "unit": "syllables_per_sentence" },
+      "whitepaper_target": { "min": 50, "max": 65, "unit": "syllables_per_sentence" },
+      "grade_level_equivalent": "Syllable-based proxy for readability"
+    },
+    "ar": {
+      "metric": "ARI (adapted for Arabic)",
+      "article_target": { "min": 10, "max": 12, "unit": "grade_level" },
+      "blog_target": { "min": 8, "max": 10, "unit": "grade_level" },
+      "whitepaper_target": { "min": 12, "max": 14, "unit": "grade_level" },
+      "grade_level_equivalent": "Adapted Automated Readability Index"
+    },
+    "hi": {
+      "metric": "Sentence length (words)",
+      "article_target": { "min": 15, "max": 22, "unit": "words_per_sentence" },
+      "blog_target": { "min": 12, "max": 18, "unit": "words_per_sentence" },
+      "whitepaper_target": { "min": 18, "max": 28, "unit": "words_per_sentence" },
+      "grade_level_equivalent": "Word-based proxy; Hindi lacks standard readability formula"
+    },
+    "ru": {
+      "metric": "Flesch (Russian adaptation)",
+      "article_target": { "min": 50, "max": 65 },
+      "blog_target": { "min": 65, "max": 75 },
+      "whitepaper_target": { "min": 35, "max": 50 },
+      "grade_level_equivalent": "Similar to English Flesch scale"
+    },
+    "pl": {
+      "metric": "FOG (Polish adaptation)",
+      "article_target": { "min": 10, "max": 13, "unit": "grade_level" },
+      "blog_target": { "min": 8, "max": 10, "unit": "grade_level" },
+      "whitepaper_target": { "min": 12, "max": 15, "unit": "grade_level" },
+      "grade_level_equivalent": "Gunning FOG adapted for Polish"
+    },
+    "tr": {
+      "metric": "Atesman readability",
+      "article_target": { "min": 50, "max": 65 },
+      "blog_target": { "min": 65, "max": 75 },
+      "whitepaper_target": { "min": 35, "max": 50 },
+      "grade_level_equivalent": "Higher = easier, similar to Flesch"
+    },
+    "vi": {
+      "metric": "Sentence length (words)",
+      "article_target": { "min": 15, "max": 22, "unit": "words_per_sentence" },
+      "blog_target": { "min": 12, "max": 18, "unit": "words_per_sentence" },
+      "whitepaper_target": { "min": 18, "max": 28, "unit": "words_per_sentence" },
+      "grade_level_equivalent": "Word-based proxy; Vietnamese lacks standard readability formula"
+    }
+  },
+  "ai_pattern_removal": {
+    "es": [
+      "profundizar",
+      "profundizar en",
+      "es importante destacar",
+      "cabe mencionar",
+      "vale la pena senalar",
+      "aprovechar",
+      "en el ambito de",
+      "de esta manera",
+      "sin lugar a dudas",
+      "en la actualidad",
+      "a dia de hoy",
+      "en el mundo actual",
+      "es fundamental",
+      "resulta esencial",
+      "como resultado de lo anterior"
+    ],
+    "fr": [
+      "il est important de noter",
+      "il convient de souligner",
+      "il faut souligner que",
+      "approfondir",
+      "exploiter",
+      "tirer parti de",
+      "dans le monde actuel",
+      "a l'heure actuelle",
+      "en fin de compte",
+      "force est de constater",
+      "il va sans dire",
+      "dans le cadre de",
+      "en ce qui concerne",
+      "mettre en lumiere",
+      "un outil incontournable"
+    ],
+    "de": [
+      "es ist wichtig zu beachten",
+      "es sei darauf hingewiesen",
+      "heutzutage",
+      "in der heutigen Zeit",
+      "nutzen (as generic filler)",
+      "optimieren (overused)",
+      "im Rahmen von",
+      "es laesst sich feststellen",
+      "abschliessend laesst sich sagen",
+      "zusammenfassend",
+      "darueber hinaus",
+      "in diesem Zusammenhang",
+      "ganzheitlich",
+      "massgeschneidert",
+      "zukunftsweisend"
+    ],
+    "pt": [
+      "e importante destacar",
+      "vale ressaltar",
+      "cabe mencionar",
+      "aprofundar",
+      "alavancar",
+      "no mundo atual",
+      "nos dias de hoje",
+      "em suma",
+      "diante do exposto",
+      "nesse sentido",
+      "e fundamental",
+      "e essencial",
+      "de forma abrangente",
+      "solucao robusta",
+      "inovador"
+    ],
+    "it": [
+      "e importante notare",
+      "vale la pena sottolineare",
+      "approfondire",
+      "sfruttare",
+      "nel mondo di oggi",
+      "al giorno d'oggi",
+      "in conclusione",
+      "in sintesi",
+      "e fondamentale",
+      "e essenziale",
+      "ottimizzare (overused)",
+      "in questo contesto",
+      "una soluzione robusta",
+      "all'avanguardia",
+      "rivoluzionario"
+    ],
+    "ja": [
+      "to iu koto wa juuyou desu",
+      "toku ni chuumoku subeki wa",
+      "katsuyou suru",
+      "samazama na",
+      "gendai shakai ni oite",
+      "matome to shite",
+      "kekkyoku no tokoro",
+      "ikanimo",
+      "kakushin-teki na",
+      "saisentan no"
+    ],
+    "zh": [
+      "zhi de zhu yi de shi",
+      "xu yao qiang diao de shi",
+      "shen ru tan tao",
+      "li yong",
+      "zai dang jin shi jie",
+      "zong er yan zhi",
+      "zong jie",
+      "ge zhong ge yang de",
+      "qian yan de",
+      "ge ming xing de"
+    ],
+    "ko": [
+      "jumokhaeya hal jeomeun",
+      "gangjohal jeomeun",
+      "hwaryonghada (as filler)",
+      "hyeondae sahoe-eseo",
+      "gyeollon-jeok-euro",
+      "yogyak hamyeon",
+      "dasi malhamyeon",
+      "hyeoksin-jeok-in",
+      "cheomdanui"
+    ],
+    "ar": [
+      "min al-muhimm an nulaahiz",
+      "tajdir al-ishaarah ilaa",
+      "fi 'aalam al-yawm",
+      "al-tatawwur",
+      "ijaabiyyan",
+      "fee al-khitaam",
+      "fee al-mulaakhas",
+      "al-istifaadah min",
+      "thawriyy",
+      "mutaqaddim"
+    ],
+    "hi": [
+      "yah dhyaan rakhna zaroori hai ki",
+      "yah ullekhaniya hai ki",
+      "aaj ke yug mein",
+      "aaj ki duniya mein",
+      "saaransh mein",
+      "nishkarsh ke roop mein",
+      "laabh uthaana",
+      "krantikari",
+      "atyaadhtunik"
+    ],
+    "ru": [
+      "vazhno otmetit chto",
+      "stoit podcherknut chto",
+      "v sovremennom mire",
+      "v zaklyuchenie",
+      "podvodya itog",
+      "ispolzovat (as filler)",
+      "innovatsionnyy",
+      "kompleksnoye resheniye",
+      "peredovoy",
+      "revolyutsionnyy"
+    ],
+    "pl": [
+      "warto zauwazyc ze",
+      "nalezy podkreslic ze",
+      "we wspolczesnym swiecie",
+      "podsumowujac",
+      "w konkluzji",
+      "wykorzystac (as filler)",
+      "innowacyjny",
+      "kompleksowe rozwiazanie",
+      "przelomowy",
+      "nowoczesny"
+    ],
+    "tr": [
+      "dikkat edilmesi gereken",
+      "belirtmek gerekir ki",
+      "gunumuz dunyasinda",
+      "sonuc olarak",
+      "ozetle",
+      "yararlanmak (as filler)",
+      "yenilikci",
+      "kapsamli cozum",
+      "devrim niteliginde",
+      "son teknoloji"
+    ],
+    "vi": [
+      "can luu y rang",
+      "dang chu y la",
+      "trong the gioi ngay nay",
+      "tom lai",
+      "ket luan",
+      "tan dung",
+      "cach mang",
+      "tien tien",
+      "giai phap toan dien",
+      "dot pha"
+    ]
+  }
+}

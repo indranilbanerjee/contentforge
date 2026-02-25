@@ -1,21 +1,29 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 2.1.0
+**Version:** 3.0.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
-> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 9-phase autonomous agent pipeline. **New in v2.0:** Batch processing (4-5x faster), content refresh, multilingual support, platform integrations (WordPress/Notion/Webflow/HubSpot), and performance analytics.
+> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 12-agent autonomous pipeline with 17 skills. **New in v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents with AI Overview optimization, comparative scoring, personality profiles, and industry-specific humanization.
 
-### ⚡ New in v2.0.0
+### What's New in v3.0.0
 
-- **🚄 Batch Processing** — Process 10-50+ pieces in parallel (60-90 min vs 4-6 hours) = **4-5x faster**
-- **🔄 Content Refresh** — Update old articles with current data, preserve SEO rankings
-- **🌍 Multilingual** — Phase 6.5 Humanizer supports 15+ languages
-- **🔌 Platform Integrations** — Publish directly to WordPress, Notion, Airtable, Webflow, HubSpot
-- **📊 Analytics** — Track quality scores, identify trends, optimize pipeline performance
-- **🎬 Video Scripts** — Generate YouTube/TikTok/Instagram video scripts
-- **🔀 A/B Testing** — Generate multiple content variants for testing
-- **📱 Social Adaptation** — Transform long-form → Twitter/LinkedIn/Instagram posts
+- **📱 Social Adaptation** — Transform articles into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts with platform-specific formatting
+- **🌐 CMS Publishing** — Push content to Webflow and WordPress directly via MCP, with HTML export fallback
+- **🌍 Translation** — Translate content preserving brand voice across 15+ languages with 3 localization levels
+- **🎬 Video Scripts** — Generate timestamped scripts for YouTube, TikTok, Instagram Reels, and explainers
+- **🔬 Content Briefs** — Generate research-backed briefs with keyword analysis, competitor gaps, and outlines
+- **📊 Analytics Dashboard** — Track quality scores over time, phase timing, brand patterns, and trend analysis
+- **🔀 A/B Variants** — Generate 3-10 headline, hook, and CTA variants with composite scoring
+- **📋 Content Audits** — Score content freshness (0-100), identify decay, find coverage gaps
+- **📅 Content Calendar** — Plan production schedules with deadline tracking and Google Calendar sync
+- **🎨 Style Guides** — Import brand voice from documents/URLs, generate brand profile JSON
+- **📄 Custom Templates** — Create content type templates beyond the 5 built-in types
+- **🔌 Connector Discovery** — `/cf:integrations` dashboard and `/cf:connect` guided setup for 22 connectors
+- **🤖 AI Overview Optimization** — SEO optimizer now structures content for Google AI Overviews and Perplexity
+- **📈 Comparative Scoring** — Reviewer shows percentile ranking against brand's historical content
+- **🎭 Personality Profiles** — Humanizer supports 4 configurable profiles: authoritative, conversational, technical, witty
+- **🏭 Industry Patterns** — Humanizer removes industry-specific AI telltale phrases for healthcare, finance, tech, legal, education
 
 ---
 
@@ -30,12 +38,13 @@ ContentForge is an enterprise-grade content generation system that replaces 6-8 
 - Enterprise brands requiring consistent quality at scale
 
 **What Makes ContentForge Different:**
-- ✅ **Zero Hallucinations:** Three-layer verification (Phases 2, 4, 7) catches fabricated data
-- ✅ **95%+ Citation Accuracy:** All claims traceable to verified sources
-- ✅ **Brand Voice Consistency:** Load and apply brand guidelines automatically
-- ✅ **Natural Language:** Phase 6.5 Humanizer removes AI writing patterns
-- ✅ **Quality Transparency:** Every piece scored 1-10 across 5 dimensions
-- ✅ **Human Oversight:** Content <5.0/10 escalates to review, never auto-publishes
+- **Zero Hallucinations:** Three-layer verification (Phases 2, 4, 7) catches fabricated data
+- **95%+ Citation Accuracy:** All claims traceable to verified sources
+- **Brand Voice Consistency:** Load and apply brand guidelines automatically
+- **Natural Language:** Phase 6.5 Humanizer removes AI writing patterns with 4 personality profiles
+- **Quality Transparency:** Every piece scored 1-10 across 5 dimensions with comparative benchmarks
+- **Human Oversight:** Content <5.0/10 escalates to review, never auto-publishes
+- **17 Skills:** Full content lifecycle — from brief to publish to repurpose
 
 ---
 
@@ -46,16 +55,56 @@ ContentForge is an enterprise-grade content generation system that replaces 6-8 
 - **Quality Score:** 9.0/10 (Grade A)
 - **Word Count:** 1,855 (Target: 1,500-2,000)
 - **Citations:** 14 sources (92% strongly verified)
-- **SEO:** Primary keyword 1.62% density, all critical placements ✅
+- **SEO:** Primary keyword 1.62% density, all critical placements
+- **GEO:** AI Overview optimized, 3 citeable moments, GEO score 8.8
 - **Readability:** Grade 10.4 (Target: 10-12 for articles)
 - **Humanization:** Zero AI patterns, burstiness 0.72 (natural human rhythm)
+- **Comparative:** 94th percentile vs. brand average
 - **Loops:** Zero (approved on first review)
 
-**Quality Assurance:**
-- Factual accuracy: 100%
-- Brand compliance: 100%
-- Citation formatting: 100% consistent
-- Hallucinations: 0
+---
+
+## Skills Overview
+
+### Core Production
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Content Pipeline | `/contentforge` | Full 9-phase production (20-30 min per piece) |
+| Batch Processing | `/batch-process` | Process 10-50+ pieces in parallel (4-5x faster) |
+| Content Refresh | `/content-refresh` | Update old content with current data, preserve SEO |
+
+### Publishing & Social
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Social Adaptation | `/cf:social-adapt` | Article → LinkedIn, Twitter/X, Instagram, Facebook, Threads posts |
+| CMS Publishing | `/cf:publish` | Push to Webflow/WordPress via MCP or HTML export |
+
+### Content Optimization
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| A/B Variants | `/cf:variants` | Generate 3-10 headline, hook, CTA variations with scoring |
+| Analytics Dashboard | `/cf:analytics` | Quality trends, timing breakdown, brand performance |
+
+### Multilingual & Video
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Translation | `/cf:translate` | Translate preserving brand voice, 15+ languages, 3 levels |
+| Video Scripts | `/cf:video-script` | Timestamped scripts for YouTube, TikTok, Instagram Reels |
+
+### Content Management
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Content Brief | `/cf:brief` | Research-backed brief with keyword analysis and outline |
+| Content Audit | `/cf:audit` | Freshness scoring, decay detection, gap analysis |
+| Content Calendar | `/cf:calendar` | Production scheduling with deadline tracking |
+| Style Guide | `/cf:style-guide` | Import brand voice, generate brand profile JSON |
+| Custom Template | `/cf:template` | Create content type templates beyond the 5 built-in |
+
+### Connector Management
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Integrations | `/cf:integrations` | Dashboard showing connected vs. available connectors |
+| Connect | `/cf:connect` | Guided setup for any of 22 supported connectors |
 
 ---
 
@@ -72,15 +121,19 @@ Phase 4: Scientific Validator
 ↓ Quality Gate 4: Zero hallucinations, all claims traceable, logic validated
 Phase 5: Structurer & Proofreader
 ↓ Quality Gate 5: Zero grammar errors, readability on target, brand compliant
-Phase 6: SEO/GEO Optimizer
-↓ Quality Gate 6: Keyword density 1.5-2.5%, meta tags optimized, GEO ready
-Phase 6.5: Humanizer ⭐ NEW
-↓ Quality Gate 6.5: AI patterns removed, burstiness ≥0.7, SEO preserved
-Phase 7: Reviewer (Final Quality Gate)
-↓ Quality Gate 7: Overall score ≥7.0, all dimensions pass, zero critical violations
-Phase 8: Output Manager
-↓ .docx generated, uploaded to Drive, tracking sheet updated
+Phase 6: SEO/GEO Optimizer ⬆ UPGRADED
+↓ Quality Gate 6: Keywords optimized, meta tags ready, GEO score ≥7, AI Overview structured
+Phase 6.5: Humanizer ⬆ UPGRADED
+↓ Quality Gate 6.5: AI patterns removed, personality profile applied, industry patterns cleared
+Phase 7: Reviewer ⬆ UPGRADED
+↓ Quality Gate 7: Score ≥7.0, comparative ranking, trend analysis, recommendations
+Phase 8: Output Manager ⬆ UPGRADED
+↓ .docx + Medium + Substack + Newsletter + PDF + Social Package
 ```
+
+**Post-Pipeline Agents (New in v3.0):**
+- **Agent 10: Social Adapter** — Extracts shareworthy moments, generates platform-specific posts
+- **Agent 11: Translator** — Element classification, brand voice mapping, cultural adaptation
 
 **Feedback Loops:**
 - Phase 4 → Phase 3 (max 2 iterations): If hallucinations detected
@@ -96,7 +149,9 @@ Phase 8: Output Manager
 
 ContentForge ships with **6 HTTP connectors** that work in both Cowork and Claude Code — Notion (knowledge base), Canva (design), Webflow (publishing), Slack (notifications), Gmail (delivery), and Google Calendar (scheduling).
 
-**The plugin works fully WITHOUT any connectors** — you can run the complete content pipeline and get output locally. Connectors are only needed for platform integrations.
+**The plugin works fully WITHOUT any connectors** — you can run the complete content pipeline and get output locally. Connectors unlock platform integrations.
+
+**New in v3.0:** Run `/cf:integrations` to see which connectors are active and what they unlock. Run `/cf:connect <name>` for guided setup of any of 22 supported connectors across 12 categories.
 
 **Claude Code users** who need Google Sheets (requirement intake) and Google Drive (brand knowledge vault) can use the advanced setup:
 
@@ -105,15 +160,6 @@ cp .mcp.json.example .mcp.json
 ```
 
 See [CONNECTORS.md](CONNECTORS.md) for the full connector reference.
-
-### Prerequisites
-
-1. **Claude Code or Cowork** installed and configured
-2. **Google Cloud Project** with APIs enabled:
-   - Google Drive API
-   - Google Sheets API
-3. **Service Account Credentials** (JSON file)
-4. **Google Drive Folder:** `ContentForge-Knowledge/` for brand profiles
 
 ### Step 1: Install Plugin
 
@@ -126,7 +172,7 @@ claude plugins install contentforge
 **Option B: Manual Install**
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/contentforge.git
+git clone https://github.com/indranilbanerjee/contentforge.git
 
 # Move to Claude plugins directory
 # On Mac/Linux:
@@ -136,42 +182,30 @@ mv contentforge ~/.claude/plugins/
 mv contentforge %USERPROFILE%\.claude\plugins\
 ```
 
-### Step 2: Configure MCP Servers (Optional)
+### Step 2: Verify Installation
 
-**First, copy the example config:**
+```bash
+# Session startup will show:
+# ✓ ContentForge v3.0 loaded — Enterprise content production with zero hallucinations
+#   /contentforge — Single piece (20-30 min)
+#   /batch-process — Multiple pieces in parallel (4-5x faster)
+#   /content-refresh — Update old content with fresh data
+#   /cf:integrations — See connected integrations
+#   /cf:social-adapt — Repurpose content for social
+#   /cf:publish — Push to CMS
+```
+
+### Step 3: Configure MCP Servers (Optional)
+
+**Copy the example config for full npx server support:**
 ```bash
 cd ~/.claude/plugins/contentforge
 cp .mcp.json.example .mcp.json
 ```
 
-**Then edit `.mcp.json`:**
+Edit `.mcp.json` with your credentials. See [CONNECTORS.md](CONNECTORS.md) for setup guides.
 
-```json
-{
-  "mcpServers": {
-    "google-sheets": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/mcp-google-sheets"],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "/absolute/path/to/your/service-account-key.json"
-      },
-      "description": "REQUIRED: Google Sheets for requirement intake and status tracking"
-    },
-    "google-drive": {
-      "command": "npx",
-      "args": ["-y", "mcp-google-drive"],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "/absolute/path/to/your/service-account-key.json"
-      },
-      "description": "REQUIRED: Google Drive for brand knowledge vault and output storage"
-    }
-  }
-}
-```
-
-**Replace:** `/absolute/path/to/your/service-account-key.json` with your actual path.
-
-### Step 3: Set Up Brand Knowledge Vault
+### Step 4: Set Up Brand Knowledge Vault (Optional)
 
 **In Google Drive, create folder structure:**
 
@@ -188,104 +222,17 @@ ContentForge-Knowledge/
 │   └── Guardrails/
 │       ├── prohibited-claims.md
 │       └── compliance-requirements.md
-├── Brand-Name-2/
-│   └── (same structure)
 ```
 
 **Populate brand files using templates from [`config/brand-registry-template.json`](config/brand-registry-template.json)**
 
-### Step 4: Create Requirement Tracking Sheet
-
-**Create Google Sheet with columns:**
-
-| A | B | C | D | E | F | G | H | I | J | K | L | M | N | O | P | Q | R | S | T |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| ID | Brand Name | Topic | Content Type | Priority | Status | Output Link | Requested Date | Completed At | Quality Score | Content Quality | Citation Integrity | Brand Compliance | SEO Score | Readability | Target Word Count | Actual Word Count | Primary Keywords | Special Instructions | Notes |
-
-**Populate rows with content requirements.**
-
-**Example row:**
-| 1 | Acme Corp | Multi-Agent AI Systems | Article | High | Queued | | 2026-02-15 | | | | | | | | 1500-2000 | | multi-agent AI systems | Focus on enterprise use cases | |
-
 ### Step 5: Test Installation
 
 ```bash
-# Open Claude Code
-claude code
-
-# Test ContentForge
-/contentforge "Generate content for row 2 in [Your Sheet URL]"
+/contentforge "Write a 1500-word article about AI content automation for brand AcmeCorp"
 ```
 
-**Expected:** Pipeline executes through all 9 phases, updates tracking sheet, uploads .docx to Drive.
-
----
-
-## Quick Start Guide
-
-### Basic Usage
-
-**1. Prepare Requirement Sheet Row:**
-```
-Brand Name: Acme Corp
-Topic: How AI Improves Content Quality
-Content Type: Blog
-Primary Keywords: AI content quality
-Target Word Count: 800-1500
-Status: Queued
-```
-
-**2. Run Pipeline:**
-```
-/contentforge "Generate content for row 5 in https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID"
-```
-
-**3. Monitor Progress:**
-ContentForge will output phase completion status:
-```
-✅ Phase 1: Research complete (8 minutes) — 12 sources identified, SERP analyzed
-✅ Phase 2: Fact check complete (3 minutes) — 100% verification, zero flags
-✅ Phase 3: Drafting complete (6 minutes) — 1,450 words, brand voice applied
-...
-✅ Phase 8: Output complete — File uploaded: https://drive.google.com/file/d/...
-```
-
-**4. Review Output:**
-- Check Google Drive for `.docx` file
-- Review Quality Scorecard (Appendix B in document)
-- Check tracking sheet for updated scores and status
-
-### Advanced Configuration
-
-**Override quality thresholds for specific brand:**
-
-Edit `config/scoring-thresholds.json`:
-```json
-{
-  "pharma": {
-    "minimum_pass_score": 8.0,
-    "dimension_weights": {
-      "citation_integrity": 35,
-      "brand_compliance": 25,
-      "content_quality": 25,
-      "seo_performance": 10,
-      "readability": 5
-    }
-  }
-}
-```
-
-**Enable appendices in output .docx:**
-
-In brand profile (`ContentForge-Knowledge/Brand-Name/brand-profile.json`):
-```json
-{
-  "output_preferences": {
-    "include_appendix": true,
-    "appendix_sections": ["seo_scorecard", "quality_assessment", "production_details"]
-  }
-}
-```
+**Expected:** Pipeline executes through all 9 phases, outputs .docx with quality scorecard.
 
 ---
 
@@ -293,23 +240,23 @@ In brand profile (`ContentForge-Knowledge/Brand-Name/brand-profile.json`):
 
 ### Agent Overview
 
-| Phase | Agent | Purpose | Input | Output | Avg Time |
-|-------|-------|---------|-------|--------|----------|
-| 1 | Researcher | SERP analysis, source mining, outline creation | Requirements | Research Brief | 8 min |
-| 2 | Fact Checker | URL verification, claim validation, cross-referencing | Research Brief | Verified Research Brief | 3 min |
-| 3 | Content Drafter | Write first draft with brand voice and citations | Verified Brief + Brand Profile | Draft v1 | 6 min |
-| 4 | Scientific Validator | Re-verify draft, catch hallucinations, validate logic | Draft v1 + Verified Brief | Validated Draft | 2 min |
-| 5 | Structurer & Proofreader | Polish grammar, structure, readability, brand compliance | Validated Draft | Polished Draft | 3 min |
-| 6 | SEO/GEO Optimizer | Keyword optimization, meta tags, AI engine readiness | Polished Draft | Optimized Content | 2 min |
-| 6.5 | Humanizer ⭐ | Remove AI patterns, add sentence variety, inject personality | Optimized Content | Humanized Content | 2 min |
-| 7 | Reviewer | Score across 5 dimensions, make go/no-go decision | Humanized Content + All Reports | Quality Scorecard | 1 min |
-| 8 | Output Manager | Generate .docx, upload to Drive, update tracking sheet | Approved Content | Final .docx + Updated Sheet | 1 min |
+| Phase | Agent | Purpose | Avg Time |
+|-------|-------|---------|----------|
+| 1 | Researcher | SERP analysis, source mining, outline creation | 8 min |
+| 2 | Fact Checker | URL verification, claim validation, cross-referencing | 3 min |
+| 3 | Content Drafter | First draft with brand voice and citations | 6 min |
+| 4 | Scientific Validator | Hallucination detection, logic validation | 2 min |
+| 5 | Structurer & Proofreader | Grammar, readability, brand compliance | 3 min |
+| 6 | SEO/GEO Optimizer | Keywords, meta tags, AI Overview optimization, GEO scoring | 2 min |
+| 6.5 | Humanizer | AI pattern removal, personality profiles, industry patterns | 2 min |
+| 7 | Reviewer | 5-dimension scoring, comparative analysis, trend tracking, recommendations | 1 min |
+| 8 | Output Manager | .docx, Medium, Substack, Newsletter, PDF, Social Package | 1 min |
+| 10 | Social Adapter | Extract shareworthy moments, generate platform-specific posts | Post-pipeline |
+| 11 | Translator | Element classification, brand voice mapping, cultural adaptation | Post-pipeline |
 
 **Total:** ~28 minutes per piece (can vary based on complexity and word count)
 
 ### Quality Gate System
-
-**Purpose:** Ensure content meets standards before advancing to next phase.
 
 **Gate Structure:**
 - **Criteria:** Specific pass/fail conditions (e.g., "Min 5 live sources")
@@ -323,7 +270,6 @@ In brand profile (`ContentForge-Knowledge/Brand-Name/brand-profile.json`):
 
 ### Three-Layer Fact Verification
 
-**Why Three Layers?**
 Single-pass fact-checking misses ~15-20% of hallucinations. ContentForge uses layered verification:
 
 1. **Phase 2 (Fact Checker):** Verifies research sources before drafting begins
@@ -334,23 +280,13 @@ Single-pass fact-checking misses ~15-20% of hallucinations. ContentForge uses la
 
 ### Brand Profile Caching
 
-**Problem:** Re-processing brand guidelines on every content piece takes 2-5 minutes.
-
-**Solution:** SHA256 hash-based caching (see [`utils/brand-cache-manager.md`](utils/brand-cache-manager.md))
-
-**How It Works:**
+SHA256 hash-based caching (see [`utils/brand-cache-manager.md`](utils/brand-cache-manager.md)):
 1. On first run for a brand, process all guideline files
 2. Calculate SHA256 hash of all source files
 3. Save processed profile with hash to cache file
-4. On subsequent runs:
-   - Calculate current hash of source files
-   - If hash matches cached hash → Load cached profile (<5 seconds)
-   - If hash differs → Re-process (source files changed)
+4. On subsequent runs: if hash matches → load cached profile (<5 seconds)
 
-**Performance Impact:**
-- First run: 2-5 minutes for profile processing
-- Cached runs: <5 seconds (95%+ time savings)
-- Cache invalidates automatically when guidelines updated
+**Performance:** First run: 2-5 minutes. Cached runs: <5 seconds (95%+ time savings).
 
 ---
 
@@ -358,172 +294,69 @@ Single-pass fact-checking misses ~15-20% of hallucinations. ContentForge uses la
 
 ### 5 Dimensions (Phase 7)
 
-**1. Content Quality (30% weight)**
-- Depth of analysis
-- Originality and differentiation from competitors
-- Value to target audience
-- Logical coherence and structure
-- Completeness (all promised topics covered)
-
-**2. Citation Integrity (25% weight)**
-- Factual accuracy (zero hallucinations)
-- Source quality and authority
-- Proper citation formatting
-- Data recency
-- Cross-referencing and verification
-
-**3. Brand Compliance (20% weight)**
-- Voice and tone consistency
-- Terminology alignment (preferred/avoided terms)
-- Guardrails adherence (prohibited claims, required disclaimers)
-- POV consistency (first/second/third person)
-- Industry-specific compliance (regulatory requirements)
-
-**4. SEO Performance (15% weight)**
-- Keyword optimization (density 1.5-2.5% for primary)
-- Meta tags quality (title ≤60 chars, description ≤155 chars)
-- On-page SEO elements (H1/H2/H3 structure)
-- GEO readiness (AI answer engine optimization)
-- Schema markup recommendations
-
-**5. Readability (10% weight)**
-- Reading level appropriateness (Flesch-Kincaid)
-- Sentence structure and variety (burstiness score)
-- Paragraph structure
-- Scannability
-- Humanization quality (zero AI patterns)
-
-### Overall Score Calculation
-
-```
-Overall Score = (Content Quality × 0.30) +
-                (Citation Integrity × 0.25) +
-                (Brand Compliance × 0.20) +
-                (SEO Performance × 0.15) +
-                (Readability × 0.10)
-```
-
-**Example:**
-```
-Content Quality: 8.6 × 0.30 = 2.58
-Citation Integrity: 9.2 × 0.25 = 2.30
-Brand Compliance: 9.4 × 0.20 = 1.88
-SEO Performance: 8.8 × 0.15 = 1.32
-Readability: 9.0 × 0.10 = 0.90
-────────────────────────────────
-Overall Score: 8.98 → Rounds to 9.0/10 (Grade A)
-```
+| Dimension | Weight | What It Measures |
+|-----------|--------|-----------------|
+| Content Quality | 30% | Depth, originality, audience value, structure, completeness |
+| Citation Integrity | 25% | Factual accuracy, source quality, formatting, recency, cross-referencing |
+| Brand Compliance | 20% | Voice/tone, terminology, guardrails, POV, industry compliance |
+| SEO Performance | 15% | Keywords, meta tags, on-page elements, GEO readiness, schema |
+| Readability | 10% | Reading level, sentence variety, paragraph structure, scannability, humanization |
 
 ### Decision Thresholds
 
-| Score Range | Grade | Decision | Action |
-|-------------|-------|----------|--------|
-| 9.5-10.0 | A+ | ✅ APPROVED | Proceed to Phase 8 (exceptional quality) |
-| 9.0-9.4 | A | ✅ APPROVED | Proceed to Phase 8 (excellent) |
-| 8.5-8.9 | A- | ✅ APPROVED | Proceed to Phase 8 (very good) |
-| 8.0-8.4 | B+ | ✅ APPROVED | Proceed to Phase 8 (good) |
-| 7.5-7.9 | B | ✅ APPROVED | Proceed to Phase 8 (above average) |
-| 7.0-7.4 | B- | ✅ APPROVED | Proceed to Phase 8 (meets minimum) |
-| 6.5-6.9 | C+ | 🔄 LOOP | Return to weakest phase, iteration 1 |
-| 6.0-6.4 | C | 🔄 LOOP | Return to weakest phase, iteration 2 |
-| 5.5-5.9 | C- | 🔄 LOOP | If loops available, else human review |
-| 5.0-5.4 | D | 🔄 LOOP | If loops available, else human review |
-| <5.0 | F | ⚠️ HUMAN REVIEW | Flag for human review, do NOT auto-publish |
+| Score Range | Grade | Decision |
+|-------------|-------|----------|
+| 9.0-10.0 | A+ to A | APPROVED — Publish + repurpose aggressively |
+| 7.0-8.9 | B- to A- | APPROVED — Publish with optional improvements |
+| 5.0-6.9 | C- to C+ | LOOP — Return to weakest phase for fixes |
+| <5.0 | D to F | HUMAN REVIEW — Escalate, do not auto-publish |
 
-**Industry Overrides:**
-- **Pharma/Healthcare:** Minimum pass score = 8.0 (stricter)
-- **BFSI:** Minimum pass score = 7.5 (stricter)
-- **Technology/General:** Minimum pass score = 7.0 (default)
+### New in v3.0: Comparative Scoring & Recommendations
+
+The Reviewer now provides:
+- **Percentile ranking** against the brand's historical content
+- **Trend tracking** across last 10 pieces (strengths, weaknesses, trajectory)
+- **Score-based recommendations** with cross-skill suggestions (e.g., "Run `/cf:social-adapt` — 5 shareworthy moments identified")
 
 ---
 
-## Phase 6.5: Humanizer ⭐ NEW
+## Phase 6.5: Humanizer
 
 **The ContentForge Differentiator**
 
-### What Is It?
-
-Phase 6.5 Humanizer is ContentForge's secret weapon—it removes AI writing patterns that make content sound robotic, while preserving all the SEO keywords from Phase 6.
-
-**Problem Solved:** Content from AI often has telltale patterns:
-- Overuse of "delve", "leverage", "it's important to note"
-- Monotonous sentence lengths (all ~20 words)
-- Repetitive sentence openings ("The system...", "The approach...")
-- Lack of conversational elements (questions, asides, emphasis)
-
-**Result:** Content that sounds like it was written by a knowledgeable human expert, not an AI.
+Phase 6.5 removes AI writing patterns that make content sound robotic, while preserving all SEO keywords from Phase 6.
 
 ### How It Works
 
-**1. AI Pattern Removal:**
-Scans for and removes 20+ telltale phrases from `config/humanization-patterns.json`:
-- "delve into" → Direct question or statement
-- "leverage" → "use"
-- "it's important to note that" → Remove entirely
-- "in summary" → "The evidence is clear:" (more confident)
+**1. AI Pattern Removal:** Scans for and removes 20+ telltale phrases from `config/humanization-patterns.json`
 
-**2. Sentence Variety (Burstiness):**
-Achieves natural human rhythm by varying sentence lengths:
+**2. Sentence Variety (Burstiness):** Achieves natural human rhythm:
 ```
-Target Distribution:
-- Short (≤12 words): 20%
-- Medium (13-25 words): 50%
-- Long (26+ words): 30%
-
+Target: Short (≤12 words) 20% | Medium (13-25) 50% | Long (26+) 30%
 Burstiness Score: ≥0.7 (standard deviation / mean)
 ```
 
-**Example Before/After:**
-```
-❌ BEFORE (Robotic, burstiness 0.53):
-"Multi-agent AI systems deploy specialized agents for distinct sub-tasks. (10 words)
-This architecture enables optimization for specific functions. (8 words)
-Each agent focuses on one aspect of the content pipeline. (11 words)"
-→ All sentences 8-11 words, monotonous
+**3. Personality Profiles (New in v3.0):** 4 configurable profiles:
+- **Authoritative** — Data-first, definitive, minimal hedging
+- **Conversational** — Direct address, questions, contractions
+- **Technical** — Jargon preserved, precision, process-oriented
+- **Witty** — Wordplay, unexpected comparisons, self-aware asides
 
-✅ AFTER (Human, burstiness 0.72):
-"Multi-agent AI systems deploy specialized agents for distinct sub-tasks. (10 words)
-This matters. (2 words)
-Unlike single-model approaches that force one AI to handle everything—research,
-drafting, fact-checking, editing—multi-agent systems let each component specialize. (22 words)
-The result? Higher quality with less compromise. (7 words)"
-→ 10 → 2 → 22 → 7 = Natural human rhythm
-```
+**4. Industry-Specific Patterns (New in v3.0):** Removes industry-specific AI phrases for:
+- Healthcare/Pharma (e.g., "healthcare landscape", "paradigm shift in medicine")
+- Finance/BFSI (e.g., "financial landscape", "navigate the complexities")
+- Technology/SaaS (e.g., "digital transformation journey", "seamless integration")
+- Legal (e.g., "navigate the legal landscape", "legal complexities")
+- Education (e.g., "educational landscape", "empowering learners")
 
-**3. Brand Personality Injection:**
-Applies personality traits from brand profile:
-- **Authoritative:** Remove hedging ("seems to", "might"), use confident assertions
-- **Data-Driven:** Lead with specific numbers, not vague claims
-- **Witty:** Add clever observations (if brand allows)
-- **Warm:** Empathetic language, addresses reader challenges
-
-**4. SEO Preservation Check:**
-CRITICAL: Verifies SEO keywords from Phase 6 are unchanged:
-- Primary keyword occurrences: Must be within ±2 of Phase 6
-- Critical placements: Title, first 100 words, H2s, conclusion must retain keywords
-- If SEO degrades → Loop to Phase 6
-
-### Quality Gate 6.5
-
-- ✅ Min sentence variety score 0.7 (burstiness)
-- ✅ AI telltale phrases removed (zero remaining)
-- ✅ Brand personality traits integrated
-- ✅ SEO keywords PRESERVED (verify Phase 6 scorecard unchanged)
-- ✅ Readability maintained or improved
-- 🔄 LOOP → If SEO degraded, return to Phase 6
-- ❌ FAIL → If can't humanize without hurting SEO after 1 loop
+**5. SEO Preservation Check:** Verifies keywords unchanged ±2 occurrences
 
 ### Results
 
-**Typical Improvements:**
 - AI patterns removed: 12-15 per article
-- Burstiness score: 0.50 → 0.72 (+44%)
-- Natural language quality: "Obviously AI" → "Indistinguishable from human expert"
-- SEO keyword variance: ±1 occurrence (negligible impact)
-- Readability grade level: Often improves by 0.3-0.5 points (shorter sentences)
-
-**Detection Testing:**
-Content passed through Phase 6.5 consistently scores <30% on AI detection tools (indistinguishable from human writing), compared to 85-95% before humanization.
+- Burstiness: 0.50 → 0.72 (+44%)
+- AI detection scores: <30% (vs. 85-95% before humanization)
+- SEO keyword variance: ±1 occurrence (negligible)
 
 ---
 
@@ -531,95 +364,28 @@ Content passed through Phase 6.5 consistently scores <30% on AI detection tools 
 
 ### Pipeline Fails at Phase 1 (Research)
 
-**Symptom:** Research Agent times out or can't find sources.
-
-**Possible Causes:**
-- Topic too niche (no SERP results)
-- Primary keyword has no search volume
-- MCP web_search not working
+**Possible Causes:** Topic too niche, no search volume, web_search not working
 
 **Solutions:**
 1. Broaden topic or use related keyword with search volume
 2. Check Claude's web_search capability is enabled
 3. Verify internet connectivity
-4. Try running Phase 1 manually with different keyword
-
-### Phase 2 Flags All Sources as "UNVERIFIED"
-
-**Symptom:** Fact Checker can't verify URLs, all sources marked as inaccessible.
-
-**Possible Causes:**
-- Paywall sources (common for news/research)
-- Rate limiting from excessive URL checks
-- MCP web_fetch issues
-
-**Solutions:**
-1. If paywall sources: Fact Checker should mark as "VERIFIED WITH PAYWALL" if data points documented
-2. Wait 30 seconds and retry (rate limiting)
-3. Check MCP configuration for web_fetch capability
-4. Manually verify 2-3 sources to confirm they're actually accessible
 
 ### Content Scores <7.0 and Keeps Looping
 
-**Symptom:** Reviewer (Phase 7) sends content back to earlier phases multiple times, eventually hits loop limit.
-
-**Possible Causes:**
-- Topic/angle fundamentally weak (can't be fixed with revisions)
-- Brand requirements too strict for automated pipeline
-- Quality thresholds set too high for content type
-
 **Solutions:**
 1. Review Phase 7 Quality Scorecard for weakest dimension
-2. If Content Quality is weak: Topic may need complete rethinking → Return to Phase 1 with clearer angle
-3. If Brand Compliance fails repeatedly: Check brand profile for conflicts (e.g., tone requirements impossible with keyword density)
-4. If SEO Performance fails: Keywords may not fit naturally with topic → Adjust keyword selection
-5. Lower quality thresholds temporarily (edit `config/scoring-thresholds.json`) if quality is acceptable but below strict threshold
+2. Run `/cf:brief` — weak briefs lead to weak content
+3. Run `/cf:style-guide` — check brand profile completeness
+4. Lower thresholds temporarily in `config/scoring-thresholds.json`
 
 ### Phase 6.5 Humanizer Degrades SEO
 
-**Symptom:** Humanizer removes too many keyword instances, Phase 6 SEO scorecard shows keyword density dropped below 1.5%.
+**Expected behavior:** Humanizer auto-loops to Phase 6 for re-optimization. Second pass usually balances both.
 
-**Possible Causes:**
-- Aggressive sentence restructuring removed keywords
-- Short, punchy sentences eliminated keyword placements
+### Connector Not Working
 
-**Solutions:**
-1. Humanizer will auto-loop to Phase 6 (this is expected behavior)
-2. Phase 6 will re-optimize keywords with constraint: "Preserve sentence variety from Phase 6.5"
-3. Second pass usually balances both humanization and SEO
-4. If still fails after loop: Consider longer content (more room for keywords + variety)
-
-### Google Drive Upload Fails
-
-**Symptom:** Phase 8 completes but .docx not in Google Drive.
-
-**Possible Causes:**
-- MCP Google Drive not configured
-- Service account lacks Drive write permissions
-- Drive storage quota exceeded
-
-**Solutions:**
-1. Check `.mcp.json` has correct `GOOGLE_APPLICATION_CREDENTIALS` path
-2. Verify service account has "Editor" role on Drive folder
-3. Check Drive storage quota (upgrade if needed)
-4. Retry: Phase 8 has automatic retry logic (3 attempts)
-5. Fallback: Phase 8 saves .docx locally if Drive fails, check `~/.contentforge/output/`
-
-### Tracking Sheet Not Updating
-
-**Symptom:** Pipeline completes but Google Sheets row still shows "Queued".
-
-**Possible Causes:**
-- MCP Google Sheets not configured
-- Service account lacks Sheets edit permissions
-- Row number doesn't exist
-
-**Solutions:**
-1. Check `.mcp.json` has correct `GOOGLE_APPLICATION_CREDENTIALS` path
-2. Verify service account has "Editor" role on Sheet
-3. Confirm row number specified in command matches actual row (e.g., "row 5" exists)
-4. Check for protected ranges in Sheet (unlock if needed)
-5. Retry: Phase 8 has automatic retry logic (3 attempts)
+Run `/cf:integrations` to check status. Run `/cf:connect <name>` for guided setup.
 
 ---
 
@@ -627,124 +393,53 @@ Content passed through Phase 6.5 consistently scores <30% on AI detection tools 
 
 ### Q: How does ContentForge compare to ChatGPT/Claude directly?
 
-**A:** Single-prompt tools produce content in 30 seconds but with:
-- ~15-20% hallucination rate (fabricated stats)
-- Generic brand voice
-- SEO keyword stuffing (unnatural)
-- AI writing patterns ("delve", "leverage", robotic rhythm)
-- No quality scoring or verification
-
-ContentForge takes 28 minutes but delivers:
-- 0% hallucination rate (three-layer verification)
-- Consistent brand voice (loaded from guidelines)
-- Natural SEO integration
-- Human-sounding prose (Phase 6.5 Humanizer)
-- Transparent quality scores (1-10 across 5 dimensions)
-
-**Trade-off:** Speed vs. Quality. ContentForge is for publication-ready enterprise content, not quick drafts.
+Single-prompt tools produce content in 30 seconds but with ~15-20% hallucination rate, generic voice, and AI writing patterns. ContentForge takes 28 minutes but delivers 0% hallucinations, consistent brand voice, human-sounding prose, and transparent quality scores.
 
 ### Q: Can I use ContentForge without Google Drive/Sheets?
 
-**A:** Not currently. Google Drive stores brand knowledge, and Google Sheets tracks requirements. Future versions may support alternatives (Notion, Airtable, etc.) — see roadmap.
-
-**Workaround:** You can run individual agents manually without full pipeline orchestration if you don't need tracking.
+Yes. The core pipeline works without any external integrations. Google Drive/Sheets are optional for brand knowledge storage and requirement tracking. Run `/cf:integrations` to see what's connected.
 
 ### Q: How much does it cost to run ContentForge?
 
-**A:** ContentForge is free (open source, MIT license). Costs are:
-- **Claude API:** ~$0.50-1.50 per article (depends on length, model used)
-- **Google Cloud:** Free for typical usage (within free tier limits for Drive/Sheets API calls)
-- **Total:** <$2 per article typically
-
-**Compare:** Hiring freelance writer: $50-200 per article, 3-5 day turnaround.
+ContentForge is free (open source, MIT license). Claude API costs are ~$0.50-1.50 per article depending on length and model.
 
 ### Q: What content types does ContentForge support?
 
-**A:** Currently supported:
-- Articles (1,500-2,000 words)
-- Blog Posts (800-1,500 words)
-- Whitepapers (2,500-5,000 words)
-- FAQs (600-1,200 words)
-- Research Papers (4,000-8,000 words)
-
-Each type has tailored templates, readability targets, and citation requirements.
-
-### Q: Can I add custom quality dimensions or change weights?
-
-**A:** Yes. Edit `config/scoring-thresholds.json`:
-
-```json
-{
-  "dimension_weights": {
-    "content_quality": 25,
-    "citation_integrity": 30,
-    "brand_compliance": 20,
-    "seo_performance": 15,
-    "readability": 10
-  }
-}
-```
-
-You can also add brand-specific overrides or industry-specific thresholds.
-
-### Q: How do I handle content that requires human review?
-
-**A:** If content scores <5.0/10 OR exceeds loop limits, Phase 8 will:
-1. Generate DRAFT .docx (prefixed with "DRAFT-")
-2. Upload to Drive with "Pending Human Review" status
-3. Update tracking sheet with specific issues flagged
-4. Provide Phase 7 Quality Scorecard for detailed review
-
-**Human reviewer can then:**
-- Approve as-is (if score acceptable despite being below threshold)
-- Request revisions (specify what to fix, re-run from appropriate phase)
-- Reject and reassign (if fundamentally wrong angle/topic)
+5 built-in types: Articles (1,500-2,000 words), Blog Posts (800-1,500), Whitepapers (2,500-5,000), FAQs (600-1,200), Research Papers (4,000-8,000). Use `/cf:template` to create custom types.
 
 ### Q: Can I run multiple content pieces in parallel?
 
-**A:** Not in v1.0.0 (sequential processing only). Planned for Phase B (see roadmap).
+Yes. `/batch-process` handles 10-50+ pieces simultaneously with 4-5x speedup over sequential processing.
 
-**Workaround:** Run multiple Claude instances with ContentForge, each processing different rows.
+### Q: How do I repurpose content for social media?
 
-### Q: How do I update brand guidelines after initial setup?
+Run `/cf:social-adapt` with any article. It generates platform-specific posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads with correct character limits, hashtags, and posting time recommendations.
 
-**A:** Simply edit files in `ContentForge-Knowledge/[Brand Name]/`. ContentForge will:
-1. Detect changed files (SHA256 hash mismatch)
-2. Automatically invalidate cache
-3. Re-process brand profile on next run
+### Q: Can I translate content while preserving brand voice?
 
-**No manual cache clearing needed** — hash-based invalidation handles it automatically.
+Yes. `/cf:translate` supports 15+ languages with 3 localization levels (literal, adapted, transcreated). The Translator Agent maps brand voice characteristics to target language conventions.
 
 ---
 
 ## Roadmap
 
-### Phase B: Batch Processing & Performance
-- [ ] Parallel execution (multiple content pieces simultaneously)
-- [ ] Queue management system
-- [ ] Priority-based processing
-- [ ] Progress tracking dashboard
-- [ ] Estimated time-to-completion for queued items
+### v3.1 (Planned)
+- [ ] Image generation integration (DALL-E, Midjourney via MCP)
+- [ ] Audio content (podcast scripts, voice-over scripts)
+- [ ] Web-based progress dashboard (HTML/CSS)
+- [ ] Slack/Teams notifications for batch completion
 
-### Phase C: Advanced Features
-- [ ] Content refresh workflow (update old content with new data)
-- [ ] Multi-language support (Phase 6.5 humanization for non-English)
-- [ ] Video script generation
-- [ ] Social media adaptation (one article → multiple social posts)
-- [ ] A/B variant generation (same topic, different angles)
+### v3.2 (Planned)
+- [ ] Expand multilingual support to 35+ languages
+- [ ] Content performance tracking (organic traffic correlation)
+- [ ] Predictive quality scoring from brief analysis
+- [ ] Content decay detection with automated refresh triggers
 
-### Phase D: Platform Expansion
-- [ ] Notion integration (alternative to Google Sheets/Drive)
-- [ ] Airtable integration
-- [ ] WordPress direct publishing
-- [ ] Webflow CMS integration
-- [ ] HubSpot integration
-
-### Phase E: Analytics & Learning
-- [ ] Content performance tracking (organic traffic, engagement)
-- [ ] Quality score correlation with performance
-- [ ] Pipeline optimization recommendations
-- [ ] Brand-specific quality pattern learning
+### v4.0 (Planned)
+- [ ] API mode (REST API for external integrations)
+- [ ] Real-time collaboration (multiple agents editing simultaneously)
+- [ ] Custom agent creation (define your own pipeline phases)
+- [ ] Advanced analytics with ML-powered optimization recommendations
 
 ---
 
@@ -753,11 +448,10 @@ You can also add brand-specific overrides or industry-specific thresholds.
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 **Priority Contribution Areas:**
-- Additional content type templates (landing pages, email sequences, etc.)
-- Alternative MCP server integrations (Notion, Airtable)
-- Industry-specific quality rubrics (Finance, Healthcare, Legal)
+- Additional content type templates (landing pages, email sequences)
 - Humanization pattern libraries for non-English languages
-- Test coverage (unit tests for individual agents)
+- Industry-specific quality rubrics
+- Test coverage for individual agents
 
 ---
 
@@ -769,17 +463,16 @@ MIT License — see [LICENSE](LICENSE) file.
 
 ## Support
 
-**Issues:** [GitHub Issues](https://github.com/yourusername/contentforge/issues)
-**Discussions:** [GitHub Discussions](https://github.com/yourusername/contentforge/discussions)
-**Email:** support@yourcompany.com
+**Issues:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**Discussions:** [GitHub Discussions](https://github.com/indranilbanerjee/contentforge/discussions)
 
 ---
 
 ## Credits
 
-**Created by:** [Your Name/Company]
+**Created by:** Indranil Banerjee
 **Built for:** Claude Code & Cowork platforms
-**Powered by:** Anthropic Claude (Sonnet 4.5)
+**Powered by:** Anthropic Claude
 
 **Special Thanks:**
 - Anthropic for Claude and MCP framework
@@ -788,4 +481,4 @@ MIT License — see [LICENSE](LICENSE) file.
 
 ---
 
-**ContentForge v1.0.0** — Transform requirements into publication-ready content in 20-30 minutes. ✅
+**ContentForge v3.0.0** — 12 agents, 17 skills, zero hallucinations. Transform requirements into publication-ready content in 20-30 minutes.

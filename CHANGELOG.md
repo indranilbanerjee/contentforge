@@ -7,6 +7,101 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.0] - 2026-02-25
+
+### Major Release: Complete Modernization
+
+**ContentForge v3.0.0** — Delivers every feature promised in v2.0.0 that was never built, adds connector infrastructure matching Digital Marketing Pro, introduces 5 new content management skills, and upgrades all 4 late-pipeline agents with AI Overview optimization, comparative scoring, personality profiles, and industry-specific humanization.
+
+### Added
+
+#### Tier A: Promised Features (Delivered)
+
+**Publishing & Social Adaptation:**
+- **`/cf:social-adapt` skill** — Transform articles into platform-specific posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads with character limits, hashtags, image specs, and posting times
+- **`/cf:publish` skill** — Push content to Webflow and WordPress via MCP. Preview before publish. Fallback: HTML export for manual upload
+- **Social Adapter Agent** (Agent 10) — Post-pipeline agent that extracts 10-15 shareworthy moments, applies platform constraints, generates hooks and hashtag strategies
+- **`config/social-platform-specs.json`** — Platform constraints (char limits, hashtag counts, voice, format, image specs, best times)
+- **`templates/social-post-templates.md`** — 5 post frameworks (Announcement, Data-Driven, How-To, Quote, Story) with platform variations
+- **`utilities/cms-publisher.md`** — CMS publishing spec: connector check → formatting → API call → verification → tracking
+
+**Content Optimization:**
+- **`/cf:variants` skill** — Generate 3-10 A/B variations of headlines, hooks, CTAs with composite scoring across clarity, emotional appeal, specificity, curiosity, keywords, and brand voice
+- **`/cf:analytics` skill** — Track quality scores over time, pipeline timing, brand patterns. Load from Google Sheets or local CSV
+- **`config/analytics-config.json`** — Thresholds, timing benchmarks, alert rules, trend analysis settings
+- **`utilities/analytics-tracker.md`** — Production data analysis spec: aggregation → trend analysis → outlier detection → recommendations
+
+**Multilingual & Video:**
+- **`/cf:translate` skill** — Translate content preserving brand voice across 15+ languages with 3 localization levels (literal, adapted, transcreated). Separates translatable text from immutable elements
+- **`/cf:video-script` skill** — Video scripts for YouTube, TikTok, Instagram Reels, explainers. 30s to 10min. Includes hooks, scene descriptions, B-roll, timestamps
+- **Translator Agent** (Agent 11) — Post-pipeline agent: element classification → translation → brand voice mapping → SEO adaptation → quality check
+- **`config/multilingual-patterns.json`** — 15+ languages with brand voice mapping, cultural adaptations, SEO considerations, readability benchmarks
+- **`templates/content-types/video-script-structure.md`** — Scene format with timestamps, dialogue, B-roll, music notes, platform-specific adaptations
+- **`utilities/translation-manager.md`** — Translation workflow spec: source analysis → element classification → translation → quality check
+
+#### Tier B: Connector Infrastructure
+
+- **`scripts/connector-status.py`** — 12-category connector registry with 22 connectors. CLI: `--action status|list-available|check|setup-guide`. JSON output
+- **`scripts/setup.py`** — Session startup validation: Python 3.8+ check, PLUGIN_ROOT/SCRIPTS_DIR paths, .mcp.json validation, connector count
+- **`/cf:integrations` skill** — Integration dashboard showing connected vs. available by category, quick wins, coverage summary
+- **`/cf:connect` skill** — Guided setup: HTTP = OAuth flow, npx = env vars + credential steps. Fuzzy name matching
+
+#### Tier C: New Capabilities
+
+- **`/cf:brief` skill** — Generate content brief from keyword/topic with keyword research, competitor analysis, search intent, audience pain points, recommended outline, SEO strategy
+- **`/cf:audit` skill** — Audit content library for decay/gaps. Freshness scoring (0-100), coverage gap analysis, top 10 refresh candidates
+- **`/cf:calendar` skill** — Content calendar planning. Work backward from publish dates, deadline conflict detection, Google Calendar sync via MCP
+- **`/cf:style-guide` skill** — Import brand voice from documents/URLs, extract tone/formality/personality/terminology/guardrails, generate brand profile JSON
+- **`/cf:template` skill** — Create custom content type templates with structure, quality standards, word count, readability target, citation minimum
+- **`templates/content-brief-template.md`** — Brief output template with keyword research, competitor analysis, search intent sections
+- **`utilities/pipeline-optimizer.md`** — Audit analysis spec: freshness scoring → gap detection → recommendation ranking
+
+### Changed
+
+#### Tier D: Agent Upgrades
+
+- **Agent 08 (Output Manager)** — Added 5 new output formats: Medium article, Substack post, email newsletter (responsive HTML), PDF export, social media package (calls Social Adapter Agent)
+- **Agent 06 (SEO/GEO Optimizer)** — Added Step 7: AI Overview Optimization with citation-worthiness scoring (1-10), AI answer snippet structuring, citeable moment identification (min 3), GEO score in SEO Scorecard
+- **Agent 06.5 (Humanizer)** — Added Step 6: Personality Profile Selection (authoritative, conversational, technical, witty) and Step 7: Industry-Specific AI Pattern Removal (healthcare, finance, tech, legal, education)
+- **Agent 07 (Reviewer)** — Added Step 6: Comparative Scoring (percentile ranking vs. brand history), Step 7: Trend Tracking (last 10 pieces, pattern detection), Step 8: Recommendation Engine (score-based next steps with cross-skill suggestions)
+- **`config/humanization-patterns.json`** — Added `personality_profiles` section (4 profiles with patterns, techniques, examples) and `industry_specific_patterns` section (5 industries with telltale phrases, replacements, compliance notes)
+
+#### Infrastructure
+
+- **`hooks/hooks.json`** — SessionStart now chains `setup.py` before banner. Added new skill hints to startup message
+- **`CONNECTORS.md`** — Added "Workflow impact" column, expanded npx categories (SEO, Translation, Social media, Analytics), added "Managing connectors" section with skill links
+- **`.claude-plugin/plugin.json`** — Version 2.1.0 → 3.0.0, updated description
+
+### Fixed
+
+- **README.md** — Fixed all placeholder URLs ("yourusername" → "indranilbanerjee"), "Your Name" → "Indranil Banerjee", removed "yourcompany", fixed bottom "v1.0.0" → "v3.0.0"
+- **Roadmap** — Replaced obsolete "Phase B-E" roadmap with v3.1/3.2/4.0 roadmap
+
+### Technical Specifications
+
+**New Agents:** 2 (Social Adapter #10, Translator #11)
+**Upgraded Agents:** 4 (Output Manager, SEO Optimizer, Humanizer, Reviewer)
+**New Skills:** 14 (cf-publish, cf-social-adapt, cf-variants, cf-analytics, cf-translate, cf-video-script, cf-brief, cf-audit, cf-calendar, cf-style-guide, cf-template, cf-integrations, cf-connect)
+**Total Skills:** 17 (3 original + 14 new)
+**New Scripts:** 2 (connector-status.py, setup.py)
+**New Configs:** 3 (analytics-config.json, social-platform-specs.json, multilingual-patterns.json)
+**Updated Configs:** 1 (humanization-patterns.json)
+**New Templates:** 3 (social-post-templates.md, video-script-structure.md, content-brief-template.md)
+**New Utilities:** 4 (cms-publisher.md, analytics-tracker.md, translation-manager.md, pipeline-optimizer.md)
+**Total New Files:** ~29
+**Total Modified Files:** ~10
+
+### Migration Notes
+
+**From v2.1.0 to v3.0.0:**
+1. No breaking changes — existing `/contentforge`, `/batch-process`, `/content-refresh` work identically
+2. New skills are additive — use when ready
+3. `scripts/` directory is new — `setup.py` runs automatically via hooks
+4. Updated `config/humanization-patterns.json` adds new sections without changing existing patterns
+5. Start with `/cf:integrations` to discover your connector status
+
+---
+
 ## [2.1.0] - 2026-02-25
 
 ### Changed — HTTP Connector Architecture
@@ -395,55 +490,55 @@ This patch release resolves the core installation and management issues reported
 
 ## [Unreleased]
 
-### Planned for Phase B: Batch Processing & Performance
-- [ ] Parallel execution for multiple content pieces
-- [ ] Queue management system
-- [ ] Priority-based processing
-- [ ] Progress tracking dashboard
-- [ ] Estimated time-to-completion for queued items
+### Planned for v3.1
+- [ ] Image generation integration (DALL-E, Midjourney via MCP)
+- [ ] Audio content (podcast scripts, voice-over scripts)
+- [ ] Web-based progress dashboard (HTML/CSS)
+- [ ] Slack/Teams notifications for batch completion
 
-### Planned for Phase C: Advanced Features
-- [ ] Content refresh workflow (update old content)
-- [ ] Multi-language support (Phase 6.5 for non-English)
-- [ ] Video script generation
-- [ ] Social media adaptation (article → social posts)
-- [ ] A/B variant generation
+### Planned for v3.2
+- [ ] Expand multilingual support to 35+ languages
+- [ ] Content performance tracking (organic traffic correlation)
+- [ ] Predictive quality scoring from brief analysis
+- [ ] Content decay detection with automated refresh triggers
 
-### Planned for Phase D: Platform Expansion
-- [ ] Notion integration
-- [ ] Airtable integration
-- [ ] WordPress direct publishing
-- [ ] Webflow CMS integration
-- [ ] HubSpot integration
-
-### Planned for Phase E: Analytics & Learning
-- [ ] Content performance tracking
-- [ ] Quality score correlation with performance
-- [ ] Pipeline optimization recommendations
-- [ ] Brand-specific quality pattern learning
+### Planned for v4.0
+- [ ] API mode (REST API for external integrations)
+- [ ] Real-time collaboration
+- [ ] Custom agent creation (define your own pipeline phases)
+- [ ] Advanced analytics with ML-powered optimization
 
 ---
 
 ## Version History
 
+- **3.0.0** (2026-02-25) — Complete modernization: 14 new skills, 2 new agents, 4 agent upgrades, connector infrastructure
+- **2.1.0** (2026-02-25) — HTTP connector architecture, kebab-case agent names
+- **2.0.2** (2026-02-24) — Agent frontmatter, Output Manager MCP fixes
+- **2.0.1** (2026-02-17) — Marketplace installation fixes, hooks.json
+- **2.0.0** (2026-02-17) — Batch processing, content refresh (Phases B-E)
 - **1.0.0** (2026-02-16) — Initial release
-- More versions to come!
 
 ---
 
 ## Reporting Issues
 
-Found a bug or have a feature request? Please open an issue on [GitHub Issues](https://github.com/yourusername/contentforge/issues).
+Found a bug or have a feature request? Please open an issue on [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues).
 
 ---
 
 ## Credits
 
-**Created by:** ContentForge Team
+**Created by:** Indranil Banerjee
 **Platform:** Claude Code & Cowork
 **License:** MIT
 
 ---
 
-[1.0.0]: https://github.com/yourusername/contentforge/releases/tag/v1.0.0
-[Unreleased]: https://github.com/yourusername/contentforge/compare/v1.0.0...HEAD
+[3.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.0.0
+[2.1.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.1.0
+[2.0.2]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.2
+[2.0.1]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.1
+[2.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.0
+[1.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v1.0.0
+[Unreleased]: https://github.com/indranilbanerjee/contentforge/compare/v3.0.0...HEAD

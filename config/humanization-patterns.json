@@ -233,5 +233,250 @@
       "weight": 0.1,
       "measure": "SEO scorecard unchanged or improved"
     }
+  },
+  "personality_profiles": {
+    "_description": "Configurable personality profiles for the Humanizer agent (Phase 6.5 Step 6). Each profile defines specific writing patterns, techniques, and constraints that shape how content is humanized while preserving factual accuracy.",
+    "authoritative": {
+      "description": "Data-first, definitive voice. Leads with evidence, makes strong claims backed by sources.",
+      "sentence_patterns": [
+        "Lead with the data point or finding",
+        "Use definitive language: 'The data shows' not 'The data seems to suggest'",
+        "Prefer active voice with strong verbs: 'drives', 'proves', 'reveals'",
+        "Minimal hedging — state positions clearly"
+      ],
+      "techniques": [
+        "Open paragraphs with statistics or research findings",
+        "Use 'Research confirms' / 'Data shows' / 'Evidence demonstrates'",
+        "Replace 'might' and 'could' with 'will' and 'does' (where supported by evidence)",
+        "Cite specific numbers rather than vague quantifiers",
+        "Close sections with definitive summary statements"
+      ],
+      "avoid": [
+        "Excessive hedging ('it might possibly suggest')",
+        "Weak qualifiers ('somewhat', 'arguably', 'potentially')",
+        "Passive constructions that dilute authority",
+        "Opinion framing ('we believe', 'in our opinion') — let data speak"
+      ],
+      "example_transforms": {
+        "before": "Companies might find that AI tools could potentially help with content creation.",
+        "after": "AI tools cut content production time by 47% — and the quality gains are measurable."
+      },
+      "best_for": ["whitepapers", "research_papers", "industry_reports", "case_studies"]
+    },
+    "conversational": {
+      "description": "Direct, engaging voice. Talks TO the reader. Uses questions, contractions, and informal bridges.",
+      "sentence_patterns": [
+        "Address the reader directly with 'you' and 'your'",
+        "Use contractions naturally: 'you're', 'it's', 'don't', 'won't'",
+        "Ask rhetorical questions to create dialogue",
+        "Use short sentences for punch. Then longer ones for explanation."
+      ],
+      "techniques": [
+        "Open sections with a question: 'Ever wondered why...?'",
+        "Use 'Here's the thing:' and 'But here's where it gets interesting'",
+        "Include reader-directed asides: 'Sound familiar?', 'You've seen this before.'",
+        "Break formality with occasional sentence fragments. Like this.",
+        "Use dashes for mid-thought additions — they feel more natural than parentheses"
+      ],
+      "avoid": [
+        "Third-person corporate speak ('one should consider')",
+        "Formal transitions ('furthermore', 'moreover', 'consequently')",
+        "Passive voice (except for deliberate emphasis)",
+        "Overly long sentences without a natural pause"
+      ],
+      "example_transforms": {
+        "before": "Organizations should consider implementing AI content tools to improve their production efficiency.",
+        "after": "You're spending 6 hours on a blog post that should take 2. Here's how to fix that."
+      },
+      "best_for": ["blogs", "articles", "newsletters", "social_content"]
+    },
+    "technical": {
+      "description": "Precision-first voice. Preserves jargon, favors specificity, respects the reader's expertise.",
+      "sentence_patterns": [
+        "Use precise technical terminology without dumbing down",
+        "Define terms only on first use, then use freely",
+        "Favor process-oriented language: 'implements', 'configures', 'executes'",
+        "Use code-like precision in descriptions"
+      ],
+      "techniques": [
+        "Preserve domain-specific jargon (don't replace 'API endpoint' with 'connection point')",
+        "Use specific version numbers, measurements, and configurations",
+        "Structure with clear cause-and-effect: 'X happens because Y'",
+        "Include implementation context: runtime, environment, dependencies",
+        "Reference standards and specifications by name (ISO, RFC, IEEE)"
+      ],
+      "avoid": [
+        "Oversimplification ('basically', 'simply put', 'in layman's terms')",
+        "Marketing buzzwords ('cutting-edge', 'revolutionary', 'game-changing')",
+        "Vague quantifiers ('many', 'several', 'a lot') — use exact numbers",
+        "Analogies that sacrifice precision for accessibility"
+      ],
+      "example_transforms": {
+        "before": "The innovative AI solution leverages cutting-edge technology to transform content creation.",
+        "after": "The multi-agent pipeline uses GPT-4o for research synthesis and Claude 3.5 for draft generation, with a separate validation model checking citation accuracy at 99.2% precision."
+      },
+      "best_for": ["technical_documentation", "developer_guides", "product_specs", "research_papers"]
+    },
+    "witty": {
+      "description": "Sharp, clever voice. Uses wordplay, unexpected comparisons, and self-aware asides without undermining credibility.",
+      "sentence_patterns": [
+        "Set up expectations, then subvert them",
+        "Use parenthetical asides for commentary",
+        "Deploy analogies from unexpected domains",
+        "Balance wit with substance — every joke earns its place"
+      ],
+      "techniques": [
+        "Wordplay on industry terms: 'Content marketing has a content problem'",
+        "Unexpected comparisons: 'Building a content strategy is like assembling IKEA furniture — you'll have pieces left over and wonder if it's supposed to wobble'",
+        "Self-aware meta-commentary: '(Yes, we see the irony of writing AI content about AI content.)'",
+        "Callback references to earlier points in the article",
+        "Understatement for impact: 'The results were... not terrible' (when results were exceptional)"
+      ],
+      "avoid": [
+        "Forced humor that derails the argument",
+        "Sarcasm that could be misread as literal",
+        "Pop culture references that will date quickly",
+        "Humor in regulated/sensitive content (healthcare, finance compliance sections)"
+      ],
+      "example_transforms": {
+        "before": "Many organizations struggle with content production at scale.",
+        "after": "Most companies produce content the way they did in 2019 — which is like navigating with a paper map while everyone else has GPS. It works, technically. But you're going to miss a lot of turns."
+      },
+      "best_for": ["blogs", "articles", "social_content", "newsletters"],
+      "caution_for": ["whitepapers", "regulated_industries", "formal_reports"]
+    }
+  },
+  "industry_specific_patterns": {
+    "_description": "Industry-specific AI telltale phrases and writing patterns that the Humanizer agent (Phase 6.5 Step 7) should detect and replace. These are phrases that AI models commonly generate for specific industries that immediately signal machine authorship to domain experts.",
+    "healthcare_pharma": {
+      "ai_telltale_phrases": [
+        "healthcare landscape",
+        "paradigm shift in medicine",
+        "holistic approach to wellness",
+        "patient-centric care model",
+        "at the forefront of medical innovation",
+        "revolutionizing healthcare delivery",
+        "empowering patients to take control",
+        "bridging the gap in healthcare",
+        "the future of medicine is here",
+        "transforming patient outcomes"
+      ],
+      "preferred_replacements": [
+        "Use specific clinical outcomes: '32% reduction in readmission rates'",
+        "Reference specific studies: 'The NEJM 2025 trial showed...'",
+        "Use precise medical terminology appropriate to audience",
+        "Lead with patient impact metrics, not buzzwords"
+      ],
+      "compliance_notes": [
+        "Never use 'cure' or 'guarantee' for treatments",
+        "Always include 'consult your healthcare provider' for medical advice",
+        "FDA-regulated claims require specific substantiation",
+        "HIPAA considerations for patient stories (use composites or de-identified data)"
+      ]
+    },
+    "finance_bfsi": {
+      "ai_telltale_phrases": [
+        "financial landscape",
+        "navigate the complexities of",
+        "unlock financial potential",
+        "in today's volatile markets",
+        "empower your financial future",
+        "revolutionizing the financial industry",
+        "driving financial inclusion",
+        "the future of banking",
+        "transforming wealth management",
+        "leveraging fintech innovation"
+      ],
+      "preferred_replacements": [
+        "Use specific market data: 'S&P 500 returned 12.3% YTD'",
+        "Reference specific regulations: 'Under SEC Rule 10b-5...'",
+        "Cite named analysts or firms: 'Goldman Sachs projects...'",
+        "Lead with quantified outcomes, not aspirational language"
+      ],
+      "compliance_notes": [
+        "Always include 'Past performance does not guarantee future results'",
+        "FINRA fair balance requirements for investment content",
+        "No guaranteed returns or specific performance promises",
+        "Risk disclosures required for investment product mentions"
+      ]
+    },
+    "technology_saas": {
+      "ai_telltale_phrases": [
+        "digital transformation journey",
+        "seamless integration",
+        "robust and scalable solution",
+        "cutting-edge technology",
+        "next-generation platform",
+        "end-to-end solution",
+        "single pane of glass",
+        "leveraging the power of AI",
+        "future-proof your technology stack",
+        "driving digital innovation"
+      ],
+      "preferred_replacements": [
+        "Use specific technical details: 'Handles 10,000 concurrent connections with <50ms latency'",
+        "Reference architecture specifics: 'Built on Kubernetes with auto-scaling'",
+        "Cite benchmark results: 'Reduced deployment time from 4 hours to 12 minutes'",
+        "Use concrete integration examples: 'Connects to Salesforce, HubSpot, and Slack via REST API'"
+      ],
+      "compliance_notes": [
+        "Performance claims should be reproducible and documented",
+        "Security claims need certification backing (SOC 2, ISO 27001)",
+        "Uptime guarantees should match SLA terms exactly",
+        "Open source license attribution where applicable"
+      ]
+    },
+    "legal": {
+      "ai_telltale_phrases": [
+        "navigate the legal landscape",
+        "legal complexities",
+        "in the ever-evolving regulatory environment",
+        "protect your legal rights",
+        "comprehensive legal solutions",
+        "leveraging legal expertise",
+        "at the intersection of law and technology",
+        "driving legal innovation",
+        "empowering legal teams",
+        "transforming legal operations"
+      ],
+      "preferred_replacements": [
+        "Reference specific statutes: 'Under 17 U.S.C. § 107...'",
+        "Cite case law: 'As established in Smith v. Jones (2024)...'",
+        "Use precise legal terminology without marketing gloss",
+        "Lead with jurisdictional specifics where applicable"
+      ],
+      "compliance_notes": [
+        "Include 'This does not constitute legal advice' disclaimer",
+        "Jurisdiction-specific disclaimers where relevant",
+        "Attorney advertising rules vary by state bar",
+        "Avoid creating implied attorney-client relationships"
+      ]
+    },
+    "education": {
+      "ai_telltale_phrases": [
+        "educational landscape",
+        "empowering learners",
+        "fostering a love of learning",
+        "revolutionizing education",
+        "bridging the achievement gap",
+        "21st century skills",
+        "personalized learning journeys",
+        "unlocking student potential",
+        "transforming the classroom experience",
+        "the future of education"
+      ],
+      "preferred_replacements": [
+        "Use specific outcome data: '23% improvement in test scores over one semester'",
+        "Reference pedagogical frameworks by name: 'Using Bloom's Taxonomy...'",
+        "Cite specific studies: 'The RAND Corporation's 2025 study found...'",
+        "Lead with measurable student outcomes, not aspirational language"
+      ],
+      "compliance_notes": [
+        "FERPA compliance for student data references",
+        "COPPA considerations for K-12 content",
+        "Accessibility requirements (WCAG 2.1 AA) for educational content",
+        "Avoid making specific grade-improvement guarantees"
+      ]
+    }
   }
 }

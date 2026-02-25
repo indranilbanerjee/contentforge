@@ -874,6 +874,266 @@ Overall Score = (8.6 × 0.30) + (9.2 × 0.25) + (9.4 × 0.20) + (8.8 × 0.15) + 
 
 ---
 
+### Step 6: Comparative Scoring
+
+**Purpose:** Compare this piece's quality against the brand's historical production data to provide percentile-based context.
+
+#### 6.1 Load Historical Data
+
+**Source:** `~/.claude-marketing/contentforge/tracking/` (populated by cf-analytics) or brand's Google Sheet (via Sheets MCP).
+
+**If historical data exists:**
+```json
+{
+  "brand": "AcmeMed",
+  "historical_pieces": 47,
+  "avg_overall_score": 7.8,
+  "score_distribution": {
+    "9.0+": 6,
+    "8.0-8.9": 18,
+    "7.0-7.9": 16,
+    "6.0-6.9": 5,
+    "<6.0": 2
+  },
+  "dimension_averages": {
+    "content_quality": 7.6,
+    "citation_integrity": 8.1,
+    "brand_compliance": 8.3,
+    "seo_performance": 7.5,
+    "readability": 7.9
+  }
+}
+```
+
+**If no historical data:** Skip Step 6, note "Comparative scoring unavailable — first reviewed piece for this brand" in scorecard.
+
+#### 6.2 Calculate Percentile Ranking
+
+**For each dimension AND overall score:**
+```
+Percentile = (number of historical pieces scoring below this piece / total historical pieces) × 100
+```
+
+**Example:**
+```
+This piece (9.0 overall) scores better than 44 of 47 historical pieces = 93.6th percentile
+→ "This piece scores better than 94% of AcmeMed content"
+```
+
+**Per-dimension comparison:**
+```
+Content Quality:    8.6 vs avg 7.6 → +1.0 above average ↑
+Citation Integrity: 9.2 vs avg 8.1 → +1.1 above average ↑
+Brand Compliance:   9.4 vs avg 8.3 → +1.1 above average ↑
+SEO Performance:    8.8 vs avg 7.5 → +1.3 above average ↑↑
+Readability:        9.0 vs avg 7.9 → +1.1 above average ↑
+```
+
+#### 6.3 Comparison Output
+
+```markdown
+## COMPARATIVE ANALYSIS
+
+**Percentile Ranking:** 94th percentile (scores better than 94% of AcmeMed content)
+**vs. Brand Average:** +1.2 above average (9.0 vs 7.8)
+
+| Dimension | This Piece | Brand Avg | Delta | Trend |
+|-----------|-----------|-----------|-------|-------|
+| Content Quality | 8.6 | 7.6 | +1.0 | ↑ Above average |
+| Citation Integrity | 9.2 | 8.1 | +1.1 | ↑ Above average |
+| Brand Compliance | 9.4 | 8.3 | +1.1 | ↑ Above average |
+| SEO Performance | 8.8 | 7.5 | +1.3 | ↑↑ Well above |
+| Readability | 9.0 | 7.9 | +1.1 | ↑ Above average |
+
+**Standout Dimension:** SEO Performance (+1.3 above average)
+**Opportunity Area:** Content Quality (closest to average)
+```
+
+---
+
+### Step 7: Trend Tracking
+
+**Purpose:** Analyze quality patterns across the last 10 pieces for this brand to identify systematic strengths, weaknesses, and trajectory.
+
+#### 7.1 Load Recent History
+
+**Load last 10 quality scorecards** from tracking data.
+
+**If fewer than 3 pieces exist:** Skip trend analysis, note "Insufficient data for trend tracking (need 3+ pieces)" in scorecard.
+
+#### 7.2 Pattern Detection
+
+**Analyze across last 10 pieces:**
+
+**Consistent Strengths** (dimension average ≥ 8.0 across last 10):
+```
+Example: "Citation Integrity has averaged 8.4 across last 10 pieces — this is a reliable strength"
+```
+
+**Consistent Weaknesses** (dimension average < 7.0 across last 10):
+```
+Example: "Content Quality has averaged 6.8 across last 10 pieces — systematic improvement needed"
+```
+
+**Trajectory** (improving, stable, or declining):
+```
+Calculate linear trend across last 10 scores:
+- Improving: positive slope > 0.1 per piece
+- Stable: slope between -0.1 and 0.1
+- Declining: negative slope < -0.1
+```
+
+**Volatility** (high variance = inconsistent quality):
+```
+Standard deviation > 1.0 = HIGH volatility (quality varies widely)
+Standard deviation 0.5-1.0 = MODERATE volatility
+Standard deviation < 0.5 = LOW volatility (consistent)
+```
+
+#### 7.3 Trend Output
+
+```markdown
+## TREND ANALYSIS (Last 10 Pieces)
+
+**Overall Trajectory:** Improving ↑ (avg moved from 7.4 to 8.2 over last 10 pieces)
+**Quality Consistency:** Low volatility (σ = 0.4) — reliable production quality
+
+**Consistent Strengths:**
+- Citation Integrity: avg 8.4 / 10 across last 10 — never dropped below 7.5
+- Brand Compliance: avg 8.1 / 10 across last 10 — very consistent
+
+**Consistent Weaknesses:**
+- Content Quality: avg 6.8 / 10 across last 10 — depth of analysis is recurring gap
+  → **Recommended action:** Invest more time in Phase 1 (Research) for deeper sources
+
+**Dimension Trends:**
+| Dimension | 10-Piece Avg | Trajectory | Volatility |
+|-----------|-------------|------------|------------|
+| Content Quality | 6.8 | Stable → | Moderate |
+| Citation Integrity | 8.4 | Improving ↑ | Low |
+| Brand Compliance | 8.1 | Stable → | Low |
+| SEO Performance | 7.5 | Improving ↑ | Moderate |
+| Readability | 7.9 | Improving ↑ | Low |
+
+**Notable Patterns:**
+- SEO scores improved significantly after Phase 6 AI Overview optimization was added
+- Content Quality is the most volatile dimension — driven by topic complexity variation
+```
+
+---
+
+### Step 8: Recommendation Engine
+
+**Purpose:** Generate score-based, actionable recommendations that extend beyond the current piece to guide production strategy and cross-skill utilization.
+
+#### 8.1 Score-Based Recommendation Tiers
+
+**Tier 1: Score 9.0+ (Exceptional)**
+```markdown
+**Recommendation:** PUBLISH + REPURPOSE + AMPLIFY
+
+1. **Publish immediately** — This is top-tier content
+2. **Repurpose aggressively:**
+   - → `/cf:social-adapt` — Generate social posts for all platforms (this piece has strong shareworthy moments)
+   - → `/cf:video-script` — Convert key insights to video script (quality justifies the investment)
+   - → Output Manager: Generate Medium + Substack + Newsletter variants
+3. **Amplify:**
+   - Flag for paid promotion (high-quality content = better ad performance)
+   - Submit to industry publications / syndication partners
+   - Create internal case study of what made this piece exceptional
+4. **Learn from success:**
+   - → `/cf:analytics` — Record this score to raise the brand benchmark
+   - Document what worked: research depth, source quality, or topic selection
+```
+
+**Tier 2: Score 7.0-8.9 (Good to Very Good)**
+```markdown
+**Recommendation:** PUBLISH + SELECTIVE REPURPOSE
+
+1. **Publish** — Content meets quality threshold
+2. **Address optional improvements** (if time permits):
+   [List specific minor improvements from scorecard]
+   Estimated time: [10-30 minutes]
+3. **Selective repurpose:**
+   - → `/cf:social-adapt` — Generate social posts (3 per platform instead of 5)
+   - → Output Manager: Generate standard formats only (skip premium formats)
+4. **Track for patterns:**
+   - → `/cf:analytics` — Record score, note which dimensions held this piece back
+```
+
+**Tier 3: Score 5.0-6.9 (Below Standard)**
+```markdown
+**Recommendation:** LOOP + TARGETED FIX
+
+1. **Do NOT publish** — Content needs improvement
+2. **Loop to weakest phase** with specific feedback:
+   - Weakest dimension: [dimension name] ([score])
+   - Responsible phase: [Phase X]
+   - Required fixes: [numbered list]
+3. **Before looping, consider:**
+   - → `/cf:brief` — Was the original brief specific enough? Weak briefs → weak content
+   - → `/cf:style-guide` — Is the brand profile complete? Missing voice guidance → brand compliance gaps
+4. **After fix, re-review** through Phase 7 (this step)
+```
+
+**Tier 4: Score < 5.0 (Failing)**
+```markdown
+**Recommendation:** HUMAN REVIEW + ROOT CAUSE ANALYSIS
+
+1. **Escalate to human review** — Score too low for automated fixing
+2. **Root cause investigation:**
+   - Was the topic too complex for the current research depth?
+   - Were source materials insufficient?
+   - Was the brand profile incomplete or incorrect?
+3. **Consider:**
+   - → `/cf:audit` — Run content audit to check if this is an isolated issue or systemic
+   - → `/cf:brief` — Generate a new brief with more specific requirements
+   - → `/cf:style-guide` — Review and update brand profile before next attempt
+4. **Do NOT count against production metrics** — flag as "requires investigation"
+```
+
+#### 8.2 Cross-Skill Suggestions
+
+**Based on content characteristics (regardless of score):**
+
+| Content Signal | Suggested Skill | Rationale |
+|---------------|----------------|-----------|
+| High citation count (15+) | `/cf:brief` for related topics | Research depth suggests expertise area — capitalize |
+| Strong GEO score (8+) | `/cf:social-adapt` | AI-friendly content performs well on social too |
+| Multiple data points | `/cf:variants` | Data-rich content produces strong A/B headline variants |
+| Evergreen topic | `/cf:calendar` | Schedule regular refresh cycles |
+| Regulated industry | `/cf:audit` | Queue for compliance re-review in 6 months |
+| Multi-language brand | `/cf:translate` | High-scoring content is worth translating first |
+
+#### 8.3 Recommendation Output
+
+```markdown
+## RECOMMENDATIONS
+
+**Score-Based Tier:** Tier 1 — PUBLISH + REPURPOSE + AMPLIFY (Score: 9.0)
+
+**Immediate Actions:**
+1. ✅ Proceed to Phase 8 (Output Manager) for publication
+2. 📱 Run `/cf:social-adapt` — 5 shareworthy moments identified (3 stats, 1 quote, 1 framework)
+3. 🎬 Run `/cf:video-script --platform=youtube` — "Multi-Agent AI Content" has strong video potential
+
+**Optimization Actions (Optional, +15 min):**
+4. Add one more case study in Section 4 (Content Quality: +0.2 estimated)
+5. Convert H2 "Implementation Roadmap" to question format (GEO: +0.3 estimated)
+
+**Strategic Actions:**
+6. 📊 Record to `/cf:analytics` for benchmark tracking
+7. 🌍 Queue for `/cf:translate --language=es,de` (high-score content = translation priority)
+8. 📅 Add to `/cf:calendar` for 6-month refresh review
+
+**Cross-Skill Opportunities:**
+- This piece has 14 citations → run `/cf:brief` for 3 related topics in this expertise cluster
+- GEO score 8.8 → social adaptation will perform well
+- Evergreen topic → schedule Q3 refresh in content calendar
+```
+
+---
+
 ## OUTPUT FORMAT
 
 ### QUALITY SCORECARD (from templates/quality-scorecard.md)

@@ -865,6 +865,97 @@ Variance: +1.1 ❌ (exceeds acceptable range)
 
 ---
 
+## STEP 7: AI OVERVIEW OPTIMIZATION (v3.0)
+
+**Purpose:** Structure content to maximize visibility in Google AI Overviews, Perplexity featured answers, and other AI-generated search results.
+
+### 7.1 Citation-Worthiness Scoring
+
+**Evaluate whether this content deserves to be cited by AI answer engines.**
+
+**Score each criterion (1-10):**
+
+| Criterion | Description | Target |
+|-----------|-------------|--------|
+| Data Density | Unique statistics, percentages, metrics per 500 words | 3+ per section |
+| Expert Attribution | Named experts, organizations, or studies cited | 5+ named sources |
+| Definitional Clarity | Clear definitions of key terms in the first use | Every technical term defined |
+| Structured Answers | Direct Q&A format, numbered steps, comparison tables | 2+ structured elements |
+| Recency Signal | Dates, version numbers, "as of 2026" markers | 3+ recency markers |
+
+**Citation-Worthiness Score:** Average of 5 criteria
+
+**Threshold:**
+- 8-10: Highly citable — AI engines will likely reference this content
+- 5-7: Moderately citable — add more data density or structured answers
+- 1-4: Low citability — restructure key sections for answer extraction
+
+### 7.2 AI Answer Snippet Structuring
+
+**Optimize 3+ sections for direct extraction by AI answer engines:**
+
+**Pattern 1: Definition Snippet**
+```
+**What is [term]?** [Term] is [clear 1-2 sentence definition]. [Supporting context with data point].
+```
+
+**Pattern 2: Data-First Statement**
+```
+[Statistic or data point] according to [source] ([year]). This means [implication].
+```
+
+**Pattern 3: Comparison Table**
+```markdown
+| Factor | Option A | Option B |
+|--------|----------|----------|
+| Metric | Value | Value |
+```
+
+**Pattern 4: Step-by-Step Process**
+```markdown
+### How to [achieve goal]
+1. **Step 1:** [Action] — [Brief explanation]
+2. **Step 2:** [Action] — [Brief explanation]
+```
+
+### 7.3 Identify Citeable Moments
+
+**Mark at least 3 "citeable moments" — passages that AI engines would quote:**
+
+```
+CITEABLE MOMENT 1: "[Exact sentence with unique data point]"
+- Location: Section [X], paragraph [Y]
+- Why citable: Contains unique statistic with named source
+
+CITEABLE MOMENT 2: "[Clear definition or framework]"
+- Location: Section [X], paragraph [Y]
+- Why citable: Provides authoritative definition
+```
+
+**If fewer than 3 citeable moments exist, create them by:**
+- Adding a unique data point to a key section
+- Restructuring a paragraph as a clear definition
+- Converting a list into a numbered process
+
+### 7.4 Updated SEO Scorecard — GEO Section
+
+**Add to existing SEO Scorecard output:**
+
+```
+## GEO SCORE: [X] / 10
+
+**Citation-Worthiness:** [X] / 10
+**Citeable Moments:** [N] identified
+**Structured Answer Elements:** [N] (target: 2+)
+**Definition Snippets:** [N] (target: 1+)
+**Data-First Statements:** [N] (target: 3+)
+**Recency Markers:** [N] (target: 3+)
+
+**GEO Recommendation:** [Specific suggestion to improve AI visibility]
+```
+
+---
+
 **SEO/GEO Optimizer Agent — Phase 6 Complete**
 
-**Next Step:** Proceed to Phase 6.5 (Humanizer) — Remove AI writing patterns while preserving SEO keywords
+**Next Step:** Proceed to Phase 6.5 (Humanizer) — Remove AI writing patterns while preserving SEO keywords and GEO structure
