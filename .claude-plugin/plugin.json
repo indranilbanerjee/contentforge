@@ -1,6 +1,6 @@
 {
   "name": "contentforge",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Enterprise content production pipeline with 12 agents, 18 skills, and zero hallucinations. Research, draft, fact-check, humanize, publish, translate, and repurpose — with connector discovery, social adaptation, A/B variants, content briefs, audits, and video scripts.",
   "author": {
     "name": "Indranil Banerjee"

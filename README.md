@@ -1,6 +1,6 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.0.0
+**Version:** 3.1.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
@@ -44,7 +44,7 @@ ContentForge is an enterprise-grade content generation system that replaces 6-8 
 - **Natural Language:** Phase 6.5 Humanizer removes AI writing patterns with 4 personality profiles
 - **Quality Transparency:** Every piece scored 1-10 across 5 dimensions with comparative benchmarks
 - **Human Oversight:** Content <5.0/10 escalates to review, never auto-publishes
-- **17 Skills:** Full content lifecycle — from brief to publish to repurpose
+- **18 Skills + 7 Commands:** Full content lifecycle — from brief to publish to repurpose, with top commands visible in the Customize panel
 
 ---
 
@@ -61,6 +61,22 @@ ContentForge is an enterprise-grade content generation system that replaces 6-8 
 - **Humanization:** Zero AI patterns, burstiness 0.72 (natural human rhythm)
 - **Comparative:** 94th percentile vs. brand average
 - **Loops:** Zero (approved on first review)
+
+---
+
+## Commands (visible in Customize panel)
+
+These 7 commands appear in the **Commands** section of the Customize sidebar, providing quick access to the most common content workflows:
+
+| Command | What It Does |
+|---------|-------------|
+| `/create-content` | Run the full 9-phase pipeline — research, draft, fact-check, humanize, publish |
+| `/content-brief` | Generate research-backed briefs with keyword data, competitor analysis, and outlines |
+| `/social-adapt` | Repurpose articles into posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads |
+| `/publish` | Push content to Webflow or WordPress with preview, verification, and HTML fallback |
+| `/translate` | Translate into 15+ languages preserving brand voice, citations, and SEO |
+| `/brand-setup` | Configure brand voice, terminology, compliance guardrails, and style guide |
+| `/audit-content` | Audit content library for freshness decay, coverage gaps, and optimization opportunities |
 
 ---
 
