@@ -179,6 +179,7 @@ CONNECTOR_REGISTRY = {
                     "contentforge", "batch-process", "content-refresh",
                     "cf-style-guide", "cf-audit",
                 ],
+                "note": "Also available as a native Claude platform integration (Settings > Integrations)",
             },
         },
     },
@@ -353,6 +354,8 @@ def status_dashboard():
                     entry["note"] = "Claude Code only (requires npx)"
                 else:
                     entry["note"] = "HTTP connector — works in Cowork + Claude Code"
+                if "note" in conn:
+                    entry["platform_note"] = conn["note"]
                 available.append(entry)
 
         categories.append({

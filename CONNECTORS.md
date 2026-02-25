@@ -17,6 +17,17 @@ Plugins are **tool-agnostic** — they describe workflows in terms of categories
 | Email | `~~email` | Gmail | Outlook | Draft delivery, review notifications |
 | Calendar | `~~calendar` | Google Calendar | Outlook Calendar | Content calendar events — enables `/cf:calendar` |
 
+## Platform-level integrations
+
+Some services are connected at the **Claude platform level** rather than through MCP. These are managed in Claude Desktop → Settings → Integrations and work automatically in Cowork sessions.
+
+| Service | Platform integration | MCP alternative |
+|---------|---------------------|-----------------|
+| Google Drive | Yes — connect in Settings → Integrations | Also available via npx (`mcp-google-drive`) |
+| Google Docs | Yes — connect in Settings → Integrations | Also available via npx (`mcp-google-docs`) |
+
+Platform-level integrations work even if they don't appear in the `/cf:integrations` connector dashboard. Google Drive connected at the platform level provides document access for brand knowledge and reference materials.
+
 ## Categories without HTTP connectors (Claude Code only)
 
 The following integrations require local npx/stdio MCP servers. They work in Claude Code but not in Cowork. See `.mcp.json.example` for configuration.
@@ -38,6 +49,7 @@ Use these skills to discover and manage your integrations:
 |-------|-------------|
 | `/cf:integrations` | Status dashboard — see what's connected, what's available, which workflows each connector enables |
 | `/cf:connect <name>` | Guided setup — step-by-step instructions for connecting a specific service (e.g., `/cf:connect wordpress`) |
+| `/cf:add-integration` | Custom setup — add any MCP server not in the registry (npm packages or custom APIs) |
 
 ## Advanced configuration (Claude Code)
 
