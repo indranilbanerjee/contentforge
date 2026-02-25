@@ -202,7 +202,7 @@ mv contentforge %USERPROFILE%\.claude\plugins\
 
 ```bash
 # Session startup will show:
-# ✓ ContentForge v3.0 loaded — Enterprise content production with zero hallucinations
+# ✓ ContentForge v3.1 loaded — Enterprise content production with zero hallucinations
 #   /contentforge — Single piece (20-30 min)
 #   /batch-process — Multiple pieces in parallel (4-5x faster)
 #   /content-refresh — Update old content with fresh data
@@ -497,4 +497,4 @@ MIT License — see [LICENSE](LICENSE) file.
 
 ---
 
-**ContentForge v3.0.0** — 12 agents, 18 skills, zero hallucinations. Transform requirements into publication-ready content in 20-30 minutes.
+**ContentForge v3.1.0** — 12 agents, 18 skills, zero hallucinations. Transform requirements into publication-ready content in 20-30 minutes.

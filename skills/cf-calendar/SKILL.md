@@ -382,7 +382,7 @@ None. This skill uses deterministic scheduling logic (backward timeline calculat
 
 ---
 
-**Version:** 2.1.0
+**Version:** 3.1.0
 **Agent:** None (deterministic scheduling)
 **MCP:** Google Calendar (optional, HTTP), Google Sheets (optional, npx)
 **Processing Time:** 3-8 minutes (varies by plan size)

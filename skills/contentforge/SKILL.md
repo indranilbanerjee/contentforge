@@ -348,7 +348,7 @@ Provide: Brand name (AcmeMed), Industry (Healthcare), Voice (Authoritative), Ton
 
 ---
 
-**Version:** 3.0.0
+**Version:** 3.1.0
 **Agents:** 12 agents (Research, Fact Checker, Drafter, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
 **Processing Time:** 20-30 minutes avg
 **Quality Guarantee:** ≥8.5/10 avg score, zero hallucinations, 95%+ citation accuracy

@@ -1,4 +1,4 @@
-# ContentForge v3.0 — Complete User Guide
+# ContentForge v3.1 — Complete User Guide
 
 **From zero to first published article.** This guide walks you through every step of using ContentForge in Claude Cowork or Claude Code, from initial setup to running the full content production pipeline.
 
@@ -94,7 +94,7 @@ Move the cloned folder to your Claude plugins directory:
 Start a new Claude session. You should see the ContentForge banner:
 
 ```
-✓ ContentForge v3.0 loaded — Enterprise content production with zero hallucinations
+✓ ContentForge v3.1 loaded — Enterprise content production with zero hallucinations
   /contentforge — Single piece (20-30 min)
   /batch-process — Multiple pieces in parallel (4-5x faster)
   /content-refresh — Update old content with fresh data
@@ -1329,4 +1329,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.0.0** — 12 agents, 17 skills, zero hallucinations.
+**ContentForge v3.1.0** — 12 agents, 18 skills, zero hallucinations.

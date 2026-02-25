@@ -1,6 +1,6 @@
 # ContentForge for Claude Cowork — Complete User Guide
 
-**Version:** 2.0.0
+**Version:** 3.1.0
 **Platform:** Claude Cowork (Web-based)
 **Audience:** Content teams, agencies, marketers using Cowork for content production
 
@@ -76,7 +76,7 @@ Available Plugins in neels-plugins:
 1. digital-marketing-pro (v2.2.0)
    Comprehensive digital marketing execution system...
 
-2. contentforge (v2.0.0)
+2. contentforge (v3.1.0)
    Enterprise multi-agent content production with batch processing...
 ```
 
@@ -87,7 +87,7 @@ Available Plugins in neels-plugins:
 
 **You'll see:**
 ```
-✓ Installing ContentForge v2.0.0...
+✓ Installing ContentForge v3.1.0...
 ✓ Installation complete!
 
 Available commands:
@@ -107,11 +107,11 @@ Type:
 
 Scroll down to "Installed Plugins" section. You should see:
 ```
-ContentForge (v2.0.0)
+ContentForge (v3.1.0)
   /contentforge
   /batch-process
   /content-refresh
-  ... (6 commands total)
+  ... (18 skills total)
 ```
 
 **✅ Installation Complete!** Now you need to set up MCP integrations.
@@ -1674,7 +1674,7 @@ If detected, loops back to Phase 3 for rewrite.
 - Sheets API: $0.004 per 1,000 requests
 
 **Q: Can I use Dropbox instead of Google Drive?**
-**A:** Not yet. Google Drive is required in v2.0. Dropbox support planned for v2.1.
+**A:** Not yet. Google Drive is the primary file storage integration. Dropbox support is on the roadmap.
 
 **Q: Can I publish to WordPress automatically?**
 **A:** Yes, if you configure WordPress MCP server:
@@ -1708,7 +1708,7 @@ If detected, loops back to Phase 3 for rewrite.
 **A:** Yes! Open a feature request on [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues).
 
 **Q: Is there a community or forum?**
-**A:** Not yet. Planned for v2.1 (Discord server or GitHub Discussions).
+**A:** Use GitHub Issues at [github.com/indranilbanerjee/contentforge/issues](https://github.com/indranilbanerjee/contentforge/issues).
 
 ---
 
@@ -1739,11 +1739,11 @@ If detected, loops back to Phase 3 for rewrite.
 
 **Questions?** Email: indranilbanerjee21@gmail.com
 **Issues?** GitHub: [github.com/indranilbanerjee/contentforge/issues](https://github.com/indranilbanerjee/contentforge/issues)
-**Updates?** Watch the repo for v2.1 features!
+**Updates?** Watch the repo for the latest features!
 
 ---
 
-**Version:** 2.0.0
-**Last Updated:** 2026-02-17
+**Version:** 3.1.0
+**Last Updated:** 2026-02-26
 **Author:** Indranil 'Neel' Banerjee
 **License:** MIT

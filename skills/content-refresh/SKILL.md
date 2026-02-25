@@ -379,6 +379,6 @@ https://docs.google.com/.../article-3,heavy,3,Topic outdated, needs rewrite
 
 ---
 
-**Version:** 2.0.0
+**Version:** 3.1.0
 **Phase:** C (Advanced Features)
 **Time Savings:** 4x faster for batch, preserves SEO equity, extends content lifespan

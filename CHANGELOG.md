@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.1.0] - 2026-02-26
+
+### Added — Commands & Version Consistency
+
+- **7 command files** in `commands/` directory — visible in the Customize panel "Commands" section:
+  - `create-content` — Run the full 9-phase content production pipeline
+  - `content-brief` — Generate a research-backed content brief with keyword data and competitor analysis
+  - `social-adapt` — Repurpose articles into platform-specific social media posts
+  - `publish` — Publish finished content to Webflow or WordPress with preview and verification
+  - `translate` — Translate content into 15+ languages while preserving brand voice and citations
+  - `brand-setup` — Configure brand voice, terminology, compliance guardrails, and style guide
+  - `audit-content` — Audit content library for freshness decay and coverage gaps
+- **New `/cf:help` skill** — Pipeline overview, all skills, brand setup methods, examples, and troubleshooting
+- **New `/cf:add-integration` skill** — Natural language guide for custom connector setup
+
+### Fixed
+
+- Updated stale version references across 17 skill files (from v2.0.0/v2.1.0/v3.0.0 to v3.1.0)
+- Updated COWORK-GUIDE.md from v2.0.0 to v3.1.0 throughout
+- Updated USER-GUIDE.md from v3.0 to v3.1
+- Updated session startup banner from v3.0 to v3.1
+
+---
+
 ## [3.0.0] - 2026-02-25
 
 ### Major Release: Complete Modernization

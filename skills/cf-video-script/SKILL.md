@@ -280,7 +280,7 @@ Google Drive: ContentForge Output/AcmeMed/video/AI-Healthcare-2026_youtube-5min_
 
 ---
 
-**Version:** 2.1.0
+**Version:** 3.1.0
 **Agents:** Researcher (01-researcher), Content Drafter (03-content-drafter), Structurer (05-structurer-proofreader)
 **Processing Time:** 6-30 minutes depending on video length
 **Quality Guarantee:** Hook in first 3s, dialogue paced at 120-150 wpm, B-roll for every major point, platform-specific optimization

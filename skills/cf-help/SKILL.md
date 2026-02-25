@@ -17,9 +17,9 @@ Display this quick orientation:
 ```
 === CONTENTFORGE — HELP ===
 
-Version: 3.0.0
+Version: 3.1.0
 Agents: 12 (9-phase pipeline + 3 post-pipeline)
-Skills: 17 slash commands (/cf:* + /contentforge + /batch-process + /content-refresh)
+Skills: 18 slash commands (/cf:* + /contentforge + /batch-process + /content-refresh)
 Connectors: 6 HTTP + 16 npx integrations
 
 Getting Started:

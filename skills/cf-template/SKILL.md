@@ -478,7 +478,7 @@ None. This skill uses deterministic template creation (section definition, word 
 
 ---
 
-**Version:** 2.1.0
+**Version:** 3.1.0
 **Agent:** None (deterministic template creation)
 **Processing Time:** 3-6 minutes
 **Output:** Template .md file in templates/content-types/, pipeline validation, usage instructions

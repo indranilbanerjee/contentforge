@@ -409,7 +409,7 @@ This skill uses existing **Humanizer** and **Reviewer** agent patterns — no ad
 
 ---
 
-**Version:** 2.1.0
+**Version:** 3.1.0
 **Agents:** Humanizer (patterns), Reviewer (scoring logic)
 **Processing Time:** 2-4 minutes per element
 **Output:** Scored variation cards with top 3 recommendations + A/B test setup guidance

@@ -501,7 +501,7 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ---
 
-**Version:** 2.1.0
+**Version:** 3.1.0
 **Script:** `scripts/connector-status.py --action setup-guide --name <connector>`
 **Processing Time:** <10 seconds
 **Network Required:** No (reads local config and env vars only)

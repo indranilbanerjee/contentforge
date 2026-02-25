@@ -224,6 +224,6 @@ ContentForge Output/
 
 ---
 
-**Version:** 2.0.0
+**Version:** 3.1.0
 **Agent:** Batch Orchestrator
 **Utilities:** batch-queue-manager.md, progress-tracker.md

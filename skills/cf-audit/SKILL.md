@@ -418,7 +418,7 @@ None. This skill uses deterministic analysis (freshness scoring algorithm, keywo
 
 ---
 
-**Version:** 2.1.0
+**Version:** 3.1.0
 **Agent:** None (deterministic analysis)
 **Utility:** pipeline-optimizer.md (freshness scoring, recommendation ranking)
 **MCP:** Google Analytics (optional), Google Search Console (optional)
