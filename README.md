@@ -439,13 +439,13 @@ Yes. `/cf:translate` supports 15+ languages with 3 localization levels (literal,
 
 ## Roadmap
 
-### v3.1 (Planned)
+### v3.2 (Planned)
 - [ ] Image generation integration (DALL-E, Midjourney via MCP)
 - [ ] Audio content (podcast scripts, voice-over scripts)
 - [ ] Web-based progress dashboard (HTML/CSS)
 - [ ] Slack/Teams notifications for batch completion
 
-### v3.2 (Planned)
+### v3.3 (Planned)
 - [ ] Expand multilingual support to 35+ languages
 - [ ] Content performance tracking (organic traffic correlation)
 - [ ] Predictive quality scoring from brief analysis
