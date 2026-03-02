@@ -55,8 +55,22 @@ You are the **Batch Orchestrator Agent**, responsible for maximizing content pro
 ### Phase 1: Intake & Validation (1-2 minutes)
 
 **Input Sources:**
-- **Google Sheets**: Preferred for agency workflows (live updates, team collaboration)
+- **Google Sheets** (via `scripts/sheets-tracker.py`): Preferred for agency workflows (live updates, team collaboration)
 - **CSV**: Alternative for one-off batches
+
+**Loading from Google Sheets:**
+
+Read the `tracking_sheet_id` and `credentials_path` from the brand profile's `google_integration` section, then run:
+
+```
+python scripts/sheets-tracker.py \
+  --action get-pending \
+  --sheet-id {tracking_sheet_id} \
+  --credentials {credentials_path} \
+  --brand "{brand_name}"
+```
+
+This returns all rows with `status=pending`, sorted by priority. If `--brand` is omitted, returns pending rows across all brands.
 
 **Required Columns:**
 - `requirement_id` (string, unique)
@@ -117,7 +131,7 @@ Queue (sorted by priority, then time):
 **For Each Piece in Queue:**
 
 1. **Update Status**
-   - Set `status=in_progress` in Google Sheets
+   - Run `python scripts/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"in_progress","started_at":"{timestamp}"}'`
    - Add to active pipelines tracker
 
 2. **Launch ContentForge Pipeline**
@@ -132,20 +146,17 @@ Queue (sorted by priority, then time):
 
 4. **Handle Completion**
    - If **successful** (quality score ≥5.0):
-     - Set `status=completed` in Google Sheets
-     - Record quality score
-     - Move .docx to final output folder
+     - Agent 08 handles Drive upload + Sheets update via `scripts/drive-uploader.py` and `scripts/sheets-tracker.py --action mark-complete`
      - Free up concurrency slot, start next in queue
 
    - If **requires review** (score <5.0 or max loops exceeded):
-     - Set `status=review_required` in Google Sheets
-     - Record reason for review
+     - Run `python scripts/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"review_required","notes":"Reason: ..."}'`
      - Move to review folder
      - Free up concurrency slot, start next in queue
 
    - If **failed** (pipeline error):
      - Retry once after 60s
-     - If fails again, set `status=failed`, log error
+     - If fails again: `python scripts/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"failed","notes":"Error: ..."}'`
      - Free up concurrency slot, start next in queue
 
 ---
@@ -213,11 +224,11 @@ Queue (sorted by priority, then time):
 2. Second failure: Mark as `review_required`, log full error trace, continue
 
 #### 4. Critical Errors (Halt Batch)
-- Google Sheets unavailable (can't track progress)
+- Google Sheets API unreachable (can't track progress) — check credentials and network
 - Google Drive quota exceeded (can't save outputs)
-- MCP server disconnected
+- Google credentials invalid or expired
 
-**Action:** Pause all pipelines, alert user, wait for resolution
+**Action:** Pause all pipelines, alert user, wait for resolution. For credential issues, guide user to check `~/.claude-marketing/google-credentials.json` and service account permissions.
 
 ---
 
@@ -283,16 +294,16 @@ Next Steps:
 1. Spot-check 2-3 completed pieces for quality verification
 2. Review and fix the 2 pieces flagged for human review
 3. Deliver completed pieces to clients or publish to CMS
-4. Update Google Sheets with final status and links
+4. Tracking sheet already updated per-piece by Agent 08 (via scripts/sheets-tracker.py)
 
 ═══════════════════════════════════════════════════════════════
 ```
 
-2. **Update Google Sheets**
-   - Set all `status=completed` or `review_required` or `failed`
-   - Add `quality_score` column values
-   - Add `output_url` links to Drive files
-   - Add `completion_time` for each piece
+2. **Verify Tracking Sheet**
+   - Each piece was already updated by Agent 08 during pipeline execution
+   - If any updates failed (network errors during pipeline), run batch update now:
+     `python scripts/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"...", "quality_score":"...", "drive_url":"..."}'`
+   - Confirm all rows have final status (completed/review_required/failed)
 
 3. **Send Summary to User**
    - Display summary report
@@ -357,9 +368,11 @@ Each pipeline in the batch runs through the full 9-phase process with identical 
 
 ## Integration Points
 
-### MCP Servers Required
-- **Google Sheets** — Requirement intake, status tracking
-- **Google Drive** — Brand profile loading, output storage
+### Google Integration Scripts
+- **`scripts/sheets-tracker.py`** — Requirement intake (`get-pending`), status tracking (`update-row`, `mark-complete`)
+- **`scripts/drive-uploader.py`** — Output file upload (`upload`), asset upload (`upload-assets`)
+- **Credentials:** Service account JSON at path specified in brand profile `google_integration.credentials_path`
+- **Configuration:** `tracking_sheet_id` and `drive_output_folder_id` from brand profile (configured once per brand)
 
 ### Utilities Used
 - **batch-queue-manager.md** — Queue sorting, priority logic

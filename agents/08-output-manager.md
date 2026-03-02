@@ -338,27 +338,92 @@ ContentForge/Acme Corp/Articles/2026/02-February/
 
 ---
 
-### Output Delivery — Adaptive MCP Approach
+### Output Delivery — Script-Based Approach
 
-**Step 1: Check Available Tools**
-Before attempting any external delivery, check what MCP tools are available in the current session. Do NOT assume specific tool names exist.
+ContentForge uses Python scripts for Google Drive uploads and Google Sheets tracking. These scripts use the Google API directly via a service account — no MCP tools required.
 
-**Step 2: If Google Drive tools are detected:**
-- Use whatever Drive-related tools are available to search for and organize output
-- Adapt to the actual tool names present (they vary by MCP server implementation)
-- If only read tools are available, note that write access requires a different MCP server configuration
+**Prerequisites (configured once per brand in brand profile):**
+- `google_integration.credentials_path` — Path to service account JSON (default: `~/.claude-marketing/google-credentials.json`)
+- `google_integration.tracking_sheet_id` — Google Sheet ID from the sheet URL
+- `google_integration.drive_output_folder_id` — Root Google Drive folder ID for outputs
 
-**Step 3: If Google Sheets tools are detected:**
-- Update the content tracking sheet using available tools
-- Adapt parameter format to match the actual tool signatures
+**Step 1: Upload .docx to Google Drive**
 
-**Step 4: Local Fallback (always available):**
-1. Save all content as markdown files to: `./output/{content-type}/{date}/`
-2. Generate a quality scores summary as JSON alongside the content
-3. Print a formatted summary directly in the conversation for immediate use
+Run the drive uploader script from the plugin's `scripts/` directory:
 
-**Step 5: If no external MCP tools are connected:**
-Guide the user: "To enable automatic upload to Google Drive or tracking in Google Sheets, connect the appropriate MCP server in your Claude settings."
+```
+python scripts/drive-uploader.py \
+  --action upload \
+  --folder-id {drive_output_folder_id from brand profile} \
+  --file {path to generated .docx} \
+  --brand "{brand_name}" \
+  --content-type {content_type} \
+  --credentials {credentials_path from brand profile}
+```
+
+The script automatically creates the folder hierarchy: `{Brand}/{Content Type}s/{Year}/{Month}/`
+
+Capture the returned `url` value — this is the Google Drive link for the tracking sheet.
+
+**Step 2: Upload Visual Assets to Google Drive** (if any generated charts exist)
+
+If Phase 3.5 generated chart PNGs in `~/.claude-marketing/{brand}/assets/`:
+
+```
+python scripts/drive-uploader.py \
+  --action upload-assets \
+  --folder-id {drive_output_folder_id from brand profile} \
+  --brand "{brand_name}" \
+  --assets-dir "~/.claude-marketing/{brand}/assets/" \
+  --credentials {credentials_path from brand profile}
+```
+
+**Step 3: Update Tracking Sheet**
+
+If this content was triggered by a tracking sheet row (batch or single request), update the row with completion data:
+
+```
+python scripts/sheets-tracker.py \
+  --action mark-complete \
+  --sheet-id {tracking_sheet_id from brand profile} \
+  --row-id {requirement_id} \
+  --credentials {credentials_path from brand profile} \
+  --data '{"quality_score": 9.0, "content_quality": 8.6, "citation_integrity": 9.2, "brand_compliance": 9.4, "seo_performance": 8.8, "readability": 9.0, "actual_word_count": 1855, "drive_url": "{drive_url from Step 1}", "notes": "Completed successfully."}'
+```
+
+If this is a NEW single request (not from the sheet), add a row first:
+
+```
+python scripts/sheets-tracker.py \
+  --action add-row \
+  --sheet-id {tracking_sheet_id from brand profile} \
+  --credentials {credentials_path from brand profile} \
+  --data '{"brand": "{brand_name}", "content_type": "{type}", "title": "{title}", "target_audience": "{audience}", "word_count_target": {target}, "priority": 3, "status": "completed"}'
+```
+
+Then immediately mark it complete with scores using the returned `requirement_id`.
+
+**Step 4: Error Handling**
+
+If any script fails (missing credentials, network error, permission denied):
+1. Save .docx locally to `./output/{content-type}/{date}/` as fallback
+2. Print the error message and provide setup instructions
+3. Continue with the completion summary — do not block the pipeline
+4. Note the failure in the completion summary under DELIVERY section
+
+**Step 5: If Google credentials are not configured:**
+
+Print setup guidance:
+```
+Google Sheets/Drive not configured for this brand.
+To enable:
+1. Create a service account at Google Cloud Console > IAM > Service Accounts
+2. Download the JSON key to: ~/.claude-marketing/google-credentials.json
+3. Share your Google Sheet and Drive folder with the service account email
+4. Set tracking_sheet_id and drive_output_folder_id in your brand profile
+```
+
+Save content locally and proceed with the completion summary.
 
 ---
 

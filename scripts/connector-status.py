@@ -157,13 +157,15 @@ CONNECTOR_REGISTRY = {
         "description": "Data intake and requirement management — batch content briefs, tracking sheets",
         "connectors": {
             "google-sheets": {
-                "transport": "npx",
-                "package": "@anthropic/mcp-google-sheets",
-                "description": "Google Sheets — batch requirement intake, content tracking, quality score history",
-                "env_vars": ["GOOGLE_APPLICATION_CREDENTIALS"],
+                "transport": "script",
+                "script": "scripts/sheets-tracker.py",
+                "description": "Google Sheets — batch requirement intake, content tracking, quality score history (via Python script + service account)",
+                "env_vars": [],
+                "credentials": "~/.claude-marketing/google-credentials.json",
                 "skills_unlocked": [
                     "batch-process", "cf-analytics", "cf-audit",
                 ],
+                "note": "Uses scripts/sheets-tracker.py with Google service account. Works in Cowork + Claude Code. Also available as npx MCP server (@anthropic/mcp-google-sheets) for Claude Code only.",
             },
         },
     },
@@ -171,15 +173,16 @@ CONNECTOR_REGISTRY = {
         "description": "File storage and brand knowledge — brand assets, reference docs, style guides",
         "connectors": {
             "google-drive": {
-                "transport": "npx",
-                "package": "@anthropic/mcp-google-drive",
-                "description": "Google Drive — brand knowledge vault, reference docs, output delivery",
-                "env_vars": ["GOOGLE_APPLICATION_CREDENTIALS"],
+                "transport": "script",
+                "script": "scripts/drive-uploader.py",
+                "description": "Google Drive — output delivery, folder organization, visual asset upload (via Python script + service account)",
+                "env_vars": [],
+                "credentials": "~/.claude-marketing/google-credentials.json",
                 "skills_unlocked": [
                     "contentforge", "batch-process", "content-refresh",
                     "cf-style-guide", "cf-audit",
                 ],
-                "note": "Also available as a native Claude platform integration (Settings > Integrations)",
+                "note": "Uses scripts/drive-uploader.py with Google service account. Works in Cowork + Claude Code. Also available as native Claude platform integration (Settings > Integrations) and as npx MCP server.",
             },
         },
     },
@@ -316,6 +319,12 @@ def _is_configured(name, connector_info, active_servers):
     # HTTP connectors in .mcp.json
     if name in active_servers:
         return True
+    # Script-based connectors — check if credentials file exists
+    if connector_info["transport"] == "script":
+        creds_path = connector_info.get("credentials", "")
+        if creds_path:
+            return Path(creds_path).expanduser().exists()
+        return True  # No credentials needed
     # Check env vars for npx connectors
     if connector_info["transport"] == "npx" and connector_info.get("env_vars"):
         return all(os.environ.get(v) for v in connector_info["env_vars"])
@@ -352,6 +361,9 @@ def status_dashboard():
                 if conn["transport"] == "npx":
                     entry["env_vars_needed"] = conn["env_vars"]
                     entry["note"] = "Claude Code only (requires npx)"
+                elif conn["transport"] == "script":
+                    entry["credentials_needed"] = conn.get("credentials", "")
+                    entry["note"] = "Python script — works in Cowork + Claude Code (needs service account)"
                 else:
                     entry["note"] = "HTTP connector — works in Cowork + Claude Code"
                 if "note" in conn:
@@ -472,6 +484,31 @@ def setup_guide(name):
                         f"{name} is configured. Use any of these skills to activate it: "
                         + ", ".join(f"/cf:{s}" if not s.startswith("cf-") else f"/{s}" for s in conn["skills_unlocked"])
                     )
+            elif conn["transport"] == "script":
+                guide["transport"] = "script"
+                guide["script"] = conn.get("script", "")
+                guide["credentials"] = conn.get("credentials", "")
+                creds_path = Path(conn.get("credentials", "")).expanduser()
+                guide["steps"] = [
+                    f"1. Go to Google Cloud Console > IAM & Admin > Service Accounts",
+                    f"2. Create a service account (e.g., 'contentforge-pipeline')",
+                    f"3. Create a JSON key and download it",
+                    f"4. Save the key to: {conn.get('credentials', '~/.claude-marketing/google-credentials.json')}",
+                    f"5. Share your Google Sheet/Drive folder with the service account email (Editor access)",
+                    f"6. Set tracking_sheet_id and drive_output_folder_id in your brand profile",
+                ]
+                if configured:
+                    guide["status_message"] = (
+                        f"{name} is configured (credentials found at {creds_path}). "
+                        f"Script: {conn.get('script', '')}. "
+                        f"Ensure tracking_sheet_id and drive_output_folder_id are set in your brand profile."
+                    )
+                guide["notes"] = [
+                    "Uses Python scripts with Google API (no npx/Node.js required).",
+                    "Works in both Claude Code and Cowork.",
+                    "Credentials are stored locally, never in the plugin repository.",
+                    "Dependencies (gspread, google-api-python-client) auto-install on first run.",
+                ]
             else:
                 guide["transport"] = "npx"
                 guide["package"] = conn.get("package", "")

@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.2.0",
-  "description": "Enterprise content production pipeline with 13 agents, 18 skills, and zero hallucinations. Research, draft, annotate visuals, fact-check, humanize, publish, translate, and repurpose — with data chart generation, structured internal linking, connector discovery, social adaptation, A/B variants, content briefs, audits, and video scripts.",
+  "version": "3.3.0",
+  "description": "Enterprise content production pipeline with 13 agents, 18 skills, and zero hallucinations. Research, draft, annotate visuals, fact-check, humanize, publish, translate, and repurpose — with data chart generation, structured internal linking, Google Sheets tracking, Google Drive delivery, connector discovery, social adaptation, A/B variants, content briefs, audits, and video scripts.",
   "author": {
     "name": "Indranil Banerjee"
   }
