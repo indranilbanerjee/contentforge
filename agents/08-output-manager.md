@@ -17,7 +17,8 @@ From Phase 7 (Reviewer):
 
 From All Prior Phases:
 - **Original Requirements** — Topic, brand, content type, word count target
-- **SEO Scorecard** (Phase 6) — Meta title, meta description, keywords
+- **Visual Asset Manifest** (Phase 3.5) — JSON manifest of all visual assets (generated charts + human-action items)
+- **SEO Scorecard** (Phase 6) — Meta title, meta description, keywords, **Internal Link Map**
 - **Humanization Report** (Phase 6.5) — Final word count, readability metrics
 - **Loop History** — If any feedback loops occurred
 
@@ -195,7 +196,81 @@ ContentForge Pipeline | [Timestamp]
 **Hallucination Risk:** ✅ Low
 ```
 
-#### 2.4 Save .docx File
+#### 2.4 Visual Asset Integration
+
+**Process the Visual Asset Manifest from Phase 3.5 to embed visuals in the document.**
+
+**For `chart` assets (status: `generated`):**
+1. Read the chart PNG from `~/.claude-marketing/{brand}/assets/{file_path}`
+2. Insert into the .docx at the position specified by the `placement` field
+3. Apply caption formatting: italic, centered below image, prefixed with "Figure N:"
+4. Set alt text in image metadata for accessibility
+5. Maintain a running figure counter across the document
+
+**Example .docx output for generated chart:**
+```
+[Embedded chart-01.png image, centered, 800x500]
+
+Figure 1: Content quality scores — multi-agent vs single-model approaches
+Source: McKinsey, 2026. Analysis of 200 agency implementations.
+```
+
+**For `screenshot` / `diagram` / `image` assets (status: `pending_human`):**
+1. Insert a formatted TODO box at the specified placement position
+2. Style with light yellow background and dashed border to make it visually distinct from content
+3. Include all details the human editor needs to fulfill the visual
+
+**TODO box format in .docx:**
+```
+┌─────────────────────────────────────────────┐
+│  FIGURE NEEDED — [HIGH/MEDIUM/LOW] PRIORITY │
+│                                             │
+│  Type: [screenshot/diagram/image]           │
+│  Description: [search terms or description] │
+│  Dimensions: [WxH]                          │
+│  Caption: [proposed caption text]           │
+│  Alt Text: [proposed alt text]              │
+│  Instructions: [specific capture/creation   │
+│                 instructions]               │
+└─────────────────────────────────────────────┘
+```
+
+**Visual asset count for completion summary:**
+- Track total embedded charts vs TODO boxes
+- Report human action items with priority breakdown
+
+#### 2.5 Internal Link Execution
+
+**Process the Internal Link Map from Phase 6 (SEO Scorecard) to insert clickable hyperlinks.**
+
+**For each `<!-- INTERNAL-LINK: ... -->` marker in the content:**
+1. Extract the `anchor` text and `url` target
+2. Locate the exact anchor text in the content body
+3. Apply hyperlink formatting: blue (#0066CC), underlined, clickable URL
+4. Remove the HTML comment marker after applying the link
+
+**Example:**
+```
+Before: "Learn more about AI content quality frameworks for enterprise teams."
+<!-- INTERNAL-LINK: anchor="AI content quality frameworks" | url=/blog/ai-quality-best-practices | priority=high | reason="Pillar content" | section=2 -->
+
+After (in .docx): "Learn more about [AI content quality frameworks] for enterprise teams."
+                                      ↑ hyperlink to /blog/ai-quality-best-practices
+```
+
+**For HTML export formats (Medium, Substack, Newsletter):**
+- Convert to standard `<a href="/blog/ai-quality-best-practices">AI content quality frameworks</a>` tags
+- For Medium export: Prepend base domain to relative URLs
+- For email newsletter: Use absolute URLs only
+
+**Internal link tracking:**
+- Count total links applied
+- Report priority breakdown (HIGH/MEDIUM/LOW)
+- Flag any markers where the anchor text was not found in content (placement error)
+
+---
+
+#### 2.6 Save .docx File
 
 **File Naming Convention:**
 ```
@@ -336,6 +411,32 @@ Guide the user: "To enable automatic upload to Google Drive or tracking in Googl
 
 ---
 
+### VISUAL ASSETS
+
+**Total Visuals:** 6
+**Auto-Generated Charts:** 3 (embedded in document as Figure 1-3)
+**Human Action Required:** 3 (TODO markers inserted in document)
+  - 1 screenshot (HIGH priority)
+  - 1 diagram (HIGH priority)
+  - 1 stock image (MEDIUM priority)
+
+**Chart Data Verified:** ✅ All 3 charts verified against Phase 2 sources (Phase 4)
+**Asset Manifest:** `~/.claude-marketing/acme-corp/assets/manifest.json`
+
+---
+
+### INTERNAL LINKS
+
+**Links Applied:** 4 (clickable hyperlinks in document)
+  - HIGH priority: 2
+  - MEDIUM priority: 1
+  - LOW priority: 1
+**Site Structure Source:** page_registry
+**Sections Covered:** 4 (Sections 2, 3, 4, Conclusion)
+**All URLs Valid:** ✅
+
+---
+
 ### DELIVERY
 
 **Google Drive Link:** [https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view](https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view)
@@ -349,18 +450,19 @@ Guide the user: "To enable automatic upload to Google Drive or tracking in Googl
 
 ### PIPELINE PERFORMANCE
 
-**Total Processing Time:** ~28 minutes
-**Phases Completed:** 9
+**Total Processing Time:** ~30 minutes
+**Phases Completed:** 10
 **Loop Iterations:** 0
-**Quality Gates Passed:** 9/9
+**Quality Gates Passed:** 10/10
 
 **Pipeline Efficiency:**
 - Phase 1 (Research): 8 min
 - Phase 2 (Fact Check): 3 min
 - Phase 3 (Drafting): 6 min
+- Phase 3.5 (Visual Assets): 2 min
 - Phase 4 (Validation): 2 min
 - Phase 5 (Polish): 3 min
-- Phase 6 (SEO): 2 min
+- Phase 6 (SEO + Internal Linking): 2 min
 - Phase 6.5 (Humanize): 2 min
 - Phase 7 (Review): 1 min
 - Phase 8 (Output): 1 min
@@ -523,13 +625,14 @@ Guide the user: "To enable automatic upload to Google Drive or tracking in Googl
 **Phase Breakdown:**
 1. ✅ Research (8 min) — 14 sources, SERP analysis complete
 2. ✅ Fact Check (3 min) — 100% verification, zero flags
-3. ✅ Drafting (6 min) — 1,855 words, brand voice applied
-4. ✅ Validation (2 min) — Zero hallucinations detected
-5. ✅ Polish (3 min) — Zero grammar errors, readability optimized
-6. ✅ SEO (2 min) — Keywords optimized, meta tags generated
-7. ✅ Humanize (2 min) — All AI patterns removed
-8. ✅ Review (1 min) — Scored 9.0/10, approved
-9. ✅ Output (1 min) — File generated, uploaded, tracked
+3. ✅ Drafting (6 min) — 1,855 words, brand voice applied, visual placeholders marked
+4. ✅ Visual Assets (2 min) — 3 charts generated, 3 human-action markers created
+5. ✅ Validation (2 min) — Zero hallucinations, chart data verified
+6. ✅ Polish (3 min) — Zero grammar errors, readability optimized
+7. ✅ SEO (2 min) — Keywords optimized, meta tags generated, 4 internal links mapped
+8. ✅ Humanize (2 min) — All AI patterns removed
+9. ✅ Review (1 min) — Scored 9.0/10, approved
+10. ✅ Output (1 min) — File generated, visuals embedded, links applied, uploaded
 
 **Efficiency Notes:**
 - Brand profile cache hit (saved 2-5 minutes)

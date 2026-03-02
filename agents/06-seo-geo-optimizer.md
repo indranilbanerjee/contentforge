@@ -365,34 +365,94 @@ Reduce costs by 68%, maintain quality, scale content operations in 2026."
 
 ---
 
-### Step 5: Internal Linking Strategy
+### Step 5: Structured Internal Link Mapping
 
-**Recommend internal link opportunities (if part of larger content ecosystem):**
+**Produce a machine-readable internal link map that Phase 8 (Output Manager) executes as clickable hyperlinks in the final document.**
 
-#### 5.1 Contextual Internal Links
+#### 5.1 Load Site Structure
 
-**If brand has related content, recommend anchor text and link placement:**
+Check the brand profile for site structure data. Accept three input forms (in priority order):
 
-**Example recommendations:**
+1. **Sitemap URL** — `seo_preferences.internal_linking.sitemap_url`
+   - If provided, fetch and parse the XML sitemap to build a page inventory
+   - Extract: URL, last modified date, priority
+
+2. **Page Registry** — `seo_preferences.internal_linking.page_registry`
+   - JSON array of `{url, title, keywords, category}` entries
+   - Pre-curated list of linkable pages
+
+3. **Pillar Pages** — `seo_preferences.internal_linking.pillar_pages`
+   - High-priority pages that should always be linked when topically relevant
+
+4. **Fallback** — If none of the above are available:
+   - Note in SEO Scorecard: "No site structure provided. Internal link recommendations are generic. Add sitemap_url or page_registry to brand profile for structured linking."
+   - Provide text-only recommendations (current behavior) without structured markers
+
+#### 5.2 Identify Link Opportunities
+
+Scan the content for phrases that could serve as natural anchor text:
+
+**Matching criteria:**
+- **Keyword overlap** — Phrase in content matches keywords associated with a target page
+- **Topical relevance** — The surrounding paragraph context aligns with the target page topic
+- **Natural fit** — The phrase reads naturally as a hyperlink (not forced or awkward)
+
+**Prioritization rules:**
+1. Link to pillar/cornerstone content first (highest SEO value)
+2. Prefer phrases that appear organically in the text (do not insert new text just for linking)
+3. Distribute links across sections — avoid clustering 3+ links in one paragraph
+4. Each link should help the reader at that point (user intent, not just SEO)
+
+#### 5.3 Generate Internal Link Map
+
+Insert structured HTML comment markers into the content at each link position:
+
+```html
+<!-- INTERNAL-LINK: anchor="AI content quality frameworks" | url=/blog/ai-content-quality-best-practices | priority=high | reason="Pillar content, exact keyword match" | section=2 -->
 ```
-Section 2, paragraph 3: Link "AI content quality frameworks" to related article on quality assurance
-→ Anchor text: "AI content quality frameworks"
-→ Target: /blog/ai-content-quality-assurance-best-practices
 
-Section 4, paragraph 5: Link "implementing AI workflows" to implementation checklist
-→ Anchor text: "step-by-step implementation guide"
-→ Target: /resources/ai-implementation-checklist
+**Marker format specification:**
 
-Conclusion: Link to related case studies
-→ Anchor text: "real-world multi-agent AI case studies"
-→ Target: /case-studies/multi-agent-ai-content-production
+| Field | Required | Description |
+|-------|----------|-------------|
+| `anchor` | YES | Exact text in the content to make clickable |
+| `url` | YES | Target page URL (relative or absolute) |
+| `priority` | YES | `high` (pillar content, high SEO value), `medium` (relevant supporting content), `low` (tangentially related) |
+| `reason` | YES | Brief justification for this link |
+| `section` | YES | Section number or name where this link appears |
+
+**Output the full link map in the SEO Scorecard:**
+
+```markdown
+### INTERNAL LINK MAP
+
+| # | Anchor Text | Target URL | Priority | Section | Reason |
+|---|------------|------------|----------|---------|--------|
+| 1 | "AI content quality frameworks" | /blog/ai-quality-best-practices | HIGH | 2 | Pillar content, exact keyword match |
+| 2 | "step-by-step implementation guide" | /resources/ai-implementation-checklist | HIGH | 4 | High-value resource, user intent alignment |
+| 3 | "real-world case studies" | /case-studies/multi-agent-ai | MEDIUM | Conclusion | Supporting evidence, reduces bounce |
+| 4 | "marketing automation workflows" | /blog/marketing-automation-guide | MEDIUM | 3 | Secondary keyword reinforcement |
+
+**Site Structure Source:** [sitemap_url | page_registry | pillar_pages | fallback]
+**Total Internal Links:** 4
+**Distribution:** Sections 2, 3, 4, Conclusion (4 different sections)
 ```
 
-**Internal linking benefits:**
-- Distributes page authority (SEO juice)
-- Increases dwell time (readers stay on site longer)
-- Reduces bounce rate
-- Helps search engines understand content relationships
+#### 5.4 Internal Linking Quality Check
+
+Validate the link map against these criteria:
+
+- **Count:** Between `seo_preferences.internal_linking.min_internal_links` (default 2) and `max_internal_links` (default 5)
+- **No duplicate URLs** — Each target page linked at most once
+- **No duplicate anchor text** — Each anchor phrase is unique
+- **Distribution** — Links span at least 2 different sections
+- **Priority mix** — At least 1 HIGH priority link
+- **URL validity** — All target URLs exist in the site structure (if page_registry/sitemap available)
+
+**If checks fail:**
+- Too few links → Identify additional opportunities
+- Duplicate URLs → Remove lower-priority duplicate
+- Poor distribution → Redistribute across sections
 
 ---
 

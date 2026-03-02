@@ -11,9 +11,13 @@ description: "Validates scientific accuracy, evidence quality, and methodologica
 
 ## INPUTS
 
-From Phase 3 (Content Drafter):
-- **Draft v1** — Complete first draft with inline citations
-- **Draft Metadata** — Word count, citation analysis, section coverage
+From Phase 3.5 (Visual Asset Annotator):
+- **Annotated Draft v1.5** — Draft with visual markers (`<!-- VISUAL: ... -->`) and chart references
+- **Visual Asset Manifest** — JSON manifest of all visual assets (auto-generated + pending_human)
+- **Visual Asset Report** — Summary of asset types, counts, and chart generation scripts
+
+From Phase 3 (Content Drafter) — Passed Through Phase 3.5:
+- **Draft Metadata** — Word count, citation analysis, section coverage, visual placeholder count
 
 From Phase 2 (Fact Checker) — For Cross-Reference:
 - **Verified Research Brief** — All verified claims and statistics
@@ -245,6 +249,77 @@ Check References section:
 **Citation Distribution Check:**
 - Are citations evenly distributed across sections?
 - ⚠️ If one section has 15 citations and another has 0 → Flag uneven distribution
+
+---
+
+### Step 2.5: Visual Data Accuracy Validation
+
+**For each `chart` type asset in the Visual Asset Manifest:**
+
+#### 2.5.1 Cross-Reference Chart Data with Phase 2
+
+For every data point in a generated chart:
+1. Extract the `data_source` field from the manifest (e.g., "Phase 2, Stat #1 — McKinsey, 2026")
+2. Locate the exact statistic in the Statistics Verification Report
+3. Verify the chart's data values match the verified numbers exactly
+
+**Verification Results:**
+
+**PASS:**
+```
+Chart: chart-01.png
+Data source: Phase 2, Stat #1 (McKinsey, 2026)
+Chart value: 7.5/10 (multi-agent) vs 6.2/10 (single-model)
+Verified value: 7.5/10 vs 6.2/10
+→ PASS: Data matches verified source
+```
+
+**FAIL:**
+```
+Chart: chart-02.png
+Data source: Phase 2, Stat #3 (Forrester, 2025)
+Chart value: 78% adoption rate
+Verified value: 73% adoption rate
+→ CRITICAL: Data mismatch — chart shows 78%, verified source says 73%
+→ ACTION: Correct chart data or regenerate chart
+```
+
+#### 2.5.2 Verify Attribution Text
+
+For each chart, confirm:
+- Attribution text cites the correct source name and year
+- The source exists in the Citation Library
+- The attributed claim matches the verified statistic
+
+#### 2.5.3 Alt Text Accuracy Check
+
+For each visual marker (all types):
+- Does the alt text accurately describe what the visual shows?
+- For charts: Does the alt text include the actual data values?
+- For screenshots: Does the alt text describe the captured element?
+
+#### 2.5.4 Visual Data Verification Report
+
+```markdown
+### VISUAL DATA VERIFICATION
+
+**Charts Verified:** [count]
+**Charts Passed:** [count]
+**Charts Flagged:** [count]
+
+| Chart ID | Data Source | Verified? | Issue |
+|----------|-----------|-----------|-------|
+| chart-01 | Phase 2, Stat #1 (McKinsey, 2026) | PASS | Data matches |
+| chart-02 | Phase 2, Stat #3 (Forrester, 2025) | FAIL | Data mismatch: 78% vs 73% |
+
+**Non-Chart Visuals (annotation completeness):**
+| Visual ID | Type | Fields Complete? | Alt Text Accurate? |
+|-----------|------|-----------------|-------------------|
+| visual-02 | screenshot | YES | YES |
+| visual-03 | diagram | YES | YES |
+```
+
+**Critical Rule:** Any chart with data that does not match Phase 2 verified statistics is a CRITICAL issue. The chart must be corrected before proceeding — this is equivalent to a hallucination in visual form.
 
 ---
 
@@ -647,6 +722,12 @@ Key Points to Cover (from outline):
   - Traceable claims: 97% (41/42)
   - Status: ⚠️ CONDITIONAL → Fix 1 untraceable claim
 
+- [ ] ✅ **Visual data accuracy verified**
+  - Charts verified: [count]
+  - Charts with data mismatches: [0]
+  - Alt text accuracy: ✅
+  - Status: ✅ PASS | ❌ FAIL (data mismatch = CRITICAL)
+
 - [ ] ✅ **Logic and flow validated**
   - Logical coherence: ✅ Sound
   - Contradictions: 1 (fixable)
@@ -752,7 +833,7 @@ Key Points to Cover (from outline):
 **Scientific Validator Agent — Phase 4 Complete**
 
 **Next Step:**
-- 🔄 **LOOP TO PHASE 3** with specific feedback (iteration 1 of 2)
-- After Phase 3 revises: **Return to Phase 4 for re-validation**
+- 🔄 **LOOP TO PHASE 3** (or **Phase 3.5** if visual data issue) with specific feedback (iteration 1 of 2)
+- After Phase 3/3.5 revises: **Return to Phase 4 for re-validation**
 - If re-validation passes: **Proceed to Phase 5 (Structurer & Proofreader)**
 - If re-validation fails: **Escalate to human review** (loop limit exceeded)

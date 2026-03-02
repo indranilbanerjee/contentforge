@@ -29,6 +29,19 @@
         "min_citations_per_300_words": 1,
         "require_all_outline_sections": true
       },
+      "phase_3_5_visual_assets": {
+        "require_data_chart_verification": true,
+        "require_complete_annotation_fields": true,
+        "min_visual_density_per_1000_words": {
+          "blog": 1,
+          "article": 1,
+          "whitepaper": 2,
+          "research_paper": 1,
+          "faq": 0
+        },
+        "require_alt_text": true,
+        "require_captions": true
+      },
       "phase_4_validation": {
         "max_hallucinations": 0,
         "max_unsourced_claims": 0,
@@ -67,6 +80,7 @@
       }
     },
     "feedback_loop_limits": {
+      "phase_4_to_3_5": 1,
       "phase_4_to_3": 2,
       "phase_6_to_5": 1,
       "phase_7_to_any": 2,

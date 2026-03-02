@@ -153,7 +153,10 @@
     "internal_linking": {
       "min_internal_links": 2,
       "max_internal_links": 5,
-      "link_to_pillar_content": true
+      "link_to_pillar_content": true,
+      "sitemap_url": "",
+      "page_registry": [],
+      "pillar_pages": []
     },
     "schema_markup_types": [
       "Article",

@@ -422,7 +422,43 @@ Later in the document:
 Task decomposition allows for... [Can use without re-defining]
 ```
 
-#### 3.6 Section Completion Checklist
+#### 3.6 Visual Placeholder Insertion
+
+**For each major section, identify where visual content would enhance the text and insert placeholder markers.**
+
+**Placeholder Format:**
+```
+[VISUAL-PLACEHOLDER: type=chart | description="Comparison of multi-agent vs single-model quality scores" | data="Phase 2 Stat #3" | suggested_chart_type=grouped_bar]
+```
+
+```
+[VISUAL-PLACEHOLDER: type=screenshot | description="Screenshot of typical AI content pipeline interface" | suggested_source="example dashboard"]
+```
+
+```
+[VISUAL-PLACEHOLDER: type=diagram | description="Multi-agent pipeline workflow showing 9 sequential phases"]
+```
+
+```
+[VISUAL-PLACEHOLDER: type=image | description="Professional reviewing content analytics" | style=photograph]
+```
+
+**Visual Placeholder Density:**
+- Whitepapers/Research Papers: Minimum 1 placeholder per major H2 section
+- Articles/Blogs: Minimum 1 placeholder per 500 words
+- FAQs: Optional, only where data visualization adds value
+
+**Placement Rules:**
+- Insert placeholders where data comparisons appear (2+ numbers) — suggest `type=chart`
+- Insert placeholders where processes are described — suggest `type=diagram`
+- Insert placeholders at section headers where a visual would orient the reader — suggest `type=image`
+- Reference Phase 2 statistics in the `data` field when suggesting charts
+
+Phase 3.5 (Visual Asset Annotator) will process these placeholders, generate charts where possible, and create detailed annotation markers for human-action items.
+
+---
+
+#### 3.7 Section Completion Checklist
 
 **For EACH H2 section, verify:**
 
@@ -658,6 +694,13 @@ https://www.techcorp.com/case-studies/ai-content-marketing
 - Conclusion: ✅
 - Overall Density: [X%]
 
+**Visual Placeholders:**
+- Total Placeholders: [count]
+- Charts Suggested: [count]
+- Diagrams Suggested: [count]
+- Screenshots Suggested: [count]
+- Images Suggested: [count]
+
 **Readability Estimate:**
 - Flesch-Kincaid Grade Level: [estimate based on sentence structure]
 - Target Grade Level: [from content type template]
@@ -701,9 +744,14 @@ https://www.techcorp.com/case-studies/ai-content-marketing
   - H2 sections: ✅ (3 of 6)
   - Conclusion: ✅
 
+- [ ] ✅ **Visual placeholders inserted**
+  - Minimum met for content type: ✅ | ⚠️
+  - Data-rich passages marked for charts: ✅
+  - Phase 2 stat references included where applicable: ✅
+
 **DECISION:** ✅ **PASS** | ⚠️ **REVISE** | ❌ **FAIL**
 
-**If PASS:** Proceed to Phase 4 (Scientific Validator)
+**If PASS:** Proceed to Phase 3.5 (Visual Asset Annotator)
 
 **If REVISE:** Make adjustments and re-check:
 - [ ] Adjust word count (add/trim content)
@@ -779,6 +827,6 @@ https://www.techcorp.com/case-studies/ai-content-marketing
 
 **Content Drafter Agent — Phase 3 Complete**
 
-**Next Step:** If Quality Gate 3 passes → Hand off to Phase 4 (Scientific Validator)
+**Next Step:** If Quality Gate 3 passes → Hand off to Phase 3.5 (Visual Asset Annotator)
 **If Revise Needed:** Make adjustments and re-check Quality Gate 3
 **If Fail:** Alert Orchestrator with specific issues

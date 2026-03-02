@@ -18,9 +18,10 @@ From All Prior Phases:
 - **Research Brief** (Phase 1)
 - **Verified Research Brief** (Phase 2)
 - **Draft Metadata** (Phase 3)
-- **Scientific Validation Report** (Phase 4)
+- **Visual Asset Report** (Phase 3.5) — Asset summary, chart verification status, human action items
+- **Scientific Validation Report** (Phase 4) — Includes visual data accuracy verification
 - **Structurer & Proofreader Report** (Phase 5)
-- **SEO Scorecard** (Phase 6)
+- **SEO Scorecard** (Phase 6) — Includes Internal Link Map
 - **Humanization Report** (Phase 6.5)
 
 From Orchestrator:
@@ -232,9 +233,38 @@ Completeness Score: [1-10]
 Rationale: [Coverage of promised topics]
 ```
 
+#### 1.6 Visual Asset Quality
+
+**Scoring Criteria:**
+
+**9-10:** Rich visual content — all data charts verified against Phase 2, annotation markers complete with alt text and captions, visual density meets content type target, mix of chart types appropriate for data
+
+**7-8:** Adequate visuals — most chart data verified, annotation markers mostly complete, visual density close to target
+
+**5-6:** Minimal visuals — few charts despite data-rich content, some markers incomplete, below target density
+
+**3-4:** Poor visuals — missing charts where data clearly supports them, incomplete markers, significantly below density target
+
+**1-2:** No visuals planned despite data-rich content with statistical comparisons
+
+**N/A:** Content type is FAQ or content has minimal data — score as 8 (neutral, no penalty)
+
+**Check Phase 3.5 Visual Asset Report:**
+- Total visuals identified vs. content type target
+- Auto-generated charts: data verified by Phase 4?
+- Human-action markers: all required fields present?
+- Alt text: descriptive and accessible?
+
+```
+Visual Asset Quality Score: [1-10]
+Total Visuals: [count] vs Target: [count]
+Charts Verified: [count/total]
+Markers Complete: [count/total]
+```
+
 **Calculate Content Quality Dimension Score:**
 ```
-Content Quality = (Depth + Originality + Value + Structure + Completeness) / 5
+Content Quality = (Depth + Originality + Value + Structure + Completeness + Visual Assets) / 6
 Content Quality Score: [X.X] / 10
 ```
 
@@ -666,9 +696,40 @@ FAQPage Schema: ✅ Template provided (5 Q&A pairs)
 HowTo Schema: ⚠️ Optional (not detailed enough)
 ```
 
+#### 4.6 Internal Linking Quality
+
+**Scoring Criteria:**
+
+**9-10:** 3-5 relevant internal links with structured `<!-- INTERNAL-LINK: ... -->` markers, diverse anchor text, links to pillar content, proper distribution across 3+ sections, all URLs valid in site structure
+
+**7-8:** 2-4 internal links, mostly relevant targets, good anchor text variety, distributed across 2+ sections
+
+**5-6:** 1-2 internal links, or links identified but limited site structure available (fallback mode)
+
+**3-4:** No internal links despite site structure being available in brand profile
+
+**1-2:** N/A — not applicable
+
+**Full credit (8) when:** No site structure is provided in brand profile (cannot link to unknown pages)
+
+**Check Phase 6 Internal Link Map:**
+- Total links mapped vs. `seo_preferences.internal_linking.min/max`
+- Priority distribution (at least 1 HIGH)
+- Anchor text diversity (no duplicates)
+- Section distribution (spread across content)
+- URL validity (all targets exist in site structure)
+
+```
+Internal Linking Score: [1-10]
+Links Mapped: [count] (target: 2-5)
+HIGH Priority: [count]
+Sections Covered: [count]
+Site Structure: [available | not available]
+```
+
 **Calculate SEO Performance Dimension Score:**
 ```
-SEO Performance = (Keyword Optimization + Meta Tags + On-Page SEO + GEO Readiness + Schema) / 5
+SEO Performance = (Keyword Optimization + Meta Tags + On-Page SEO + GEO Readiness + Schema + Internal Linking) / 6
 SEO Performance Score: [X.X] / 10
 ```
 
