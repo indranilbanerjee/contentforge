@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.3.0] - 2026-03-03
+
+### Added — Google Sheets Tracking & Google Drive Delivery
+
+- **`scripts/sheets-tracker.py`** — Google Sheets API integration via service account (gspread)
+  - Operations: init, add-row, get-pending, get-row, update-row, mark-complete
+  - 20-column tracking schema: requirement_id through notes
+  - Auto-installs gspread + google-auth on first run
+  - Safe requirement_id generation using max existing ID (avoids collisions after row deletions)
+  - Priority validation (clamped 1-5) and crash-safe sorting
+- **`scripts/drive-uploader.py`** — Google Drive file upload with organized folder hierarchies
+  - Operations: upload, ensure-folders, list, upload-assets
+  - Auto-creates: Brand/Content Types/Year/Month/ folder structure
+  - Client-side folder name matching (safe for brand names with apostrophes)
+  - Auto-installs google-api-python-client + google-auth on first run
+- **Agent 08 (Output Manager)** — Updated with script-based Google Drive upload + Sheets tracking
+  - Prerequisites stored once in brand profile (`google_integration` section)
+  - Error checking between script calls with local fallback
+  - Setup guidance when credentials not configured
+- **Agent 09 (Batch Orchestrator)** — Updated to use sheets-tracker.py for intake + status tracking
+- **`setup.py`** — Now checks Google credentials and pip packages on session start
+- **`connector-status.py`** — New "script" transport type for Google Sheets/Drive
+- **Brand profile** — Added `google_integration` section (credentials_path, tracking_sheet_id, drive_output_folder_id)
+
+### Why Scripts Instead of MCP
+
+Google Sheets has NO HTTP MCP endpoint. Google Drive has NO HTTP MCP endpoint (only native platform integration for read-only). Python scripts with service account credentials are the only approach that works in both Cowork VM and Claude Code.
+
+---
+
+## [3.2.0] - 2026-03-03
+
+### Added — Visual Asset Annotator & Structured Internal Linking
+
+- **Phase 3.5 Visual Asset Annotator** — New agent (`agents/03.5-visual-asset-annotator.md`)
+  - Identifies visual opportunities in content (charts, diagrams, screenshots, images)
+  - Generates matplotlib data charts from Phase 2 verified statistics
+  - Creates structured `<!-- VISUAL: ... -->` HTML comment markers for human-action visuals
+  - Produces JSON asset manifest at `~/.claude-marketing/{brand}/assets/manifest.json`
+  - Visual density targets by content type (blog: 2-4, whitepaper: 3-5 per 1000 words)
+- **Structured Internal Linking** (Phase 6 SEO Agent)
+  - Produces `<!-- INTERNAL-LINK: anchor="..." | url=... | priority=... -->` markers
+  - Loads site structure from brand profile (sitemap_url, page_registry, pillar_pages)
+  - 3-5 links per article with priority scoring and distribution across sections
+- **Phase 4 (Validator)** — Added chart data accuracy verification against Phase 2 sources
+- **Phase 7 (Reviewer)** — Added Visual Asset Quality + Internal Linking Quality scoring dimensions
+- **Phase 8 (Output Manager)** — Embeds generated charts in .docx, inserts TODO boxes for human visuals, converts link markers to clickable hyperlinks
+- **Pipeline** — 10 phases, 13 agents (was 9 phases, 12 agents)
+- **Config** — `phase_3_5_visual_assets` quality gate + `phase_4_to_3_5` feedback loop limit
+
+---
+
 ## [3.1.0] - 2026-02-26
 
 ### Added — Commands & Version Consistency

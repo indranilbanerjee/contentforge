@@ -81,16 +81,21 @@ def get_service(credentials_path):
 # ── Folder Operations ──────────────────────────────────────────────
 
 def find_folder(service, parent_id, folder_name):
-    """Find a folder by name within a parent folder."""
+    """Find a folder by name within a parent folder.
+
+    Uses client-side name matching to avoid query injection from
+    folder names containing apostrophes (e.g., "O'Reilly Media").
+    """
     query = (
         f"'{parent_id}' in parents and "
-        f"name = '{folder_name}' and "
         f"mimeType = 'application/vnd.google-apps.folder' and "
         f"trashed = false"
     )
     results = service.files().list(q=query, fields="files(id, name)").execute()
-    files = results.get("files", [])
-    return files[0]["id"] if files else None
+    for f in results.get("files", []):
+        if f["name"] == folder_name:
+            return f["id"]
+    return None
 
 
 def create_folder(service, parent_id, folder_name):
@@ -144,7 +149,7 @@ def build_folder_path(brand, content_type):
 
 def upload_file(service, folder_id, file_path):
     """Upload a single file to a Drive folder."""
-    file_path = Path(file_path)
+    file_path = Path(file_path).expanduser()
     if not file_path.exists():
         return {"error": f"File not found: {file_path}"}
 

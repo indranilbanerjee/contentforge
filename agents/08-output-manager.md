@@ -403,6 +403,13 @@ python scripts/sheets-tracker.py \
 
 Then immediately mark it complete with scores using the returned `requirement_id`.
 
+**IMPORTANT: Check Script Output Before Proceeding**
+
+After EACH script call above, parse the JSON output and check for an `"error"` key:
+- If `"error"` exists in the Drive upload response → skip asset upload, update tracking sheet with `status: "failed"` and `notes: "{error message}"`, save .docx locally as fallback
+- If `"error"` exists in the Sheets update → note the failure in the completion summary, file is still in Drive
+- Only proceed to the next script if the previous one succeeded
+
 **Step 4: Error Handling**
 
 If any script fails (missing credentials, network error, permission denied):
@@ -645,16 +652,16 @@ Save content locally and proceed with the completion summary.
 
 | Column | Field | Value Written |
 |--------|-------|---------------|
-| F | Status | "Completed" |
-| G | Output Link | [Drive URL] |
-| I | Completed At | 2026-02-16 15:30:00 |
-| J | Quality Score | 9.0 |
-| K | Content Quality | 8.6 |
-| L | Citation Integrity | 9.2 |
-| M | Brand Compliance | 9.4 |
-| N | SEO Score | 8.8 |
-| O | Readability Score | 9.0 |
-| Q | Actual Word Count | 1,855 |
+| H | Status | "Completed" |
+| K | Completed At | 2026-02-16 15:30:00 |
+| L | Quality Score | 9.0 |
+| M | Content Quality | 8.6 |
+| N | Citation Integrity | 9.2 |
+| O | Brand Compliance | 9.4 |
+| P | SEO Score | 8.8 |
+| Q | Readability Score | 9.0 |
+| R | Actual Word Count | 1,855 |
+| S | Drive URL | [Drive URL] |
 | T | Notes | "Completed successfully. Zero loops. Approved on first review." |
 
 **Previous Row Status:** "Queued"

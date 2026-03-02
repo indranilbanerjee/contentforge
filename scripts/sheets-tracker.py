@@ -139,10 +139,18 @@ def add_row(client, sheet_id, tab_name, data):
     if err:
         return {"error": err}
 
-    # Generate requirement ID
+    # Generate requirement ID — use max existing ID to avoid collisions after deletions
     all_values = ws.col_values(1)  # Column A
     existing_ids = [v for v in all_values[1:] if v]  # Skip header
-    next_num = len(existing_ids) + 1
+    max_num = 0
+    for id_val in existing_ids:
+        if id_val.startswith("REQ-"):
+            try:
+                num = int(id_val.split("-", 1)[1])
+                max_num = max(max_num, num)
+            except (IndexError, ValueError):
+                pass
+    next_num = max_num + 1
     req_id = data.get("requirement_id", f"REQ-{next_num:03d}")
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
@@ -154,7 +162,7 @@ def add_row(client, sheet_id, tab_name, data):
         data.get("title", ""),
         data.get("target_audience", ""),
         str(data.get("word_count_target", "")),
-        str(data.get("priority", 3)),
+        str(min(max(int(data.get("priority", 3)), 1), 5)),  # Clamp 1-5
         data.get("status", "pending"),
         now,                                    # created_at
         "",                                     # started_at
@@ -197,8 +205,13 @@ def get_pending(client, sheet_id, tab_name, brand_filter=None):
             record["_row_number"] = i + 2  # +2 for header row + 0-index
             pending.append(record)
 
-    # Sort by priority (1=highest)
-    pending.sort(key=lambda r: int(r.get("priority", 5)))
+    # Sort by priority (1=highest) — safely handle non-numeric values
+    def _safe_priority(r):
+        try:
+            return int(r.get("priority", 5))
+        except (ValueError, TypeError):
+            return 5  # Default to lowest priority
+    pending.sort(key=_safe_priority)
 
     return {"pending_count": len(pending), "pending": pending}
 

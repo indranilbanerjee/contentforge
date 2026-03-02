@@ -1,10 +1,10 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.1.0
+**Version:** 3.3.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
-> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 12-agent autonomous pipeline with 18 skills. **New in v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents with AI Overview optimization, comparative scoring, personality profiles, and industry-specific humanization.
+> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 18 skills. **New in v3.2/v3.3:** Visual Asset Annotator (Phase 3.5) with auto-generated matplotlib charts, structured internal linking markers, Google Sheets tracking via service account scripts, and Google Drive output delivery with organized folder hierarchies. **v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents.
 
 ### What's New in v3.0.0
 
@@ -497,4 +497,4 @@ MIT License — see [LICENSE](LICENSE) file.
 
 ---
 
-**ContentForge v3.1.0** — 12 agents, 18 skills, zero hallucinations. Transform requirements into publication-ready content in 20-30 minutes.
+**ContentForge v3.3.0** — 13 agents, 18 skills, zero hallucinations. Transform requirements into publication-ready content in 20-30 minutes.
