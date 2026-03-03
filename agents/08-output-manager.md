@@ -423,11 +423,11 @@ If any script fails (missing credentials, network error, permission denied):
 Print setup guidance:
 ```
 Google Sheets/Drive not configured for this brand.
-To enable:
-1. Create a service account at Google Cloud Console > IAM > Service Accounts
-2. Download the JSON key to: ~/.claude-marketing/google-credentials.json
-3. Share your Google Sheet and Drive folder with the service account email
-4. Set tracking_sheet_id and drive_output_folder_id in your brand profile
+Content has been saved locally and delivered in this conversation.
+
+To enable tracking and Drive delivery, run /brand-setup — it will
+walk you through creating your own Google service account and
+connecting your Sheet and Drive folder in about 5 minutes.
 ```
 
 Save content locally and proceed with the completion summary.

@@ -93,51 +93,89 @@ Profiles are saved as structured JSON and used automatically by every pipeline p
 
 ## Google Integration (Auto-Configure)
 
-After setting up voice, terminology, and compliance, **automatically check** whether the `google_integration` section is configured in the brand profile. Do NOT ask the user to edit JSON manually — handle it conversationally.
+After setting up voice, terminology, and compliance, **automatically check** whether Google integration is configured. Do NOT ask the user to edit JSON manually — handle it conversationally.
 
-### If already configured → skip this section entirely.
+> **Important:** Google integration is optional. ContentForge produces content without it. Google adds tracking (Sheets) and delivery (Drive) on top. Always offer: "Want to set up Google Sheets tracking and Drive delivery? You can skip this and add it later."
 
-### If NOT configured → ask 3 simple questions:
+### If already configured → verify and skip.
 
-1. **"Do you have a Google service account credentials file? If yes, where is it?"**
-   - Default path: `~/.claude-marketing/google-credentials.json`
-   - If file exists at default path, confirm and use it. Don't ask.
-   - If not found, explain: "Your agency admin provides this file. Save it to `~/.claude-marketing/google-credentials.json` and re-run setup."
-   - If they provide a custom path, use that.
+Check if `~/.claude-marketing/google-credentials.json` exists AND `google_integration.tracking_sheet_id` is non-empty in the brand profile. If both are good, say "Google integration is already configured" and move on.
 
-2. **"What's your tracking sheet URL? (paste the Google Sheets URL)"**
-   - Extract the sheet ID from the URL automatically:
-     - `https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit` → extract `SHEET_ID_HERE`
-   - The user should NEVER have to find or type a raw ID.
+### If NOT configured → guide the user through setup.
 
-3. **"What's your Drive output folder URL? (paste the Google Drive folder URL)"**
-   - Extract the folder ID from the URL automatically:
-     - `https://drive.google.com/drive/folders/FOLDER_ID_HERE` → extract `FOLDER_ID_HERE`
-   - The user should NEVER have to find or type a raw ID.
+#### Step A: Check for credentials file
 
-### Auto-fill the brand profile:
+Check if `~/.claude-marketing/google-credentials.json` exists:
+
+**If the file exists:**
+- Read the `client_email` field from the JSON
+- Confirm: "Found Google service account: `{client_email}`. Using this for Sheets and Drive."
+- Proceed to Step B.
+
+**If the file does NOT exist:**
+- The user needs to create their own service account. Every organization creates their own — this is NOT shared between plugin users. Walk them through it:
+
+Tell the user:
+
+> **You need a Google service account to connect Sheets and Drive. Here's how (5 minutes):**
+>
+> 1. Go to [console.cloud.google.com](https://console.cloud.google.com)
+> 2. Create a project (or use an existing one) — any name works
+> 3. Go to **APIs & Services > Library** — enable **Google Sheets API** and **Google Drive API**
+> 4. Go to **IAM & Admin > Service Accounts** — click **+ Create Service Account**
+>    - Name it anything (e.g., `contentforge`)
+>    - Click **Create and Continue**, then **Done**
+> 5. Click on the service account you just created
+> 6. Go to **Keys** tab > **Add Key** > **Create new key** > **JSON**
+> 7. A file downloads — save it as: `~/.claude-marketing/google-credentials.json`
+>
+> **Come back here when you've saved the file. I'll verify it automatically.**
+
+Then wait. When the user returns, check the file again. If found, read `client_email` and proceed. If still not found, say "No rush — you can set this up later and re-run `/brand-setup`."
+
+#### Step B: Get the tracking sheet URL
+
+Ask: **"Paste your Google Sheets URL for content tracking (or say 'create new' and I'll tell you what to do)"**
+
+**If they paste a URL:**
+- Extract sheet ID: `https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit` → `SHEET_ID_HERE`
+- The user should NEVER type a raw ID.
+
+**If they say "create new":**
+- Tell them: "Create a blank Google Sheet, name it anything (e.g., 'ContentForge Tracker'), then paste the URL here."
+
+**After getting the sheet ID:**
+- Remind: "Share this sheet with `{client_email from Step A}` as **Editor**."
+- Run `sheets-tracker.py --action init --sheet-id {id}` to verify connection and create headers.
+- If connection succeeds: "Sheet connected. Headers created."
+- If it fails with permission error: "Can't access the sheet yet. Make sure you've shared it with `{client_email}` as Editor, then try again."
+
+#### Step C: Get the Drive output folder URL (optional)
+
+Ask: **"Paste your Google Drive folder URL for content delivery (or type 'skip' to deliver files in the conversation instead)"**
+
+**If they paste a URL:**
+- Extract folder ID: `https://drive.google.com/drive/folders/FOLDER_ID_HERE` → `FOLDER_ID_HERE`
+- Remind: "Share this folder with `{client_email from Step A}` as **Editor**."
+- Note: On personal Google accounts, Drive uploads may not work (service account storage quota limitation). If that happens, the pipeline saves files locally and delivers them in the conversation. Sheets tracking works regardless.
+
+**If they type "skip":**
+- Set `drive_output_folder_id` to empty string.
+- Pipeline will save .docx locally and deliver in conversation.
+- Tell them: "No problem. Content will be delivered directly in the conversation. You can add Drive delivery later."
+
+#### Step D: Auto-fill the brand profile
 
 ```json
 "google_integration": {
   "credentials_path": "~/.claude-marketing/google-credentials.json",
   "tracking_sheet_id": "<extracted from URL>",
   "tracking_sheet_tab": "ContentForge Tracking",
-  "drive_output_folder_id": "<extracted from URL>"
+  "drive_output_folder_id": "<extracted from URL or empty>"
 }
 ```
 
-### Verify connectivity:
-
-After filling in the values, run a quick connectivity test:
-- Try opening the sheet via `sheets-tracker.py --action init`
-- If it succeeds → "Sheet connected. Tracking is ready."
-- If it fails → show the specific error and how to fix it (e.g., "Share the sheet with `<service_account_email>` as Editor")
-
-### If credentials file doesn't exist → the pipeline still works.
-
-All 9 phases run normally. Content is produced and returned directly in the conversation. Google integration is optional — it adds tracking and delivery but isn't required. Tell the user:
-- "Google integration is optional. You can produce content right now without it."
-- "To add tracking later, just run `/brand-setup` again."
+Save to the brand profile automatically. User never sees or edits this JSON.
 
 ## After Setup
 
