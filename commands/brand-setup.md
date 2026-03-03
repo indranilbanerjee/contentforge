@@ -242,6 +242,203 @@ python scripts/drive-uploader.py \
 
 Save to brand profile automatically. User never sees this.
 
+#### Step F: Key File Creation & Update
+
+After verifying the knowledge vault (Step E), **always ask** whether the user wants to create, update, or keep their key files as-is. This applies to both new brands (files don't exist) and existing brands (files may be outdated or incomplete).
+
+**Decision prompt — adapt based on Step E result:**
+
+**If key files are missing (status: "partial" or "incomplete"):**
+> "Some key files are missing from your brand folder. I can generate them for you by analyzing your brand's website, the information you've provided, and any reference files already in Drive. Want me to create them?"
+>
+> - **Yes, create them** → proceed to Generation Flow below
+> - **No, I'll upload them myself** → skip to After Setup
+
+**If all key files exist (status: "ok"):**
+> "Your brand files are all present. Would you like to:"
+>
+> - **Review and update them** — I'll check the content, flag anything that looks outdated or incomplete, and offer to regenerate
+> - **Keep them as-is** — skip to After Setup
+> - **Start fresh** — regenerate all files from scratch using your website and the latest information
+
+---
+
+##### Generation Flow
+
+This flow creates or updates the three key files: `{Brand}-brand-profile.json`, `{Brand}-guardrails.json`, and `{Brand}-reference-content.md`.
+
+**Source 1: Brand website analysis**
+
+Ask: **"What's the brand's website URL?"**
+
+- If already provided in earlier steps or known from the brand profile → confirm: "I have `{url}` — is that correct?"
+- WebFetch the following pages (skip any that 404):
+  1. Homepage — extract tagline, value proposition, tone
+  2. About/Company page — extract mission, history, leadership
+  3. Services/Products page — extract offerings, terminology, positioning
+  4. 2-3 recent blog posts — extract writing style, voice patterns, content structure
+  5. Contact/Legal/Privacy page — extract compliance requirements, disclaimers
+
+**Source 2: Existing reference files in Drive**
+
+- If Step E found files in the brand folder (even if key files are missing), read what's already there.
+- Other uploaded documents (PDFs, additional markdown, style guides) provide context.
+- Use this to avoid contradicting what the user has already established.
+
+**Source 3: Earlier setup information**
+
+- Voice, tone, formality, terminology, and compliance information gathered in Steps 1-3 of brand setup (the interactive or imported settings).
+- These take priority over website-inferred values — the user explicitly chose them.
+
+**Source 4: Targeted follow-up questions**
+
+After analyzing sources 1-3, ask the user **only about gaps** — don't re-ask things already answered. Typical gap questions:
+
+- "I found these terms on your website: {list}. Should any be added to the approved or prohibited terminology list?"
+- "Your website mentions {industry/regulatory body}. Are there specific compliance requirements I should include in the guardrails?"
+- "I see your blog posts use {style pattern}. Should I match this in the reference content, or do you want a different style for new content?"
+- "Any specific claims the brand should NEVER make? (e.g., 'guaranteed results', 'best in class')"
+- "Who is the primary reader? What's their role and what do they care about?"
+
+Only ask questions where the answer isn't already clear from the sources. If all information is available, confirm: "I have everything I need from your website and the settings above. Generating files now."
+
+---
+
+##### File Generation
+
+**File 1: `{Brand}-brand-profile.json`**
+
+Generate a complete brand profile following the `config/brand-registry-template.json` schema. Fill every field with real values derived from the sources above. Key sections:
+
+- `brand_name`, `industry`, `company_info` — from website analysis
+- `voice` — from setup steps + website writing style analysis
+- `terminology` — from setup steps + website term extraction
+- `citation_rules` — infer from industry (pharma → APA + PubMed priority, tech → IEEE, general → Chicago)
+- `content_patterns` — from blog post analysis (structure, headings, lists, statistics usage)
+- `seo_preferences` — reasonable defaults for the industry, ask for sitemap URL if available
+- `target_audience` — from website messaging + user input
+- `quality_thresholds` — use template defaults unless user specifies otherwise
+- `google_integration` — copy from Step D configuration
+- `knowledge_vault_config` — copy from Step E configuration
+
+Show the user a summary of key extracted values before saving. Let them correct anything.
+
+**File 2: `{Brand}-guardrails.json`**
+
+Generate compliance guardrails. Structure:
+
+```json
+{
+  "brand_name": "{Brand}",
+  "prohibited_claims": ["..."],
+  "required_disclaimers": ["..."],
+  "compliance_notes": "...",
+  "sensitive_topics": {
+    "avoid": ["..."],
+    "handle_with_care": ["..."]
+  },
+  "regulatory_requirements": {
+    "industry_body": "...",
+    "disclosure_requirements": ["..."],
+    "review_required_for": ["..."]
+  },
+  "content_restrictions": {
+    "max_superlatives_per_piece": 2,
+    "require_evidence_for_statistics": true,
+    "competitor_mention_policy": "neutral_comparison_only | never_mention | acknowledge_respectfully"
+  }
+}
+```
+
+- Infer from industry (pharma → FDA, HIPAA; financial → SEC, FINRA; healthcare → HIPAA)
+- Include any disclaimers found on the website
+- Add standard guardrails for the industry even if not explicitly mentioned (better safe than sorry)
+
+**File 3: `{Brand}-reference-content.md`**
+
+Generate a reference content document that demonstrates the brand's voice. Structure:
+
+```markdown
+# {Brand} — Reference Content
+
+## Voice Calibration Sample
+
+[A 300-500 word sample article in the brand's exact voice, tone, and style.
+Written about a topic relevant to the brand's industry.
+Uses the brand's approved terminology and follows the writing patterns
+extracted from the website.]
+
+## Style Patterns
+
+- Sentence structure: {short/medium/long/mixed}
+- Paragraph length: {short/medium/long}
+- Uses questions: {yes/no}
+- Uses contractions: {yes/no}
+- Person: {first/second/third}
+- Technical depth: {beginner/intermediate/advanced/expert}
+
+## Terminology Quick Reference
+
+### Always Use
+| Instead of | Use |
+|-----------|-----|
+| {generic term} | {brand-preferred term} |
+
+### Never Use
+- {prohibited term 1}
+- {prohibited term 2}
+
+## Sample Headlines
+
+1. {Example headline in brand voice — blog style}
+2. {Example headline in brand voice — whitepaper style}
+3. {Example headline in brand voice — article style}
+```
+
+- The voice calibration sample is the most important part — it's what the pipeline uses to match tone
+- Base it on actual blog content from the website (rewrite in a fresh topic, not copy)
+- Include 3-5 example headlines in different content type styles
+
+---
+
+##### Saving Generated Files
+
+Save all files locally first:
+```
+~/.claude-marketing/{brand-slug}/Brand-Guidelines/{Brand}-brand-profile.json
+~/.claude-marketing/{brand-slug}/Guardrails/{Brand}-guardrails.json
+~/.claude-marketing/{brand-slug}/Reference-Content/{Brand}-reference-content.md
+```
+
+**Then attempt Drive upload** (if Google integration is configured):
+- Try uploading each file to the corresponding subfolder in the brand's Drive folder
+- If upload succeeds → confirm: "Files uploaded to Drive: {folder path}"
+- If upload fails (storage quota) → tell user: "Files saved locally. Please upload them manually to your Drive brand folder. Here are the local paths: {paths}"
+
+**After saving, re-run verify-structure** to confirm everything is in place.
+
+---
+
+##### Updating Existing Files
+
+When the user chooses to **review and update** existing key files:
+
+1. Download (read) the existing files from Drive
+2. Analyze each file for completeness:
+   - Are all fields populated with real values (not template placeholders)?
+   - Does the voice profile match the current website?
+   - Are guardrails appropriate for the industry?
+   - Is the reference content a good representation of the brand voice?
+3. Show a report:
+   > **Brand Profile Review:**
+   > - Voice: Complete / 2 fields still using template defaults
+   > - Terminology: 12 preferred terms, 8 prohibited — looks good
+   > - Guardrails: Missing required disclaimers for {industry}
+   > - Reference Content: Voice sample is 150 words (recommend 300-500)
+4. Ask: "Want me to fix the flagged issues? I'll regenerate only the incomplete sections."
+5. If yes → regenerate only the sections that need updating, merge with existing data
+6. Save updated files (same local + Drive flow as above)
+
 ## After Setup
 
 After creating the profile, show a summary:
@@ -258,10 +455,12 @@ After creating the profile, show a summary:
 | Sheets tracking | Connected / Not configured |
 | Drive delivery | Connected / Not configured |
 | Knowledge vault | Verified (N files) / Partial / Not configured |
+| Key files | Generated / Updated / Pre-existing / Not created |
 
 Ask: "Brand profile for [name] is ready. Would you like to:
 - Start producing content? (`/create-content`)
 - Generate a content brief? (`/content-brief`)
 - Import additional guidelines from another source?
 - Create a test piece to validate the voice settings?
+- Update brand knowledge files? (re-run Step F to regenerate or refresh)
 - Check which connectors are active? (`/integrations`)"
