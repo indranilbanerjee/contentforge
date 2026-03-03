@@ -212,11 +212,11 @@
     "human_review_required_below": 6.0
   },
   "google_integration": {
-    "_instructions": "Configure once per brand. credentials_path is global (same service account for all brands). tracking_sheet_id can be shared across brands (the sheet has a brand column).",
+    "_instructions": "Auto-configured by /brand-setup. Do not edit manually. The setup command extracts IDs from URLs automatically.",
     "credentials_path": "~/.claude-marketing/google-credentials.json",
-    "tracking_sheet_id": "GOOGLE_SHEET_ID_FROM_URL",
+    "tracking_sheet_id": "",
     "tracking_sheet_tab": "ContentForge Tracking",
-    "drive_output_folder_id": "GOOGLE_DRIVE_FOLDER_ID_FOR_OUTPUTS"
+    "drive_output_folder_id": ""
   },
   "knowledge_vault_config": {
     "drive_folder_id": "GOOGLE_DRIVE_FOLDER_ID",

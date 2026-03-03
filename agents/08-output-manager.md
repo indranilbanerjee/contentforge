@@ -559,13 +559,22 @@ Save content locally and proceed with the completion summary.
 
 ### Error: Google Drive Upload Fails
 
-**Possible Causes:**
-- Network connectivity issues
-- Drive quota exceeded
-- Permission errors with MCP
+**Check the `"error"` field in the script's JSON output to determine the type:**
+
+**Case A: `"error": "storage_quota"` (Service account can't own files)**
+
+This is a permanent error — do NOT retry. Service accounts have no storage quota on personal Google accounts.
 
 **Actions:**
-1. Retry upload with exponential backoff (3 attempts)
+1. Save .docx locally to `./output/{content-type}/{date}/` (already saved during Step 2)
+2. Update tracking sheet with: `status: "completed"`, `drive_url: "LOCAL — see conversation"`, `notes: "Content produced successfully. Drive upload skipped (service account storage quota). File delivered in conversation."`
+3. Present the .docx file directly in the conversation for download
+4. Inform the user: "Your content is ready! Drive upload requires a Google Workspace Shared Drive for service account uploads. The file is available for download below."
+
+**Case B: Network/permission errors (transient)**
+
+**Actions:**
+1. Retry upload (up to 3 attempts)
 2. If persistent failure:
    - Save .docx locally to fallback location
    - Update tracking sheet with status "Completed - File Export Pending"

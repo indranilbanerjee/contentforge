@@ -148,7 +148,11 @@ def build_folder_path(brand, content_type):
 # ── Upload Operations ──────────────────────────────────────────────
 
 def upload_file(service, folder_id, file_path):
-    """Upload a single file to a Drive folder."""
+    """Upload a single file to a Drive folder.
+
+    If the service account lacks storage quota (personal Google accounts),
+    returns a structured error with the local file path as fallback.
+    """
     file_path = Path(file_path).expanduser()
     if not file_path.exists():
         return {"error": f"File not found: {file_path}"}
@@ -162,11 +166,29 @@ def upload_file(service, folder_id, file_path):
 
     media = MediaFileUpload(str(file_path), mimetype=mime_type, resumable=True)
 
-    uploaded = service.files().create(
-        body=metadata,
-        media_body=media,
-        fields="id, name, webViewLink, size",
-    ).execute()
+    try:
+        uploaded = service.files().create(
+            body=metadata,
+            media_body=media,
+            fields="id, name, webViewLink, size",
+        ).execute()
+    except Exception as e:
+        error_str = str(e)
+        if "storageQuotaExceeded" in error_str or "do not have storage quota" in error_str.lower():
+            return {
+                "error": "storage_quota",
+                "message": (
+                    "Service account cannot upload files to personal Google Drive "
+                    "(no storage quota). The file has been saved locally."
+                ),
+                "local_path": str(file_path),
+                "file_name": file_path.name,
+                "fix_options": [
+                    "Use a Google Workspace Shared Drive instead of personal Drive",
+                    "Download the file directly from the conversation",
+                ],
+            }
+        return {"error": f"Upload failed: {error_str}"}
 
     return {
         "file_id": uploaded["id"],

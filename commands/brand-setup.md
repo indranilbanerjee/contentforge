@@ -91,6 +91,54 @@ Profiles are saved as structured JSON and used automatically by every pipeline p
 - Phase 6.5 (Humanizer) — applies personality profile
 - Phase 7 (Reviewer) — scores brand compliance
 
+## Google Integration (Auto-Configure)
+
+After setting up voice, terminology, and compliance, **automatically check** whether the `google_integration` section is configured in the brand profile. Do NOT ask the user to edit JSON manually — handle it conversationally.
+
+### If already configured → skip this section entirely.
+
+### If NOT configured → ask 3 simple questions:
+
+1. **"Do you have a Google service account credentials file? If yes, where is it?"**
+   - Default path: `~/.claude-marketing/google-credentials.json`
+   - If file exists at default path, confirm and use it. Don't ask.
+   - If not found, explain: "Your agency admin provides this file. Save it to `~/.claude-marketing/google-credentials.json` and re-run setup."
+   - If they provide a custom path, use that.
+
+2. **"What's your tracking sheet URL? (paste the Google Sheets URL)"**
+   - Extract the sheet ID from the URL automatically:
+     - `https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit` → extract `SHEET_ID_HERE`
+   - The user should NEVER have to find or type a raw ID.
+
+3. **"What's your Drive output folder URL? (paste the Google Drive folder URL)"**
+   - Extract the folder ID from the URL automatically:
+     - `https://drive.google.com/drive/folders/FOLDER_ID_HERE` → extract `FOLDER_ID_HERE`
+   - The user should NEVER have to find or type a raw ID.
+
+### Auto-fill the brand profile:
+
+```json
+"google_integration": {
+  "credentials_path": "~/.claude-marketing/google-credentials.json",
+  "tracking_sheet_id": "<extracted from URL>",
+  "tracking_sheet_tab": "ContentForge Tracking",
+  "drive_output_folder_id": "<extracted from URL>"
+}
+```
+
+### Verify connectivity:
+
+After filling in the values, run a quick connectivity test:
+- Try opening the sheet via `sheets-tracker.py --action init`
+- If it succeeds → "Sheet connected. Tracking is ready."
+- If it fails → show the specific error and how to fix it (e.g., "Share the sheet with `<service_account_email>` as Editor")
+
+### If credentials file doesn't exist → the pipeline still works.
+
+All 9 phases run normally. Content is produced and returned directly in the conversation. Google integration is optional — it adds tracking and delivery but isn't required. Tell the user:
+- "Google integration is optional. You can produce content right now without it."
+- "To add tracking later, just run `/brand-setup` again."
+
 ## After Setup
 
 After creating the profile, show a summary:
@@ -104,6 +152,8 @@ After creating the profile, show a summary:
 | Approved terms | [count] |
 | Banned terms | [count] |
 | Compliance | [frameworks] |
+| Sheets tracking | Connected / Not configured |
+| Drive delivery | Connected / Not configured |
 
 Ask: "Brand profile for [name] is ready. Would you like to:
 - Start producing content? (`/create-content`)
