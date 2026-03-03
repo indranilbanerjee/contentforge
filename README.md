@@ -1,10 +1,26 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.3.0
+**Version:** 3.4.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
-> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 18 skills. **New in v3.2/v3.3:** Visual Asset Annotator (Phase 3.5) with auto-generated matplotlib charts, structured internal linking markers, Google Sheets tracking via service account scripts, and Google Drive output delivery with organized folder hierarchies. **v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents.
+> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 18 skills and 10 industry knowledge packs. **New in v3.4:** Industry Knowledge Packs for subject matter expertise (pharma, BFSI, healthcare, legal, real estate, technology, B2B SaaS, e-commerce, consumer goods, education) with SME calibration in the Content Drafter and domain-specific validation in the Scientific Validator. Brand setup now auto-generates key files (brand profile, guardrails, reference content) from website analysis and user input. **v3.2/v3.3:** Visual Asset Annotator (Phase 3.5) with auto-generated matplotlib charts, structured internal linking markers, Google Sheets tracking via service account scripts, and Google Drive output delivery. **v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents.
+
+### What's New in v3.4.0
+
+- **Industry Knowledge Packs** — 10 domain-specific knowledge configs (pharma, BFSI, healthcare, legal, real estate, technology, B2B SaaS, e-commerce, consumer goods, education) that make the Content Drafter write as a subject matter expert and the Scientific Validator perform domain-specific checks
+- **SME Calibration (Phase 3)** — Before writing, the drafter loads the industry knowledge pack and calibrates expertise stance, writing conventions, terminology depth, regulatory awareness, evidence standards, and quality signals
+- **Domain-Specific Validation (Phase 4)** — Validates terminology accuracy, evidence standard compliance, regulatory compliance, common pitfalls, and expert quality signals against the knowledge pack
+- **Brand Key File Auto-Generation** — `/brand-setup` can now create brand-profile.json, guardrails.json, and reference-content.md automatically by analyzing the brand's website, existing files, and user input
+
+### What's New in v3.2.0/v3.3.0
+
+- **Visual Asset Annotator (Phase 3.5)** — New agent that generates matplotlib charts from verified research data and creates structured annotation markers for screenshots, diagrams, and images
+- **Structured Internal Linking (Phase 6)** — SEO agent produces machine-readable `<!-- INTERNAL-LINK -->` markers that Phase 8 converts to clickable hyperlinks
+- **Google Sheets Tracking** — Service account script (`sheets-tracker.py`) for content tracking without MCP dependency
+- **Google Drive Delivery** — Service account script (`drive-uploader.py`) with auto-created folder hierarchies
+- **Self-Service Google Setup** — Brand setup walks users through service account creation and configuration
+- **Drive Knowledge Vault Verification** — Brand setup verifies brand files exist in the correct Drive folder structure
 
 ### What's New in v3.0.0
 
@@ -29,7 +45,7 @@
 
 ## What is ContentForge?
 
-ContentForge is an enterprise-grade content generation system that replaces 6-8 person content workflows with a coordinated multi-agent AI pipeline. Unlike single-prompt tools, ContentForge runs content through 9 specialized quality gates with three-layer fact verification, preventing hallucinations and ensuring brand compliance.
+ContentForge is an enterprise-grade content generation system that replaces 6-8 person content workflows with a coordinated multi-agent AI pipeline. Unlike single-prompt tools, ContentForge runs content through 10 specialized quality gates with three-layer fact verification, preventing hallucinations and ensuring brand compliance.
 
 **Target Users:**
 - Digital marketing agencies managing 50-200 brands
@@ -70,12 +86,12 @@ These 7 commands appear in the **Commands** section of the Customize sidebar, pr
 
 | Command | What It Does |
 |---------|-------------|
-| `/create-content` | Run the full 9-phase pipeline — research, draft, fact-check, humanize, publish |
+| `/create-content` | Run the full 10-phase pipeline — research, draft, fact-check, humanize, publish |
 | `/content-brief` | Generate research-backed briefs with keyword data, competitor analysis, and outlines |
 | `/social-adapt` | Repurpose articles into posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads |
 | `/publish` | Push content to Webflow or WordPress with preview, verification, and HTML fallback |
 | `/translate` | Translate into 15+ languages preserving brand voice, citations, and SEO |
-| `/brand-setup` | Configure brand voice, terminology, compliance guardrails, and style guide |
+| `/brand-setup` | Configure brand voice, terminology, guardrails, Google integration, and auto-generate key files |
 | `/audit-content` | Audit content library for freshness decay, coverage gaps, and optimization opportunities |
 
 ---
@@ -85,7 +101,7 @@ These 7 commands appear in the **Commands** section of the Customize sidebar, pr
 ### Core Production
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Content Pipeline | `/contentforge` | Full 9-phase production (20-30 min per piece) |
+| Content Pipeline | `/contentforge` | Full 10-phase production (20-30 min per piece) |
 | Batch Processing | `/batch-process` | Process 10-50+ pieces in parallel (4-5x faster) |
 | Content Refresh | `/content-refresh` | Update old content with current data, preserve SEO |
 
@@ -124,27 +140,29 @@ These 7 commands appear in the **Commands** section of the Customize sidebar, pr
 
 ---
 
-## The 9-Phase Pipeline
+## The 10-Phase Pipeline
 
 ```
 Phase 1: Research Agent
 ↓ Quality Gate 1: 5+ live sources, competitor analysis, differentiated angle
 Phase 2: Fact Checker
 ↓ Quality Gate 2: 80%+ verified claims, zero flagged items, all URLs live
-Phase 3: Content Drafter
-↓ Quality Gate 3: Word count ±10%, all sections covered, min 1 citation/300 words
-Phase 4: Scientific Validator
-↓ Quality Gate 4: Zero hallucinations, all claims traceable, logic validated
+Phase 3: Content Drafter ⬆ UPGRADED (SME Calibration via Industry Knowledge Packs)
+↓ Quality Gate 3: Word count ±10%, all sections covered, SME calibration applied
+Phase 3.5: Visual Asset Annotator [NEW in v3.2]
+↓ Quality Gate 3.5: Chart data verified, annotation fields complete, visual density met
+Phase 4: Scientific Validator ⬆ UPGRADED (Domain-Specific Validation)
+↓ Quality Gate 4: Zero hallucinations, domain terminology verified, regulatory compliance
 Phase 5: Structurer & Proofreader
 ↓ Quality Gate 5: Zero grammar errors, readability on target, brand compliant
-Phase 6: SEO/GEO Optimizer ⬆ UPGRADED
-↓ Quality Gate 6: Keywords optimized, meta tags ready, GEO score ≥7, AI Overview structured
+Phase 6: SEO/GEO Optimizer ⬆ UPGRADED (Structured Internal Linking)
+↓ Quality Gate 6: Keywords optimized, meta tags ready, GEO score ≥7, internal links mapped
 Phase 6.5: Humanizer ⬆ UPGRADED
 ↓ Quality Gate 6.5: AI patterns removed, personality profile applied, industry patterns cleared
 Phase 7: Reviewer ⬆ UPGRADED
 ↓ Quality Gate 7: Score ≥7.0, comparative ranking, trend analysis, recommendations
-Phase 8: Output Manager ⬆ UPGRADED
-↓ .docx + Medium + Substack + Newsletter + PDF + Social Package
+Phase 8: Output Manager ⬆ UPGRADED (Visual + Link Integration)
+↓ .docx + Medium + Substack + Newsletter + PDF + Social Package + Charts
 ```
 
 **Post-Pipeline Agents (New in v3.0):**
@@ -152,6 +170,7 @@ Phase 8: Output Manager ⬆ UPGRADED
 - **Agent 11: Translator** — Element classification, brand voice mapping, cultural adaptation
 
 **Feedback Loops:**
+- Phase 4 → Phase 3.5 (max 1 iteration): If visual chart data doesn't match verified statistics
 - Phase 4 → Phase 3 (max 2 iterations): If hallucinations detected
 - Phase 6 → Phase 5 (max 1 iteration): If SEO degrades readability
 - Phase 7 → Any phase (max 2 iterations): If dimension scores below threshold
@@ -202,7 +221,7 @@ mv contentforge %USERPROFILE%\.claude\plugins\
 
 ```bash
 # Session startup will show:
-# ✓ ContentForge v3.1 loaded — Enterprise content production with zero hallucinations
+# ✓ ContentForge v3.4 loaded — Enterprise content production with zero hallucinations
 #   /contentforge — Single piece (20-30 min)
 #   /batch-process — Multiple pieces in parallel (4-5x faster)
 #   /content-refresh — Update old content with fresh data
@@ -248,7 +267,7 @@ ContentForge-Knowledge/
 /contentforge "Write a 1500-word article about AI content automation for brand AcmeCorp"
 ```
 
-**Expected:** Pipeline executes through all 9 phases, outputs .docx with quality scorecard.
+**Expected:** Pipeline executes through all 10 phases, outputs .docx with quality scorecard.
 
 ---
 
@@ -260,13 +279,14 @@ ContentForge-Knowledge/
 |-------|-------|---------|----------|
 | 1 | Researcher | SERP analysis, source mining, outline creation | 8 min |
 | 2 | Fact Checker | URL verification, claim validation, cross-referencing | 3 min |
-| 3 | Content Drafter | First draft with brand voice and citations | 6 min |
-| 4 | Scientific Validator | Hallucination detection, logic validation | 2 min |
+| 3 | Content Drafter | First draft with brand voice, citations, and SME calibration | 6 min |
+| 3.5 | Visual Asset Annotator | Chart generation, visual markers, asset manifest | 2 min |
+| 4 | Scientific Validator | Hallucination detection, domain-specific validation, visual data verification | 2 min |
 | 5 | Structurer & Proofreader | Grammar, readability, brand compliance | 3 min |
-| 6 | SEO/GEO Optimizer | Keywords, meta tags, AI Overview optimization, GEO scoring | 2 min |
+| 6 | SEO/GEO Optimizer | Keywords, meta tags, AI Overview optimization, internal linking | 2 min |
 | 6.5 | Humanizer | AI pattern removal, personality profiles, industry patterns | 2 min |
-| 7 | Reviewer | 5-dimension scoring, comparative analysis, trend tracking, recommendations | 1 min |
-| 8 | Output Manager | .docx, Medium, Substack, Newsletter, PDF, Social Package | 1 min |
+| 7 | Reviewer | 5-dimension scoring, visual + link quality, comparative analysis | 1 min |
+| 8 | Output Manager | .docx with charts, internal links, Medium, Substack, PDF | 1 min |
 | 10 | Social Adapter | Extract shareworthy moments, generate platform-specific posts | Post-pipeline |
 | 11 | Translator | Element classification, brand voice mapping, cultural adaptation | Post-pipeline |
 
@@ -439,23 +459,31 @@ Yes. `/cf:translate` supports 15+ languages with 3 localization levels (literal,
 
 ## Roadmap
 
-### v3.2 (Planned)
-- [ ] Image generation integration (DALL-E, Midjourney via MCP)
-- [ ] Audio content (podcast scripts, voice-over scripts)
-- [ ] Web-based progress dashboard (HTML/CSS)
-- [ ] Slack/Teams notifications for batch completion
+### v3.2.0 (Released)
+- [x] Visual Asset Annotator (Phase 3.5) — auto-generated matplotlib charts from verified data
+- [x] Structured internal linking markers in SEO agent (Phase 6)
+- [x] Chart embedding and TODO boxes in Output Manager (Phase 8)
+- [x] Visual quality and internal linking scoring in Reviewer (Phase 7)
 
-### v3.3 (Planned)
-- [ ] Expand multilingual support to 35+ languages
-- [ ] Content performance tracking (organic traffic correlation)
-- [ ] Predictive quality scoring from brief analysis
-- [ ] Content decay detection with automated refresh triggers
+### v3.3.0 (Released)
+- [x] Google Sheets tracking via service account scripts (`sheets-tracker.py`)
+- [x] Google Drive output delivery via service account scripts (`drive-uploader.py`)
+- [x] Self-service Google setup in brand-setup command
+- [x] Drive knowledge vault verification during brand setup
+
+### v3.4.0 (Current)
+- [x] 10 Industry Knowledge Packs for subject matter expertise (pharma, BFSI, healthcare, legal, real estate, technology, B2B SaaS, e-commerce, consumer goods, education)
+- [x] SME Calibration step in Content Drafter (Phase 3, Step 0.3)
+- [x] Domain-Specific Validation step in Scientific Validator (Phase 4, Step 5)
+- [x] Brand-setup key file auto-generation (Step F) — create brand profile, guardrails, and reference content from website analysis
 
 ### v4.0 (Planned)
 - [ ] API mode (REST API for external integrations)
 - [ ] Real-time collaboration (multiple agents editing simultaneously)
 - [ ] Custom agent creation (define your own pipeline phases)
 - [ ] Advanced analytics with ML-powered optimization recommendations
+- [ ] Image generation integration (DALL-E, Midjourney via MCP)
+- [ ] Audio content (podcast scripts, voice-over scripts)
 
 ---
 
@@ -497,4 +525,4 @@ MIT License — see [LICENSE](LICENSE) file.
 
 ---
 
-**ContentForge v3.3.0** — 13 agents, 18 skills, zero hallucinations. Transform requirements into publication-ready content in 20-30 minutes.
+**ContentForge v3.4.0** — 13 agents, 18 skills, 10 industry knowledge packs, zero hallucinations. Transform requirements into publication-ready, domain-expert content in 20-30 minutes.
