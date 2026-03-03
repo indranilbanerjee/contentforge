@@ -136,6 +136,62 @@ Check for: {Brand-Name}-profile-cache.json
 - Tone/formality expectations
 - Citation frequency (e.g., "Min 1 citation per 300 words")
 
+### Step 0.3: SME Calibration — Load Industry Knowledge Pack
+
+**Before writing a single word, calibrate your subject matter expertise for this content's domain.**
+
+Load the industry knowledge pack from `config/industries/{industry}.json` where `{industry}` matches the brand profile's `industry` field (e.g., `pharma`, `bfsi`, `real_estate`, `technology`, `b2b_saas`, `healthcare`, `legal`, `ecommerce`, `consumer_goods`, `education`).
+
+**If no matching pack exists:** Fall back to general writing mode but flag this in Draft Metadata: `"sme_calibration": "no_industry_pack_available"`.
+
+**From the knowledge pack, extract and apply:**
+
+#### A. Expertise Stance
+Read `expertise_profile.role` — this defines WHO you are writing as. A pharma article should read like it was written by a pharmaceutical analyst, not a general content writer. Adopt this expertise stance for the entire draft.
+
+#### B. Writing Conventions
+Read `writing_conventions` and adjust your approach:
+- **Evidence hierarchy** — know which sources carry the most weight in this domain. Cite higher-hierarchy sources more prominently. If the research brief contains a mix, lead with the strongest evidence type for this industry.
+- **Argument structure** — follow the domain-specific pattern. Pharma: evidence level first, then results. BFSI: data with risk context. Legal: principle, authority, application. Tech: problem, approach, benchmarks.
+- **Tone calibration** — domain-specific adjustments on top of brand voice. A "conversational" pharma article still uses clinical precision. A "formal" tech blog still uses concrete examples.
+- **Content type adaptations** — read the specific guidance for this content type in this industry. A pharma whitepaper has fundamentally different structure requirements than a tech whitepaper.
+
+#### C. Terminology Depth
+Read `terminology.must_use_correctly` — these are the terms that signal expertise vs. amateur writing:
+- **Apply correct usage** for every term in the list that appears in your draft
+- **Check common misuses** — actively avoid the mistakes listed in `terminology.common_misuses`
+- **Match audience depth** — read `terminology.depth_by_audience` and match the depth level to the brand profile's `target_audience.primary_persona`
+
+#### D. Regulatory Awareness
+Read `regulatory` — know what you CANNOT say in this industry:
+- **Required disclaimers** — include where the content type requires them
+- **Prohibited claims** — these are hard stops, even stronger than brand guardrails
+- Cross-reference with brand profile's `guardrails` — use the STRICTER of the two
+
+#### E. Evidence Standards
+Read `evidence_standards` — these define the minimum bar for claims in this industry:
+- **Minimum evidence level** — don't cite sources below this threshold
+- **Citation requirements** — industry-specific citation details (protocol IDs for pharma, filing numbers for BFSI, etc.)
+- **Data presentation** — how to present numbers and statistics in this domain (confidence intervals for pharma, risk-adjusted metrics for BFSI, geographic specificity for real estate)
+- **Recency requirements** — domain-specific freshness standards (6 months for tech, 3 years for pharma clinical data)
+
+#### F. Quality Signal Awareness
+Read `quality_signals` — this is what separates expert content from generic content:
+- **Actively do** everything in `what_experts_do`
+- **Actively avoid** everything in `what_non_experts_do_wrong`
+- These signals are what the Reviewer (Phase 7) and the target audience will judge quality by
+
+**SME Calibration Summary (include in Draft Metadata):**
+```
+SME Calibration:
+- Industry: {industry from brand profile}
+- Knowledge Pack: {loaded / not available}
+- Expertise Stance: {role summary}
+- Evidence Standard: {minimum level}
+- Key Regulatory Constraints: {count} prohibited claim types
+- Audience Depth: {depth level from terminology.depth_by_audience}
+```
+
 ---
 
 ## EXECUTION STEPS
@@ -705,6 +761,16 @@ https://www.techcorp.com/case-studies/ai-content-marketing
 - Flesch-Kincaid Grade Level: [estimate based on sentence structure]
 - Target Grade Level: [from content type template]
 - Status: ✅ ON TARGET | ⚠️ REVIEW NEEDED
+
+**SME Calibration:**
+- Industry: [industry from brand profile]
+- Knowledge Pack: [loaded / not available]
+- Expertise Stance: [role summary from pack]
+- Evidence Standard: [minimum level applied]
+- Regulatory Constraints: [count] prohibited claim types active
+- Audience Depth: [matched depth level]
+- Domain-Specific Terms Used Correctly: [count]
+- Common Misuses Avoided: ✅ | ⚠️ [list any concerns]
 ```
 
 ---
@@ -748,6 +814,14 @@ https://www.techcorp.com/case-studies/ai-content-marketing
   - Minimum met for content type: ✅ | ⚠️
   - Data-rich passages marked for charts: ✅
   - Phase 2 stat references included where applicable: ✅
+
+- [ ] ✅ **SME calibration applied**
+  - Industry knowledge pack loaded: ✅ | ⚠️ Not available
+  - Domain-specific terminology used correctly: ✅
+  - Evidence hierarchy respected (strongest evidence cited most prominently): ✅
+  - Regulatory prohibited claims avoided: ✅
+  - Industry-specific common pitfalls avoided: ✅
+  - Content reads like it was written by a domain expert: ✅ | ⚠️ Review needed
 
 **DECISION:** ✅ **PASS** | ⚠️ **REVISE** | ❌ **FAIL**
 

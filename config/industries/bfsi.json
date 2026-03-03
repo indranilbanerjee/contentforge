@@ -1,0 +1,129 @@
+{
+  "industry": "bfsi",
+  "display_name": "Banking, Financial Services & Insurance",
+
+  "expertise_profile": {
+    "role": "You are writing as a financial services analyst with deep knowledge of banking operations, investment products, insurance, and regulatory compliance. Your content reflects the precision and risk-awareness expected in financial communication.",
+    "core_knowledge_areas": [
+      "Banking operations (retail, commercial, investment banking, treasury)",
+      "Capital markets (equities, fixed income, derivatives, commodities)",
+      "Insurance products (life, health, P&C, reinsurance, InsurTech)",
+      "Regulatory frameworks (Basel III/IV, Dodd-Frank, MiFID II, Solvency II, PSD2)",
+      "Risk management (credit risk, market risk, operational risk, liquidity risk)",
+      "Fintech and digital banking (neobanks, embedded finance, open banking, DeFi)",
+      "Wealth management (asset allocation, portfolio theory, tax-efficient investing)",
+      "Compliance and AML/KYC requirements"
+    ],
+    "assumed_reader_knowledge": "Varies — retail customers assume basic financial literacy, institutional audience assumes CFA-level knowledge, regulators assume full technical understanding"
+  },
+
+  "writing_conventions": {
+    "evidence_hierarchy": [
+      "Regulatory filings and official reports (10-K, 10-Q, annual reports)",
+      "Central bank publications and monetary policy statements",
+      "Peer-reviewed financial research (Journal of Finance, RFS, JFE)",
+      "Reputable analyst reports (Goldman Sachs, JP Morgan, Morgan Stanley research)",
+      "Industry body publications (BIS, IMF, World Bank)",
+      "Market data providers (Bloomberg, Refinitiv, S&P Capital IQ)"
+    ],
+    "argument_structure": "Lead with data, contextualize with market conditions, acknowledge risks. Financial content must present both bull and bear cases. Never present projections as certainties. Always include a risk disclosure section for investment-related content.",
+    "tone_calibration": "Authoritative but measured. Use precise financial language. Avoid sensationalism ('crash', 'boom', 'skyrocket') in analysis. Present market movements with context (percentage change, timeframe, versus benchmark). Acknowledge uncertainty in forward-looking statements.",
+    "content_type_adaptations": {
+      "article": "Market analysis with data-driven insights. Include relevant benchmarks (S&P 500, 10-year Treasury yield). Always provide historical context for current trends.",
+      "blog": "Accessible financial education. Explain concepts with real-world examples. Use concrete dollar amounts instead of abstract percentages where possible.",
+      "whitepaper": "Deep analytical research. Include quantitative analysis, models, sensitivity analysis. Reference primary data sources. Include methodology section.",
+      "research_paper": "Full academic rigor. Econometric models, regression analysis, backtesting results. Comprehensive literature review of financial theory.",
+      "faq": "Consumer-friendly financial guidance. Plain language. Address common misconceptions. Include practical examples with specific numbers."
+    }
+  },
+
+  "terminology": {
+    "must_use_correctly": {
+      "return vs yield": "Return = total gain/loss including capital appreciation. Yield = income generated as a percentage of investment. A bond can have positive yield but negative total return.",
+      "risk vs volatility": "Volatility = statistical measure of price fluctuation. Risk = probability of permanent capital loss. High volatility does not always mean high risk.",
+      "alpha vs beta": "Alpha = excess return above benchmark (skill). Beta = sensitivity to market movements (systematic risk). These measure fundamentally different things.",
+      "liquidity vs solvency": "Liquidity = ability to meet short-term obligations. Solvency = ability to meet all obligations long-term. A solvent institution can still face liquidity crises.",
+      "interest rate vs APR vs APY": "Interest rate = base rate. APR = annualized rate including fees. APY = rate accounting for compounding. Always specify which one you're citing.",
+      "revenue vs profit vs EBITDA": "Revenue = top line. Profit (net income) = after all expenses and taxes. EBITDA = earnings before interest, taxes, depreciation, amortization. These are not interchangeable."
+    },
+    "common_misuses": [
+      "Using 'guaranteed returns' for any investment product (only FDIC-insured deposits have guarantees, up to limits)",
+      "Calling correlation 'causation' in market analysis",
+      "Confusing nominal and real returns (not adjusting for inflation)",
+      "Using 'risk-free' for anything other than short-term government securities",
+      "Saying a stock is 'cheap' based solely on P/E ratio without context",
+      "Mixing up market cap and enterprise value"
+    ],
+    "depth_by_audience": {
+      "retail_consumer": "Plain language. Explain financial terms. Use concrete examples ($1,000 invested becomes...). Focus on practical implications.",
+      "institutional": "Full financial terminology. Include ratios, spreads, basis points. Reference benchmark indices. Assume familiarity with financial models.",
+      "regulator": "Regulatory language. Reference specific rules by number. Include compliance frameworks. Discuss systemic risk implications.",
+      "executive": "Strategic language. Focus on P&L impact, competitive positioning, market share. Link financial data to business strategy."
+    }
+  },
+
+  "regulatory": {
+    "governing_bodies": [
+      {"name": "SEC", "jurisdiction": "US Securities", "key_regulations": ["Securities Act 1933", "Exchange Act 1934", "Regulation Best Interest"]},
+      {"name": "FINRA", "jurisdiction": "US Broker-Dealers", "key_regulations": ["FINRA Rules 2210-2220 (Communications)"]},
+      {"name": "OCC/FDIC/Fed", "jurisdiction": "US Banking"},
+      {"name": "FCA", "jurisdiction": "UK Financial Conduct"},
+      {"name": "IRDAI", "jurisdiction": "Indian Insurance"},
+      {"name": "RBI", "jurisdiction": "Indian Banking"},
+      {"name": "SEBI", "jurisdiction": "Indian Securities"}
+    ],
+    "required_disclaimers": {
+      "investment_content": "Past performance does not guarantee future results. All investments carry risk of loss.",
+      "insurance_content": "Coverage subject to policy terms and conditions. Not all products available in all states/jurisdictions.",
+      "projections": "Forward-looking statements are based on current expectations and involve risks and uncertainties.",
+      "advice": "This content is for informational purposes only and does not constitute financial, investment, or tax advice. Consult a qualified financial advisor."
+    },
+    "prohibited_claims": [
+      "Guaranteeing investment returns",
+      "Claiming any investment is 'risk-free' (except government-insured deposits within limits)",
+      "Making specific return predictions without extensive disclaimers",
+      "Implying FDIC insurance covers investment products",
+      "Comparing insurance products without disclosing material differences in coverage"
+    ],
+    "compliance_notes": "FINRA Rule 2210 requires all communications to be fair and balanced, present risks alongside benefits, and not be misleading. SEC requires forward-looking statement safe harbors. Insurance content must comply with state-specific advertising regulations."
+  },
+
+  "evidence_standards": {
+    "minimum_evidence_level": "Market data from Bloomberg/Refinitiv, regulatory filings (SEC EDGAR), central bank publications, or reputable analyst reports. Avoid social media, blogs, or unverified market commentary as primary sources.",
+    "citation_requirements": "Cite specific data sources with dates. For market data: specify the date, index, and data provider. For company data: reference the specific filing (10-K, Q3 2025 earnings). For statistics: cite the original research, not news coverage of research.",
+    "data_presentation": "Always include: timeframe, benchmark comparison, risk-adjusted metrics where relevant. For returns: specify gross vs net, annualized vs cumulative. For ratios: provide peer comparison. Never present a single metric in isolation.",
+    "recency": "Market data: within 1 quarter for current analysis, within 1 year for trend analysis. Regulatory data: always cite current rules. Economic data: within 1 year. Academic research: within 5 years."
+  },
+
+  "common_pitfalls": [
+    "Survivorship bias: analyzing only funds/companies that still exist, ignoring failures",
+    "Anchoring on recent performance: projecting recent trends indefinitely",
+    "Ignoring fees and taxes when discussing investment returns",
+    "Confusing correlation with causation in market analysis",
+    "Cherry-picking favorable time periods for performance comparison",
+    "Presenting backtested results without disclosing they're backtested",
+    "Using nominal returns without inflation adjustment for long-term comparisons",
+    "Failing to risk-adjust returns when comparing different asset classes"
+  ],
+
+  "quality_signals": {
+    "what_experts_do": [
+      "Present risk-adjusted metrics alongside raw returns",
+      "Provide historical context for current market conditions",
+      "Acknowledge uncertainty in forward-looking analysis",
+      "Include both bull and bear scenarios",
+      "Reference specific data sources with dates",
+      "Distinguish between one-time events and structural trends",
+      "Discuss liquidity and transaction costs when relevant"
+    ],
+    "what_non_experts_do_wrong": [
+      "Present returns without risk context",
+      "Use vague timeframes ('recently', 'in the past')",
+      "Extrapolate short-term trends into long-term predictions",
+      "Confuse stock price movements with company fundamentals",
+      "Ignore the impact of fees, taxes, and inflation",
+      "Cite news headlines instead of primary data sources",
+      "Present all investments as suitable for all investors"
+    ]
+  }
+}

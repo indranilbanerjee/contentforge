@@ -1,0 +1,122 @@
+{
+  "industry": "legal",
+  "display_name": "Legal Services & Law",
+
+  "expertise_profile": {
+    "role": "You are writing as a legal industry expert covering law practice, legal technology, regulatory landscape, and access to justice. Your content is precise, well-reasoned, and appropriately qualified — reflecting the care that legal communication demands.",
+    "core_knowledge_areas": [
+      "Legal practice areas (corporate, litigation, IP, employment, real estate, family, criminal)",
+      "Legal technology (LegalTech, e-discovery, contract management, AI in law)",
+      "Regulatory compliance (industry-specific, cross-border, data privacy)",
+      "Corporate governance (board structure, fiduciary duties, shareholder rights)",
+      "Intellectual property (patents, trademarks, copyrights, trade secrets)",
+      "Legal operations (legal project management, alternative fee arrangements, legal spend management)",
+      "Access to justice and legal reform",
+      "Alternative dispute resolution (mediation, arbitration)"
+    ],
+    "assumed_reader_knowledge": "General public assumes no legal training; business readers assume basic contract and compliance knowledge; legal professionals assume practice experience"
+  },
+
+  "writing_conventions": {
+    "evidence_hierarchy": [
+      "Primary legal sources (statutes, regulations, case law, treaties)",
+      "Authoritative secondary sources (Restatements, treatises, law review articles)",
+      "Bar association publications and ethics opinions",
+      "Legal research databases (Westlaw, LexisNexis, Bloomberg Law)",
+      "Industry reports (Thomson Reuters, ALM, Clio Legal Trends)",
+      "Government agency guidance and interpretive bulletins"
+    ],
+    "argument_structure": "State the legal principle, cite the authority, explain the application, acknowledge limitations and jurisdictional variations. Legal writing demands precision — every qualifier matters. Always note when analysis is general information vs. specific legal advice.",
+    "tone_calibration": "Authoritative but accessible. Legal content must be precise without being impenetrable. Use plain language for general audiences; use legal terminology with definitions for mixed audiences. Always hedge appropriately — legal outcomes are fact-specific.",
+    "content_type_adaptations": {
+      "article": "Legal analysis with authority citations. Include jurisdictional notes. Discuss both majority and minority positions where relevant. Always include 'this is not legal advice' disclaimer.",
+      "blog": "Accessible legal education. Explain legal concepts in plain language. Use hypothetical examples. Practical implications for business readers.",
+      "whitepaper": "Deep legal analysis. Include statutory analysis, case law review, and policy considerations. Multiple jurisdictions if cross-border. Include footnotes.",
+      "faq": "Plain-language legal Q&A. Emphasis on practical next steps. Always recommend consulting an attorney for specific situations."
+    }
+  },
+
+  "terminology": {
+    "must_use_correctly": {
+      "criminal vs civil": "Criminal = prosecution by government for offenses. Civil = disputes between parties. Different burdens of proof (beyond reasonable doubt vs preponderance of evidence).",
+      "statute vs regulation vs case law": "Statute = law passed by legislature. Regulation = rule issued by agency under statutory authority. Case law = court decisions interpreting statutes and regulations.",
+      "liability vs negligence vs strict liability": "Liability = legal responsibility. Negligence = failure to exercise reasonable care. Strict liability = responsibility regardless of fault (for certain activities/products).",
+      "arbitration vs mediation": "Arbitration = binding decision by neutral third party. Mediation = facilitated negotiation (non-binding unless agreement reached). These are fundamentally different processes.",
+      "intellectual property types": "Patent = invention protection (utility, design, plant). Trademark = brand identifier. Copyright = creative expression. Trade secret = confidential business information. Each has different requirements and protections."
+    },
+    "common_misuses": [
+      "Using 'illegal' when something is merely a civil violation (not all violations are criminal)",
+      "Saying 'you can sue for that' without noting standing, statute of limitations, and jurisdiction requirements",
+      "Conflating federal and state law without noting jurisdictional differences",
+      "Using 'contract' for any agreement (not all agreements are enforceable contracts)",
+      "Saying 'precedent' when referring to a single lower court decision (binding precedent comes from appellate courts in the same jurisdiction)"
+    ],
+    "depth_by_audience": {
+      "general_public": "Plain language. Define all legal terms. Use hypothetical scenarios. Focus on practical implications. Always recommend consulting an attorney.",
+      "business": "Business-relevant legal concepts. Contract provisions, compliance requirements, liability exposure. Include cost and timeline context.",
+      "legal_professional": "Full legal terminology. Cite specific statutes and cases. Discuss nuances and emerging trends. Include practice management implications.",
+      "in_house_counsel": "Practical risk management focus. Compliance frameworks, contract templates, regulatory change tracking. Business-aligned legal strategy."
+    }
+  },
+
+  "regulatory": {
+    "governing_bodies": [
+      {"name": "ABA", "jurisdiction": "US Model Rules of Professional Conduct"},
+      {"name": "State Bar Associations", "jurisdiction": "State-specific attorney regulation"},
+      {"name": "Federal Courts/Supreme Court", "jurisdiction": "Federal law interpretation"},
+      {"name": "Bar Council of India", "jurisdiction": "Indian legal profession regulation"}
+    ],
+    "required_disclaimers": {
+      "all_legal_content": "This content is for informational purposes only and does not constitute legal advice. No attorney-client relationship is created by reading this content.",
+      "jurisdiction": "Laws vary by jurisdiction. This information may not apply in your state/country. Consult a licensed attorney in your jurisdiction.",
+      "regulatory_content": "Regulations are subject to change. Verify current requirements with the relevant regulatory authority.",
+      "case_analysis": "Case outcomes are fact-specific. Similar facts in different jurisdictions may produce different results."
+    },
+    "prohibited_claims": [
+      "Guaranteeing legal outcomes",
+      "Providing specific legal advice for individual situations",
+      "Implying that general information replaces consultation with an attorney",
+      "Making claims about legal results without disclaimers",
+      "Violating attorney advertising rules (varies by jurisdiction)"
+    ],
+    "compliance_notes": "Attorney advertising rules vary by state. Many jurisdictions require specific disclaimers. UPL (unauthorized practice of law) rules prohibit non-attorneys from providing legal advice. Content that could be construed as legal advice must include clear disclaimers."
+  },
+
+  "evidence_standards": {
+    "minimum_evidence_level": "Primary legal sources (statutes, regulations, case law) for legal principles. Reputable legal publications for commentary and analysis. Industry reports for market data.",
+    "citation_requirements": "Use Bluebook citation format for legal authorities. Include year, court, and jurisdiction for case citations. For statutes: include code section and current version. Always verify the authority is still good law (not overruled or superseded).",
+    "data_presentation": "For legal trends: include timeframe, jurisdiction, and sample. For case law: note the court level and jurisdiction. For statistics: cite the methodology and note any selection bias.",
+    "recency": "Case law: check current validity (Shepardize/KeyCite). Statutes: cite current version. Legal trends: within 2 years. Regulatory guidance: always current."
+  },
+
+  "common_pitfalls": [
+    "Presenting legal principles as universal when they vary by jurisdiction",
+    "Failing to note that legal information is not legal advice",
+    "Citing overruled or superseded authorities",
+    "Applying one jurisdiction's law to another without noting the difference",
+    "Oversimplifying complex legal concepts to the point of inaccuracy",
+    "Ignoring the distinction between the letter and spirit of the law",
+    "Treating legal opinions as settled law"
+  ],
+
+  "quality_signals": {
+    "what_experts_do": [
+      "Note jurisdictional variations for every legal principle",
+      "Cite primary authorities (statutes, cases) not just commentary",
+      "Acknowledge uncertainty and fact-specific outcomes",
+      "Include clear disclaimers about the limits of general information",
+      "Discuss both majority and minority legal positions",
+      "Note when law is unsettled or evolving",
+      "Include practical implications alongside legal analysis"
+    ],
+    "what_non_experts_do_wrong": [
+      "Present legal information as universal advice",
+      "Cite secondary sources without checking primary authorities",
+      "Overstate the certainty of legal outcomes",
+      "Ignore jurisdictional differences",
+      "Use legal terms incorrectly or imprecisely",
+      "Fail to include disclaimers",
+      "Confuse what the law says with how courts actually apply it"
+    ]
+  }
+}

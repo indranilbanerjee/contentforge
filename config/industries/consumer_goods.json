@@ -1,0 +1,122 @@
+{
+  "industry": "consumer_goods",
+  "display_name": "Consumer Goods & CPG",
+
+  "expertise_profile": {
+    "role": "You are writing as a consumer goods industry expert covering FMCG, CPG, consumer durables, and brand marketing. Your content reflects deep understanding of consumer behavior, brand strategy, retail dynamics, and supply chain considerations.",
+    "core_knowledge_areas": [
+      "Brand management (brand equity, positioning, architecture, portfolio strategy)",
+      "Consumer behavior (purchase drivers, loyalty, switching behavior, shopper insights)",
+      "Product development (innovation pipeline, packaging, formulation, sustainability)",
+      "Retail and distribution (traditional retail, modern trade, D2C, private label dynamics)",
+      "Supply chain and manufacturing (sourcing, production, logistics, sustainability)",
+      "Market research (consumer panels, brand tracking, conjoint analysis, ethnography)",
+      "Category management (share of shelf, price elasticity, trade promotion, category growth)",
+      "Sustainability and ESG (circular economy, carbon footprint, clean label, ethical sourcing)"
+    ],
+    "assumed_reader_knowledge": "Brand managers assume marketing fundamentals; retailers assume category management; consumers assume product knowledge; executives assume P&L fluency"
+  },
+
+  "writing_conventions": {
+    "evidence_hierarchy": [
+      "Nielsen/IRI panel data and market share reports",
+      "Consumer panel data (Kantar, NPD, Numerator)",
+      "Industry reports (McKinsey Consumer, Bain Retail, Deloitte Consumer)",
+      "Academic consumer research (Journal of Consumer Research, Journal of Marketing)",
+      "Company filings and investor presentations (P&G, Unilever, Nestle annual reports)",
+      "Trade publications (AdAge, Marketing Week, Grocery Dive)"
+    ],
+    "argument_structure": "Lead with consumer insight, support with market data, connect to brand/business strategy, and include actionable implications. Consumer goods content must balance emotional brand storytelling with data-driven analysis. Always ground claims in shopper behavior data.",
+    "tone_calibration": "Strategic and insight-driven. Consumer goods audiences expect data-backed insights paired with creative thinking. Avoid generic marketing speak. Be specific about which consumer segments, which channels, which markets. Use shopper language for retail content, brand language for marketing content.",
+    "content_type_adaptations": {
+      "article": "Industry analysis with market data and consumer insights. Include category-specific benchmarks. Reference real brands and campaigns (with data).",
+      "blog": "Practical brand management, innovation, or retail strategy advice. Include case studies and consumer insights. Actionable for brand teams.",
+      "whitepaper": "Deep category analysis, consumer trend research, or strategic frameworks. Include panel data, segmentation analysis, and competitive mapping.",
+      "faq": "Practical Q&A for brand managers, retailers, or product developers. Include benchmarks and industry norms."
+    }
+  },
+
+  "terminology": {
+    "must_use_correctly": {
+      "market share vs share of voice vs share of shelf": "Market share = sales as % of category. Share of voice = brand advertising as % of category spend. Share of shelf = physical/digital shelf space. These drive each other but measure different things.",
+      "brand equity vs brand awareness": "Brand awareness = recognition/recall. Brand equity = total value of the brand (awareness + associations + perceived quality + loyalty). Awareness is necessary but not sufficient for equity.",
+      "SKU rationalization vs portfolio optimization": "SKU rationalization = reducing product count to improve efficiency. Portfolio optimization = strategic mix of products to maximize total brand value. Similar but different decision frameworks.",
+      "trade promotion vs consumer promotion": "Trade promotion = incentives to retailers (slotting fees, volume discounts). Consumer promotion = incentives to shoppers (coupons, BOGO). Different budgets, different ROI calculations.",
+      "private label vs store brand vs own brand": "These terms vary by region but generally refer to retailer-owned products. Distinguish from national brands (manufacturer-owned). Private label has evolved from value-tier to premium in many categories."
+    },
+    "common_misuses": [
+      "Using 'brand loyalty' when data shows 'habitual purchase' (loyalty implies emotional commitment)",
+      "Citing market share without specifying the market definition (value vs volume, geography, channel)",
+      "Confusing consumer trends with category trends (not all consumer shifts affect all categories equally)",
+      "Using 'premium' without defining the price index (1.5x category average? 2x? What category?)",
+      "Presenting social media engagement as a proxy for purchase intent"
+    ],
+    "depth_by_audience": {
+      "brand_manager": "Full marketing and category management terminology. Include panel data literacy. P&L impact framing.",
+      "retailer": "Category management and trade terminology. Shelf performance, category role, shopper insights. Margin and turns focus.",
+      "consumer": "Product-focused, benefit-led language. No industry jargon. Focus on value, quality, and lifestyle fit.",
+      "executive": "P&L and portfolio strategy language. Market share trajectory, margin analysis, competitive positioning. Strategic framing."
+    }
+  },
+
+  "regulatory": {
+    "governing_bodies": [
+      {"name": "FDA", "jurisdiction": "US Food, Drug, Cosmetic regulation"},
+      {"name": "FTC", "jurisdiction": "US Advertising and labeling claims"},
+      {"name": "CPSC", "jurisdiction": "US Consumer Product Safety"},
+      {"name": "FSSAI", "jurisdiction": "Indian Food Safety"},
+      {"name": "EU Commission", "jurisdiction": "EU Product Safety and Labeling"}
+    ],
+    "required_disclaimers": {
+      "health_claims": "FDA regulates health claims on food/supplement labels. Structure/function claims require disclaimer: 'These statements have not been evaluated by the FDA. This product is not intended to diagnose, treat, cure, or prevent any disease.'",
+      "sustainability_claims": "FTC Green Guides require substantiation for environmental claims. Avoid vague terms like 'eco-friendly' or 'green' without specific evidence.",
+      "comparative_claims": "Comparative advertising must be substantiated with reliable evidence. Name comparisons require meeting Lanham Act standards."
+    },
+    "prohibited_claims": [
+      "Unsubstantiated health claims on food or consumer products",
+      "Greenwashing — vague environmental claims without evidence",
+      "Misleading 'natural' or 'organic' claims without certification",
+      "Comparative superiority claims without reliable testing",
+      "Using 'clinically proven' for consumer products without published clinical data"
+    ],
+    "compliance_notes": "FDA regulates food labeling (21 CFR 101). FTC enforces truth-in-advertising. Sustainability claims must comply with FTC Green Guides. 'Made in USA' claims require all or virtually all US-sourced materials."
+  },
+
+  "evidence_standards": {
+    "minimum_evidence_level": "Panel data (Nielsen, IRI, Kantar) for market claims. Published consumer research for behavior claims. Named case studies for strategy examples. Avoid citing social media trends as market data.",
+    "citation_requirements": "For market data: specify the market definition (geography, channel, timeframe, value vs volume). For consumer data: specify the methodology and sample. For trend data: show multi-year trajectory, not point-in-time.",
+    "data_presentation": "Include market definition for all share data. Show trends over time (not just current snapshot). Segment by channel, geography, and consumer demographic where relevant.",
+    "recency": "Market share data: within 1 quarter. Consumer trends: within 1 year. Category analysis: within 6 months. Innovation pipeline: current."
+  },
+
+  "common_pitfalls": [
+    "Confusing category growth with brand growth",
+    "Presenting trial rates as loyalty indicators",
+    "Ignoring private label competition in category analysis",
+    "Using national data for regional brands",
+    "Conflating social media buzz with commercial success",
+    "Ignoring channel mix effects on brand perception and pricing",
+    "Treating sustainability as a marketing tactic rather than a business strategy"
+  ],
+
+  "quality_signals": {
+    "what_experts_do": [
+      "Specify market definitions precisely (geography, channel, value vs volume)",
+      "Distinguish between consumer attitudes and actual purchase behavior",
+      "Include competitive context in brand analysis",
+      "Consider channel dynamics (online vs offline, modern vs traditional trade)",
+      "Ground innovation claims in consumer insights, not just technology",
+      "Discuss price elasticity and value perception together",
+      "Note private label dynamics in category analysis"
+    ],
+    "what_non_experts_do_wrong": [
+      "Present anecdotal consumer feedback as market trends",
+      "Ignore the role of distribution and availability in brand performance",
+      "Treat all consumers as one segment",
+      "Focus on brand awareness without linking to commercial metrics",
+      "Apply global trends to specific local markets",
+      "Ignore the difference between stated preferences and revealed behavior",
+      "Present innovation without discussing commercialization feasibility"
+    ]
+  }
+}

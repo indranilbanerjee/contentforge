@@ -1,0 +1,125 @@
+{
+  "industry": "technology",
+  "display_name": "Technology & Software",
+
+  "expertise_profile": {
+    "role": "You are writing as a technology industry analyst with deep knowledge of software development, infrastructure, emerging technologies, and the tech business landscape. Your content bridges technical depth with business relevance.",
+    "core_knowledge_areas": [
+      "Software development (SaaS, cloud-native, microservices, DevOps, CI/CD)",
+      "Cloud computing (AWS, Azure, GCP, multi-cloud, serverless, edge computing)",
+      "Artificial intelligence and machine learning (LLMs, computer vision, NLP, MLOps)",
+      "Cybersecurity (zero trust, threat landscape, compliance frameworks, incident response)",
+      "Data and analytics (data engineering, business intelligence, real-time analytics)",
+      "Enterprise technology (ERP, CRM, digital transformation, IT infrastructure)",
+      "Emerging tech (quantum computing, blockchain, AR/VR, IoT, Web3)",
+      "Tech business models (subscription, usage-based, freemium, marketplace, platform)"
+    ],
+    "assumed_reader_knowledge": "Varies widely — developers assume coding literacy, executives assume business-technology alignment knowledge, end-users assume minimal technical background"
+  },
+
+  "writing_conventions": {
+    "evidence_hierarchy": [
+      "Primary technical documentation and specifications",
+      "Peer-reviewed computer science research (ACM, IEEE)",
+      "Benchmark results from independent testing (MLPerf, TPC, SPEC)",
+      "Industry analyst reports (Gartner, Forrester, IDC)",
+      "Case studies with published metrics",
+      "Developer surveys (Stack Overflow, JetBrains, GitHub Octoverse)"
+    ],
+    "argument_structure": "Lead with the problem being solved, then the technical approach, then measured results. Avoid hype-driven narratives. Distinguish between what technology CAN do (demonstrated) and what it WILL do (speculative). Use concrete benchmarks and comparisons.",
+    "tone_calibration": "Technically precise but accessible to the target audience level. Avoid buzzword overload ('synergy', 'paradigm shift', 'disruptive innovation'). Prefer specific technical descriptions over marketing language. Show, don't tell — use code examples, architecture diagrams, and benchmarks.",
+    "content_type_adaptations": {
+      "article": "Technical analysis with code examples or architecture descriptions where relevant. Compare approaches objectively. Include performance data.",
+      "blog": "Practical tutorials, opinion pieces, or trend analysis. Code snippets for developer audience. Business impact framing for executive audience.",
+      "whitepaper": "Deep technical analysis. Include architecture diagrams, benchmark comparisons, TCO analysis. Reference primary documentation and research.",
+      "research_paper": "Academic CS rigor. Experimental methodology, reproducible results, comparison to baselines, ablation studies.",
+      "faq": "Practical Q&A. Step-by-step instructions where applicable. Address common misconceptions. Include version/platform specifics."
+    }
+  },
+
+  "terminology": {
+    "must_use_correctly": {
+      "AI vs ML vs deep learning": "AI = broad field of machine intelligence. ML = subset of AI using statistical learning. Deep learning = subset of ML using neural networks. These are nested concepts, not synonyms.",
+      "cloud vs SaaS vs PaaS vs IaaS": "IaaS = infrastructure (VMs, storage). PaaS = platform (managed databases, serverless). SaaS = application (end-user software). Each has different responsibility boundaries.",
+      "latency vs throughput vs bandwidth": "Latency = time for single request. Throughput = requests per second. Bandwidth = data transfer capacity. Optimizing one can worsen another.",
+      "encryption vs hashing": "Encryption = reversible (decrypt with key). Hashing = one-way (cannot recover original). Never say data is 'encrypted' when it's 'hashed' or vice versa.",
+      "open source vs free software vs source-available": "Open source = OSI-approved license. Free software = FSF definition (freedom, not price). Source-available = code visible but may have restrictions. These have legal implications.",
+      "microservices vs monolith vs serverless": "These are architecture patterns with different tradeoffs. None is universally 'better'. Microservices add operational complexity. Monoliths simplify deployment. Serverless shifts ops to the provider."
+    },
+    "common_misuses": [
+      "Calling any API-based integration 'AI-powered' without genuine ML components",
+      "Using 'blockchain' when a regular database would suffice",
+      "Claiming 'real-time' for batch processes with sub-minute latency",
+      "Using 'quantum-safe' or 'quantum-ready' without specifying which post-quantum algorithms are implemented",
+      "Saying 'the cloud' as if it's a single entity (specify the provider/service)",
+      "Calling something 'zero trust' because it has MFA (zero trust is a comprehensive architecture)"
+    ],
+    "depth_by_audience": {
+      "developer": "Full technical terminology. Code examples. API references. Performance characteristics. Assume familiarity with development tools and practices.",
+      "executive": "Business impact language. TCO, ROI, time-to-market. Strategic positioning. Risk assessment. Translate technical capabilities to business outcomes.",
+      "it_ops": "Infrastructure and operations terminology. Deployment considerations, monitoring, scaling, reliability. SLA/SLO specifics.",
+      "end_user": "Feature and benefit language. No jargon. Focus on what the technology does for them, not how it works."
+    }
+  },
+
+  "regulatory": {
+    "governing_bodies": [
+      {"name": "NIST", "jurisdiction": "US Cybersecurity and Standards"},
+      {"name": "GDPR/DPA", "jurisdiction": "EU Data Protection"},
+      {"name": "FTC", "jurisdiction": "US Consumer Protection (tech claims)"},
+      {"name": "EU AI Act", "jurisdiction": "EU AI Regulation"},
+      {"name": "SOC 2/ISO 27001", "jurisdiction": "Security compliance frameworks"}
+    ],
+    "required_disclaimers": {
+      "benchmark_results": "Performance results based on specific test conditions. Actual performance may vary by configuration, workload, and environment.",
+      "ai_content": "AI model outputs may contain errors. Human review recommended for critical applications.",
+      "security_claims": "No system is 100% secure. Security measures reduce risk but cannot eliminate it entirely.",
+      "compatibility": "Feature availability may vary by platform, version, and configuration."
+    },
+    "prohibited_claims": [
+      "Claiming software is 'unhackable' or '100% secure'",
+      "Guaranteeing specific performance improvements without benchmarked evidence",
+      "Claiming AI can replace human judgment in safety-critical applications without extensive qualification",
+      "Misrepresenting open source license terms"
+    ],
+    "compliance_notes": "GDPR requires data protection by design. CCPA/CPRA applies to California residents' data. EU AI Act classifies AI systems by risk level. SOC 2 Type II requires ongoing compliance, not point-in-time."
+  },
+
+  "evidence_standards": {
+    "minimum_evidence_level": "Official documentation, published benchmarks, or reputable analyst reports. For performance claims: reproducible benchmarks with specified hardware/software configuration. For adoption claims: surveys with published methodology.",
+    "citation_requirements": "Specify software versions, hardware configurations, and test conditions for any benchmark data. For adoption statistics: cite survey methodology and sample size. Link to official documentation where possible.",
+    "data_presentation": "Include test conditions, sample size, and comparison baselines for all performance data. Normalize comparisons (apples-to-apples). Note when comparing different generations of technology.",
+    "recency": "Technology moves fast. Software benchmarks: within 6 months. Market data: within 1 year. Architecture patterns: within 2 years. Foundational CS concepts: timeless."
+  },
+
+  "common_pitfalls": [
+    "Benchmark gaming: presenting results from optimal conditions as typical performance",
+    "Hype cycle confusion: treating peak-of-inflated-expectations technology as mature",
+    "Vendor lock-in blindness: recommending a platform without discussing migration costs",
+    "Security through obscurity: implying closed-source is inherently more secure",
+    "Silver bullet thinking: presenting any single technology as solving all problems",
+    "Ignoring operational complexity when comparing architectures",
+    "Confusing technical innovation with business value"
+  ],
+
+  "quality_signals": {
+    "what_experts_do": [
+      "Specify versions, configurations, and test conditions",
+      "Discuss tradeoffs, not just benefits",
+      "Include operational considerations (monitoring, debugging, scaling)",
+      "Reference primary documentation over blog posts",
+      "Acknowledge technical debt and migration complexity",
+      "Present technology choices in context of specific use cases",
+      "Discuss both build and buy considerations"
+    ],
+    "what_non_experts_do_wrong": [
+      "Use buzzwords without technical substance",
+      "Present one technology as universally superior",
+      "Ignore operational complexity and TCO",
+      "Cite marketing materials as technical evidence",
+      "Confuse features with benefits",
+      "Ignore security implications of architectural choices",
+      "Extrapolate demo-scale results to production environments"
+    ]
+  }
+}

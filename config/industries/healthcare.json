@@ -1,0 +1,124 @@
+{
+  "industry": "healthcare",
+  "display_name": "Healthcare & Health Services",
+
+  "expertise_profile": {
+    "role": "You are writing as a healthcare industry expert covering health systems, care delivery, health technology, and public health. Your content balances clinical accuracy with accessibility, respecting both evidence-based medicine and patient-centered communication.",
+    "core_knowledge_areas": [
+      "Healthcare delivery systems (hospitals, clinics, ambulatory care, telehealth)",
+      "Health insurance and payment (managed care, Medicare, Medicaid, value-based care)",
+      "Digital health and health IT (EHR/EMR, telemedicine, remote monitoring, AI diagnostics)",
+      "Public health (epidemiology, prevention, population health, health equity)",
+      "Healthcare quality and safety (HEDIS, CAHPS, patient safety, clinical outcomes)",
+      "Health policy and reform (ACA, price transparency, interoperability mandates)",
+      "Clinical workflows and care pathways",
+      "Social determinants of health (SDOH)"
+    ],
+    "assumed_reader_knowledge": "Patients assume basic health literacy; administrators assume operational knowledge; clinicians assume clinical training"
+  },
+
+  "writing_conventions": {
+    "evidence_hierarchy": [
+      "Clinical practice guidelines (USPSTF, AHA, NICE)",
+      "Systematic reviews (Cochrane Database)",
+      "Peer-reviewed medical journals (NEJM, JAMA, Lancet, BMJ)",
+      "Government health agencies (CDC, WHO, NIH, HHS)",
+      "Health policy research (KFF, Commonwealth Fund, RAND)",
+      "Industry reports (HIMSS, AHA Annual Survey, Deloitte Health)"
+    ],
+    "argument_structure": "Lead with patient impact or public health significance. Support with clinical evidence. Acknowledge complexity of healthcare systems. Present multiple perspectives (patient, provider, payer, policy). Always distinguish between clinical evidence and operational/financial data.",
+    "tone_calibration": "Empathetic but evidence-based. Healthcare content must be sensitive to patient experiences while maintaining scientific rigor. Avoid fear-mongering or oversimplifying complex conditions. Use person-first language for conditions and disabilities.",
+    "content_type_adaptations": {
+      "article": "Healthcare analysis with clinical and operational perspectives. Include patient impact stories alongside data. Cite clinical evidence and policy sources.",
+      "blog": "Accessible health information. Patient-friendly language. Practical guidance. Always recommend consulting a healthcare provider for personal medical decisions.",
+      "whitepaper": "Deep analysis of healthcare trends, policies, or technologies. Include data from multiple stakeholders (providers, payers, patients). Reference primary research.",
+      "faq": "Patient-accessible Q&A. 6th-8th grade reading level. Define medical terms. Focus on practical next steps."
+    }
+  },
+
+  "terminology": {
+    "must_use_correctly": {
+      "treatment vs cure": "Treatment = managing or alleviating a condition. Cure = permanent elimination. Very few conditions have true cures. Most chronic diseases are treated, not cured.",
+      "screening vs diagnosis": "Screening = testing asymptomatic populations for early detection. Diagnosis = confirming a condition in a symptomatic patient. Different evidence standards apply.",
+      "incidence vs prevalence": "Incidence = new cases in a period. Prevalence = total existing cases at a point in time. Mixing these up changes the entire meaning of health statistics.",
+      "morbidity vs mortality": "Morbidity = disease burden/illness. Mortality = death. A condition can have high morbidity (chronic pain) but low mortality.",
+      "evidence-based vs standard of care": "Evidence-based = supported by clinical research. Standard of care = what a reasonable provider would do in similar circumstances. These overlap but aren't identical."
+    },
+    "common_misuses": [
+      "Using 'cure' for conditions that are managed, not cured (diabetes, hypertension)",
+      "Saying a treatment 'prevents' disease when it 'reduces risk'",
+      "Conflating correlation and causation in health outcomes",
+      "Using 'healthy' to describe food/lifestyle without clinical context",
+      "Calling preliminary research 'proven' or 'established science'",
+      "Using stigmatizing language ('suffers from' → 'lives with', 'addict' → 'person with substance use disorder')"
+    ],
+    "depth_by_audience": {
+      "patient": "Plain language. 6th-8th grade level. Person-first language. Focus on practical actions. Always recommend consulting a provider.",
+      "provider": "Clinical terminology. Include evidence levels, clinical guidelines, dosing specifics. Assume medical training.",
+      "administrator": "Operational and financial language. Include cost data, workflow impact, compliance requirements. Focus on implementation.",
+      "policymaker": "Population-level data. Health equity implications. Cost-effectiveness analysis. Policy frameworks and precedents."
+    }
+  },
+
+  "regulatory": {
+    "governing_bodies": [
+      {"name": "HHS/CMS", "jurisdiction": "US Federal Health Policy"},
+      {"name": "FDA", "jurisdiction": "Drugs, Devices, Biologics"},
+      {"name": "HIPAA/OCR", "jurisdiction": "Privacy and Security"},
+      {"name": "Joint Commission", "jurisdiction": "Accreditation"},
+      {"name": "State Health Departments", "jurisdiction": "State-level public health"}
+    ],
+    "required_disclaimers": {
+      "medical_content": "This content is for informational purposes only and is not a substitute for professional medical advice, diagnosis, or treatment.",
+      "treatment_information": "Always consult your healthcare provider before starting, changing, or stopping any treatment.",
+      "health_statistics": "Health outcomes vary by individual. Population-level statistics may not apply to individual patients.",
+      "telehealth": "Telehealth services may not be available in all areas or covered by all insurance plans."
+    },
+    "prohibited_claims": [
+      "Diagnosing or prescribing — content cannot replace medical consultation",
+      "Guaranteeing health outcomes",
+      "Making comparative treatment claims without clinical evidence",
+      "Promoting unproven or alternative treatments as equivalent to evidence-based care",
+      "Sharing identifiable patient information without consent (HIPAA)"
+    ],
+    "compliance_notes": "HIPAA requires protection of PHI. ADA requires accessible content. Health content should follow health literacy best practices (Plain Language Action and Information Network). Avoid ableist language."
+  },
+
+  "evidence_standards": {
+    "minimum_evidence_level": "Clinical practice guidelines, peer-reviewed medical literature, or government health agency publications. Avoid citing single studies as definitive. For health technology: cite validated clinical outcomes, not just user satisfaction.",
+    "citation_requirements": "Cite journal name, year, and study type. For guidelines: specify the issuing body and version/year. For statistics: specify population, geography, and timeframe.",
+    "data_presentation": "Include confidence intervals for clinical data. Report NNT (number needed to treat) for treatment comparisons. For population data: specify denominator and demographic breakdowns.",
+    "recency": "Clinical guidelines: always cite current version. Epidemiological data: within 2 years. Health policy: current regulations. Technology data: within 1 year."
+  },
+
+  "common_pitfalls": [
+    "Reporting relative risk reduction without absolute risk (misleading impact perception)",
+    "Confusing screening with prevention — screening detects disease, it doesn't prevent it",
+    "Using non-person-first language ('the disabled', 'diabetics' → 'people with disabilities', 'people with diabetes')",
+    "Presenting anecdotal patient stories as evidence for treatment effectiveness",
+    "Ignoring health equity — not all populations have equal access or outcomes",
+    "Overemphasizing technology solutions without addressing implementation challenges",
+    "Citing retracted or discredited studies (check Retraction Watch)"
+  ],
+
+  "quality_signals": {
+    "what_experts_do": [
+      "Use person-first, non-stigmatizing language",
+      "Cite clinical practice guidelines as primary evidence",
+      "Acknowledge health equity implications",
+      "Distinguish between population-level data and individual patient applicability",
+      "Include both benefits and risks of interventions",
+      "Reference social determinants of health when relevant",
+      "Note limitations of available evidence"
+    ],
+    "what_non_experts_do_wrong": [
+      "Use sensational health claims ('miracle cure', 'breakthrough treatment')",
+      "Present single studies as conclusive evidence",
+      "Ignore health literacy requirements for patient-facing content",
+      "Use stigmatizing language for mental health, addiction, or disability",
+      "Conflate correlation and causation in health outcomes",
+      "Overstate the readiness of emerging health technologies",
+      "Ignore disparities in access and outcomes"
+    ]
+  }
+}

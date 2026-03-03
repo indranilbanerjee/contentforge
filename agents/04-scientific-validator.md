@@ -494,11 +494,152 @@ Research Brief: "Dr. Jane Doe, MIT Professor"
 
 ---
 
-### Step 5: Completeness Check
+### Step 5: Domain-Specific Validation
+
+**Load the industry knowledge pack from `config/industries/{industry}.json`** (same pack used by the Drafter in Step 0.3). This step validates domain-specific accuracy that generic fact-checking cannot catch.
+
+#### 5.1 Terminology Accuracy Audit
+
+**Read `terminology.must_use_correctly` from the knowledge pack.**
+
+For each term in the list that appears in the draft:
+- Is it used in the technically correct sense?
+- Would a domain expert reading this content spot a misuse?
+
+**Example (pharma):**
+```
+Draft: "The drug has proven to be effective in clinical trials."
+Knowledge Pack: "efficacy vs effectiveness" — Efficacy = controlled conditions. Effectiveness = real world.
+Issue: If citing clinical trial data, the correct term is "efficacious" not "effective".
+→ ⚠️ FLAG: Terminology misuse — change "effective" to "efficacious" for clinical trial context
+```
+
+**Example (BFSI):**
+```
+Draft: "The fund generated 12% returns last year."
+Knowledge Pack: "return vs yield" — Always specify gross vs net, and whether this is total return or yield.
+Issue: Missing specification of return type.
+→ ⚠️ FLAG: Specify "total return" or "yield" and whether gross or net of fees
+```
+
+**Build Terminology Audit Table:**
+| Term Used | Context | Correct Usage? | Issue | Fix |
+|-----------|---------|---------------|-------|-----|
+
+#### 5.2 Evidence Standard Compliance
+
+**Read `evidence_standards` from the knowledge pack.**
+
+For each major claim in the draft:
+1. Does the supporting evidence meet the **minimum evidence level** for this industry?
+2. Are citations presented with the **required detail** for this domain?
+3. Is data presented according to **domain-specific conventions**?
+
+**Example (pharma):**
+```
+Claim: "Treatment X reduces symptoms by 40%"
+Source: A single observational study (N=50)
+Knowledge Pack minimum: "Phase II clinical trial data" for efficacy claims
+→ ❌ FLAG: Evidence level insufficient — observational study cited for efficacy claim.
+→ Action: Qualify the claim ("preliminary observational data suggests...") or find stronger evidence
+```
+
+**Example (technology):**
+```
+Claim: "Platform X processes 10,000 requests per second"
+Source: Vendor marketing material
+Knowledge Pack minimum: "Independent benchmarks" for performance claims
+→ ⚠️ FLAG: Evidence is vendor-sourced, not independently verified.
+→ Action: Note source ("according to vendor benchmarks") or find independent testing
+```
+
+**Build Evidence Compliance Table:**
+| Claim | Evidence Source | Required Level | Actual Level | Status |
+|-------|---------------|---------------|-------------|--------|
+
+#### 5.3 Regulatory Compliance Check
+
+**Read `regulatory.prohibited_claims` and `regulatory.required_disclaimers` from the knowledge pack.**
+
+Cross-reference with brand profile guardrails. Use the **STRICTER** rule when both apply.
+
+For each prohibited claim type:
+- Scan the draft for any language that could constitute the prohibited claim
+- Flag not just exact violations but language that a regulator could interpret as a violation
+
+**Example (pharma):**
+```
+Prohibited: "Claiming a drug is a 'cure' unless FDA label explicitly uses this term"
+Draft contains: "This new treatment has shown to eliminate the disease entirely"
+→ ❌ FLAG: "eliminate the disease entirely" implies cure without FDA cure designation
+→ Action: Change to "has shown significant disease remission" or cite the specific clinical endpoint
+```
+
+For each required disclaimer type:
+- Check if the draft's content triggers a disclaimer requirement
+- Verify the disclaimer is present and properly placed
+
+**Build Regulatory Compliance Table:**
+| Requirement | Type | Status | Location | Action |
+|-------------|------|--------|----------|--------|
+
+#### 5.4 Common Pitfalls Check
+
+**Read `common_pitfalls` from the knowledge pack.**
+
+Scan the draft for each pitfall pattern. These are mistakes that non-experts commonly make in this domain.
+
+**Example (real estate):**
+```
+Pitfall: "Using national median home price data to advise local buyers"
+Draft: "With the national median home price at $412,000..."
+Context: Article is about buying in a specific metro area
+→ ⚠️ FLAG: National data used for local market article. Include local median or qualify the national figure.
+```
+
+**Example (healthcare):**
+```
+Pitfall: "Reporting relative risk reduction without absolute risk"
+Draft: "Treatment reduced risk by 50%"
+→ ⚠️ FLAG: Missing absolute risk. Add: "from 4% to 2% (absolute risk reduction: 2 percentage points)"
+```
+
+#### 5.5 Expert Quality Signal Check
+
+**Read `quality_signals.what_non_experts_do_wrong` from the knowledge pack.**
+
+Score the draft against each non-expert signal. Each signal found in the draft is a quality concern.
+
+**Domain Expert Score:**
+- 0 non-expert signals found = ✅ Expert-level content
+- 1-2 minor signals = ⚠️ Needs minor revision
+- 3+ signals = ❌ Content reads like it was written by a non-expert, significant revision needed
+
+**Include in Validation Report:**
+```markdown
+### DOMAIN-SPECIFIC VALIDATION
+
+**Industry:** {industry}
+**Knowledge Pack:** {loaded / not available}
+
+**Terminology Accuracy:** ✅ X/Y terms used correctly | ⚠️ N misuses flagged
+**Evidence Standard Compliance:** ✅ All claims meet minimum | ⚠️ N claims below standard
+**Regulatory Compliance:** ✅ No prohibited claims | ❌ N violations found
+**Common Pitfalls:** ✅ None detected | ⚠️ N pitfalls flagged
+**Expert Quality Score:** ✅ Expert-level | ⚠️ Minor concerns | ❌ Non-expert signals detected
+
+**Domain-Specific Issues Requiring Fix:**
+| # | Issue | Location | Severity | Action |
+|---|-------|----------|----------|--------|
+```
+
+---
+
+### Step 6: Completeness Check
 
 **Verify nothing critical was omitted or misrepresented:**
 
-#### 5.1 Outline Adherence
+#### 6.1 Outline Adherence
 
 **Cross-reference Draft v1 with Verified Outline from Research Brief:**
 
@@ -518,7 +659,7 @@ Key Points to Cover (from outline):
 | Section 2 | Definition, task decomposition, performance | All covered | ✅ Complete |
 | Section 3 | Cost analysis, ROI examples | Cost covered, ROI missing | ⚠️ Incomplete |
 
-#### 5.2 Context Preservation
+#### 6.2 Context Preservation
 
 **Check that statistics are used with appropriate context:**
 
@@ -536,7 +677,7 @@ Key Points to Cover (from outline):
 → FLAG: Add context
 ```
 
-#### 5.3 Disclaimer and Limitation Check
+#### 6.3 Disclaimer and Limitation Check
 
 **For regulated industries (Pharma, BFSI, Healthcare, Legal):**
 
@@ -676,7 +817,26 @@ Key Points to Cover (from outline):
 
 ---
 
-## 5. COMPLETENESS CHECK
+## 5. DOMAIN-SPECIFIC VALIDATION
+
+**Industry:** [from brand profile]
+**Knowledge Pack:** [loaded / not available]
+
+**Terminology Accuracy:** ✅ X/Y terms used correctly | ⚠️ N misuses flagged
+**Evidence Standard Compliance:** ✅ All claims meet minimum | ⚠️ N claims below standard
+**Regulatory Compliance:** ✅ No prohibited claims | ❌ N violations found
+**Common Pitfalls:** ✅ None detected | ⚠️ N pitfalls flagged
+**Expert Quality Score:** ✅ Expert-level | ⚠️ Minor concerns | ❌ Non-expert signals
+
+### Domain Issues Requiring Fix
+
+| # | Issue | Type | Location | Severity | Action |
+|---|-------|------|----------|----------|--------|
+| 1 | [term misuse / evidence gap / regulatory / pitfall] | [category] | [section] | [CRITICAL/MODERATE/MINOR] | [specific correction] |
+
+---
+
+## 6. COMPLETENESS CHECK
 
 ### Outline Adherence: ✅ 95% COMPLETE
 
@@ -732,6 +892,15 @@ Key Points to Cover (from outline):
   - Logical coherence: ✅ Sound
   - Contradictions: 1 (fixable)
   - Status: ✅ PASS with minor fixes
+
+- [ ] ✅ **Domain-specific validation passed**
+  - Industry knowledge pack: loaded ✅
+  - Terminology accuracy: [X/Y correct]
+  - Evidence standards met: ✅ | ⚠️ [N claims below minimum]
+  - Regulatory compliance: ✅ | ❌ [N violations]
+  - Common pitfalls avoided: ✅ | ⚠️ [N detected]
+  - Expert quality score: ✅ Expert-level | ⚠️ Minor concerns | ❌ Non-expert
+  - Status: ✅ PASS | ⚠️ CONDITIONAL | ❌ FAIL
 
 **DECISION:** 🔄 **LOOP TO PHASE 3**
 

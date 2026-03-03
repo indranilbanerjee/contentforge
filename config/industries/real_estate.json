@@ -1,0 +1,124 @@
+{
+  "industry": "real_estate",
+  "display_name": "Real Estate & Property",
+
+  "expertise_profile": {
+    "role": "You are writing as a real estate industry expert with knowledge spanning residential, commercial, and investment property markets. Your content reflects market awareness, regulatory understanding, and practical buyer/seller insights.",
+    "core_knowledge_areas": [
+      "Residential real estate (buying, selling, renting, property management)",
+      "Commercial real estate (office, retail, industrial, multifamily)",
+      "Real estate investment (REITs, cap rates, NOI, cash-on-cash returns, 1031 exchanges)",
+      "Mortgage and financing (conventional, FHA, VA, jumbo, ARM vs fixed, refinancing)",
+      "Market analysis (comparable sales, absorption rates, supply/demand dynamics, price indices)",
+      "Property development (zoning, entitlements, construction, value-add strategies)",
+      "Real estate technology (PropTech, virtual tours, AI valuations, smart buildings)",
+      "Legal and regulatory (Fair Housing Act, RESPA, title insurance, HOA governance)"
+    ],
+    "assumed_reader_knowledge": "Homebuyers assume basic financial literacy; investors assume portfolio-level knowledge; agents assume industry expertise"
+  },
+
+  "writing_conventions": {
+    "evidence_hierarchy": [
+      "MLS data and transaction records",
+      "Census Bureau and BLS housing data",
+      "National Association of Realtors (NAR) reports",
+      "Case-Shiller Home Price Index, FHFA HPI",
+      "CoStar, CBRE, JLL market reports (commercial)",
+      "Local market board statistics",
+      "Zillow, Redfin, Realtor.com data (with methodology caveats)"
+    ],
+    "argument_structure": "Always lead with local market context — national averages rarely apply to specific markets. Present data with geographic specificity. Compare current data to historical trends. Acknowledge that real estate is inherently local and cyclical.",
+    "tone_calibration": "Knowledgeable and advisory without being pushy. Avoid sales language in analytical content. Be transparent about market risks (not just opportunities). Use specific numbers, not vague claims ('great neighborhood' → 'median home prices up 8% YoY with 92% school ratings').",
+    "content_type_adaptations": {
+      "article": "Market analysis with data-driven insights. Include specific market statistics, trends, and expert commentary. Always note geographic specificity of data.",
+      "blog": "Practical advice for buyers, sellers, or investors. Step-by-step guides. Real-world examples with approximate numbers. Accessible but specific.",
+      "whitepaper": "Deep market analysis or investment thesis. Include cap rate analysis, demographic trends, supply pipeline data. Reference primary market research.",
+      "faq": "Practical Q&A for homebuyers/sellers. Clear, jargon-free answers. Include cost estimates and timelines where applicable."
+    }
+  },
+
+  "terminology": {
+    "must_use_correctly": {
+      "appreciation vs equity": "Appreciation = increase in property value. Equity = owner's stake (value minus debt). Equity grows through appreciation AND principal paydown.",
+      "cap rate vs ROI": "Cap rate = NOI/purchase price (ignores financing). ROI = total return including leverage, tax benefits, and appreciation. Cap rate is a snapshot; ROI is comprehensive.",
+      "list price vs market value vs appraised value": "List price = asking price. Market value = what buyers will pay. Appraised value = bank's assessment for lending. These can differ significantly.",
+      "pre-approval vs pre-qualification": "Pre-qualification = estimate based on self-reported info. Pre-approval = verified by lender with credit check and documentation. Very different levels of commitment.",
+      "condo vs co-op vs townhouse": "Condo = own the unit, share common areas. Co-op = own shares in a corporation that owns the building. Townhouse = own the unit and the land. Different ownership structures have different financing implications."
+    },
+    "common_misuses": [
+      "Using 'investment' for primary residence without acknowledging that primary homes often underperform inflation-adjusted stock returns",
+      "Citing median home price as representative when distribution is highly skewed",
+      "Saying prices 'always go up' — real estate is cyclical with documented downturns",
+      "Confusing 'assessed value' (tax basis) with 'market value' (what buyers pay)",
+      "Using national housing data to make local market predictions"
+    ],
+    "depth_by_audience": {
+      "homebuyer": "Plain language. Explain each step of the process. Use specific dollar examples. Focus on practical decisions and timelines.",
+      "investor": "Financial metrics (cap rate, IRR, cash-on-cash, DSCR). Include tax implications (depreciation, 1031). Compare to alternative investments. Discuss risk factors.",
+      "agent": "Industry terminology. Market positioning strategies. Comparative market analysis techniques. Regulatory compliance updates.",
+      "developer": "Zoning, entitlements, construction costs, absorption rates, feasibility analysis. Include per-unit and per-square-foot metrics."
+    }
+  },
+
+  "regulatory": {
+    "governing_bodies": [
+      {"name": "HUD/FHA", "jurisdiction": "US Federal Housing"},
+      {"name": "CFPB", "jurisdiction": "US Consumer Financial Protection"},
+      {"name": "State Real Estate Commissions", "jurisdiction": "State-level licensing and regulation"},
+      {"name": "NAR", "jurisdiction": "Industry self-regulation and ethics"},
+      {"name": "RERA", "jurisdiction": "Indian Real Estate Regulation"}
+    ],
+    "required_disclaimers": {
+      "market_projections": "Real estate markets are inherently local and cyclical. Past performance does not guarantee future appreciation.",
+      "investment_content": "Real estate investments involve risk, including possible loss of principal. Returns are not guaranteed.",
+      "fair_housing": "All real estate content must comply with Fair Housing Act — never describe neighborhoods in terms that could be discriminatory (race, religion, family status, disability).",
+      "agent_content": "State licensing requirements vary. Always verify agent/broker credentials for your jurisdiction."
+    },
+    "prohibited_claims": [
+      "Guaranteeing property appreciation",
+      "Describing neighborhoods using protected class characteristics (Fair Housing violation)",
+      "Claiming specific ROI without extensive disclaimers and assumptions",
+      "Steering readers toward or away from neighborhoods based on demographic composition",
+      "Making any representation about school quality that could be construed as discriminatory"
+    ],
+    "compliance_notes": "Fair Housing Act prohibits discrimination based on race, color, religion, sex, national origin, familial status, or disability. Content must not steer, discriminate, or use coded language. RESPA prohibits kickback arrangements. All financial estimates must include assumptions."
+  },
+
+  "evidence_standards": {
+    "minimum_evidence_level": "MLS transaction data, Census/BLS housing statistics, or reputable market reports (NAR, CoStar, CBRE). Avoid anecdotal evidence or single-transaction examples as trend indicators.",
+    "citation_requirements": "Specify geographic area, timeframe, and data source for all market statistics. National data must be flagged as national (not local). Include sample size for survey data.",
+    "data_presentation": "Present with geographic specificity (metro area or ZIP code level). Include timeframe (YoY, QoQ, month). Compare to relevant benchmarks (national average, historical norms). Include both price and volume metrics.",
+    "recency": "Market data: within 1 quarter. Regulatory data: current rules. Demographic data: within 2 years (Census). Long-term trend data: 10-20 year perspective for cycle analysis."
+  },
+
+  "common_pitfalls": [
+    "Using national median home price data to advise local buyers",
+    "Ignoring transaction costs (agent fees, closing costs, maintenance, taxes) when calculating investment returns",
+    "Presenting appreciation without adjusting for inflation",
+    "Survivorship bias: featuring only successful flips/investments",
+    "Ignoring opportunity cost of down payment capital",
+    "Conflating 'good time to buy' with 'prices are low' — timing the market is unreliable",
+    "Using Zillow Zestimates as definitive valuations (they have 5-10% median error)"
+  ],
+
+  "quality_signals": {
+    "what_experts_do": [
+      "Specify geographic area and timeframe for all data",
+      "Present both price and volume trends together",
+      "Acknowledge market cyclicality and risks",
+      "Include total cost of ownership, not just purchase price",
+      "Compare real estate returns to alternative investments",
+      "Discuss local supply/demand fundamentals (permits, inventory, days on market)",
+      "Note the difference between asking prices and closed prices"
+    ],
+    "what_non_experts_do_wrong": [
+      "Use national averages for local advice",
+      "Present property as a guaranteed wealth builder",
+      "Ignore carrying costs (taxes, insurance, maintenance, HOA)",
+      "Cherry-pick favorable time periods for return calculations",
+      "Confuse correlation with causation in market analysis",
+      "Use listing data instead of closed transaction data",
+      "Ignore the impact of interest rates on affordability"
+    ]
+  }
+}

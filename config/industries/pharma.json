@@ -1,0 +1,127 @@
+{
+  "industry": "pharma",
+  "display_name": "Pharmaceutical & Life Sciences",
+
+  "expertise_profile": {
+    "role": "You are writing as a pharmaceutical industry analyst with deep knowledge of drug development, clinical research, and regulatory affairs. Your content should reflect the rigor and precision expected in life sciences communication.",
+    "core_knowledge_areas": [
+      "Drug development lifecycle (discovery, preclinical, Phase I-IV clinical trials, post-market surveillance)",
+      "FDA approval pathways (NDA, ANDA, BLA, 505(b)(2), Breakthrough Therapy, Fast Track, Accelerated Approval)",
+      "Clinical trial design (RCT, double-blind, placebo-controlled, crossover, adaptive designs)",
+      "Pharmacology fundamentals (pharmacokinetics, pharmacodynamics, bioavailability, half-life)",
+      "Regulatory landscape (FDA, EMA, PMDA, TGA, CDSCO)",
+      "Pharmaceutical manufacturing (GMP, quality control, supply chain, cold chain logistics)",
+      "Market access and health economics (HEOR, formulary placement, payer negotiations, QALY)",
+      "Intellectual property (patent cliffs, exclusivity periods, biosimilar competition)"
+    ],
+    "assumed_reader_knowledge": "Varies by audience — HCPs assume clinical literacy, patients assume health literacy at 8th grade level, investors assume financial and basic science literacy, payers assume HEOR knowledge"
+  },
+
+  "writing_conventions": {
+    "evidence_hierarchy": [
+      "Systematic reviews and meta-analyses (highest)",
+      "Randomized controlled trials (RCTs)",
+      "Cohort studies and observational studies",
+      "Case-control studies",
+      "Case reports and case series",
+      "Expert opinion and consensus guidelines (lowest)"
+    ],
+    "argument_structure": "Always lead with evidence level. State the study type, sample size, and primary endpoint before presenting results. Never present a single study's finding as universal truth. Use hedging language appropriate to evidence strength: 'demonstrated' (RCT), 'suggested' (observational), 'may indicate' (preclinical).",
+    "tone_calibration": "Measured and precise. Avoid hype. Never use 'breakthrough' or 'cure' unless quoting an official FDA designation. Prefer 'treatment', 'therapy', 'intervention' over 'drug' or 'medicine' in professional content. Acknowledge limitations explicitly.",
+    "content_type_adaptations": {
+      "article": "Focus on clinical data interpretation, real-world evidence, and treatment landscape analysis. Always include study limitations section.",
+      "blog": "Accessible science communication. Explain mechanisms in plain language. Use analogies for complex concepts. Still cite sources rigorously.",
+      "whitepaper": "Deep clinical analysis. Include methodology discussion, statistical significance, confidence intervals. Reference primary literature directly. Include data tables.",
+      "research_paper": "Academic rigor. IMRAD structure (Introduction, Methods, Results, Discussion). Full statistical reporting. Comprehensive literature review.",
+      "faq": "Patient-accessible language. Flesch-Kincaid grade 6-8. Define all medical terms. Focus on practical implications, not mechanisms."
+    }
+  },
+
+  "terminology": {
+    "must_use_correctly": {
+      "efficacy vs effectiveness": "Efficacy = performance under controlled conditions (clinical trials). Effectiveness = performance in real-world settings. Never interchange these.",
+      "adverse event vs side effect": "Adverse event (AE) = any unfavorable medical occurrence during treatment (may not be caused by drug). Side effect = known, expected pharmacological effect. Use 'adverse event' in clinical context.",
+      "indication vs use": "Indication = FDA-approved condition the drug treats. Off-label use = prescribing for non-approved conditions. Never imply off-label use is an indication.",
+      "generic vs biosimilar": "Generic = chemically identical small-molecule copy. Biosimilar = highly similar biologic with no clinically meaningful differences. These are fundamentally different regulatory pathways.",
+      "endpoint vs outcome": "Primary endpoint = pre-specified main measure of a trial. Outcome = any result. Always specify 'primary endpoint' when discussing trial results.",
+      "statistically significant vs clinically meaningful": "Statistical significance (p<0.05) does not guarantee clinical relevance. Always discuss both. A statistically significant 0.1% improvement may not be clinically meaningful."
+    },
+    "common_misuses": [
+      "Using 'cure' when data shows 'remission' or 'response'",
+      "Calling Phase II results 'proven' — Phase II establishes efficacy signals, not proof",
+      "Saying a drug 'prevents' disease based on risk reduction data — use 'reduces risk of'",
+      "Conflating 'approved' with 'recommended' — FDA approval != clinical practice guideline recommendation",
+      "Using 'safe' without qualification — no drug is universally safe, use 'acceptable safety profile'",
+      "Mixing up incidence (new cases) and prevalence (total cases)"
+    ],
+    "depth_by_audience": {
+      "hcp": "Full clinical terminology. Include mechanism of action, pharmacokinetic parameters, dosing specifics. Assume knowledge of study design and statistics.",
+      "patient": "Plain language. Explain every medical term on first use. Focus on 'what does this mean for me?' not mechanisms. Use analogies.",
+      "investor": "Financial + science hybrid. Explain clinical significance in market terms. Include pipeline stage, addressable market, competitive landscape. Translate trial data to commercial potential.",
+      "payer": "HEOR language. Include NNT (number needed to treat), cost-effectiveness ratios, budget impact analysis, QALY gains. Focus on value proposition vs standard of care."
+    }
+  },
+
+  "regulatory": {
+    "governing_bodies": [
+      {"name": "FDA", "jurisdiction": "United States", "key_regulations": ["FDCA", "BPCIA", "21 CFR"]},
+      {"name": "EMA", "jurisdiction": "European Union", "key_regulations": ["EC Regulation 726/2004"]},
+      {"name": "PMDA", "jurisdiction": "Japan"},
+      {"name": "TGA", "jurisdiction": "Australia"},
+      {"name": "CDSCO", "jurisdiction": "India"}
+    ],
+    "required_disclaimers": {
+      "clinical_data": "Always note study limitations, sample size, and that results may not generalize to all populations.",
+      "drug_information": "Not intended as medical advice. Consult your healthcare provider.",
+      "investment_content": "Forward-looking statements involve risks. Clinical trial outcomes are uncertain.",
+      "off_label": "Never promote off-label use. If discussing off-label research, explicitly state 'This use is not FDA-approved.'"
+    },
+    "prohibited_claims": [
+      "Claiming a drug is a 'cure' unless FDA label explicitly uses this term",
+      "Comparative superiority claims without head-to-head trial data",
+      "Safety claims beyond what the FDA-approved label states",
+      "Implying FDA approval is imminent based on trial data alone",
+      "Making efficacy claims for unapproved indications"
+    ],
+    "compliance_notes": "All pharmaceutical content must comply with FDA promotional guidelines (21 CFR 202.1). Fair balance requirement: risks must be presented with equal prominence to benefits. ISI (Important Safety Information) may be required for branded content."
+  },
+
+  "evidence_standards": {
+    "minimum_evidence_level": "For claims about drug efficacy: minimum Phase II clinical trial data. For epidemiological claims: peer-reviewed published data. For market data: reputable analyst reports (IQVIA, Evaluate, GlobalData).",
+    "citation_requirements": "Cite primary literature (journal articles) over secondary sources (news, press releases). Include DOI or PubMed ID when available. For clinical trials, reference ClinicalTrials.gov NCT number.",
+    "data_presentation": "Always report: study design, sample size (N=), primary endpoint, result with confidence interval, p-value. For survival data: median OS/PFS with HR and 95% CI. Never cherry-pick favorable subgroup analyses without disclosing it's a subgroup.",
+    "recency": "Clinical data: within 3 years for fast-moving therapeutic areas (oncology, rare disease), 5 years for stable areas. Epidemiological data: within 5 years. Regulatory guidance: always cite current version."
+  },
+
+  "common_pitfalls": [
+    "Overstating preclinical results: 'Lab results show the drug kills cancer cells' — preclinical results rarely translate directly to human efficacy",
+    "Ignoring the denominator: 'Drug X helped 500 patients' means nothing without knowing the total trial population",
+    "Survivorship bias in case studies: featuring only successful treatment outcomes",
+    "Confusing relative risk reduction with absolute risk reduction: '50% risk reduction' could mean from 2% to 1% (absolute: 1 percentage point)",
+    "Using 'first-in-class' when the mechanism has precedent in adjacent therapeutic areas",
+    "Failing to mention standard of care when discussing new treatments",
+    "Presenting post-hoc analyses as if they were pre-specified endpoints",
+    "Mixing up overall survival (OS) and progression-free survival (PFS) — these have very different clinical significance"
+  ],
+
+  "quality_signals": {
+    "what_experts_do": [
+      "Distinguish between Phase II and Phase III evidence strength",
+      "Report confidence intervals alongside point estimates",
+      "Acknowledge study limitations proactively",
+      "Use the evidence hierarchy to weight different sources",
+      "Discuss mechanism of action when it matters for understanding",
+      "Contextualize results within the treatment landscape (vs standard of care)",
+      "Note the difference between surrogate and clinical endpoints"
+    ],
+    "what_non_experts_do_wrong": [
+      "Present all clinical studies as equally valid",
+      "Use absolute language ('proven', 'safe', 'cures') for nuanced data",
+      "Omit sample sizes and study design details",
+      "Cite press releases instead of peer-reviewed publications",
+      "Ignore adverse event profiles when discussing benefits",
+      "Confuse FDA approval with clinical recommendation",
+      "Treat single-site studies as generalizable evidence"
+    ]
+  }
+}
