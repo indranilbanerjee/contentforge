@@ -106,7 +106,7 @@ def get_worksheet(client, sheet_id, tab_name=DEFAULT_TAB):
     except gspread.WorksheetNotFound:
         # Create the tab if it doesn't exist
         worksheet = spreadsheet.add_worksheet(title=tab_name, rows=1000, cols=len(HEADERS))
-        worksheet.update("A1", [HEADERS])
+        worksheet.update([HEADERS], "A1")
         # Bold the header row
         worksheet.format("A1:T1", {"textFormat": {"bold": True}})
 
@@ -127,7 +127,7 @@ def init_sheet(client, sheet_id, tab_name):
         return {"status": "already_initialized", "sheet_id": sheet_id, "tab": tab_name, "columns": len(HEADERS)}
 
     # Write headers
-    ws.update("A1", [HEADERS])
+    ws.update([HEADERS], "A1")
     ws.format("A1:T1", {"textFormat": {"bold": True}})
 
     return {"status": "initialized", "sheet_id": sheet_id, "tab": tab_name, "columns": len(HEADERS)}
