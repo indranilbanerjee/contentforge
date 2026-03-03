@@ -177,6 +177,71 @@ Ask: **"Paste your Google Drive folder URL for content delivery (or type 'skip' 
 
 Save to the brand profile automatically. User never sees or edits this JSON.
 
+#### Step E: Verify Knowledge Vault (Brand Files in Drive)
+
+If Google integration was configured (Steps A-D completed), check whether the brand's knowledge files exist in the right Drive folder structure. This is critical — the pipeline uses these files for voice calibration, compliance checking, and content quality.
+
+**Ask: "Paste the URL of your brand's Drive folder (the folder containing Brand-Guidelines, Guardrails, Reference-Content)"**
+
+- Extract folder ID from URL: `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
+- This is a DIFFERENT folder from the output folder (Step C). This is where brand knowledge lives, not where content is delivered.
+
+**Run the verification script:**
+```
+python scripts/drive-uploader.py \
+  --action verify-structure \
+  --folder-id {brand_folder_id} \
+  --brand "{brand_name}" \
+  --credentials {credentials_path}
+```
+
+**Parse the result and report to the user:**
+
+**If `status: "ok"`:**
+- All 3 subfolders exist with key files found.
+- Show: "Brand knowledge vault verified:"
+  - "Brand-Guidelines: {file_count} files (key: {key_file})"
+  - "Guardrails: {file_count} files (key: {key_file})"
+  - "Reference-Content: {file_count} files (key: {key_file})"
+
+**If `status: "partial"` (folders exist but key files missing):**
+- Show which files are missing with specific instructions:
+  - "Brand-Guidelines folder exists but missing the brand profile JSON."
+  - "Upload a file named `{Brand}-brand-profile.json` to the Brand-Guidelines folder."
+- The pipeline CAN run without these — it just won't have full brand context. Tell the user: "You can start producing content now, but quality will improve significantly once these files are uploaded."
+
+**If `status: "incomplete"` (subfolders missing):**
+- Show exactly what to create:
+  - "Your brand folder needs these subfolders: Brand-Guidelines/, Guardrails/, Reference-Content/"
+  - "Create them in your Drive brand folder and upload the relevant files."
+- Provide expected folder structure:
+  ```
+  {Brand Name}/
+  ├── Brand-Guidelines/
+  │   └── {Brand}-brand-profile.json (voice, tone, terminology)
+  ├── Guardrails/
+  │   └── {Brand}-guardrails.json (compliance rules, disclaimers)
+  └── Reference-Content/
+      └── {Brand}-reference-content.md (sample content for voice calibration)
+  ```
+
+**If the user says "skip" or doesn't have a brand folder yet:**
+- Tell them: "No problem. The pipeline will use the voice/terminology settings from this brand setup. You can add Drive-based knowledge files later — they make the output significantly better."
+- The pipeline runs without Drive knowledge files — it just relies on the brand profile JSON created during voice/terminology setup.
+
+**Auto-fill the knowledge vault config:**
+
+```json
+"knowledge_vault_config": {
+  "drive_folder_id": "<brand folder ID from URL>",
+  "brand_guidelines_folder": "Brand-Guidelines/",
+  "reference_content_folder": "Reference-Content/",
+  "guardrails_folder": "Guardrails/"
+}
+```
+
+Save to brand profile automatically. User never sees this.
+
 ## After Setup
 
 After creating the profile, show a summary:
@@ -192,6 +257,7 @@ After creating the profile, show a summary:
 | Compliance | [frameworks] |
 | Sheets tracking | Connected / Not configured |
 | Drive delivery | Connected / Not configured |
+| Knowledge vault | Verified (N files) / Partial / Not configured |
 
 Ask: "Brand profile for [name] is ready. Would you like to:
 - Start producing content? (`/create-content`)

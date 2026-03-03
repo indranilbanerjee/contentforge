@@ -12,6 +12,7 @@ Usage:
     python drive-uploader.py --action ensure-folders --folder-id ROOT_ID --brand "Acme Corp" --content-type article
     python drive-uploader.py --action list --folder-id FOLDER_ID
     python drive-uploader.py --action upload-assets --folder-id ROOT_ID --brand "Acme Corp" --assets-dir ~/.claude-marketing/acme-corp/assets/
+    python drive-uploader.py --action verify-structure --folder-id BRAND_FOLDER_ID --brand "Acme Corp"
 
 Credentials: Reads service account JSON from --credentials flag
              (default: ~/.claude-marketing/google-credentials.json)
@@ -42,7 +43,7 @@ except ImportError:
 
 # ── Constants ───────────────────────────────────────────────────────
 
-SCOPES = ["https://www.googleapis.com/auth/drive.file"]
+SCOPES = ["https://www.googleapis.com/auth/drive"]
 DEFAULT_CREDENTIALS = Path.home() / ".claude-marketing" / "google-credentials.json"
 
 MONTH_NAMES = {
@@ -257,12 +258,113 @@ def upload_assets(service, root_folder_id, brand, assets_dir):
     }
 
 
+# ── Verification Operations ───────────────────────────────────────
+
+REQUIRED_SUBFOLDERS = ["Brand-Guidelines", "Guardrails", "Reference-Content"]
+
+EXPECTED_FILES = {
+    "Brand-Guidelines": {
+        "required_pattern": "-brand-profile.json",
+        "description": "Brand profile JSON (e.g., Acme-brand-profile.json)",
+    },
+    "Guardrails": {
+        "required_pattern": "-guardrails.json",
+        "description": "Guardrails JSON (e.g., Acme-guardrails.json)",
+    },
+    "Reference-Content": {
+        "required_pattern": "-reference-content.md",
+        "description": "Reference content markdown (e.g., Acme-reference-content.md)",
+    },
+}
+
+
+def verify_brand_structure(service, brand_folder_id, brand_name):
+    """Verify a brand's Drive folder has the expected structure and files.
+
+    Checks:
+    1. Required subfolders exist (Brand-Guidelines, Guardrails, Reference-Content)
+    2. Each subfolder contains the key config file
+    3. Reports what's present and what's missing
+    """
+    result = {
+        "brand": brand_name,
+        "brand_folder_id": brand_folder_id,
+        "status": "ok",
+        "subfolders": {},
+        "missing": [],
+        "warnings": [],
+    }
+
+    # List subfolders in brand folder
+    query = (
+        f"'{brand_folder_id}' in parents and "
+        f"mimeType = 'application/vnd.google-apps.folder' and "
+        f"trashed = false"
+    )
+    folders = service.files().list(q=query, fields="files(id, name)").execute()
+    folder_map = {f["name"]: f["id"] for f in folders.get("files", [])}
+
+    for subfolder_name in REQUIRED_SUBFOLDERS:
+        sub_info = {"exists": False, "folder_id": None, "files": [], "key_file_found": False}
+
+        if subfolder_name in folder_map:
+            sub_info["exists"] = True
+            sub_info["folder_id"] = folder_map[subfolder_name]
+
+            # List files in this subfolder
+            file_query = (
+                f"'{folder_map[subfolder_name]}' in parents and "
+                f"mimeType != 'application/vnd.google-apps.folder' and "
+                f"trashed = false"
+            )
+            files = service.files().list(
+                q=file_query,
+                fields="files(name, mimeType, size)",
+                orderBy="name",
+            ).execute()
+
+            file_list = files.get("files", [])
+            sub_info["files"] = [f["name"] for f in file_list]
+            sub_info["file_count"] = len(file_list)
+
+            # Check for the key file
+            expected = EXPECTED_FILES[subfolder_name]
+            for f in file_list:
+                if f["name"].endswith(expected["required_pattern"]):
+                    sub_info["key_file_found"] = True
+                    sub_info["key_file"] = f["name"]
+                    break
+
+            if not sub_info["key_file_found"]:
+                result["warnings"].append(
+                    f"{subfolder_name}: missing key file ({expected['description']}). "
+                    f"Found {len(file_list)} other file(s)."
+                )
+        else:
+            sub_info["exists"] = False
+            result["missing"].append(
+                f"{subfolder_name}: folder not found. "
+                f"Create '{brand_name}/{subfolder_name}/' in Drive and upload "
+                f"{EXPECTED_FILES[subfolder_name]['description']}."
+            )
+
+        result["subfolders"][subfolder_name] = sub_info
+
+    if result["missing"]:
+        result["status"] = "incomplete"
+    elif result["warnings"]:
+        result["status"] = "partial"
+
+    return result
+
+
 # ── Main ────────────────────────────────────────────────────────────
 
 def main():
     parser = argparse.ArgumentParser(description="ContentForge Google Drive Uploader")
     parser.add_argument("--action", required=True,
-                        choices=["upload", "ensure-folders", "list", "upload-assets"])
+                        choices=["upload", "ensure-folders", "list", "upload-assets",
+                                 "verify-structure"])
     parser.add_argument("--folder-id", required=True,
                         help="Root Google Drive folder ID (the ContentForge output folder)")
     parser.add_argument("--credentials", default=str(DEFAULT_CREDENTIALS),
@@ -314,6 +416,12 @@ def main():
             result = {"error": "Provide --brand and --assets-dir for upload-assets"}
         else:
             result = upload_assets(service, args.folder_id, args.brand, args.assets_dir)
+
+    elif args.action == "verify-structure":
+        if not args.brand:
+            result = {"error": "Provide --brand for verify-structure"}
+        else:
+            result = verify_brand_structure(service, args.folder_id, args.brand)
 
     else:
         result = {"error": f"Unknown action: {args.action}"}

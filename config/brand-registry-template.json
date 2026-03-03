@@ -219,13 +219,11 @@
     "drive_output_folder_id": ""
   },
   "knowledge_vault_config": {
-    "drive_folder_id": "GOOGLE_DRIVE_FOLDER_ID",
+    "_instructions": "Auto-configured by /brand-setup. The drive_folder_id is the brand's root folder (NOT the output folder). Contains Brand-Guidelines/, Guardrails/, Reference-Content/ subfolders.",
+    "drive_folder_id": "",
     "brand_guidelines_folder": "Brand-Guidelines/",
     "reference_content_folder": "Reference-Content/",
-    "guardrails_folder": "Guardrails/",
-    "cache_file_name": "brand-profile-cache.json",
-    "source_docs_hash": "SHA256_HASH_OF_SOURCE_DOCS",
-    "last_updated": "2026-02-16T18:00:00Z"
+    "guardrails_folder": "Guardrails/"
   },
   "data_sources": {
     "trusted_sources_registry": [
