@@ -1,6 +1,7 @@
 ---
 name: cf-template
 description: Create and manage custom content type templates beyond the 5 built-in types, with quality standards, section structure, and pipeline compatibility
+argument-hint: "[content-type]"
 ---
 
 # Custom Content Template Manager

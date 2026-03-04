@@ -1,0 +1,81 @@
+{
+  "skill_name": "contentforge",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Write a 2000-word blog post about sustainable coffee packaging for an eco-friendly coffee brand called GreenBean",
+      "expected_output": "A complete 10-phase pipeline execution producing a fact-checked, brand-compliant, SEO-optimized article with inline citations",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Pipeline executes all 10 phases in correct order (Research → Fact Check → Draft → Visual → Validate → Structure → SEO → Humanize → Review → Output)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Output includes inline citations from verified sources with URLs",
+          "type": "quantitative"
+        },
+        {
+          "text": "SEO metadata is present: title tag, meta description, schema markup suggestions",
+          "type": "quantitative"
+        },
+        {
+          "text": "No hallucinated statistics — all data points have source attribution",
+          "type": "quantitative"
+        },
+        {
+          "text": "Reviewer score is 7.0 or above across all 5 dimensions",
+          "type": "quantitative"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Create a whitepaper on AI-powered clinical trial recruitment for a pharma company",
+      "expected_output": "A fact-checked whitepaper with industry knowledge pack calibration (pharma), domain-specific validation, visual asset annotations, and strict evidence standards",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Industry knowledge pack (pharma) is loaded and SME calibration is applied in Phase 3",
+          "type": "qualitative"
+        },
+        {
+          "text": "Domain-specific validation in Phase 4 checks regulatory compliance and terminology accuracy",
+          "type": "qualitative"
+        },
+        {
+          "text": "Visual Asset Annotator (Phase 3.5) generates chart specifications from verified data",
+          "type": "quantitative"
+        },
+        {
+          "text": "Content uses appropriate pharma terminology without oversimplification",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write an FAQ page about home loan refinancing for a financial services brand",
+      "expected_output": "A structured FAQ with verified financial data, regulatory compliance (BFSI knowledge pack), and appropriate disclaimers",
+      "files": [],
+      "assertions": [
+        {
+          "text": "BFSI industry knowledge pack is loaded for financial content calibration",
+          "type": "qualitative"
+        },
+        {
+          "text": "FAQ schema markup is included in SEO output",
+          "type": "quantitative"
+        },
+        {
+          "text": "Financial disclaimers are present where required",
+          "type": "quantitative"
+        },
+        {
+          "text": "All interest rates and financial figures cite authoritative sources",
+          "type": "quantitative"
+        }
+      ]
+    }
+  ]
+}

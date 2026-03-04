@@ -1,0 +1,49 @@
+{
+  "skill_name": "cf-style-guide",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "/cf:style-guide Acme Corp — a B2B SaaS cybersecurity company targeting enterprise CISOs",
+      "expected_output": "A complete brand profile with voice guidelines, audience personas, content preferences, and guardrails configured at ~/.claude-marketing/brands/acme-corp/",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Brand profile JSON is generated with all required sections (identity, voice, audience, content_preferences, seo_preferences)",
+          "type": "quantitative"
+        },
+        {
+          "text": "Voice guidelines reflect B2B enterprise tone: authoritative, technical, trust-building",
+          "type": "qualitative"
+        },
+        {
+          "text": "Guardrails include industry-appropriate restrictions (no fear-mongering, accurate threat claims)",
+          "type": "quantitative"
+        },
+        {
+          "text": "Brand slug is generated correctly in kebab-case and directory structure is created",
+          "type": "quantitative"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Import our brand guidelines from https://example.com/brand-guide and set up the ContentForge profile",
+      "expected_output": "Skill fetches the URL, extracts brand voice, colors, restrictions, and creates a profile with imported guidelines",
+      "files": [],
+      "assertions": [
+        {
+          "text": "URL is fetched and content is analyzed for brand voice characteristics",
+          "type": "qualitative"
+        },
+        {
+          "text": "Extracted guidelines are saved to the brand profile's guidelines directory",
+          "type": "quantitative"
+        },
+        {
+          "text": "User is asked to confirm or adjust extracted voice attributes before saving",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

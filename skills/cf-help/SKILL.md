@@ -1,5 +1,6 @@
 ---
 description: "Show the ContentForge user guide, available skills, pipeline overview, examples, and troubleshooting"
+argument-hint: "[--pipeline | --skills | --examples]"
 ---
 
 # /cf:help

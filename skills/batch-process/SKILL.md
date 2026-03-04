@@ -1,6 +1,7 @@
 ---
 name: batch-process
 description: Process multiple content pieces in parallel with queue management, priority scheduling, and progress tracking
+argument-hint: "[sheet-url or topic-list]"
 ---
 
 # Batch Content Processing

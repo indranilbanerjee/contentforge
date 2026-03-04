@@ -1,6 +1,7 @@
 ---
 name: contentforge
 description: Generate publication-ready, fact-checked, brand-compliant, SEO-optimized content through 10-phase autonomous pipeline with zero hallucinations
+argument-hint: "[topic or content brief]"
 ---
 
 # ContentForge — Enterprise Content Production

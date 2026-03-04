@@ -1,6 +1,7 @@
 ---
 name: cf-social-adapt
 description: Repurpose finished articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads
+argument-hint: "[article-path]"
 ---
 
 # Social Content Adaptation — ContentForge Post-Pipeline

@@ -1,6 +1,8 @@
 ---
 name: cf-publish
 description: Publish finished content to Webflow or WordPress via MCP connectors with preview, verification, and HTML export fallback
+disable-model-invocation: true
+argument-hint: "[platform]"
 ---
 
 # Publish Content — ContentForge CMS Publishing

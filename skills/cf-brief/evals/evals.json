@@ -1,0 +1,49 @@
+{
+  "skill_name": "cf-brief",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "/cf:brief AI-powered customer service chatbots for e-commerce",
+      "expected_output": "A structured content brief with keyword analysis, competitor content gaps, audience targeting, and outline recommendations",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Brief includes primary and secondary keyword recommendations with search volume estimates",
+          "type": "quantitative"
+        },
+        {
+          "text": "Competitor content analysis identifies gaps and differentiation opportunities",
+          "type": "qualitative"
+        },
+        {
+          "text": "Target audience and search intent are clearly defined",
+          "type": "quantitative"
+        },
+        {
+          "text": "Suggested outline includes H2/H3 hierarchy with word count targets per section",
+          "type": "quantitative"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "Create a content brief for a thought leadership article about ESG investing trends in 2026",
+      "expected_output": "A research-backed brief with financial industry context, authoritative source recommendations, and E-E-A-T considerations",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Brief recommends authoritative financial sources (not just generic blogs)",
+          "type": "qualitative"
+        },
+        {
+          "text": "E-E-A-T signals are addressed: author expertise, citing studies, original data opportunities",
+          "type": "quantitative"
+        },
+        {
+          "text": "Content angle differentiates from top-ranking competitor content",
+          "type": "qualitative"
+        }
+      ]
+    }
+  ]
+}

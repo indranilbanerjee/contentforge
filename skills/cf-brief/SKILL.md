@@ -1,6 +1,7 @@
 ---
 name: cf-brief
 description: Generate comprehensive content briefs with keyword research, competitor analysis, search intent classification, audience insights, and SEO strategy from a topic or keyword
+argument-hint: "[topic]"
 ---
 
 # Content Brief Generator

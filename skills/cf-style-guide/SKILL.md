@@ -1,6 +1,7 @@
 ---
 name: cf-style-guide
 description: Import and manage brand voice profiles from style guide documents or URLs, extracting tone, terminology, guardrails, and compliance requirements into structured brand profile JSON
+argument-hint: "[brand-name or URL]"
 ---
 
 # Brand Style Guide Importer
