@@ -1,4 +1,6 @@
-# ContentForge v3.0.0 Upgrade Guide
+# ContentForge Upgrade Guide — v2.1.0 → v3.0.0 (Historical)
+
+This guide covers the v2.1.0 → v3.0.0 migration only. For changes since v3.0.0, see CHANGELOG.md entries for v3.1.0 through v3.4.0.
 
 Upgrading from v2.1.0 to v3.0.0. No breaking changes.
 
@@ -6,15 +8,15 @@ Upgrading from v2.1.0 to v3.0.0. No breaking changes.
 
 ## What Changed
 
-| Category | v2.1.0 | v3.0.0 |
-|----------|--------|--------|
-| Skills | 3 | 17 (+14 new) |
-| Agents | 10 | 12 (+2 new, 4 upgraded) |
-| Scripts | 0 | 2 |
-| Configs | 4 | 7 (+3 new, 1 updated) |
-| Templates | 7 | 10 (+3 new) |
-| Utilities | 2 | 6 (+4 new) |
-| Connectors | 6 HTTP | 6 HTTP + 16 npx available |
+| Category | v2.1.0 | v3.0.0 | Current (v3.4.0) |
+|----------|--------|--------|------------------|
+| Skills | 3 | 17 (+14 new) | 18 |
+| Agents | 10 | 12 (+2 new, 4 upgraded) | 13 |
+| Scripts | 0 | 2 | 4 |
+| Configs | 4 | 7 (+3 new, 1 updated) | 7 + 10 industry packs |
+| Templates | 7 | 10 (+3 new) | 10 |
+| Utilities | 2 | 6 (+4 new) | 6 |
+| Connectors | 6 HTTP | 6 HTTP + 16 npx available | 7 HTTP + 16 npx available |
 
 ---
 

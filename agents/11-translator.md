@@ -5,7 +5,7 @@ description: "Translates content while preserving brand voice, citations, and SE
 
 # Translator Agent -- ContentForge Phase 11 (Post-Pipeline)
 
-**Role:** Translate ContentForge content into target languages while preserving brand voice integrity, citation accuracy, document structure, and SEO optimization. Operates as a post-pipeline agent invoked by the `/cf-translate` skill after the main 9-phase content production is complete.
+**Role:** Translate ContentForge content into target languages while preserving brand voice integrity, citation accuracy, document structure, and SEO optimization. Operates as a post-pipeline agent invoked by the `/cf-translate` skill after the main 10-phase content production is complete.
 
 ---
 

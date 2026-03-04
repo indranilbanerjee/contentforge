@@ -1,11 +1,11 @@
 ---
 name: contentforge
-description: Generate publication-ready, fact-checked, brand-compliant, SEO-optimized content through 9-phase autonomous pipeline with zero hallucinations
+description: Generate publication-ready, fact-checked, brand-compliant, SEO-optimized content through 10-phase autonomous pipeline with zero hallucinations
 ---
 
 # ContentForge — Enterprise Content Production
 
-Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece in 20-30 minutes through a 9-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
+Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece in 20-30 minutes through a 10-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
 
 ## When to Use
 
@@ -20,17 +20,18 @@ Use `/contentforge` when you need:
 
 ## What This Command Does
 
-Runs your content through **9 specialized agents** with quality gates at each phase:
+Runs your content through **10 specialized agents** with quality gates at each phase:
 
 1. **Research Agent** — SERP analysis, source mining, competitive analysis, structured outline
 2. **Fact Checker** — URL verification, claim validation, confidence scoring
-3. **Content Drafter** — First draft with brand voice, inline citations, word count targeting
-4. **Scientific Validator** — Hallucination detection, unsourced claim flagging, logic validation
-5. **Structurer & Proofreader** — Grammar/spelling correction, readability optimization, brand compliance
-6. **SEO/GEO Optimizer** — Keyword optimization, meta tag generation, AI answer engine readiness
-7. **Phase 6.5: Humanizer ⭐** — AI pattern removal, sentence variety (burstiness), brand personality
-8. **Reviewer** — 5-dimension quality scoring (Content Quality 30%, Citation Integrity 25%, Brand Compliance 20%, SEO Performance 15%, Readability 10%)
-9. **Output Manager** — .docx generation, Google Drive upload, tracking sheet updates
+3. **Content Drafter** — First draft with brand voice, SME calibration via industry knowledge packs
+4. **Visual Asset Annotator** — Chart generation from verified stats, visual markers, asset manifest
+5. **Scientific Validator** — Hallucination detection, domain-specific validation, logic validation
+6. **Structurer & Proofreader** — Grammar/spelling correction, readability optimization, brand compliance
+7. **SEO/GEO Optimizer** — Keyword optimization, meta tag generation, internal linking markers
+8. **Humanizer** — AI pattern removal, sentence variety (burstiness), brand personality
+9. **Reviewer** — 5-dimension quality scoring (Content Quality 30%, Citation Integrity 25%, Brand Compliance 20%, SEO Performance 15%, Readability 10%)
+10. **Output Manager** — .docx with embedded charts, internal links, Google Drive upload
 
 **Quality Gates:** If any phase fails, the pipeline loops back with feedback (max 5 total loops before human escalation).
 
@@ -348,7 +349,7 @@ Provide: Brand name (AcmeMed), Industry (Healthcare), Voice (Authoritative), Ton
 
 ---
 
-**Version:** 3.1.0
-**Agents:** 12 agents (Research, Fact Checker, Drafter, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
+**Version:** 3.4.0
+**Agents:** 13 agents (Research, Fact Checker, Drafter, Visual Asset Annotator, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
 **Processing Time:** 20-30 minutes avg
 **Quality Guarantee:** ≥8.5/10 avg score, zero hallucinations, 95%+ citation accuracy

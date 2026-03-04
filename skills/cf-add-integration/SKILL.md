@@ -1,4 +1,5 @@
 ---
+name: cf-add-integration
 description: "Guide users through adding a custom MCP connector — connect any API, tool, or service to ContentForge by configuring .mcp.json with proper credentials"
 ---
 

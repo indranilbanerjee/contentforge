@@ -1,4 +1,4 @@
-# ContentForge v3.1 — Complete User Guide
+# ContentForge v3.4 — Complete User Guide
 
 **From zero to first published article.** This guide walks you through every step of using ContentForge in Claude Cowork or Claude Code, from initial setup to running the full content production pipeline.
 
@@ -13,7 +13,7 @@
 5. [Setting Up Google Sheets (Optional)](#5-setting-up-google-sheets-optional)
 6. [Setting Up Google Drive Knowledge Vault (Optional)](#6-setting-up-google-drive-knowledge-vault-optional)
 7. [Running Your First Content Piece](#7-running-your-first-content-piece)
-8. [Understanding the 9-Phase Pipeline](#8-understanding-the-9-phase-pipeline)
+8. [Understanding the 10-Phase Pipeline](#8-understanding-the-10-phase-pipeline)
 9. [Reading the Quality Scorecard](#9-reading-the-quality-scorecard)
 10. [Publishing & Social Adaptation](#10-publishing--social-adaptation)
 11. [Batch Processing (Multiple Pieces)](#11-batch-processing-multiple-pieces)
@@ -115,7 +115,7 @@ Run immediately after install:
 /cf:integrations
 ```
 
-This shows which connectors are active and what they unlock. You should see at least 6 HTTP connectors (Notion, Canva, Webflow, Slack, Gmail, Google Calendar) if the plugin installed correctly.
+This shows which connectors are active and what they unlock. You should see at least 7 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar) if the plugin installed correctly.
 
 ---
 
@@ -127,7 +127,7 @@ When ContentForge loads, the `setup.py` script runs automatically and reports:
 [ContentForge] Python 3.10.12 ✓
 [ContentForge] PLUGIN_ROOT=/home/user/.claude/plugins/contentforge
 [ContentForge] SCRIPTS_DIR=/home/user/.claude/plugins/contentforge/scripts
-[ContentForge] CONNECTORS=6 HTTP connectors loaded
+[ContentForge] CONNECTORS=7 HTTP connectors loaded
 ```
 
 This tells you:
@@ -181,7 +181,7 @@ Here's our brand voice guide:
 - Reading level: College graduate
 ```
 
-ContentForge generates a JSON profile that all 12 agents reference during content production.
+ContentForge generates a JSON profile that all 13 agents reference during content production.
 
 ### Method 2: Manual JSON Creation
 
@@ -495,7 +495,7 @@ Business casual. Use contractions (it's, we're) but avoid slang.
 
 ContentForge will:
 1. Ask which brand to use (or use defaults if none exist)
-2. Run the 9-phase pipeline
+2. Run the 10-phase pipeline
 3. Output a quality scorecard + the content
 
 ### Interactive Mode (Recommended for First Time)
@@ -528,7 +528,7 @@ Reads requirement from Row 5 of the sheet.
 
 ### What to Expect
 
-After you provide inputs, the pipeline runs through 9 phases. You'll see progress updates:
+After you provide inputs, the pipeline runs through 10 phases. You'll see progress updates:
 
 ```
 Phase 1: Research Agent — Finding sources for "AI Diagnostics"...
@@ -555,7 +555,7 @@ TOTAL TIME: 24 minutes
 
 ---
 
-## 8. Understanding the 9-Phase Pipeline
+## 8. Understanding the 10-Phase Pipeline
 
 ### Phase Flow
 
@@ -1147,7 +1147,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/contentforge` | Full 9-phase content pipeline | 20-30 min |
+| `/contentforge` | Full 10-phase content pipeline | 20-30 min |
 | `/batch-process` | Parallel production (10-50+ pieces) | 4-5x faster |
 | `/content-refresh` | Update old content with fresh data | 10-25 min |
 
@@ -1247,17 +1247,18 @@ All 5 articles scored ≥7.0 → APPROVED.
 ```
 contentforge/
 ├── .claude-plugin/plugin.json     # Manifest (name, version, description, author)
-├── .mcp.json                      # 6 HTTP connectors (Notion, Canva, Webflow, Slack, Gmail, Calendar)
+├── .mcp.json                      # 7 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Calendar)
 ├── .mcp.json.example              # 67 npx servers (opt-in, copy to .mcp.json)
 ├── CONNECTORS.md                  # Full connector reference
 ├── README.md                      # Project overview
 ├── CHANGELOG.md                   # Release history
-├── UPGRADE-GUIDE.md               # v2.x → v3.0 migration
+├── UPGRADE-GUIDE.md               # v2.x → v3.0 migration (historical)
 │
-├── agents/                        # 12 specialist agents
+├── agents/                        # 13 specialist agents
 │   ├── 01-researcher.md           # Phase 1: SERP analysis, source mining
 │   ├── 02-fact-checker.md         # Phase 2: URL verification, claim validation
 │   ├── 03-content-drafter.md      # Phase 3: First draft with citations
+│   ├── 03.5-visual-asset-annotator.md # Phase 3.5: Visual asset annotation
 │   ├── 04-scientific-validator.md # Phase 4: Hallucination detection
 │   ├── 05-structurer-proofreader.md # Phase 5: Grammar, readability, brand
 │   ├── 06-seo-geo-optimizer.md    # Phase 6: Keywords, meta, GEO, AI Overview
@@ -1268,7 +1269,7 @@ contentforge/
 │   ├── 10-social-adapter.md       # Social media post generation
 │   └── 11-translator.md           # Multilingual translation
 │
-├── skills/                        # 17 skill commands
+├── skills/                        # 18 skill commands
 │   ├── contentforge/SKILL.md      # Main pipeline
 │   ├── batch-process/SKILL.md     # Parallel processing
 │   ├── content-refresh/SKILL.md   # Content updates
@@ -1329,4 +1330,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.1.0** — 12 agents, 18 skills, zero hallucinations.
+**ContentForge v3.4.0** — 13 agents, 18 skills, zero hallucinations.

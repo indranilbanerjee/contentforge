@@ -68,7 +68,7 @@ python3 scripts/connector-status.py --action status
 ```
 
 This checks:
-- `.mcp.json` for HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar, Ahrefs, Similarweb)
+- `.mcp.json` for HTTP connectors (7 pre-configured: Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar; plus Ahrefs, Similarweb when user-added)
 - Environment variables for npx connectors (Google Sheets, Google Drive, WordPress, Semrush, DeepL, etc.)
 - Returns JSON with connected/available status per connector, grouped by category
 
@@ -83,7 +83,7 @@ Organize results into a visual dashboard. Each category shows:
 ```
 ===========================================================
   ContentForge Integration Dashboard
-  Connected: 6 of 22 (27%)
+  Connected: 7 of 22 (32%)
 ===========================================================
 
   KNOWLEDGE BASE
@@ -153,15 +153,15 @@ Present the high-level numbers:
 -----------------------------------------------------------
 
   Total connectors:     22
-  Connected:            6 (27%)
-  Available:            16
+  Connected:            7 (32%)
+  Available:            15
 
-  HTTP connectors:      9 total, 6 connected (67%)
+  HTTP connectors:      9 total, 7 connected (78%)
   npx connectors:       13 total, 0 connected (0%)
 
-  Categories covered:   4 of 12 (33%)
-  Categories empty:     8 (spreadsheets, file-storage, social-media, analytics,
-                           translation, seo [partial])
+  Categories covered:   6 of 12 (50%)
+  Categories empty:     6 (spreadsheets, file-storage, social-media, analytics,
+                           translation, seo)
 ```
 
 ### Step 5: Provide Next Steps
@@ -206,7 +206,7 @@ The complete dashboard includes these sections:
 ```
 ===========================================================
   ContentForge Integration Dashboard
-  Connected: 6 of 22 (27%)
+  Connected: 7 of 22 (32%)
 ===========================================================
 
   KNOWLEDGE BASE — Store requirements, brand docs, reference material
@@ -334,14 +334,14 @@ The complete dashboard includes these sections:
 -----------------------------------------------------------
 
   Total connectors:     22
-  Connected:            6 (27%)
-  Available:            16
+  Connected:            7 (32%)
+  Available:            15
 
-  HTTP connectors:      9 total, 6 connected (67%)
+  HTTP connectors:      9 total, 7 connected (78%)
   npx connectors:       13 total, 0 connected (0%)
 
-  Categories covered:   5 of 12 (42%)
-  Categories empty:     7
+  Categories covered:   6 of 12 (50%)
+  Categories empty:     6
 
 -----------------------------------------------------------
   NEXT STEPS
@@ -419,7 +419,7 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Script:** `scripts/connector-status.py --action status`
 **Processing Time:** <10 seconds
 **Network Required:** No (reads local config only)

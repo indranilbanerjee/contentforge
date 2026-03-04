@@ -165,7 +165,7 @@ Recommendation: Medium Refresh (50% rewrite)
 - Update target keywords based on current search intent
 - Add 5-10 new sections
 - Replace 80% of citations
-- Full 9-phase pipeline (same as new content)
+- Full 10-phase pipeline (same as new content)
 
 **What Stays:**
 - Core topic and brand voice
@@ -379,6 +379,6 @@ https://docs.google.com/.../article-3,heavy,3,Topic outdated, needs rewrite
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Phase:** C (Advanced Features)
 **Time Savings:** 4x faster for batch, preserves SEO equity, extends content lifespan

@@ -271,7 +271,7 @@ These elements are **never** translated:
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Agents:** Translator (11-translator), Humanizer (06.5-humanizer)
 **Processing Time:** 10-30 minutes depending on localization level
 **Quality Guarantee:** Brand voice >= 8/10, zero citation errors, SEO keywords adapted for target market

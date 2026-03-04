@@ -135,7 +135,7 @@ Queue (sorted by priority, then time):
    - Add to active pipelines tracker
 
 2. **Launch ContentForge Pipeline**
-   - Run full 9-phase pipeline as defined in agents 01-08
+   - Run full 10-phase pipeline as defined in agents 01-08
    - Pass requirement data (title, audience, brand, word count, content type)
    - Each pipeline is independent (separate context, separate outputs)
 
@@ -356,7 +356,7 @@ total_time = longest_piece_time + (sum(remaining_pieces) / concurrency)
 
 ## Quality Gates (Same as Single-Piece Pipeline)
 
-Each pipeline in the batch runs through the full 9-phase process with identical quality gates:
+Each pipeline in the batch runs through the full 10-phase process with identical quality gates:
 - Phase 2: Fact-checking (all URLs verified, claims sourced)
 - Phase 4: Hallucination detection (no unsourced claims)
 - Phase 5: Brand compliance (100% adherence)

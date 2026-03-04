@@ -507,7 +507,7 @@ See [`config/analytics-config.json`](../../config/analytics-config.json) for ful
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Agents:** None (data analysis only)
 **Processing Time:** 5-15 seconds (data loading + aggregation)
 **Output:** ASCII analytics dashboard with trends, comparisons, alerts, and recommendations

@@ -480,7 +480,7 @@ Fallback: Publish without featured image, flag for manual fix
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Agent:** Output Manager (Phase 8) + CMS Publisher utility
 **Utilities:** cms-publisher.md
 **Platforms:** Webflow, WordPress

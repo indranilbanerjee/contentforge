@@ -14,7 +14,7 @@
 4. [First-Time Setup (5 minutes)](#first-time-setup)
 5. [Using ContentForge Commands](#using-contentforge-commands)
 6. [Workflows for Different Use Cases](#workflows-for-different-use-cases)
-7. [Understanding the 9-Phase Pipeline](#understanding-the-9-phase-pipeline)
+7. [Understanding the 10-Phase Pipeline](#understanding-the-10-phase-pipeline)
 8. [Quality Scores & What They Mean](#quality-scores--what-they-mean)
 9. [Batch Processing for Agencies](#batch-processing-for-agencies)
 10. [Content Refresh (Update Old Content)](#content-refresh)
@@ -29,7 +29,7 @@ ContentForge is an **enterprise-grade content production system** that transform
 
 ### What Makes It Different
 
-Unlike single-prompt tools (ChatGPT, Gemini), ContentForge runs your content through **9 specialized quality gates**:
+Unlike single-prompt tools (ChatGPT, Gemini), ContentForge runs your content through **10 specialized quality gates**:
 
 ✅ **Zero Hallucinations** — Three-layer fact verification catches fabricated data
 ✅ **95%+ Citation Accuracy** — All claims traceable to verified sources
@@ -76,7 +76,7 @@ Available Plugins in neels-plugins:
 1. digital-marketing-pro (v2.2.0)
    Comprehensive digital marketing execution system...
 
-2. contentforge (v3.1.0)
+2. contentforge (v3.4.0)
    Enterprise multi-agent content production with batch processing...
 ```
 
@@ -87,7 +87,7 @@ Available Plugins in neels-plugins:
 
 **You'll see:**
 ```
-✓ Installing ContentForge v3.1.0...
+✓ Installing ContentForge v3.4.0...
 ✓ Installation complete!
 
 Available commands:
@@ -107,7 +107,7 @@ Type:
 
 Scroll down to "Installed Plugins" section. You should see:
 ```
-ContentForge (v3.1.0)
+ContentForge (v3.4.0)
   /contentforge
   /batch-process
   /content-refresh
@@ -895,7 +895,7 @@ Guardrails:
 
 ---
 
-## Understanding the 9-Phase Pipeline
+## Understanding the 10-Phase Pipeline
 
 ### Visual Pipeline Flow
 

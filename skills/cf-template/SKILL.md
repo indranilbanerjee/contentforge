@@ -371,7 +371,7 @@ The template creation produces:
 |--------|------------|
 | **Template File** | .md file in `templates/content-types/[name]-structure.md` |
 | **Usage Instructions** | Command to use the template with `/contentforge` |
-| **Pipeline Validation** | Compatibility test results for all 9 phases |
+| **Pipeline Validation** | Compatibility test results for all 10 phases |
 | **Specifications Summary** | Word count, readability, citations, sections count |
 
 ## Output Example
@@ -388,7 +388,7 @@ Specifications:
   Sections: 9
   Production Time: 25-35 min
 
-Pipeline Validation: PASS (all 9 phases compatible)
+Pipeline Validation: PASS (all 10 phases compatible)
 
 Usage:
   /contentforge "Client X: How AI Reduced Diagnostic Time by 40%"
@@ -478,7 +478,7 @@ None. This skill uses deterministic template creation (section definition, word 
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Agent:** None (deterministic template creation)
 **Processing Time:** 3-6 minutes
 **Output:** Template .md file in templates/content-types/, pipeline validation, usage instructions

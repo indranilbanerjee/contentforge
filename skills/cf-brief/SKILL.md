@@ -594,7 +594,7 @@ Results are directionally accurate but less precise. The brief clearly labels es
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Agent:** Researcher (Agent 01)
 **MCP:** Ahrefs (optional, HTTP), Similarweb (optional, HTTP)
 **Processing Time:** 10-15 minutes

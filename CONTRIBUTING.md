@@ -285,7 +285,7 @@ Brief description of changes
 /contentforge "Generate content for test row in [Sheet URL]"
 
 # Verify:
-# - All 9 phases complete
+# - All 10 phases complete
 # - Quality score calculated correctly
 # - Output .docx generated
 # - Tracking sheet updated

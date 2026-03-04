@@ -182,7 +182,7 @@ Phase 8: Output Manager ⬆ UPGRADED (Visual + Link Integration)
 
 ### Connectors (MCP Integrations)
 
-ContentForge ships with **6 HTTP connectors** that work in both Cowork and Claude Code — Notion (knowledge base), Canva (design), Webflow (publishing), Slack (notifications), Gmail (delivery), and Google Calendar (scheduling).
+ContentForge ships with **7 HTTP connectors** that work in both Cowork and Claude Code — Notion (knowledge base), Canva (design), Figma (design), Webflow (publishing), Slack (notifications), Gmail (delivery), and Google Calendar (scheduling).
 
 **The plugin works fully WITHOUT any connectors** — you can run the complete content pipeline and get output locally. Connectors unlock platform integrations.
 
@@ -287,6 +287,7 @@ ContentForge-Knowledge/
 | 6.5 | Humanizer | AI pattern removal, personality profiles, industry patterns | 2 min |
 | 7 | Reviewer | 5-dimension scoring, visual + link quality, comparative analysis | 1 min |
 | 8 | Output Manager | .docx with charts, internal links, Medium, Substack, PDF | 1 min |
+| 9 | Batch Orchestrator | Parallel pipeline coordination, queue management, progress tracking | Post-pipeline |
 | 10 | Social Adapter | Extract shareworthy moments, generate platform-specific posts | Post-pipeline |
 | 11 | Translator | Element classification, brand voice mapping, cultural adaptation | Post-pipeline |
 

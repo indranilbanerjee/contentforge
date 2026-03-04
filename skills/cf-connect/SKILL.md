@@ -143,9 +143,9 @@ This returns:
 
 Instructions differ based on transport type.
 
-#### HTTP Connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar, Ahrefs, Similarweb)
+#### HTTP Connectors (7 pre-configured: Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar; plus Ahrefs, Similarweb available)
 
-HTTP connectors are the easiest to set up because they're already pre-configured in ContentForge's `.mcp.json` file. No API keys, no environment variables, no manual configuration.
+The 7 pre-configured HTTP connectors are the easiest to set up because they're already in ContentForge's `.mcp.json` file. No API keys, no environment variables, no manual configuration. Ahrefs and Similarweb are also HTTP connectors but must be added to `.mcp.json` by the user.
 
 ```
 -----------------------------------------------------------
@@ -386,19 +386,19 @@ The complete setup guide includes these sections:
 
 ## Connector Quick Reference
 
-### HTTP Connectors (Zero Config)
+### HTTP Connectors (7 Pre-Configured + 2 Available)
 
-| Connector | Category | URL | Skills |
-|-----------|----------|-----|--------|
-| Notion | Knowledge base | `https://mcp.notion.com/mcp` | contentforge, batch-process, content-refresh, cf-brief, cf-audit, cf-style-guide |
-| Canva | Design | `https://mcp.canva.com/mcp` | contentforge, batch-process, cf-social-adapt |
-| Figma | Design | `https://mcp.figma.com/mcp` | contentforge, cf-social-adapt |
-| Webflow | CMS | `https://mcp.webflow.com/sse` | cf-publish, contentforge, batch-process |
-| Slack | Chat | `https://mcp.slack.com/mcp` | batch-process, cf-publish, cf-calendar |
-| Gmail | Email | `https://gmail.mcp.claude.com/mcp` | batch-process, cf-publish |
-| Google Calendar | Calendar | `https://gcal.mcp.claude.com/mcp` | cf-calendar, batch-process |
-| Ahrefs | SEO | `https://api.ahrefs.com/mcp/mcp` | cf-brief, cf-audit, content-refresh |
-| Similarweb | SEO | `https://mcp.similarweb.com` | cf-brief, cf-audit |
+| Connector | Category | URL | Pre-configured | Skills |
+|-----------|----------|-----|----------------|--------|
+| Notion | Knowledge base | `https://mcp.notion.com/mcp` | Yes | contentforge, batch-process, content-refresh, cf-brief, cf-audit, cf-style-guide |
+| Canva | Design | `https://mcp.canva.com/mcp` | Yes | contentforge, batch-process, cf-social-adapt |
+| Figma | Design | `https://mcp.figma.com/mcp` | Yes | contentforge, cf-social-adapt |
+| Webflow | CMS | `https://mcp.webflow.com/sse` | Yes | cf-publish, contentforge, batch-process |
+| Slack | Chat | `https://mcp.slack.com/mcp` | Yes | batch-process, cf-publish, cf-calendar |
+| Gmail | Email | `https://gmail.mcp.claude.com/mcp` | Yes | batch-process, cf-publish |
+| Google Calendar | Calendar | `https://gcal.mcp.claude.com/mcp` | Yes | cf-calendar, batch-process |
+| Ahrefs | SEO | `https://api.ahrefs.com/mcp/mcp` | No | cf-brief, cf-audit, content-refresh |
+| Similarweb | SEO | `https://mcp.similarweb.com` | No | cf-brief, cf-audit |
 
 ### npx Connectors (Require Setup)
 
@@ -501,7 +501,7 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Script:** `scripts/connector-status.py --action setup-guide --name <connector>`
 **Processing Time:** <10 seconds
 **Network Required:** No (reads local config and env vars only)

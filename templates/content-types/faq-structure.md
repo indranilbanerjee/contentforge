@@ -227,7 +227,7 @@ Best for simple, factual questions
 ```
 ### What is ContentForge?
 
-ContentForge is an enterprise multi-agent AI platform for content generation. It produces research-backed, brand-compliant, SEO-optimized content through an 9-phase autonomous pipeline.
+ContentForge is an enterprise multi-agent AI platform for content generation. It produces research-backed, brand-compliant, SEO-optimized content through a 10-phase autonomous pipeline.
 
 The system handles articles, blogs, whitepapers, FAQs, and research papers for digital marketing agencies managing 50-200 brands.
 ```

@@ -68,7 +68,7 @@ REQ-002,blog,10 Tips for Remote Teams,HR Managers,TechCorp,1500,3,pending
 
 ### Step 2: Parallel Execution (20-30 min per piece, up to 5 concurrent)
 - Launch up to 5 ContentForge pipelines simultaneously
-- Each pipeline runs full 9-phase process independently
+- Each pipeline runs full 10-phase process independently
 - Progress tracker updates in real-time
 - When one completes, next in queue starts automatically
 
@@ -224,6 +224,6 @@ ContentForge Output/
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Agent:** Batch Orchestrator
 **Utilities:** batch-queue-manager.md, progress-tracker.md

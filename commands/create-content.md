@@ -1,5 +1,5 @@
 ---
-description: Run the full 9-phase content production pipeline — research, draft, fact-check, humanize, and publish
+description: Run the full 10-phase content production pipeline — research, draft, fact-check, humanize, and publish
 argument-hint: "<topic or title> [content type]"
 ---
 
@@ -7,7 +7,7 @@ argument-hint: "<topic or title> [content type]"
 
 > If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../CONNECTORS.md).
 
-Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece through a 9-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
+Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece through a 10-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
 
 ## Trigger
 
@@ -37,7 +37,7 @@ Gather the following from the user. If not provided, ask before proceeding:
    - Specific sources or references to include
    - Competitor URLs to differentiate from
 
-## The 9-Phase Pipeline
+## The 10-Phase Pipeline
 
 Each phase has a quality gate. If any phase fails, the pipeline loops back with feedback (max 5 loops before human escalation).
 
@@ -54,9 +54,16 @@ Each phase has a quality gate. If any phase fails, the pipeline loops back with 
 
 ### Phase 3: Content Drafter
 - First draft with brand voice applied throughout
+- SME calibration via industry knowledge packs (terminology, regulatory, evidence standards)
 - Inline citations for every factual claim
 - Word count targeting within 10% of specification
 - Natural flow with transitions between sections
+
+### Phase 3.5: Visual Asset Annotator
+- Chart generation from verified research statistics (matplotlib)
+- Visual opportunity identification and annotation markers
+- Asset manifest with placement, alt text, and data sources
+- TODO markers for visuals requiring human action (screenshots, photos)
 
 ### Phase 4: Scientific Validator (Layer 2)
 - Hallucination detection — flag any claim not backed by cited sources

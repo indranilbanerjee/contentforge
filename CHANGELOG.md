@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.4.0] - 2026-03-04
+
+### Added
+- **10 industry knowledge packs** for subject matter expertise calibration (`config/industries/`)
+  - Pharma, BFSI, Real Estate, Healthcare, Technology, B2B SaaS, Legal, eCommerce, Consumer Goods, Education
+  - Each pack provides: terminology depth, regulatory awareness, evidence standards, quality signals, common pitfalls
+- **Phase 3 Step 0.3: SME Calibration** — Content Drafter loads industry knowledge pack and calibrates expertise stance, writing conventions, terminology depth, regulatory awareness, evidence standards, and quality signals before drafting
+- **Phase 4 Step 5: Domain-Specific Validation** — Scientific Validator validates terminology accuracy, evidence standard compliance, regulatory compliance, common pitfalls, and expert quality signals against the knowledge pack
+- **Brand-setup Step F: Key File Generation** — Auto-generates brand-profile.json, guardrails.json, and reference-content.md from website analysis, existing Drive files, user input, and targeted gap questions
+- **Figma HTTP connector** added to `.mcp.json` (7 HTTP connectors total)
+- **`name` field** added to `cf-add-integration` skill frontmatter (was missing, could cause registration failure)
+
+### Fixed
+- README pipeline diagram now correctly shows Phase 3.5 (Visual Asset Annotator) — was missing since v3.2.0
+- All "9-phase" references updated to "10-phase" across commands, skills, agents, templates, and documentation
+- Agent table in README now includes Agent 09 (Batch Orchestrator) — was missing
+- Version strings updated to 3.4.0 across plugin.json, hooks.json, README, and marketplace
+- Stale counts updated: 13 agents (was 12), 18 skills (was 17), 7 HTTP connectors (was 6)
+- Humanizer agent removed stale "NEW" badge from header
+- `scoring-thresholds.json` has industry overrides for regulated industries (pharma, bfsi, real_estate, healthcare, legal)
+
+---
+
 ## [3.3.0] - 2026-03-03
 
 ### Added — Google Sheets Tracking & Google Drive Delivery
@@ -64,7 +87,7 @@ Google Sheets has NO HTTP MCP endpoint. Google Drive has NO HTTP MCP endpoint (o
 ### Added — Commands & Version Consistency
 
 - **7 command files** in `commands/` directory — visible in the Customize panel "Commands" section:
-  - `create-content` — Run the full 9-phase content production pipeline
+  - `create-content` — Run the full 10-phase content production pipeline
   - `content-brief` — Generate a research-backed content brief with keyword data and competitor analysis
   - `social-adapt` — Repurpose articles into platform-specific social media posts
   - `publish` — Publish finished content to Webflow or WordPress with preview and verification
@@ -455,7 +478,7 @@ This patch release resolves the core installation and management issues reported
 
 ### Added
 
-#### Core Pipeline (9 Phases)
+#### Core Pipeline (10 Phases)
 - **Phase 1: Research Agent** — SERP analysis, source mining, competitive analysis, structured outline generation
 - **Phase 2: Fact Checker** — URL verification, claim validation, cross-referencing, confidence scoring
 - **Phase 3: Content Drafter** — First draft generation with brand voice, inline citations, word count targeting
@@ -566,28 +589,25 @@ This patch release resolves the core installation and management issues reported
 
 ## [Unreleased]
 
-### Planned for v3.1
-- [ ] Image generation integration (DALL-E, Midjourney via MCP)
-- [ ] Audio content (podcast scripts, voice-over scripts)
-- [ ] Web-based progress dashboard (HTML/CSS)
-- [ ] Slack/Teams notifications for batch completion
-
-### Planned for v3.2
-- [ ] Expand multilingual support to 35+ languages
-- [ ] Content performance tracking (organic traffic correlation)
-- [ ] Predictive quality scoring from brief analysis
-- [ ] Content decay detection with automated refresh triggers
-
 ### Planned for v4.0
 - [ ] API mode (REST API for external integrations)
 - [ ] Real-time collaboration
 - [ ] Custom agent creation (define your own pipeline phases)
 - [ ] Advanced analytics with ML-powered optimization
+- [ ] Image generation integration (DALL-E, Midjourney via MCP)
+- [ ] Audio content (podcast scripts, voice-over scripts)
+- [ ] Expand multilingual support to 35+ languages
+- [ ] Content performance tracking (organic traffic correlation)
+- [ ] Predictive quality scoring from brief analysis
 
 ---
 
 ## Version History
 
+- **3.4.0** (2026-03-04) — 10 industry knowledge packs, SME calibration, domain-specific validation, brand-setup key file generation, Figma connector
+- **3.3.0** (2026-03-03) — Google Sheets tracking + Google Drive delivery via Python scripts with service account
+- **3.2.0** (2026-03-03) — Visual Asset Annotator (Phase 3.5), structured internal linking, 10-phase pipeline
+- **3.1.0** (2026-02-26) — 7 commands, /cf:help, /cf:add-integration, version consistency
 - **3.0.0** (2026-02-25) — Complete modernization: 14 new skills, 2 new agents, 4 agent upgrades, connector infrastructure
 - **2.1.0** (2026-02-25) — HTTP connector architecture, kebab-case agent names
 - **2.0.2** (2026-02-24) — Agent frontmatter, Output Manager MCP fixes
@@ -611,10 +631,14 @@ Found a bug or have a feature request? Please open an issue on [GitHub Issues](h
 
 ---
 
+[3.4.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.4.0
+[3.3.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.3.0
+[3.2.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.2.0
+[3.1.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.1.0
 [3.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.0.0
 [2.1.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.1.0
 [2.0.2]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.2
 [2.0.1]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.1
 [2.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.0
 [1.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v1.0.0
-[Unreleased]: https://github.com/indranilbanerjee/contentforge/compare/v3.0.0...HEAD
+[Unreleased]: https://github.com/indranilbanerjee/contentforge/compare/v3.4.0...HEAD

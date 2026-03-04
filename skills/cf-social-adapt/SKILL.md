@@ -642,7 +642,7 @@ Action: Posts generated without link. Add --url parameter to include article lin
 
 ---
 
-**Version:** 3.1.0
+**Version:** 3.4.0
 **Agent:** Social Adapter (10-social-adapter)
 **Config:** social-platform-specs.json
 **Templates:** social-post-templates.md

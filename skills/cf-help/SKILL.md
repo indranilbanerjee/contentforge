@@ -17,15 +17,15 @@ Display this quick orientation:
 ```
 === CONTENTFORGE — HELP ===
 
-Version: 3.1.0
-Agents: 12 (9-phase pipeline + 3 post-pipeline)
+Version: 3.4.0
+Agents: 13 (10-phase pipeline + 3 post-pipeline)
 Skills: 18 slash commands (/cf:* + /contentforge + /batch-process + /content-refresh)
-Connectors: 6 HTTP + 16 npx integrations
+Connectors: 7 HTTP + 16 npx integrations
 
 Getting Started:
   1. /cf:style-guide         — Create your brand profile (start here)
   2. /cf:integrations         — See which connectors are active
-  3. /contentforge            — Run the full 9-phase content pipeline
+  3. /contentforge            — Run the full 10-phase content pipeline
   4. /cf:help --examples      — See example prompts and workflows
 ```
 
@@ -34,8 +34,8 @@ Getting Started:
 | Argument | Effect |
 |----------|--------|
 | (none) | Show the full help overview |
-| `--pipeline` | Show the 9-phase pipeline with timing and quality gates |
-| `--skills` | List all 17 skills with descriptions |
+| `--pipeline` | Show the 10-phase pipeline with timing and quality gates |
+| `--skills` | List all 18 skills with descriptions |
 | `--brand` | Explain brand profile setup methods |
 | `--examples` | Show example workflows from brief to publish |
 | `--troubleshoot` | Show common issues and solutions |
@@ -43,7 +43,7 @@ Getting Started:
 
 ### 3. Pipeline Overview
 
-When `--pipeline` is specified, show the 9-phase pipeline:
+When `--pipeline` is specified, show the 10-phase pipeline:
 
 ```
 === CONTENTFORGE PIPELINE ===
@@ -55,25 +55,28 @@ Phase 2: Fact Checker (2-3 min)
   → URL verification, claim validation, source grading
 
 Phase 3: Content Drafter (5-8 min)
-  → Brand-voiced draft with inline citations
+  → Brand-voiced draft with inline citations, SME calibration via industry knowledge packs
+
+Phase 3.5: Visual Asset Annotator (1-2 min)
+  → Chart generation from verified stats, visual markers, asset manifest
 
 Phase 4: Scientific Validator (2-3 min)
-  → Hallucination detection, claim cross-referencing
+  → Hallucination detection, domain-specific validation, claim cross-referencing
 
 Phase 5: Structurer & Proofreader (2-3 min)
   → Heading hierarchy, readability, grammar, formatting
 
 Phase 6: SEO/GEO Optimizer (2-3 min)
-  → Keywords, meta tags, schema, AI Overview optimization
+  → Keywords, meta tags, schema, AI Overview optimization, internal linking
 
 Phase 6.5: Humanizer (2-3 min)
   → AI pattern removal, personality profiles, industry patterns
 
 Phase 7: Reviewer (2-3 min)
-  → 5-dimension scoring (needs ≥7.0), comparative analysis
+  → 5-dimension scoring (needs ≥7.0), visual + link quality, comparative analysis
 
 Phase 8: Output Manager (1-2 min)
-  → .docx generation, Drive upload, tracking sheet update
+  → .docx with embedded charts, internal links, Drive upload, tracking sheet update
 
 Post-Pipeline:
   → Social Adapter (#10): Article → social posts
@@ -87,16 +90,17 @@ Result: Zero hallucinations in production
 
 ### 4. All Skills
 
-When `--skills` is specified, list all 17 skills:
+When `--skills` is specified, list all 18 skills:
 
 | Skill | Description |
 |-------|-------------|
-| `/contentforge` | Run the full 9-phase content production pipeline |
+| `/contentforge` | Run the full 10-phase content production pipeline |
 | `/batch-process` | Process 10-50+ pieces in parallel from Google Sheets |
 | `/content-refresh` | Update existing content with fresh data and sources |
 | `/cf:style-guide` | Create or update a brand profile interactively |
 | `/cf:integrations` | See which connectors are active and available |
 | `/cf:connect <name>` | Step-by-step setup guide for any connector |
+| `/cf:add-integration` | Add a custom MCP connector for any API or service |
 | `/cf:publish` | Push content to Webflow/WordPress or export HTML |
 | `/cf:social-adapt` | Transform article into social posts (5 platforms) |
 | `/cf:variants` | Generate A/B test variations of headlines, hooks, CTAs |
@@ -214,7 +218,7 @@ Point users to these resources:
 | Guide | What it covers |
 |-------|---------------|
 | `docs/USER-GUIDE.md` | Comprehensive end-to-end guide (1,300+ lines) |
-| `UPGRADE-GUIDE.md` | v2.1.0 → v3.0.0 migration guide |
+| `UPGRADE-GUIDE.md` | v2.1.0 → v3.0.0 migration guide (historical) |
 | `CONNECTORS.md` | All available connectors by category |
 | `CHANGELOG.md` | Full version history and release notes |
 | `config/brand-registry-template.json` | Brand profile JSON template |

@@ -23,6 +23,10 @@
     "google-calendar": {
       "type": "http",
       "url": "https://gcal.mcp.claude.com/mcp"
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp"
     }
   }
 }
