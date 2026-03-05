@@ -1,4 +1,4 @@
-# ContentForge Testing Guide — v3.4.0
+# ContentForge Testing Guide — v3.5.0
 
 Complete testing guide for the ContentForge enterprise content production plugin.
 
@@ -16,9 +16,10 @@ Complete testing guide for the ContentForge enterprise content production plugin
 8. [Hook Tests](#8-hook-tests)
 9. [MCP Connector Tests](#9-mcp-connector-tests)
 10. [Google Integration Tests](#10-google-integration-tests)
-11. [Edge Cases & Error Scenarios](#11-edge-cases--error-scenarios)
-12. [Regression Checklist](#12-regression-checklist)
-13. [Test Priority Order](#13-test-priority-order)
+11. [Multi-Backend Tests](#11-multi-backend-tests)
+12. [Edge Cases & Error Scenarios](#12-edge-cases--error-scenarios)
+13. [Regression Checklist](#13-regression-checklist)
+14. [Test Priority Order](#14-test-priority-order)
 
 ---
 
@@ -70,8 +71,8 @@ rm -rf ~/.claude-marketing/
 
 **Expected Results:**
 - [ ] Marketplace loads without errors
-- [ ] ContentForge listed with version 3.4.0
-- [ ] Description mentions "13 agents, 18 skills, 10 industry knowledge packs"
+- [ ] ContentForge listed with version 3.5.0
+- [ ] Description mentions "13 agents, 19 skills, 10 industry knowledge packs"
 - [ ] Installation completes without rollback
 - [ ] No "Host key verification failed" error (uses HTTPS, not SSH)
 
@@ -97,7 +98,7 @@ rm -rf ~/.claude-marketing/
 - [ ] SessionStart hook fires — setup.py runs without errors
 - [ ] Version banner displays:
   ```
-  ✓ ContentForge v3.4 loaded — Enterprise content production with zero hallucinations
+  ✓ ContentForge v3.5 loaded — Enterprise content production with zero hallucinations
     /contentforge — Single piece (20-30 min)
     /batch-process — Multiple pieces in parallel (4-5x faster)
     /content-refresh — Update old content with fresh data
@@ -106,7 +107,7 @@ rm -rf ~/.claude-marketing/
     /cf:publish — Push to CMS
   ```
 - [ ] 7 commands visible in Customize panel (create-content, content-brief, social-adapt, publish, translate, brand-setup, audit-content)
-- [ ] 18 skills visible in Skills section
+- [ ] 19 skills visible in Skills section
 - [ ] 13 agents registered (check for no frontmatter errors in logs)
 
 ### 2.4 Plugin Structure Verification
@@ -116,8 +117,8 @@ rm -rf ~/.claude-marketing/
 **Expected file counts:**
 - [ ] `agents/` — 13 files (01 through 11 + 03.5 + 06.5)
 - [ ] `commands/` — 7 files
-- [ ] `skills/` — 18 skill directories, each with SKILL.md
-- [ ] `scripts/` — 4 files (setup.py, connector-status.py, sheets-tracker.py, drive-uploader.py)
+- [ ] `skills/` — 19 skill directories, each with SKILL.md
+- [ ] `scripts/` — 8 files (setup.py, connector-status.py, sheets-tracker.py, drive-uploader.py, pipeline-tracker.py, airtable-tracker.py, local-tracker.py, backend-migrator.py)
 - [ ] `config/` — 7 config files + `industries/` subdirectory with 10 JSON packs
 - [ ] `templates/` — 10 template files
 - [ ] `utilities/` — 6 utility files
@@ -249,6 +250,7 @@ Test all 7 commands visible in the Customize panel.
 | **D: Compliance** | Provide compliance rules | Guardrails configured |
 | **E: Reference Content** | Provide sample URLs or documents | Reference content analyzed |
 | **F: Key File Generation** | Let it auto-generate key files | brand-profile.json, guardrails.json, reference-content.md created |
+| **G: Tracking Backend** | Choose Google Sheets, Airtable, or Local | Backend configured in brand profile `tracking.backend` field |
 
 **v3.4.0 Step F Checks:**
 - [ ] Step F presented as an option (generate new or update existing)
@@ -322,7 +324,7 @@ Test all 7 commands visible in the Customize panel.
 
 ## 5. Skill Tests
 
-Test each of the 18 skills individually.
+Test each of the 19 skills individually.
 
 ### Core Pipeline Skills
 
@@ -365,14 +367,15 @@ Test each of the 18 skills individually.
 |---|-------|-------------|------------|
 | 16 | `/cf:style-guide` | "Import style guide from [URL]" | Extracts voice, terminology, guardrails |
 | 17 | `/cf:template` | "Create a case study template" | Custom content type beyond built-in 5 |
-| 18 | `/cf:help` | (no argument) | Shows v3.4.0, 13 agents, 18 skills, 7 connectors, 10-phase pipeline |
+| 18 | `/cf:switch-backend` | `/cf:switch-backend airtable` | Validates target, offers migration, updates brand profile |
+| 19 | `/cf:help` | (no argument) | Shows v3.5.0, 13 agents, 19 skills, 7 connectors, 10-phase pipeline |
 
 **`/cf:help` Argument Tests:**
 
 | Argument | Expected Output |
 |----------|----------------|
 | `--pipeline` | 10-phase pipeline with timing and quality gates |
-| `--skills` | All 18 skills listed with descriptions |
+| `--skills` | All 19 skills listed with descriptions |
 | `--brand` | Brand profile setup methods |
 | `--examples` | Example workflows from brief to publish |
 | `--troubleshoot` | Common issues and solutions |
@@ -437,6 +440,77 @@ Test each of the 18 skills individually.
 - [ ] Brand names with apostrophes handled safely (client-side matching, no query injection)
 - [ ] `~` path resolution works (expanduser)
 - [ ] Folder creation is idempotent (doesn't create duplicates)
+
+### 6.5 pipeline-tracker.py (no credentials needed)
+
+**Test each action:**
+
+| Action | Test | Expected |
+|--------|------|----------|
+| `init` | Initialize pipeline run | Creates `~/.claude-marketing/{brand}/pipeline-run.json` |
+| `phase-start` | Start phase 1 | Timestamp recorded for phase 1 |
+| `phase-end` | End phase 1 | Duration calculated, content words recorded |
+| `get-report` | Generate timing report | JSON with per-phase timing, benchmarks, token estimates |
+
+**Edge cases:**
+- [ ] Multiple runs per phase (feedback loops) — total time = sum of all run durations
+- [ ] Token estimation includes disclaimer about approximation
+- [ ] Benchmark comparison shows correct content type benchmarks
+- [ ] `get-report` without `phase-end` for current phase shows "in progress"
+
+### 6.6 airtable-tracker.py (requires AIRTABLE_TOKEN)
+
+**Test each action:**
+
+| Action | Test | Expected |
+|--------|------|----------|
+| `init` | Initialize Airtable table | Table created with 20-column schema |
+| `add-row` | Add content request | Record created with auto-incremented requirement_id |
+| `get-pending` | List pending | Returns pending records sorted by priority |
+| `get-row` | Get specific record | Returns correct record data |
+| `update-row` | Update status | Record updated |
+| `mark-complete` | Complete with file | Status updated, .docx attached to record |
+
+**Edge cases:**
+- [ ] Auto-installs pyairtable on first run
+- [ ] File attachment works via `--attach-file` parameter
+- [ ] Numeric fields coerced correctly (priority, quality_score)
+- [ ] Missing AIRTABLE_TOKEN gives clear error message
+
+### 6.7 local-tracker.py (no credentials needed)
+
+**Test each action:**
+
+| Action | Test | Expected |
+|--------|------|----------|
+| `init` | Initialize local tracking | Creates `~/.claude-marketing/{brand}/tracking/tracking.json` |
+| `add-row` | Add content request | Record appended to tracking.json |
+| `get-pending` | List pending | Returns pending records sorted by priority |
+| `get-row` | Get specific record | Returns correct record |
+| `update-row` | Update status | Record updated in tracking.json |
+| `mark-complete` | Complete with file | Status updated, .docx copied to organized outputs/ dir |
+
+**Edge cases:**
+- [ ] Zero dependencies — stdlib only
+- [ ] Output files organized in `outputs/{year}/{month}/` structure
+- [ ] Works immediately with no setup
+- [ ] Handles concurrent access gracefully
+
+### 6.8 backend-migrator.py
+
+**Test each action:**
+
+| Action | Test | Expected |
+|--------|------|----------|
+| `status` | Check current backend status | Reports backend, record count, file count |
+| `migrate local→airtable` | Migrate from local to Airtable | Records copied, files attached, source preserved |
+| `migrate local→google` | Migrate from local to Google | Records added to Sheet, files uploaded to Drive |
+
+**Edge cases:**
+- [ ] Source data is NEVER deleted (additive migration)
+- [ ] Idempotent — running twice doesn't create duplicates
+- [ ] Handles missing credentials gracefully
+- [ ] Reports migration progress and summary
 
 ---
 
@@ -622,7 +696,80 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 
 ---
 
-## 11. Edge Cases & Error Scenarios
+## 11. Multi-Backend Tests
+
+### 11.1 Backend Selection During Brand Setup
+
+**Test:** Run `/brand-setup` or `/cf:style-guide` and reach Step G
+
+**Expected:**
+- [ ] Three options presented: Google Sheets + Drive, Airtable, Local
+- [ ] Google and Airtable are primary options (presented first)
+- [ ] Local available but only if explicitly chosen or skipped
+- [ ] Skipping defaults to local with a message about `/cf:switch-backend`
+- [ ] Choosing Google triggers service account setup guidance
+- [ ] Choosing Airtable triggers token creation guidance
+- [ ] Brand profile `tracking.backend` field is set correctly
+
+### 11.2 Pipeline with Each Backend
+
+**Test:** Run a full pipeline with each backend configured
+
+| Backend | What to Verify |
+|---------|---------------|
+| **Local** | tracking.json updated, .docx in organized outputs/ directory |
+| **Airtable** | Airtable record created/updated, .docx attached as attachment |
+| **Google** | Sheet row created/updated, .docx uploaded to Drive folder |
+
+### 11.3 Backend Switching
+
+**Test:** `/cf:switch-backend airtable` (while currently on local)
+
+**Expected:**
+- [ ] Current backend identified and record count shown
+- [ ] Target backend validated (AIRTABLE_TOKEN check)
+- [ ] Migration offered (yes/no/skip)
+- [ ] If "yes": records migrated, files attached, summary shown
+- [ ] Brand profile updated to new backend
+- [ ] Source data preserved (never deleted)
+
+### 11.4 Backend Migration
+
+**Test:** Migrate from local to Airtable with existing tracking data
+
+**Expected:**
+- [ ] All records copied to Airtable
+- [ ] Output files attached to Airtable records
+- [ ] Migration is idempotent (re-running doesn't create duplicates)
+- [ ] Summary shows records_migrated, files_migrated, files_failed counts
+- [ ] Source local data remains intact at `~/.claude-marketing/{brand}/tracking/`
+
+### 11.5 Pipeline Performance Tracking
+
+**Test:** Run a full pipeline and check the completion summary
+
+**Expected:**
+- [ ] PIPELINE PERFORMANCE section has actual times (not placeholder estimates)
+- [ ] Per-phase timing table with: Phase, Name, Time, Benchmark, Status, Iterations
+- [ ] Phases with feedback loops show correct iteration count
+- [ ] Total processing time matches sum of phase times
+- [ ] Benchmark comparison shows under/over with correct content type
+- [ ] TOKEN USAGE ESTIMATE section present with: Agent Instructions, Content, Config, Subtotal, Overhead, Total
+- [ ] Disclaimer: "Token estimates are approximate. For precise session costs, use /cost."
+
+### 11.6 setup.py Backend Detection
+
+**Test:** Start a session with different env vars set
+
+**Expected:**
+- [ ] With `AIRTABLE_TOKEN` set: shows "AIRTABLE_TOKEN=configured"
+- [ ] Without `AIRTABLE_TOKEN`: shows "AIRTABLE_TOKEN=not_configured"
+- [ ] TRACKING_BACKENDS lists all available backends (always includes "local")
+- [ ] Google credentials check still works as before
+
+---
+
+## 12. Edge Cases & Error Scenarios
 
 ### 11.1 Empty/Minimal Input
 
@@ -683,14 +830,14 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 
 ---
 
-## 12. Regression Checklist
+## 13. Regression Checklist
 
 Run this after any changes to verify nothing is broken.
 
 ### Core Pipeline
 
-- [ ] Session start hook fires with correct version (v3.4)
-- [ ] Brand setup completes all steps A-F
+- [ ] Session start hook fires with correct version (v3.5)
+- [ ] Brand setup completes all steps A-G (including Step G backend selection)
 - [ ] Full pipeline runs for blog content type
 - [ ] Full pipeline runs for whitepaper content type
 - [ ] Phase 3 loads industry knowledge pack (SME Calibration)
@@ -703,10 +850,16 @@ Run this after any changes to verify nothing is broken.
 
 ### Skills & Commands
 
-- [ ] All 18 skills respond to invocation
+- [ ] All 19 skills respond to invocation
 - [ ] All 7 commands appear in Customize panel
 - [ ] `/cf:help` shows complete, accurate information
 - [ ] `/cf:integrations` shows 7 HTTP connectors with correct status
+- [ ] Argument hints show in Skills UI when typing `/cf:` (spot check 3-5 skills)
+- [ ] `/cf:publish` cannot be triggered by Claude without explicit user invocation (disable-model-invocation)
+- [ ] `/cf:help` has `name: cf-help` in frontmatter
+- [ ] `skills/contentforge/evals/evals.json` exists and is valid JSON with 3 test cases
+- [ ] `skills/cf-brief/evals/evals.json` exists and is valid JSON with 2 test cases
+- [ ] `skills/cf-style-guide/evals/evals.json` exists and is valid JSON with 2 test cases
 
 ### Scripts
 
@@ -714,23 +867,29 @@ Run this after any changes to verify nothing is broken.
 - [ ] connector-status.py lists 7 HTTP + script connectors
 - [ ] sheets-tracker.py operations work (if Google credentials configured)
 - [ ] drive-uploader.py operations work (if Google credentials configured)
+- [ ] pipeline-tracker.py init/phase-start/phase-end/get-report all produce valid JSON
+- [ ] airtable-tracker.py operations work (if AIRTABLE_TOKEN configured)
+- [ ] local-tracker.py operations work (zero deps, no credentials)
+- [ ] backend-migrator.py status and migrate actions work
 
 ### Versioning Consistency
 
-- [ ] `plugin.json` version = 3.4.0
-- [ ] `hooks.json` version string = v3.4
-- [ ] `README.md` version = 3.4.0
-- [ ] Marketplace entry version = 3.4.0
+- [ ] `plugin.json` version = 3.5.0
+- [ ] `hooks.json` version string = v3.5
+- [ ] `README.md` version = 3.5.0
+- [ ] Marketplace entry version = 3.5.0
 - [ ] `13 agents` in all descriptions (not 12)
-- [ ] `18 skills` in all descriptions
+- [ ] `19 skills` in all descriptions (not 18)
 - [ ] `7 commands` in all descriptions
 - [ ] `7 HTTP connectors` in all descriptions (not 6)
+- [ ] `8 scripts` in all descriptions (not 4)
 - [ ] `10 industry knowledge packs` mentioned
 - [ ] `10-phase pipeline` everywhere (not 9-phase)
+- [ ] Brand setup mentions Step G (backend selection)
 
 ---
 
-## 13. Test Priority Order
+## 14. Test Priority Order
 
 If time is limited, test in this order:
 
@@ -738,11 +897,12 @@ If time is limited, test in this order:
 |----------|------|---------|-----|
 | 1 | Installation | 2 | Nothing else works without this |
 | 2 | Full pipeline — blog/technology | 3.1 | Validates core product |
-| 3 | Brand setup (all steps A-F) | 4.1 | Validates v3.4.0 Step F |
+| 3 | Brand setup (all steps A-G) | 4.1 | Validates v3.5.0 Steps F + G |
 | 4 | Pipeline — pharma whitepaper | 3.2 | Validates industry knowledge packs |
-| 5 | All 18 skills invocation | 5 | Validates skill registration |
-| 6 | `/cf:help` with all arguments | 5 (#18) | Validates help accuracy |
+| 5 | All 19 skills invocation | 5 | Validates skill registration |
+| 6 | `/cf:help` with all arguments | 5 (#19) | Validates help accuracy |
 | 7 | Hook tests | 8 | Validates compliance guardrails |
 | 8 | Google integration | 10 | Validates Sheets/Drive scripts |
-| 9 | Edge cases | 11 | Robustness testing |
-| 10 | MCP connectors | 9 | Requires external service accounts |
+| 9 | Multi-backend I/O | 11 | Validates Airtable/local/migration |
+| 10 | Edge cases | 12 | Robustness testing |
+| 11 | MCP connectors | 9 | Requires external service accounts |

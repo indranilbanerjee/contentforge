@@ -211,8 +211,30 @@
     "auto_approve_threshold": 8.5,
     "human_review_required_below": 6.0
   },
+  "tracking": {
+    "_instructions": "Configured during brand setup (Step G). Switch backends anytime with /cf:switch-backend.",
+    "backend": "",
+    "_options": "google_sheets | airtable | local",
+    "airtable": {
+      "base_id": "",
+      "table_name": "ContentForge Tracking",
+      "_setup": "Set AIRTABLE_TOKEN environment variable with your Personal Access Token"
+    },
+    "google_sheets": {
+      "sheet_id": "",
+      "tab_name": "ContentForge Tracking",
+      "credentials_path": "~/.claude-marketing/google-credentials.json"
+    },
+    "google_drive": {
+      "folder_id": "",
+      "credentials_path": "~/.claude-marketing/google-credentials.json"
+    },
+    "local": {
+      "tracking_dir": "~/.claude-marketing/{brand}/tracking"
+    }
+  },
   "google_integration": {
-    "_instructions": "Auto-configured by /brand-setup. Do not edit manually. The setup command extracts IDs from URLs automatically.",
+    "_deprecated": "Use tracking.google_sheets and tracking.google_drive instead. Kept for backwards compatibility.",
     "credentials_path": "~/.claude-marketing/google-credentials.json",
     "tracking_sheet_id": "",
     "tracking_sheet_tab": "ContentForge Tracking",

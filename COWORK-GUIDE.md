@@ -76,7 +76,7 @@ Available Plugins in neels-plugins:
 1. digital-marketing-pro (v2.2.0)
    Comprehensive digital marketing execution system...
 
-2. contentforge (v3.4.0)
+2. contentforge (v3.5.0)
    Enterprise multi-agent content production with batch processing...
 ```
 
@@ -87,7 +87,7 @@ Available Plugins in neels-plugins:
 
 **You'll see:**
 ```
-✓ Installing ContentForge v3.4.0...
+✓ Installing ContentForge v3.5.0...
 ✓ Installation complete!
 
 Available commands:
@@ -107,11 +107,11 @@ Type:
 
 Scroll down to "Installed Plugins" section. You should see:
 ```
-ContentForge (v3.4.0)
+ContentForge (v3.5.0)
   /contentforge
   /batch-process
   /content-refresh
-  ... (18 skills total)
+  ... (19 skills total)
 ```
 
 **✅ Installation Complete!** Now you need to set up MCP integrations.

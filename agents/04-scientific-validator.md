@@ -41,6 +41,14 @@ Perform a sentence-by-sentence validation of Draft v1 to ensure:
 
 ## EXECUTION STEPS
 
+### Step 0: Start Phase Timer
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 4
+```
+
+---
+
 ### Step 1: Hallucination Detection Scan
 
 **What is a hallucination in this context?**
@@ -691,6 +699,14 @@ Key Points to Cover (from outline):
 
 **Check:**
 - Draft mentions cost savings or ROI → ✅ Appropriate disclaimer added? | ❌ Disclaimer missing?
+
+---
+
+### Step 7: Record Phase Timing
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 4
+```
 
 ---
 

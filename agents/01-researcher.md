@@ -29,6 +29,19 @@ Build a comprehensive Research Brief that provides everything the Content Drafte
 
 ## EXECUTION STEPS
 
+### Step 0: Initialize Pipeline Tracking
+
+Before beginning research, initialize the pipeline performance tracker:
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action init --brand "{brand}" --content-type "{content_type}" --topic "{topic}"
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 1
+```
+
+This creates a fresh pipeline-run.json and starts the Phase 1 timer.
+
+---
+
 ### Step 1: SERP Analysis (Top 10 Results)
 
 **Use Claude's `web_search` capability:**
@@ -259,6 +272,16 @@ If available, include 2-5 expert quotes that strengthen authority:
 2. **Speaker** — Name, Title, Organization
 3. **Source** — Which citation number?
 4. **Relevance** — Why this matters for our content
+
+---
+
+### Step 8: Record Phase Timing
+
+After completing research:
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 1 --content-words {outline_word_count}
+```
 
 ---
 

@@ -29,6 +29,14 @@ Verify every factual claim, statistic, quote, and source URL to ensure the Conte
 
 ## EXECUTION STEPS
 
+### Step 0: Start Phase Timer
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 2
+```
+
+---
+
 ### Step 1: URL Verification & Accessibility Check
 
 **For EACH source in the Citation Library (all 12-15 sources):**
@@ -287,6 +295,14 @@ Sources to Cite: [Citation #1, Citation #5, Citation #9]
 - ✅ All sections have adequate source mapping → Continue
 - ⚠️ 1-2 sections weak on sources → Document, Drafter can adapt
 - ❌ Multiple sections missing sources → Loop to Phase 1 to strengthen outline
+
+---
+
+### Step 7: Record Phase Timing
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 2
+```
 
 ---
 

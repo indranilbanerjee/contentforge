@@ -95,6 +95,14 @@ Overall Score = (Content Quality × 0.30) +
 
 ## EXECUTION STEPS
 
+### Step 0: Start Phase Timer
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 7
+```
+
+---
+
 ### Step 1: Dimension 1 — Content Quality (30%)
 
 **What This Measures:**
@@ -1191,6 +1199,14 @@ Standard deviation < 0.5 = LOW volatility (consistent)
 - This piece has 14 citations → run `/cf:brief` for 3 related topics in this expertise cluster
 - GEO score 8.8 → social adaptation will perform well
 - Evergreen topic → schedule Q3 refresh in content calendar
+```
+
+---
+
+### Step 9: Record Phase Timing
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 7
 ```
 
 ---

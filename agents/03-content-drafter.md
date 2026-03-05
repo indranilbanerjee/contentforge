@@ -196,6 +196,14 @@ SME Calibration:
 
 ## EXECUTION STEPS
 
+### Step 0: Start Phase Timer
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 3
+```
+
+---
+
 ### Step 1: Write the Title (H1)
 
 **Requirements from Verified Outline:**
@@ -653,6 +661,14 @@ https://www.techcorp.com/case-studies/ai-content-marketing
 - ✅ Hanging indent formatting (for final output in Phase 8)
 
 **For IEEE:** Number references [1], [2], [3] in order of appearance
+
+---
+
+### Step 7: Record Phase Timing
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 3 --content-words {output_word_count}
+```
 
 ---
 

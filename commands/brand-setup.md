@@ -91,17 +91,28 @@ Profiles are saved as structured JSON and used automatically by every pipeline p
 - Phase 6.5 (Humanizer) — applies personality profile
 - Phase 7 (Reviewer) — scores brand compliance
 
-## Google Integration (Auto-Configure)
+## Tracking & Delivery Backend (Step G)
 
-After setting up voice, terminology, and compliance, **automatically check** whether Google integration is configured. Do NOT ask the user to edit JSON manually — handle it conversationally.
+After setting up voice, terminology, compliance, and key files, **choose where ContentForge tracks quality scores and delivers output files**. Do NOT ask the user to edit JSON manually — handle it conversationally.
 
-> **Important:** Google integration is optional. ContentForge produces content without it. Google adds tracking (Sheets) and delivery (Drive) on top. Always offer: "Want to set up Google Sheets tracking and Drive delivery? You can skip this and add it later."
+Present the user with three options:
 
-### If already configured → verify and skip.
+> **Choose your tracking and delivery backend:**
+>
+> 1. **Google Sheets + Drive** (Recommended if you have Google Workspace)
+>    Tracks in Google Sheets, delivers .docx to Google Drive. Requires service account (~5 min setup).
+>
+> 2. **Airtable** (Recommended for simplicity)
+>    Tracks in Airtable, delivers .docx as record attachments. Requires Personal Access Token (~2 min setup).
+>
+> 3. **Local** (No setup required)
+>    Tracks in local JSON, delivers .docx to local filesystem. No auth needed.
+>
+> You can switch backends anytime with `/cf:switch-backend`.
 
-Check if `~/.claude-marketing/google-credentials.json` exists AND `google_integration.tracking_sheet_id` is non-empty in the brand profile. If both are good, say "Google integration is already configured" and move on.
+---
 
-### If NOT configured → guide the user through setup.
+### Option 1: Google Sheets + Drive
 
 #### Step A: Check for credentials file
 
@@ -176,6 +187,22 @@ Ask: **"Paste your Google Drive folder URL for content delivery (or type 'skip' 
 ```
 
 Save to the brand profile automatically. User never sees or edits this JSON.
+
+Also set the tracking backend in the brand profile:
+```json
+"tracking": {
+  "backend": "google_sheets",
+  "google_sheets": {
+    "sheet_id": "<extracted from URL>",
+    "tab_name": "ContentForge Tracking",
+    "credentials_path": "~/.claude-marketing/google-credentials.json"
+  },
+  "google_drive": {
+    "folder_id": "<extracted from URL or empty>",
+    "credentials_path": "~/.claude-marketing/google-credentials.json"
+  }
+}
+```
 
 #### Step E: Verify Knowledge Vault (Brand Files in Drive)
 
@@ -439,6 +466,58 @@ When the user chooses to **review and update** existing key files:
 5. If yes → regenerate only the sections that need updating, merge with existing data
 6. Save updated files (same local + Drive flow as above)
 
+---
+
+### Option 2: Airtable
+
+1. Check if `AIRTABLE_TOKEN` environment variable exists
+2. If not, guide through setup:
+   - Go to [airtable.com/create/tokens](https://airtable.com/create/tokens)
+   - Create a Personal Access Token with `data.records:read`, `data.records:write`, `schema.bases:read`, `schema.bases:write` scopes
+   - Select the target base (or create a new one)
+   - Set the environment variable: `export AIRTABLE_TOKEN=patXXXXXXXX`
+3. Ask for the Airtable Base ID (from the base URL: `airtable.com/appXXXXXXX/...`)
+4. Run `airtable-tracker.py --action init --base-id {base_id}` to create the tracking table
+5. Set in brand profile:
+   ```json
+   "tracking": {
+     "backend": "airtable",
+     "airtable": {
+       "base_id": "{user-provided}",
+       "table_name": "ContentForge Tracking"
+     }
+   }
+   ```
+
+**Note:** Airtable handles both tracking AND file delivery in a single platform — output files are attached to the tracking record. No separate file storage service needed.
+
+---
+
+### Option 3: Local
+
+1. No setup required — works immediately
+2. Run `local-tracker.py --action init --brand "{brand}"` to create the tracking directory
+3. Set in brand profile:
+   ```json
+   "tracking": {
+     "backend": "local",
+     "local": {
+       "tracking_dir": "~/.claude-marketing/{brand}/tracking"
+     }
+   }
+   ```
+
+Data stored at `~/.claude-marketing/{brand}/tracking/`. Good for getting started — switch to Google or Airtable anytime with `/cf:switch-backend`.
+
+---
+
+### If user skips backend selection
+
+Default to `"local"` with a note:
+> "Defaulted to local tracking. You can switch to Google Sheets or Airtable anytime by running `/cf:switch-backend`."
+
+---
+
 ## After Setup
 
 After creating the profile, show a summary:
@@ -452,8 +531,8 @@ After creating the profile, show a summary:
 | Approved terms | [count] |
 | Banned terms | [count] |
 | Compliance | [frameworks] |
-| Sheets tracking | Connected / Not configured |
-| Drive delivery | Connected / Not configured |
+| Tracking backend | Google Sheets / Airtable / Local |
+| File delivery | Google Drive / Airtable attachments / Local filesystem |
 | Knowledge vault | Verified (N files) / Partial / Not configured |
 | Key files | Generated / Updated / Pre-existing / Not created |
 
@@ -463,4 +542,5 @@ Ask: "Brand profile for [name] is ready. Would you like to:
 - Import additional guidelines from another source?
 - Create a test piece to validate the voice settings?
 - Update brand knowledge files? (re-run Step F to regenerate or refresh)
+- Switch tracking backend? (`/cf:switch-backend`)
 - Check which connectors are active? (`/integrations`)"

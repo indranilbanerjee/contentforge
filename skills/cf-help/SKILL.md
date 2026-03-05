@@ -1,4 +1,5 @@
 ---
+name: cf-help
 description: "Show the ContentForge user guide, available skills, pipeline overview, examples, and troubleshooting"
 argument-hint: "[--pipeline | --skills | --examples]"
 ---
@@ -18,10 +19,11 @@ Display this quick orientation:
 ```
 === CONTENTFORGE — HELP ===
 
-Version: 3.4.0
+Version: 3.5.0
 Agents: 13 (10-phase pipeline + 3 post-pipeline)
-Skills: 18 slash commands (/cf:* + /contentforge + /batch-process + /content-refresh)
+Skills: 19 slash commands — all with argument-hint autocomplete
 Connectors: 7 HTTP + 16 npx integrations
+Tracking: 3 backends (Google Sheets + Drive, Airtable, Local)
 
 Getting Started:
   1. /cf:style-guide         — Create your brand profile (start here)
@@ -36,7 +38,7 @@ Getting Started:
 |----------|--------|
 | (none) | Show the full help overview |
 | `--pipeline` | Show the 10-phase pipeline with timing and quality gates |
-| `--skills` | List all 18 skills with descriptions |
+| `--skills` | List all 19 skills with descriptions |
 | `--brand` | Explain brand profile setup methods |
 | `--examples` | Show example workflows from brief to publish |
 | `--troubleshoot` | Show common issues and solutions |
@@ -77,7 +79,8 @@ Phase 7: Reviewer (2-3 min)
   → 5-dimension scoring (needs ≥7.0), visual + link quality, comparative analysis
 
 Phase 8: Output Manager (1-2 min)
-  → .docx with embedded charts, internal links, Drive upload, tracking sheet update
+  → .docx with embedded charts, internal links, backend-dispatched delivery + tracking
+  → Pipeline performance report: actual timing per phase, token estimate, benchmarks
 
 Post-Pipeline:
   → Social Adapter (#10): Article → social posts
@@ -91,7 +94,7 @@ Result: Zero hallucinations in production
 
 ### 4. All Skills
 
-When `--skills` is specified, list all 18 skills:
+When `--skills` is specified, list all 19 skills:
 
 | Skill | Description |
 |-------|-------------|
@@ -112,6 +115,7 @@ When `--skills` is specified, list all 18 skills:
 | `/cf:audit` | Content freshness scoring, decay detection, gap analysis |
 | `/cf:calendar` | Production scheduling with deadline tracking |
 | `/cf:template` | Create custom content type templates |
+| `/cf:switch-backend` | Switch tracking backend (local/airtable/google) with migration |
 | `/cf:help` | This help guide |
 
 ### 5. Brand Setup Quick Reference
@@ -143,8 +147,10 @@ Brand Profile Includes:
   - Guardrails (topics to avoid, compliance)
   - Industry Context (Pharma, BFSI, Healthcare, Legal)
   - Personality Profile (4 profiles for Humanizer)
+  - Tracking Backend (Google Sheets + Drive, Airtable, or Local)
 
 Profiles are cached (SHA256 hash) — 95% time savings on repeat runs.
+Switch backends anytime: /cf:switch-backend [airtable|google|local]
 ```
 
 ### 6. Example Workflows
@@ -198,7 +204,28 @@ Step 3: Review results
   → Quality trends, timing breakdown, brand performance
 ```
 
-### 7. Troubleshooting
+### 7. Skill Platform Features
+
+When showing the full help, include:
+
+```
+=== SKILL PLATFORM FEATURES ===
+
+Argument Hints (16 skills):
+  All skills show autocomplete hints in the Skills UI.
+  Example: /contentforge shows "topic" --type=article --brand=name
+  Example: /cf:brief shows "topic or keyword" [--depth=deep]
+
+Execution Safety:
+  /cf:publish requires explicit user invocation — Claude cannot
+  auto-trigger it. Prevents accidental publishing to Webflow/WordPress.
+
+Quality Evals (3 skills):
+  contentforge, cf-brief, and cf-style-guide have evals/evals.json
+  with structured test cases for quality benchmarking.
+```
+
+### 8. Troubleshooting
 
 When `--troubleshoot` is specified, show common issues:
 
@@ -212,7 +239,7 @@ When `--troubleshoot` is specified, show common issues:
 | Pipeline taking too long | Normal: 20-30 min for articles. For faster: use `/batch-process` for parallel processing |
 | Humanizer removing too much | Adjust personality profile: `/contentforge --tone=conversational` for lighter touch |
 
-### 8. Documentation References
+### 9. Documentation References
 
 Point users to these resources:
 

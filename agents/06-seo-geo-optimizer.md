@@ -42,6 +42,14 @@ Optimize content for search and AI discoverability through:
 
 ## EXECUTION STEPS
 
+### Step 0: Start Phase Timer
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 6
+```
+
+---
+
 ### Step 1: Keyword Density Analysis
 
 **Calculate current keyword presence before optimization:**
@@ -667,6 +675,14 @@ Variance: +1.1 ❌ (exceeds acceptable range)
 - Remove some forced keyword placements
 - Simplify sentences where keywords were added
 - Prioritize natural language over keyword density
+
+---
+
+### Step 9: Record Phase Timing
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 6 --content-words {output_word_count}
+```
 
 ---
 

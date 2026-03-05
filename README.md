@@ -1,10 +1,17 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.4.0
+**Version:** 3.5.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
-> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 18 skills and 10 industry knowledge packs. **New in v3.4:** Industry Knowledge Packs for subject matter expertise (pharma, BFSI, healthcare, legal, real estate, technology, B2B SaaS, e-commerce, consumer goods, education) with SME calibration in the Content Drafter and domain-specific validation in the Scientific Validator. Brand setup now auto-generates key files (brand profile, guardrails, reference content) from website analysis and user input. **v3.2/v3.3:** Visual Asset Annotator (Phase 3.5) with auto-generated matplotlib charts, structured internal linking markers, Google Sheets tracking via service account scripts, and Google Drive output delivery. **v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents.
+> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 19 skills and 10 industry knowledge packs. **New in v3.5:** Pipeline performance tracking with actual wall-clock timing per phase and token usage estimation. Multi-backend I/O — choose Google Sheets + Drive, Airtable, or local filesystem for tracking and delivery. Backend migration with `/cf:switch-backend`. Brand setup Step G asks users to choose their tracking backend. **v3.4:** Industry Knowledge Packs for subject matter expertise with SME calibration and domain-specific validation. Brand setup auto-generates key files. **v3.2/v3.3:** Visual Asset Annotator (Phase 3.5) with auto-generated matplotlib charts, structured internal linking markers, Google Sheets tracking, and Google Drive delivery. **v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents.
+
+### What's New in v3.5.0
+
+- **Pipeline Performance Tracking** — Actual wall-clock timing per phase (no more placeholder estimates). Token usage estimation with content tokens, agent instruction tokens, and configurable overhead multiplier. Phase 8 completion summary shows real timing table with benchmark comparison
+- **Multi-Backend I/O** — Choose your tracking and delivery backend: Google Sheets + Drive, Airtable, or local filesystem. Airtable handles both tracking and file delivery via record attachments (~2 min setup vs Google's ~5 min)
+- **Backend Migration** — `/cf:switch-backend` to change backends anytime with optional data + file migration. Source data is never deleted. Migration is idempotent and resumable
+- **Brand Setup Step G** — During brand onboarding, users choose their preferred tracking backend. Google and Airtable are the primary options; local only if explicitly chosen or skipped
 
 ### What's New in v3.4.0
 
@@ -60,7 +67,7 @@ ContentForge is an enterprise-grade content generation system that replaces 6-8 
 - **Natural Language:** Phase 6.5 Humanizer removes AI writing patterns with 4 personality profiles
 - **Quality Transparency:** Every piece scored 1-10 across 5 dimensions with comparative benchmarks
 - **Human Oversight:** Content <5.0/10 escalates to review, never auto-publishes
-- **18 Skills + 7 Commands:** Full content lifecycle — from brief to publish to repurpose, with top commands visible in the Customize panel
+- **19 Skills + 7 Commands:** Full content lifecycle — from brief to publish to repurpose, with top commands visible in the Customize panel. All skills include argument-hint autocomplete, `/cf:publish` has execution safety (`disable-model-invocation`), and 3 key skills have structured evals
 
 ---
 
@@ -91,7 +98,7 @@ These 7 commands appear in the **Commands** section of the Customize sidebar, pr
 | `/social-adapt` | Repurpose articles into posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads |
 | `/publish` | Push content to Webflow or WordPress with preview, verification, and HTML fallback |
 | `/translate` | Translate into 15+ languages preserving brand voice, citations, and SEO |
-| `/brand-setup` | Configure brand voice, terminology, guardrails, Google integration, and auto-generate key files |
+| `/brand-setup` | Configure brand voice, terminology, guardrails, tracking backend, and auto-generate key files |
 | `/audit-content` | Audit content library for freshness decay, coverage gaps, and optimization opportunities |
 
 ---
@@ -132,11 +139,18 @@ These 7 commands appear in the **Commands** section of the Customize sidebar, pr
 | Style Guide | `/cf:style-guide` | Import brand voice, generate brand profile JSON |
 | Custom Template | `/cf:template` | Create content type templates beyond the 5 built-in |
 
-### Connector Management
+### Connector & Backend Management
 | Skill | Command | Purpose |
 |-------|---------|---------|
 | Integrations | `/cf:integrations` | Dashboard showing connected vs. available connectors |
 | Connect | `/cf:connect` | Guided setup for any of 22 supported connectors |
+| Add Integration | `/cf:add-integration` | Add a custom MCP connector for any API or service |
+| Switch Backend | `/cf:switch-backend` | Switch tracking backend (local/airtable/google) with optional data migration |
+
+### Help & Reference
+| Skill | Command | Purpose |
+|-------|---------|---------|
+| Help | `/cf:help` | User guide, pipeline overview, skill list, examples, troubleshooting |
 
 ---
 
@@ -221,7 +235,7 @@ mv contentforge %USERPROFILE%\.claude\plugins\
 
 ```bash
 # Session startup will show:
-# ✓ ContentForge v3.4 loaded — Enterprise content production with zero hallucinations
+# ✓ ContentForge v3.5 loaded — Enterprise content production with zero hallucinations
 #   /contentforge — Single piece (20-30 min)
 #   /batch-process — Multiple pieces in parallel (4-5x faster)
 #   /content-refresh — Update old content with fresh data
@@ -434,7 +448,7 @@ Single-prompt tools produce content in 30 seconds but with ~15-20% hallucination
 
 ### Q: Can I use ContentForge without Google Drive/Sheets?
 
-Yes. The core pipeline works without any external integrations. Google Drive/Sheets are optional for brand knowledge storage and requirement tracking. Run `/cf:integrations` to see what's connected.
+Yes. ContentForge supports three tracking backends: Google Sheets + Drive, Airtable, and local filesystem. During brand setup (Step G), you choose your preferred backend. Airtable requires only a Personal Access Token (~2 min setup). Local works with zero setup. Run `/cf:switch-backend` to change backends anytime.
 
 ### Q: How much does it cost to run ContentForge?
 
@@ -472,11 +486,25 @@ Yes. `/cf:translate` supports 15+ languages with 3 localization levels (literal,
 - [x] Self-service Google setup in brand-setup command
 - [x] Drive knowledge vault verification during brand setup
 
-### v3.4.0 (Current)
+### v3.4.0 (Released)
 - [x] 10 Industry Knowledge Packs for subject matter expertise (pharma, BFSI, healthcare, legal, real estate, technology, B2B SaaS, e-commerce, consumer goods, education)
 - [x] SME Calibration step in Content Drafter (Phase 3, Step 0.3)
 - [x] Domain-Specific Validation step in Scientific Validator (Phase 4, Step 5)
 - [x] Brand-setup key file auto-generation (Step F) — create brand profile, guardrails, and reference content from website analysis
+
+### v3.4.1 (Released)
+- [x] Argument-hint autocomplete on all 16 user-invocable skills
+- [x] Execution safety on `/cf:publish` (disable-model-invocation)
+- [x] Structured evals on 3 key skills (contentforge, cf-brief, cf-style-guide)
+- [x] Fixed cf-help missing `name` field in frontmatter
+
+### v3.5.0 (Current)
+- [x] Pipeline performance tracking — actual wall-clock timing per phase, token usage estimation
+- [x] Multi-backend I/O — Google Sheets + Drive, Airtable, or local filesystem
+- [x] Backend migration — `/cf:switch-backend` with optional data + file migration
+- [x] Brand setup Step G — active backend selection during brand onboarding
+- [x] 4 new scripts: pipeline-tracker.py, airtable-tracker.py, local-tracker.py, backend-migrator.py
+- [x] All 10 pipeline agents instrumented with timing calls
 
 ### v4.0 (Planned)
 - [ ] API mode (REST API for external integrations)
@@ -526,4 +554,4 @@ MIT License — see [LICENSE](LICENSE) file.
 
 ---
 
-**ContentForge v3.4.0** — 13 agents, 18 skills, 10 industry knowledge packs, zero hallucinations. Transform requirements into publication-ready, domain-expert content in 20-30 minutes.
+**ContentForge v3.5.0** — 13 agents, 19 skills, 10 industry knowledge packs, zero hallucinations. Transform requirements into publication-ready, domain-expert content in 20-30 minutes with pipeline performance tracking and multi-backend I/O.

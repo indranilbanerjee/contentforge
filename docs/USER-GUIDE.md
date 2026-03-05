@@ -1330,4 +1330,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.4.0** — 13 agents, 18 skills, zero hallucinations.
+**ContentForge v3.5.0** — 13 agents, 19 skills, 10 industry knowledge packs, zero hallucinations.

@@ -47,6 +47,12 @@ Deliver the finished content to the client by:
 
 ## EXECUTION STEPS
 
+### Step 0: Start Phase Timer
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 8
+```
+
 ### Step 1: Determine Final Status
 
 **Check Quality Scorecard Decision:**
@@ -338,103 +344,145 @@ ContentForge/Acme Corp/Articles/2026/02-February/
 
 ---
 
-### Output Delivery — Script-Based Approach
+### Output Delivery — Backend-Dispatched Approach
 
-ContentForge uses Python scripts for Google Drive uploads and Google Sheets tracking. These scripts use the Google API directly via a service account — no MCP tools required.
+ContentForge supports three tracking/delivery backends. Check the brand profile's `tracking.backend` field to determine which scripts to use.
 
-**Prerequisites (configured once per brand in brand profile):**
-- `google_integration.credentials_path` — Path to service account JSON (default: `~/.claude-marketing/google-credentials.json`)
-- `google_integration.tracking_sheet_id` — Google Sheet ID from the sheet URL
-- `google_integration.drive_output_folder_id` — Root Google Drive folder ID for outputs
+#### Backend Dispatch: Determine Active Backend
 
-**Step 1: Upload .docx to Google Drive**
-
-Run the drive uploader script from the plugin's `scripts/` directory:
-
-```
-python scripts/drive-uploader.py \
-  --action upload \
-  --folder-id {drive_output_folder_id from brand profile} \
-  --file {path to generated .docx} \
-  --brand "{brand_name}" \
-  --content-type {content_type} \
-  --credentials {credentials_path from brand profile}
-```
-
-The script automatically creates the folder hierarchy: `{Brand}/{Content Type}s/{Year}/{Month}/`
-
-Capture the returned `url` value — this is the Google Drive link for the tracking sheet.
-
-**Step 2: Upload Visual Assets to Google Drive** (if any generated charts exist)
-
-If Phase 3.5 generated chart PNGs in `~/.claude-marketing/{brand}/assets/`:
-
-```
-python scripts/drive-uploader.py \
-  --action upload-assets \
-  --folder-id {drive_output_folder_id from brand profile} \
-  --brand "{brand_name}" \
-  --assets-dir "~/.claude-marketing/{brand}/assets/" \
-  --credentials {credentials_path from brand profile}
-```
-
-**Step 3: Update Tracking Sheet**
-
-If this content was triggered by a tracking sheet row (batch or single request), update the row with completion data:
-
-```
-python scripts/sheets-tracker.py \
-  --action mark-complete \
-  --sheet-id {tracking_sheet_id from brand profile} \
-  --row-id {requirement_id} \
-  --credentials {credentials_path from brand profile} \
-  --data '{"quality_score": 9.0, "content_quality": 8.6, "citation_integrity": 9.2, "brand_compliance": 9.4, "seo_performance": 8.8, "readability": 9.0, "actual_word_count": 1855, "drive_url": "{drive_url from Step 1}", "notes": "Completed successfully."}'
-```
-
-If this is a NEW single request (not from the sheet), add a row first:
-
-```
-python scripts/sheets-tracker.py \
-  --action add-row \
-  --sheet-id {tracking_sheet_id from brand profile} \
-  --credentials {credentials_path from brand profile} \
-  --data '{"brand": "{brand_name}", "content_type": "{type}", "title": "{title}", "target_audience": "{audience}", "word_count_target": {target}, "priority": 3, "status": "completed"}'
-```
-
-Then immediately mark it complete with scores using the returned `requirement_id`.
-
-**IMPORTANT: Check Script Output Before Proceeding**
-
-After EACH script call above, parse the JSON output and check for an `"error"` key:
-- If `"error"` exists in the Drive upload response → skip asset upload, update tracking sheet with `status: "failed"` and `notes: "{error message}"`, save .docx locally as fallback
-- If `"error"` exists in the Sheets update → note the failure in the completion summary, file is still in Drive
-- Only proceed to the next script if the previous one succeeded
-
-**Step 4: Error Handling**
-
-If any script fails (missing credentials, network error, permission denied):
-1. Save .docx locally to `./output/{content-type}/{date}/` as fallback
-2. Print the error message and provide setup instructions
-3. Continue with the completion summary — do not block the pipeline
-4. Note the failure in the completion summary under DELIVERY section
-
-**Step 5: If Google credentials are not configured:**
-
-Print setup guidance:
-```
-Google Sheets/Drive not configured for this brand.
-Content has been saved locally and delivered in this conversation.
-
-To enable tracking and Drive delivery, run /brand-setup — it will
-walk you through creating your own Google service account and
-connecting your Sheet and Drive folder in about 5 minutes.
-```
-
-Save content locally and proceed with the completion summary.
+Read `tracking.backend` from the brand profile. If empty or missing, default to `"local"`.
 
 ---
 
-### Step 5: Generate Completion Summary
+#### If `tracking.backend` is `"google_sheets"`:
+
+**Prerequisites (from brand profile):**
+- `tracking.google_sheets.credentials_path` (or legacy `google_integration.credentials_path`)
+- `tracking.google_sheets.sheet_id` (or legacy `google_integration.tracking_sheet_id`)
+- `tracking.google_drive.folder_id` (or legacy `google_integration.drive_output_folder_id`)
+
+**Step D1: Upload .docx to Google Drive**
+
+```
+python3 {scripts_dir}/drive-uploader.py \
+  --action upload \
+  --folder-id {drive_folder_id} \
+  --file {path to generated .docx} \
+  --brand "{brand_name}" \
+  --content-type {content_type} \
+  --credentials {credentials_path}
+```
+
+Capture the returned `url` value.
+
+**Step D2: Upload Visual Assets** (if any generated charts exist)
+
+```
+python3 {scripts_dir}/drive-uploader.py \
+  --action upload-assets \
+  --folder-id {drive_folder_id} \
+  --brand "{brand_name}" \
+  --assets-dir "~/.claude-marketing/{brand}/assets/" \
+  --credentials {credentials_path}
+```
+
+**Step D3: Update Tracking Sheet**
+
+```
+python3 {scripts_dir}/sheets-tracker.py \
+  --action mark-complete \
+  --sheet-id {sheet_id} \
+  --row-id {requirement_id} \
+  --credentials {credentials_path} \
+  --data '{"quality_score": {score}, "content_quality": {cq}, "citation_integrity": {ci}, "brand_compliance": {bc}, "seo_performance": {seo}, "readability": {read}, "actual_word_count": {words}, "drive_url": "{drive_url}", "notes": "Completed successfully."}'
+```
+
+---
+
+#### If `tracking.backend` is `"airtable"`:
+
+**Prerequisites (from brand profile):**
+- `AIRTABLE_TOKEN` environment variable
+- `tracking.airtable.base_id`
+
+**Step D1: Mark Complete + Attach Output File**
+
+Airtable handles both tracking AND file delivery in one call:
+
+```
+python3 {scripts_dir}/airtable-tracker.py \
+  --action mark-complete \
+  --base-id {base_id} \
+  --row-id {requirement_id} \
+  --data '{"quality_score": {score}, "content_quality": {cq}, "citation_integrity": {ci}, "brand_compliance": {bc}, "seo_performance": {seo}, "readability": {read}, "actual_word_count": {words}, "notes": "Completed successfully."}' \
+  --attach-file {path to generated .docx}
+```
+
+The .docx is uploaded as an attachment on the tracking record — no separate file storage needed.
+
+---
+
+#### If `tracking.backend` is `"local"` (or empty/missing):
+
+**Step D1: Mark Complete + Copy Output File**
+
+```
+python3 {scripts_dir}/local-tracker.py \
+  --action mark-complete \
+  --brand "{brand_name}" \
+  --row-id {requirement_id} \
+  --data '{"quality_score": {score}, "content_quality": {cq}, "citation_integrity": {ci}, "brand_compliance": {bc}, "seo_performance": {seo}, "readability": {read}, "actual_word_count": {words}, "notes": "Completed successfully."}' \
+  --output-file {path to generated .docx}
+```
+
+The .docx is copied to `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/`.
+
+---
+
+#### For ALL backends: New Single Request Handling
+
+If this is a NEW single request (not from a tracking row), add a row first using the appropriate tracker:
+
+- **Google:** `python3 {scripts_dir}/sheets-tracker.py --action add-row --sheet-id {sheet_id} --data '...'`
+- **Airtable:** `python3 {scripts_dir}/airtable-tracker.py --action add-row --base-id {base_id} --data '...'`
+- **Local:** `python3 {scripts_dir}/local-tracker.py --action add-row --brand "{brand}" --data '...'`
+
+Then immediately mark it complete with scores using the returned `requirement_id`.
+
+#### Error Handling (All Backends)
+
+After EACH script call, parse the JSON output and check for an `"error"` key:
+- If error occurs: save .docx locally as fallback, note the failure in completion summary
+- Continue with the completion summary — do not block the pipeline
+- If the backend is not configured at all, save locally and print:
+
+```
+Tracking backend not configured for this brand.
+Content has been saved locally and delivered in this conversation.
+
+To configure tracking and delivery, run /cf:switch-backend to choose
+Google Sheets + Drive, Airtable, or Local filesystem.
+```
+
+---
+
+### Step 5: Record Phase Timing & Get Pipeline Report
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 8
+```
+
+Then retrieve the full pipeline performance report:
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action get-report --brand "{brand}"
+```
+
+Parse the JSON output — use it to populate the PIPELINE PERFORMANCE and TOKEN USAGE ESTIMATE sections in the completion summary below.
+
+---
+
+### Step 6: Generate Completion Summary
 
 **Create human-readable summary for orchestrator/user:**
 
@@ -522,24 +570,41 @@ Save content locally and proceed with the completion summary.
 
 ### PIPELINE PERFORMANCE
 
-**Total Processing Time:** ~30 minutes
-**Phases Completed:** 10
-**Loop Iterations:** 0
+**Total Processing Time:** {total_time_formatted from get-report}
+**Benchmark:** {benchmark_formatted} ({content_type})
+**Status:** {✅ Under benchmark | ⚠️ Over by Xm}
+**Loop Iterations:** {count from loop history}
 **Quality Gates Passed:** 10/10
 
-**Pipeline Efficiency:**
-- Phase 1 (Research): 8 min
-- Phase 2 (Fact Check): 3 min
-- Phase 3 (Drafting): 6 min
-- Phase 3.5 (Visual Assets): 2 min
-- Phase 4 (Validation): 2 min
-- Phase 5 (Polish): 3 min
-- Phase 6 (SEO + Internal Linking): 2 min
-- Phase 6.5 (Humanize): 2 min
-- Phase 7 (Review): 1 min
-- Phase 8 (Output): 1 min
+| Phase | Name | Time | Benchmark | Status | Iterations |
+|-------|------|------|-----------|--------|------------|
+| 1 | Research | {from report} | {from report} | {✅/⚠️} | {N} |
+| 2 | Fact Checking | {from report} | {from report} | {✅/⚠️} | {N} |
+| 3 | Content Drafting | {from report} | {from report} | {✅/⚠️} | {N} |
+| 3.5 | Visual Asset Annotation | {from report} | {from report} | {✅/⚠️} | {N} |
+| 4 | Scientific Validation | {from report} | {from report} | {✅/⚠️} | {N} |
+| 5 | Structuring & Proofreading | {from report} | {from report} | {✅/⚠️} | {N} |
+| 6 | SEO/GEO Optimization | {from report} | {from report} | {✅/⚠️} | {N} |
+| 6.5 | Humanizer | {from report} | {from report} | {✅/⚠️} | {N} |
+| 7 | Review | {from report} | {from report} | {✅/⚠️} | {N} |
+| 8 | Output & Delivery | {from report} | {from report} | {✅/⚠️} | {N} |
 
 **Brand Profile Caching:** ✅ Cache hit (saved 2-5 minutes)
+
+---
+
+### TOKEN USAGE ESTIMATE
+
+| Category | Tokens (Est.) |
+|----------|--------------|
+| Agent Instructions (10 phases) | ~{agent_instructions from report} |
+| Content (research + draft + reports) | ~{content from report} |
+| Config & Brand Profile | ~{config_and_brand_profile from report} |
+| **Measurable Subtotal** | **~{measurable_subtotal from report}** |
+| Estimated System Overhead (×1.8) | ~{system_overhead from report} |
+| **Estimated Total** | **~{estimated_total from report}** |
+
+> Token estimates are approximate. For precise session costs, use `/cost`.
 
 ---
 

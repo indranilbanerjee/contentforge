@@ -29,6 +29,7 @@ Use `/cf:style-guide` when:
 4. **Parse Compliance Requirements** — Extract guardrails, required disclaimers, prohibited claims, regulatory requirements, and sensitivity guidelines
 5. **Generate Brand Profile JSON** — Create or update a structured JSON profile following the `brand-registry-template.json` schema
 6. **Save and Validate** — Save profile to Google Drive (via MCP) or local cache using the brand-cache-manager pattern, and validate the profile works with the ContentForge pipeline
+7. **Configure Tracking Backend** — Choose where ContentForge tracks quality scores and delivers output files: Google Sheets + Drive, Airtable, or local filesystem
 
 ## Required Inputs
 
@@ -467,6 +468,126 @@ Status: READY — Profile can be used with /contentforge --brand=AcmeMed
 ================================================================
 ```
 
+### Step G: Tracking & Delivery Backend (1-2 minutes)
+
+Choose where ContentForge tracks quality scores and delivers output files. This step configures the `tracking` section of the brand profile.
+
+**Present the user with three options:**
+
+```
+Step G: Tracking & Delivery Backend
+================================================================
+
+Choose where ContentForge tracks quality scores and delivers
+output files for this brand:
+
+  1. Google Sheets + Drive (Recommended if you have Google Workspace)
+     Tracks in Google Sheets, delivers .docx to Google Drive
+     Requires: Service account credentials (~5 min setup)
+
+  2. Airtable (Recommended for simplicity)
+     Tracks in Airtable, delivers .docx as record attachments
+     Requires: Personal Access Token (~2 min setup)
+
+  3. Local (No setup required)
+     Tracks in local JSON, delivers .docx to local filesystem
+     No auth needed, but no cloud access or collaboration
+
+Your choice: ___
+================================================================
+```
+
+**If user picks Google Sheets + Drive:**
+
+1. Check if Google credentials already exist at `~/.claude-marketing/google-credentials.json`
+2. If not, guide through service account setup:
+   - Create a GCP project at console.cloud.google.com
+   - Enable Google Sheets API and Google Drive API
+   - Create a service account and download the JSON key file
+   - Save to `~/.claude-marketing/google-credentials.json`
+   - Share the target Google Sheet and Drive folder with the service account email
+3. Ask for the Google Sheet ID (from the Sheet URL)
+4. Ask for the Google Drive folder ID (from the folder URL)
+5. Set in brand profile:
+   ```json
+   "tracking": {
+     "backend": "google_sheets",
+     "google_sheets": {
+       "sheet_id": "{user-provided}",
+       "tab_name": "ContentForge Tracking",
+       "credentials_path": "~/.claude-marketing/google-credentials.json"
+     },
+     "google_drive": {
+       "folder_id": "{user-provided}",
+       "credentials_path": "~/.claude-marketing/google-credentials.json"
+     }
+   }
+   ```
+6. Run `python3 {scripts_dir}/sheets-tracker.py --action init --sheet-id {sheet_id}` to create the tracking schema
+
+**If user picks Airtable:**
+
+1. Check if `AIRTABLE_TOKEN` environment variable exists
+2. If not, guide through token creation:
+   - Go to airtable.com/create/tokens
+   - Create a Personal Access Token with `data.records:read`, `data.records:write`, `schema.bases:read`, `schema.bases:write` scopes
+   - Select the target base (or create a new one)
+   - Set the token as `AIRTABLE_TOKEN` environment variable
+3. Ask for the Airtable Base ID (from the base URL: `airtable.com/{base_id}/...`)
+4. Set in brand profile:
+   ```json
+   "tracking": {
+     "backend": "airtable",
+     "airtable": {
+       "base_id": "{user-provided}",
+       "table_name": "ContentForge Tracking"
+     }
+   }
+   ```
+5. Run `python3 {scripts_dir}/airtable-tracker.py --action init --base-id {base_id}` to create the tracking table with schema
+
+**If user picks Local:**
+
+1. No setup required
+2. Set in brand profile:
+   ```json
+   "tracking": {
+     "backend": "local",
+     "local": {
+       "tracking_dir": "~/.claude-marketing/{brand}/tracking"
+     }
+   }
+   ```
+3. Run `python3 {scripts_dir}/local-tracker.py --action init --brand "{brand}"` to create the tracking directory and initial tracking.json
+
+**If user skips Step G** (presses enter without choosing or says "skip"):
+- Default to `"local"` with a note:
+  ```
+  Defaulted to local tracking. You can switch to Google Sheets or
+  Airtable anytime by running /cf:switch-backend.
+  ```
+
+**Example Output:**
+```
+Tracking Backend Configured
+================================================================
+
+Backend: Airtable
+Base ID: appXXXXXXXXXXXXXX
+Table: ContentForge Tracking (created with 20-column schema)
+Token: AIRTABLE_TOKEN detected
+
+Tracking table initialized with columns:
+  requirement_id, brand, content_type, title, target_audience,
+  word_count_target, priority, status, created_at, started_at,
+  completed_at, quality_score, content_quality, citation_integrity,
+  brand_compliance, seo_performance, readability, actual_word_count,
+  output_file (Attachment), notes
+
+To switch backends later: /cf:switch-backend
+================================================================
+```
+
 ## Output
 
 The style guide import produces:
@@ -557,11 +678,12 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 - **[/batch-process](../batch-process/SKILL.md)** — All pieces in a batch reference a brand profile
 - **[/content-refresh](../content-refresh/SKILL.md)** — Refresh maintains brand compliance using the profile
 - **[/cf:integrations](../cf-integrations/SKILL.md)** — Check Notion and Google Drive connector status
+- **[/cf:switch-backend](../cf-switch-backend/SKILL.md)** — Switch tracking backend (local/airtable/google) after initial setup
 
 ---
 
-**Version:** 3.4.0
+**Version:** 3.5.0
 **Agent:** None (deterministic parsing)
 **MCP:** Google Drive (optional), Notion (optional)
-**Processing Time:** 5-8 minutes
-**Output:** Brand profile JSON, voice summary, terminology count, guardrails list, validation status
+**Processing Time:** 5-10 minutes
+**Output:** Brand profile JSON, voice summary, terminology count, guardrails list, validation status, tracking backend config

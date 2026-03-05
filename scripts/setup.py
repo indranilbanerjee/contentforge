@@ -84,6 +84,22 @@ def main():
     else:
         print("GOOGLE_PACKAGES=not_installed (will auto-install on first script run)")
 
+    # Check Airtable integration
+    import os
+    airtable_token = os.environ.get("AIRTABLE_TOKEN")
+    if airtable_token:
+        print("AIRTABLE_TOKEN=configured")
+    else:
+        print("AIRTABLE_TOKEN=not_configured")
+
+    # Report available tracking backends
+    backends = ["local"]
+    if airtable_token:
+        backends.append("airtable")
+    if google["credentials"]:
+        backends.append("google_sheets")
+    print(f"TRACKING_BACKENDS={', '.join(backends)}")
+
     if errors:
         for err in errors:
             print(f"ERROR: {err}", file=sys.stderr)

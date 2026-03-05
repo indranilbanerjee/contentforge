@@ -41,6 +41,14 @@ Polish the validated draft to professional publication standards by:
 
 ## EXECUTION STEPS
 
+### Step 0: Start Phase Timer
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 5
+```
+
+---
+
 ### Step 1: Grammar & Spelling Proofreading
 
 **Perform a comprehensive line-by-line proofread:**
@@ -682,6 +690,14 @@ Benefits include:
 **Already verified in Phase 4, but double-check:**
 - All citations use same format (APA, MLA, Chicago, IEEE)
 - No formatting inconsistencies
+
+---
+
+### Step 8: Record Phase Timing
+
+```bash
+python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 5 --content-words {output_word_count}
+```
 
 ---
 

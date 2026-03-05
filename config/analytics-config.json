@@ -96,10 +96,50 @@
       "measures": "Grade level, sentence variety, flow"
     }
   },
+  "phase_timing_benchmarks": {
+    "_description": "Expected processing time per phase per content type in seconds",
+    "article": {
+      "1": 300, "2": 180, "3": 420, "3.5": 120, "4": 180,
+      "5": 180, "6": 180, "6.5": 90, "7": 180, "8": 120
+    },
+    "blog": {
+      "1": 240, "2": 120, "3": 300, "3.5": 90, "4": 120,
+      "5": 120, "6": 120, "6.5": 60, "7": 120, "8": 90
+    },
+    "whitepaper": {
+      "1": 360, "2": 240, "3": 540, "3.5": 180, "4": 240,
+      "5": 240, "6": 240, "6.5": 120, "7": 240, "8": 180
+    },
+    "faq": {
+      "1": 180, "2": 120, "3": 240, "3.5": 60, "4": 120,
+      "5": 120, "6": 120, "6.5": 60, "7": 120, "8": 60
+    },
+    "research_paper": {
+      "1": 420, "2": 300, "3": 600, "3.5": 180, "4": 300,
+      "5": 240, "6": 240, "6.5": 120, "7": 300, "8": 180
+    },
+    "video_script": {
+      "1": 240, "2": 120, "3": 300, "3.5": 60, "4": 120,
+      "5": 120, "6": 120, "6.5": 60, "7": 120, "8": 90
+    }
+  },
+  "token_estimation": {
+    "_description": "Constants for estimating token usage per pipeline run",
+    "tokens_per_word": 1.33,
+    "overhead_multiplier": 1.8,
+    "brand_profile_tokens": 3000,
+    "agent_instruction_tokens": {
+      "_description": "Approximate token count per agent markdown instruction file",
+      "1": 3200, "2": 2400, "3": 3800, "3.5": 2600,
+      "4": 2200, "5": 2800, "6": 3000, "6.5": 2200,
+      "7": 2800, "8": 3400
+    }
+  },
   "data_sources": {
-    "primary": "google_sheets",
-    "fallback": "local_csv",
-    "local_csv_path": "~/.claude-marketing/contentforge-tracking.csv",
+    "_description": "Legacy config — tracking backend is now configured per-brand in brand profile (tracking.backend)",
+    "primary": "brand_profile",
+    "fallback": "local",
+    "local_tracking_dir": "~/.claude-marketing/{brand}/tracking",
     "sheet_tab_name": "ContentForge Tracking"
   },
   "export": {

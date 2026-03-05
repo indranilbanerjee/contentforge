@@ -7,6 +7,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.0] - 2026-03-05
+
+### Added — Pipeline Performance Tracking + Multi-Backend I/O
+
+- **Pipeline Performance Tracking** — Actual wall-clock timing per phase replaces placeholder estimates
+  - `scripts/pipeline-tracker.py` (stdlib only) — 4 actions: init, phase-start, phase-end, get-report
+  - All 10 agents instrumented with phase-start/phase-end timing calls
+  - Token usage estimation: content tokens (word count × 1.33) + agent instruction tokens + configurable overhead multiplier (1.8×)
+  - Phase 8 completion summary now shows real timing table with benchmark comparison + token usage estimate
+  - Pipeline run data stored at `~/.claude-marketing/{brand}/pipeline-run.json`
+  - Multiple runs per phase tracked for feedback loops — total phase time = sum of all run durations
+- **Airtable Backend** — Alternative to Google Sheets + Drive with simpler setup
+  - `scripts/airtable-tracker.py` — Same 6-action interface as sheets-tracker.py (init, add-row, get-pending, get-row, update-row, mark-complete)
+  - File delivery via Airtable attachments (same record, no separate uploader script needed)
+  - Auth: `AIRTABLE_TOKEN` env var (Personal Access Token, ~2 min setup)
+  - Auto-installs pyairtable on first run
+- **Enhanced Local Backend** — Fully functional zero-auth tracking + filesystem delivery
+  - `scripts/local-tracker.py` (stdlib only) — Same 6-action interface, zero dependencies
+  - Organized output directories: `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/`
+  - Default backend when no cloud service configured
+- **Backend Migration** — Switch between backends anytime with data + file migration
+  - `scripts/backend-migrator.py` — 2 actions: migrate (6 direction pairs), status
+  - Migration is additive (source data never deleted), idempotent, resumable
+  - `/cf:switch-backend` skill — Guided backend switching with validation and optional data migration
+- **Brand Setup Step G: Tracking & Delivery Backend** — Users choose their backend during brand setup
+  - Three options: Google Sheets + Drive (recommended for Google Workspace), Airtable (recommended for simplicity), Local (no setup required)
+  - Local is default only if user explicitly skips — not silently assigned
+  - Each option includes guided setup (credentials, IDs, initialization)
+- **Agent 08 + Agent 09 Backend Dispatch** — All tracking/delivery operations dispatch to the configured backend
+  - Agent 08 reads `tracking.backend` from brand profile and calls the appropriate tracker script
+  - Agent 09 batch intake and status updates dispatch to the configured backend
+- **`config/analytics-config.json`** — Added `phase_timing_benchmarks` (per-phase per-content-type in seconds) and `token_estimation` (overhead multiplier, tokens per word, agent instruction tokens per phase)
+- **`config/brand-registry-template.json`** — New `tracking` section with three backend configs (google_sheets, airtable, local) replacing the legacy `google_integration` section
+- **`utilities/progress-tracker.md`** — Added Phase 3.5 to phase_weights, rebalanced all weights to sum to 1.0
+- **`scripts/setup.py`** — Now detects Airtable token and reports available tracking backends
+
+### How it works
+
+**Pipeline timing** is automatic: Phase 1 initializes the pipeline run file, each phase records start/end timestamps, and Phase 8 retrieves the timing report for the completion summary. The timing table shows actual wall-clock time, benchmark comparison, pass/fail status, and iteration count per phase.
+
+**Backend selection** happens during brand setup (Step G of `/cf:style-guide`). Users choose between Google Sheets + Drive, Airtable, or Local. The choice is stored in the brand profile's `tracking.backend` field. All agents dispatch to the configured backend automatically.
+
+**Backend migration** via `/cf:switch-backend` validates the target backend, offers to migrate existing records and files, updates the brand profile, and confirms the switch. Source data is never deleted.
+
+### Technical Specifications
+
+**New Scripts:** 4 (pipeline-tracker.py, airtable-tracker.py, local-tracker.py, backend-migrator.py)
+**New Skills:** 1 (cf-switch-backend)
+**Modified Agents:** 12 (all 10 pipeline agents + batch orchestrator + output manager backend dispatch)
+**Modified Configs:** 2 (analytics-config.json, brand-registry-template.json)
+**Modified Utilities:** 1 (progress-tracker.md)
+**Modified Skills:** 1 (cf-style-guide with Step G)
+**Total New Files:** 5
+**Total Modified Files:** 16
+
+---
+
+## [3.4.1] - 2026-03-05
+
+### Added — Skill Platform Enhancements
+
+- **`argument-hint`** added to all 16 user-invocable skills — provides autocomplete hints in the Skills UI (e.g., `"topic" --type=article --brand=name`, `[--pipeline | --skills | --examples]`)
+- **`disable-model-invocation: true`** added to `/cf:publish` — prevents Claude from auto-triggering the publish skill; user must explicitly invoke it
+- **`evals/evals.json`** added to 3 key skills (contentforge, cf-brief, cf-style-guide) — structured test cases with prompts, expected outputs, and quantitative/qualitative assertions for quality benchmarking
+- **`name` field** added to `cf-help` skill frontmatter (was missing, could cause registration failure)
+
+### How it works
+
+**Argument hints** appear as placeholder text in the Skills UI, showing what arguments each skill accepts. For example, `/contentforge` shows `"topic" --type=article --brand=name` and `/cf:brief` shows `"topic or keyword" [--depth=deep]`.
+
+**Execution safety** on `/cf:publish` ensures content cannot be published to external platforms without the user explicitly invoking the command. This complements the existing MCP write approval hook.
+
+**Evals** provide reproducible test cases for key skills. Each eval includes a realistic prompt, expected output description, and assertions (quantitative/qualitative). Located at `skills/{skill-name}/evals/evals.json`.
+
+---
+
 ## [3.4.0] - 2026-03-04
 
 ### Added
@@ -604,6 +680,8 @@ This patch release resolves the core installation and management issues reported
 
 ## Version History
 
+- **3.5.0** (2026-03-05) — Pipeline performance tracking, multi-backend I/O (Google Sheets, Airtable, local), backend migration, brand setup Step G
+- **3.4.1** (2026-03-05) — Skill platform enhancements: argument-hint on 16 skills, disable-model-invocation on cf-publish, evals on 3 key skills
 - **3.4.0** (2026-03-04) — 10 industry knowledge packs, SME calibration, domain-specific validation, brand-setup key file generation, Figma connector
 - **3.3.0** (2026-03-03) — Google Sheets tracking + Google Drive delivery via Python scripts with service account
 - **3.2.0** (2026-03-03) — Visual Asset Annotator (Phase 3.5), structured internal linking, 10-phase pipeline
@@ -631,6 +709,8 @@ Found a bug or have a feature request? Please open an issue on [GitHub Issues](h
 
 ---
 
+[3.5.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.5.0
+[3.4.1]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.4.1
 [3.4.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.4.0
 [3.3.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.3.0
 [3.2.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v3.2.0
@@ -641,4 +721,4 @@ Found a bug or have a feature request? Please open an issue on [GitHub Issues](h
 [2.0.1]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.1
 [2.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v2.0.0
 [1.0.0]: https://github.com/indranilbanerjee/contentforge/releases/tag/v1.0.0
-[Unreleased]: https://github.com/indranilbanerjee/contentforge/compare/v3.4.0...HEAD
+[Unreleased]: https://github.com/indranilbanerjee/contentforge/compare/v3.5.0...HEAD

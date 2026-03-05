@@ -117,15 +117,16 @@ batch_state = {
 ### Phase Weights (for % completion)
 ```python
 phase_weights = {
-    1: 0.15,  # Research: 15% of total time
-    2: 0.12,  # Fact-checking: 12%
-    3: 0.18,  # Drafting: 18% (heaviest)
-    4: 0.08,  # Scientific validation: 8%
-    5: 0.10,  # Structuring & proofreading: 10%
-    6: 0.12,  # SEO/GEO optimization: 12%
-    6.5: 0.08,  # Humanizer: 8%
-    7: 0.10,  # Reviewer: 10%
-    8: 0.07   # Output manager: 7%
+    1: 0.14,    # Research: 14% of total time
+    2: 0.11,    # Fact-checking: 11%
+    3: 0.17,    # Drafting: 17% (heaviest)
+    3.5: 0.05,  # Visual Asset Annotation: 5%
+    4: 0.08,    # Scientific validation: 8%
+    5: 0.10,    # Structuring & proofreading: 10%
+    6: 0.11,    # SEO/GEO optimization: 11%
+    6.5: 0.07,  # Humanizer: 7%
+    7: 0.10,    # Reviewer: 10%
+    8: 0.07     # Output manager: 7%
 }
 
 def calculate_progress_percentage(current_phase):

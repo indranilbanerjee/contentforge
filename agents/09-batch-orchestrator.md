@@ -55,22 +55,37 @@ You are the **Batch Orchestrator Agent**, responsible for maximizing content pro
 ### Phase 1: Intake & Validation (1-2 minutes)
 
 **Input Sources:**
-- **Google Sheets** (via `scripts/sheets-tracker.py`): Preferred for agency workflows (live updates, team collaboration)
-- **CSV**: Alternative for one-off batches
+Requirements are loaded from the brand's configured tracking backend. Check `tracking.backend` in the brand profile.
 
-**Loading from Google Sheets:**
+**Loading Pending Requirements — Backend Dispatch:**
 
-Read the `tracking_sheet_id` and `credentials_path` from the brand profile's `google_integration` section, then run:
+Read `tracking.backend` from the brand profile (default: `"local"` if empty/missing):
 
+**If `tracking.backend` is `"google_sheets"`:**
 ```
-python scripts/sheets-tracker.py \
+python3 {scripts_dir}/sheets-tracker.py \
   --action get-pending \
-  --sheet-id {tracking_sheet_id} \
-  --credentials {credentials_path} \
+  --sheet-id {tracking.google_sheets.sheet_id} \
+  --credentials {tracking.google_sheets.credentials_path} \
   --brand "{brand_name}"
 ```
 
-This returns all rows with `status=pending`, sorted by priority. If `--brand` is omitted, returns pending rows across all brands.
+**If `tracking.backend` is `"airtable"`:**
+```
+python3 {scripts_dir}/airtable-tracker.py \
+  --action get-pending \
+  --base-id {tracking.airtable.base_id} \
+  --brand "{brand_name}"
+```
+
+**If `tracking.backend` is `"local"`:**
+```
+python3 {scripts_dir}/local-tracker.py \
+  --action get-pending \
+  --brand "{brand_name}"
+```
+
+All backends return the same format: `{"pending_count": N, "pending": [records]}`, sorted by priority.
 
 **Required Columns:**
 - `requirement_id` (string, unique)
@@ -130,8 +145,10 @@ Queue (sorted by priority, then time):
 
 **For Each Piece in Queue:**
 
-1. **Update Status**
-   - Run `python scripts/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"in_progress","started_at":"{timestamp}"}'`
+1. **Update Status** (use the same backend dispatch as Phase 1)
+   - **Google:** `python3 {scripts_dir}/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"in_progress","started_at":"{timestamp}"}'`
+   - **Airtable:** `python3 {scripts_dir}/airtable-tracker.py --action update-row --base-id {base_id} --row-id {requirement_id} --data '{"status":"in_progress","started_at":"{timestamp}"}'`
+   - **Local:** `python3 {scripts_dir}/local-tracker.py --action update-row --brand "{brand}" --row-id {requirement_id} --data '{"status":"in_progress","started_at":"{timestamp}"}'`
    - Add to active pipelines tracker
 
 2. **Launch ContentForge Pipeline**
@@ -150,13 +167,13 @@ Queue (sorted by priority, then time):
      - Free up concurrency slot, start next in queue
 
    - If **requires review** (score <5.0 or max loops exceeded):
-     - Run `python scripts/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"review_required","notes":"Reason: ..."}'`
+     - Update status using the appropriate backend tracker (same dispatch pattern as status updates above): `--action update-row --row-id {requirement_id} --data '{"status":"review_required","notes":"Reason: ..."}'`
      - Move to review folder
      - Free up concurrency slot, start next in queue
 
    - If **failed** (pipeline error):
      - Retry once after 60s
-     - If fails again: `python scripts/sheets-tracker.py --action update-row --sheet-id {sheet_id} --row-id {requirement_id} --data '{"status":"failed","notes":"Error: ..."}'`
+     - If fails again, update via backend tracker: `--action update-row --row-id {requirement_id} --data '{"status":"failed","notes":"Error: ..."}'`
      - Free up concurrency slot, start next in queue
 
 ---
@@ -368,11 +385,13 @@ Each pipeline in the batch runs through the full 10-phase process with identical
 
 ## Integration Points
 
-### Google Integration Scripts
-- **`scripts/sheets-tracker.py`** — Requirement intake (`get-pending`), status tracking (`update-row`, `mark-complete`)
-- **`scripts/drive-uploader.py`** — Output file upload (`upload`), asset upload (`upload-assets`)
-- **Credentials:** Service account JSON at path specified in brand profile `google_integration.credentials_path`
-- **Configuration:** `tracking_sheet_id` and `drive_output_folder_id` from brand profile (configured once per brand)
+### Tracking & Delivery Scripts (Backend-Dispatched)
+- **`scripts/sheets-tracker.py`** — Google Sheets backend: requirement intake, status tracking
+- **`scripts/airtable-tracker.py`** — Airtable backend: requirement intake, status tracking, file attachments
+- **`scripts/local-tracker.py`** — Local backend: requirement intake, status tracking, file copy
+- **`scripts/drive-uploader.py`** — Google Drive file upload (used only with `google_sheets` backend)
+- **`scripts/pipeline-tracker.py`** — Per-pipeline timing and token estimation
+- **Backend selection:** Read `tracking.backend` from brand profile (`google_sheets` | `airtable` | `local`)
 
 ### Utilities Used
 - **batch-queue-manager.md** — Queue sorting, priority logic
@@ -406,7 +425,7 @@ Each pipeline in the batch runs through the full 10-phase process with identical
 1. **Max 5 concurrent** (can't be increased without risking rate limits)
 2. **All brands must pre-exist** (no on-the-fly profile creation during batch)
 3. **Single content type per batch** (mixing types is fine, just estimate times vary)
-4. **Google Sheets/CSV only** (Notion, Airtable coming in later phases)
+4. **Supported backends:** Google Sheets, Airtable, or local JSON (configured per brand via `tracking.backend`)
 
 ---
 

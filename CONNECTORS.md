@@ -28,6 +28,22 @@ Some services are connected at the **Claude platform level** rather than through
 
 Platform-level integrations work even if they don't appear in the `/cf:integrations` connector dashboard. Google Drive connected at the platform level provides document access for brand knowledge and reference materials.
 
+## Tracking & delivery backends
+
+ContentForge supports three backends for content tracking and output delivery, configured per-brand during setup (Step G):
+
+| Backend | Auth Setup | Tracking | File Delivery | Switch with |
+|---------|-----------|----------|---------------|-------------|
+| **Google Sheets + Drive** | Service account (~5 min) | `sheets-tracker.py` | `drive-uploader.py` | `/cf:switch-backend google` |
+| **Airtable** | Personal Access Token (~2 min) | `airtable-tracker.py` | Record attachments (same script) | `/cf:switch-backend airtable` |
+| **Local** | None | `local-tracker.py` | Local filesystem | `/cf:switch-backend local` |
+
+**Airtable** handles both tracking AND file delivery in a single platform (output files attach to the tracking record). No separate uploader needed.
+
+**Local** works immediately with zero setup. Data at `~/.claude-marketing/{brand}/tracking/`. Good for getting started — switch to Google or Airtable anytime.
+
+**Migration** between backends is supported via `/cf:switch-backend`. Source data is never deleted.
+
 ## Categories without HTTP connectors (Claude Code only)
 
 The following integrations require local npx/stdio MCP servers. They work in Claude Code but not in Cowork. See `.mcp.json.example` for configuration.
@@ -50,6 +66,7 @@ Use these skills to discover and manage your integrations:
 | `/cf:integrations` | Status dashboard — see what's connected, what's available, which workflows each connector enables |
 | `/cf:connect <name>` | Guided setup — step-by-step instructions for connecting a specific service (e.g., `/cf:connect wordpress`) |
 | `/cf:add-integration` | Custom setup — add any MCP server not in the registry (npm packages or custom APIs) |
+| `/cf:switch-backend` | Switch tracking backend — migrate between Google Sheets, Airtable, and local with optional data migration |
 
 ## Advanced configuration (Claude Code)
 
