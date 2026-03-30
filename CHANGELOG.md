@@ -7,6 +7,67 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.0] - 2026-03-31
+
+### Fixed — Title Curation, Brand Validation, Scoring, Tracking
+
+Major quality and consistency release addressing 31 audit findings across title generation, brand compliance, scoring, and performance tracking.
+
+#### Title Curation Overhaul (01-researcher.md Step 0.5)
+
+- **Quick SERP reconnaissance** before generating titles — scans top 5 competitor titles for differentiation
+- **Content-type-specific angles** — blog/article/whitepaper/FAQ/research paper each get tailored title frameworks (no more one-size-fits-all)
+- **Brand personality adaptation** — title language adjusts for authoritative/conversational/technical/witty/warm brands
+- **Brand guardrails validation on titles** — checks prohibited terms and claims BEFORE presenting to user
+- **Google SERP character limit** (≤60 chars) enforced — with character count shown per title
+- **Anti-clickbait check** — curiosity-driven titles validated against content scope
+- **Competitor title context** — top 3 ranking titles shown alongside options for differentiation
+
+#### Pre-Flight Brand Validation (NEW — runs before every content production)
+
+- **Brand completeness check** in create-content.md and contentforge SKILL.md — validates voice, guardrails, audience, industry pack before starting
+- **Regulated industry enforcement** — pharma/BFSI/healthcare/legal brands with empty guardrails get explicit warning and must confirm before proceeding
+- **Phase 3 (Content Drafter)** — new Step 0.1.5 validates brand profile completeness after loading; warns on empty guardrails and missing industry knowledge packs
+- **Phase 5 (Structurer & Proofreader)** — guardrails pre-check: empty guardrails now report "SKIPPED" (not "PASSED"), trigger -1.0 Brand Compliance penalty in Phase 7
+
+#### Scoring Consistency Fixes (07-reviewer.md)
+
+- **GEO Readiness clarified** as sub-score under SEO Performance (not a phantom 6th dimension)
+- **Industry threshold overrides** — explicit instructions for Phase 7 to load pharma (8.0), BFSI (7.5), healthcare (8.0), legal (8.0) minimums
+- **Rounding precision defined** — all scores rounded to 1 decimal place (standard rounding)
+- **Dimension minimums enforced** — content fails if ANY dimension is below its minimum, regardless of composite score
+- **Empty guardrails penalty** — Brand Compliance gets -1.0 when guardrails not configured
+
+#### Performance Tracking Fixes (08-output-manager.md)
+
+- **Per-phase timing columns** (U through AE) added to tracking sheet — reads from pipeline-run.json
+- **Token estimate column** (AF) — estimated total tokens from pipeline-tracker.py
+- **Guardrails status column** (AG) — "verified" / "skipped_empty" / "minimal"
+- **Pipeline performance section** in user-facing output — timing per phase, token estimates, guardrails status
+
+#### Brand Profile Expansion
+
+- **brand-registry-template.json** — 3 new fields: `visual_identity` (colors, fonts, image style), `content_pillars` (topic ownership), `competitor_analysis` (structured competitor data)
+- **cf-style-guide** — 4 new setup steps: audience personas (Step 7), competitor analysis (Step 8), content pillars (Step 9), visual identity (Step 10)
+
+#### Eval Coverage Expansion
+
+- 3 new eval tests (6 total): Phase 7 scoring dimension verification, empty guardrails compliance test, title curation with brand personality test
+
+### Summary
+
+| Category | Issues Fixed |
+|----------|-------------|
+| Title curation | 7 (SERP, content-type angles, brand voice, guardrails, char limits, anti-clickbait, differentiation) |
+| Brand validation | 5 (pre-flight check, Phase 3 guardrails, Phase 5 guardrails, regulated industry enforcement, completeness) |
+| Scoring | 5 (GEO clarity, industry thresholds, rounding, dimension minimums, guardrails penalty) |
+| Tracking | 4 (per-phase timing, token estimates, guardrails status, user-facing performance) |
+| Brand template | 3 (visual_identity, content_pillars, competitor_analysis) |
+| Brand setup | 4 (audience, competitors, pillars, visual identity steps) |
+| Evals | 3 (scoring, guardrails, title tests) |
+
+---
+
 ## [3.6.0] - 2026-03-31
 
 ### Added — AI Image Generation, Platform Feature Adoption, Quality Hooks

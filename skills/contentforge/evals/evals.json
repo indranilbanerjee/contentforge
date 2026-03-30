@@ -76,6 +76,79 @@
           "type": "quantitative"
         }
       ]
+    },
+    {
+      "name": "Phase 7 Scoring Dimension Test",
+      "prompt": "Create a blog post about 'Remote Work Productivity Tips' for brand 'TechStartup' (technology industry, conversational tone). Verify the Phase 7 scoring output.",
+      "expected_output": "Phase 7 produces a Quality Scorecard with all 5 dimensions scored 1-10, composite score calculated as weighted average, and pass/fail decision based on 7.0 threshold.",
+      "assertions": [
+        {
+          "text": "Quality Scorecard includes all 5 dimensions: Content Quality, Citation Integrity, Brand Compliance, SEO Performance, Readability",
+          "type": "qualitative"
+        },
+        {
+          "text": "Composite score equals weighted average: (CQ×0.30 + CI×0.25 + BC×0.20 + SEO×0.15 + R×0.10) rounded to 1 decimal",
+          "type": "quantitative"
+        },
+        {
+          "text": "Each dimension score is between 1.0 and 10.0",
+          "type": "quantitative"
+        },
+        {
+          "text": "Decision is APPROVED if composite ≥7.0 and all dimension minimums met",
+          "type": "quantitative"
+        }
+      ]
+    },
+    {
+      "name": "Empty Guardrails Compliance Test",
+      "prompt": "Create a blog post about 'Best Investment Strategies 2026' for a BFSI brand with EMPTY guardrails (no prohibited_claims, no required_disclaimers). Verify the system warns about missing guardrails.",
+      "expected_output": "System warns that guardrails are empty before starting pipeline. Phase 5 reports compliance as SKIPPED (not PASSED). Phase 7 applies -1.0 penalty to Brand Compliance.",
+      "assertions": [
+        {
+          "text": "Pre-flight validation warns: guardrails empty for regulated industry",
+          "type": "qualitative"
+        },
+        {
+          "text": "Phase 5 Brand Compliance reports 'skipped_empty_guardrails' status, NOT 'passed'",
+          "type": "qualitative"
+        },
+        {
+          "text": "Phase 7 Brand Compliance score includes penalty for empty guardrails",
+          "type": "quantitative"
+        },
+        {
+          "text": "Final output includes guardrails status in pipeline performance section",
+          "type": "qualitative"
+        }
+      ]
+    },
+    {
+      "name": "Title Curation with Brand Personality Test",
+      "prompt": "Create an article about 'AI in Supply Chain Management' for brand 'LogiCorp' (witty personality, conversational tone, B2B SaaS industry). Verify title curation adapts to brand voice.",
+      "expected_output": "Title curation generates 4-5 options using article-specific angles (not generic blog angles), adapted to witty/conversational brand personality. Titles checked against SERP competitors.",
+      "assertions": [
+        {
+          "text": "Title options use article-specific angles (Authority, Analysis, Problem-Solution, Future-focused, Expert perspective)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Title language reflects witty/conversational brand personality (casual language, clever framing)",
+          "type": "qualitative"
+        },
+        {
+          "text": "Competitor titles from SERP shown alongside options for differentiation",
+          "type": "qualitative"
+        },
+        {
+          "text": "Each title shows character count and stays ≤60 characters (SERP safe)",
+          "type": "quantitative"
+        },
+        {
+          "text": "User must explicitly select or modify a title before Phase 1 begins",
+          "type": "qualitative"
+        }
+      ]
     }
   ]
 }

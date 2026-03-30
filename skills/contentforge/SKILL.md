@@ -44,6 +44,8 @@ Runs your content through **10 specialized agents** with quality gates at each p
 - **Content Type** — article, blog, whitepaper, faq, research_paper
 - **Brand** — Which brand profile to use (create with `/cf:style-guide` if new brand)
 
+**Pre-Flight Validation:** After gathering inputs, the system validates your brand profile for completeness (voice, guardrails, audience, industry pack). For regulated industries (pharma, BFSI, healthcare, legal), guardrails are required — the system will warn if they're empty and ask whether to proceed or update the profile first.
+
 **Optional:**
 - **Target Audience** — Who this content is for (e.g., "Healthcare CIOs")
 - **Word Count** — Target length (defaults to content type standard)
@@ -378,7 +380,7 @@ You select Option 1 → Pipeline starts with that title as the anchor.
 
 ---
 
-**Version:** 3.6.0
+**Version:** 3.7.0
 **Agents:** 13 agents (Research, Fact Checker, Drafter, Visual Asset Annotator, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
 **Processing Time:** 20-30 minutes avg
 **Quality Guarantee:** ≥8.5/10 avg score, zero hallucinations, 95%+ citation accuracy

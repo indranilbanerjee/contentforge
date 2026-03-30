@@ -37,6 +37,38 @@ Gather the following from the user. If not provided, ask before proceeding:
    - Specific sources or references to include
    - Competitor URLs to differentiate from
 
+## Pre-Flight Validation (Before Title Curation)
+
+**This check runs automatically before any content production begins.**
+
+After gathering inputs (topic, type, brand, audience, keyword), validate the brand profile:
+
+1. **Load brand profile** from `~/.claude-marketing/{brand}/` or `${CLAUDE_PLUGIN_DATA}/{brand}/`
+2. **Check required fields:**
+   - `voice.tone` — must be set (not empty)
+   - `voice.formality` — must be set
+   - `terminology.prohibited_terms` — should be non-empty for regulated industries
+   - `guardrails.prohibited_claims` — **REQUIRED** for pharma, BFSI, healthcare, legal industries; recommended for all
+   - `target_audience.primary_persona` — should include role, reading level
+   - `industry` — must match an available industry knowledge pack
+
+3. **If any required field is missing, warn the user:**
+```
+⚠️ Brand profile check:
+  ✓ Voice/tone: [value]
+  ✓ Formality: [value]
+  ✗ Guardrails: EMPTY — compliance checks will be skipped
+  ✗ Audience persona: MISSING — content may not match reader expectations
+
+For regulated industries (pharma, BFSI, healthcare, legal), guardrails are REQUIRED.
+
+Options:
+  1. Continue anyway (defaults applied where possible)
+  2. Fix brand profile first (/cf:style-guide --update [brand])
+```
+
+4. **Wait for user response.** Do not auto-proceed with incomplete profiles for regulated industries.
+
 ## Title Curation (Before Pipeline Starts)
 
 **This step is mandatory.** After gathering the inputs above, generate **4-5 title options** before starting Phase 1. Do NOT auto-select a title or skip straight to research.

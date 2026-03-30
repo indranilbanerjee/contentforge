@@ -304,6 +304,40 @@
       "code_font": "Courier New"
     }
   },
+  "visual_identity": {
+    "brand_colors": {
+      "primary": "#000000",
+      "secondary": "#666666",
+      "accent": "#0066CC"
+    },
+    "fonts": {
+      "headings": "",
+      "body": "",
+      "code": ""
+    },
+    "image_style": "photorealistic",
+    "logo_description": ""
+  },
+  "content_pillars": [
+    {
+      "name": "Example Pillar",
+      "description": "Core topic area the brand owns",
+      "keywords": ["keyword1", "keyword2"],
+      "content_types": ["article", "blog"]
+    }
+  ],
+  "competitor_analysis": {
+    "top_competitors": [
+      {
+        "name": "Competitor Name",
+        "url": "https://competitor.com",
+        "content_strengths": ["strong SEO", "deep technical content"],
+        "content_gaps": ["no video content", "weak social presence"],
+        "keywords_they_own": ["keyword1", "keyword2"]
+      }
+    ],
+    "differentiation_strategy": "How our content stands apart"
+  },
   "notification_preferences": {
     "send_completion_notification": true,
     "send_human_review_alert": true,

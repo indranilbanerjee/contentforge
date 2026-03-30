@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/setup.py 2>/dev/null; echo '✓ ContentForge v3.6 loaded — Enterprise content production with zero hallucinations' && echo '  /contentforge — Single piece (20-30 min, now with optional AI image generation)' && echo '  /batch-process — Multiple pieces in parallel (4-5x faster)' && echo '  /content-refresh — Update old content with fresh data' && echo '  /cf:integrations — See connected integrations (9 HTTP + image gen)' && echo '  /cf:social-adapt — Repurpose content for social' && echo '  /cf:publish — Push to CMS'"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/setup.py 2>/dev/null; echo '✓ ContentForge v3.7 loaded — Enterprise content production with zero hallucinations' && echo '  /contentforge — Single piece (20-30 min, now with optional AI image generation)' && echo '  /batch-process — Multiple pieces in parallel (4-5x faster)' && echo '  /content-refresh — Update old content with fresh data' && echo '  /cf:integrations — See connected integrations (9 HTTP + image gen)' && echo '  /cf:social-adapt — Repurpose content for social' && echo '  /cf:publish — Push to CMS'"
           }
         ]
       }

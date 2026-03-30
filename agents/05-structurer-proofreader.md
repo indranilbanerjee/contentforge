@@ -813,6 +813,35 @@ Variance: -8.5%
 - **POV consistency:** ✅ 100%
 
 **Guardrails:**
+
+**Guardrails Pre-Check:**
+
+Before scanning for prohibited claims, verify the brand's guardrails are populated:
+
+1. Check `guardrails.prohibited_claims` — is the array non-empty?
+2. Check `guardrails.required_disclaimers` — is the array non-empty?
+
+**If BOTH are empty:**
+```
+⚠️ GUARDRAILS EMPTY: Brand "{brand}" has no prohibited claims or required disclaimers defined.
+
+Compliance scan result: SKIPPED (no rules to check against)
+This does NOT mean content is compliant — it means compliance was NOT verified.
+
+RECOMMENDATION: Flag for manual compliance review before publishing.
+```
+
+- Set `compliance_status` to `"skipped_empty_guardrails"` (not `"passed"`)
+- Phase 7 (Reviewer) should treat this as a quality score penalty (-1.0 on Brand Compliance dimension)
+- Add to output: "Brand Compliance: ⚠️ NOT VERIFIED (empty guardrails)"
+
+**If guardrails exist but are minimal (<3 rules):**
+```
+⚠️ GUARDRAILS MINIMAL: Brand "{brand}" has only [N] prohibited claims defined.
+Consider adding more guardrails for comprehensive compliance coverage.
+```
+- Proceed with scan but note the limited scope in output
+
 - Prohibited claims checked: ✅ Zero violations
 - Required disclaimers: ✅ Present
 

@@ -51,31 +51,132 @@ This creates a fresh pipeline-run.json and starts the Phase 1 timer.
 
 **Do NOT skip this step. Do NOT auto-select a title. Do NOT start SERP analysis with just a topic.**
 
-Using the topic, content type, brand context, target audience, and primary keyword, generate **4-5 distinct title options**, each with a different angle:
+#### 0.5.1 Pre-Flight Brand Check
 
-1. **Benefit-driven** — Leads with the value the reader gets
-2. **How-to / Tactical** — Actionable, instructional framing
-3. **Data-driven / Stat-led** — Opens with a compelling number or trend
-4. **Question-based / Curiosity** — Provokes the reader to click
-5. **Contrarian / Unexpected** — Challenges conventional thinking
+Before generating titles, load and validate the brand profile:
+
+1. Load brand profile from `~/.claude-marketing/{brand}/Brand-Guidelines/{Brand}-brand-profile.json` (or `${CLAUDE_PLUGIN_DATA}/{brand}/`)
+2. Extract and verify these fields are non-empty:
+   - `voice.tone` (authoritative, conversational, technical, witty, etc.)
+   - `voice.formality` (formal, business_casual, casual)
+   - `voice.personality_traits` (array of traits)
+   - `terminology.prohibited_terms` (banned words list)
+   - `guardrails.prohibited_claims` (claims the brand cannot make)
+   - `target_audience.primary_persona` (who this content is for)
+
+3. **If any REQUIRED field is empty, warn the user:**
+```
+⚠️ Brand profile incomplete. Missing: [field list]
+These gaps may affect content quality:
+  - Empty guardrails → compliance checks will be skipped
+  - No audience persona → content may not match reader expectations
+  - No prohibited terms → brand terminology won't be enforced
+
+Would you like to:
+  1. Continue anyway (I'll use defaults where possible)
+  2. Update the brand profile first (/cf:style-guide --update)
+```
+
+Wait for user response before proceeding.
+
+#### 0.5.2 Quick SERP Reconnaissance
+
+**Before generating titles**, do a lightweight SERP check to understand competitive landscape:
+
+1. Run a web search for `"{Primary Keyword}"` (exact match)
+2. Scan the **top 5 results only** (not the full Step 1 analysis — just titles and angles):
+   - What title structures are ranking? (how-to, listicle, question, stat-led, etc.)
+   - What keywords appear in competitor titles?
+   - What content angle dominates the SERP?
+   - What's MISSING from competitor titles? (this is your differentiation opportunity)
+
+3. Store as `serp_context` for title generation. This is a quick 1-minute scan, NOT the full Step 1 SERP analysis.
+
+#### 0.5.3 Generate Title Options
+
+Using the topic, content type, brand voice, audience persona, primary keyword, AND `serp_context`, generate **4-5 distinct title options**.
+
+**IMPORTANT: Adapt title angles by content type:**
+
+**For Blog Posts (800-1500 words):**
+1. **Trending / Timely** — Connects to current events or recent data
+2. **How-to / Tactical** — Actionable, step-by-step framing
+3. **Listicle / Data-driven** — "N Ways/Tips/Trends" with a number
+4. **Question-based** — Answers a specific search query
+5. **Contrarian / Hot take** — Challenges a common belief
+
+**For Articles (1500-3000 words):**
+1. **Authority / Definitive** — "The Complete Guide to..." or "Everything You Need to Know About..."
+2. **Analysis / Data-driven** — Opens with a compelling statistic or trend
+3. **Problem-Solution** — Names the pain point, promises the fix
+4. **Future-focused** — "The Future of..." or "What's Next for..."
+5. **Expert perspective** — "Why [Experts/Leaders] Are..."
+
+**For Whitepapers (3000-6000 words):**
+1. **Research-backed** — "State of [Industry] 2026" or "A Study of..."
+2. **Framework / Methodology** — "[Brand]'s Framework for..."
+3. **Business case** — "The ROI of..." or "The Business Case for..."
+4. **Comparative analysis** — "[Approach A] vs [Approach B]: What the Data Shows"
+5. **Strategic roadmap** — "Planning for [Topic]: A [Industry] Leader's Guide"
+
+**For FAQs:**
+1. **Question hub** — "Frequently Asked Questions About [Topic]"
+2. **What/How/Why** — "What Is [Topic]? How It Works and Why It Matters"
+3. **Audience-specific** — "[Topic] for [Audience]: Your Questions Answered"
+4. **Beginner's guide** — "Understanding [Topic]: A Complete FAQ"
+5. **Quick answers** — "[Topic] Explained: [N] Questions Answered in Plain Language"
+
+**For Research Papers (2000-5000 words):**
+1. **Methodology-forward** — "A [Qualitative/Quantitative] Analysis of [Topic]"
+2. **Findings-led** — "[Key Finding]: Evidence from [N] [Sources/Studies/Cases]"
+3. **Comparative study** — "Comparing [A] and [B]: Implications for [Industry]"
+4. **Systematic review** — "[Topic]: A Systematic Review of Current Evidence"
+5. **Impact assessment** — "The Impact of [Topic] on [Domain]: [Timeframe] Analysis"
+
+#### 0.5.4 Apply Brand Voice to Titles
+
+Adjust each title option based on brand personality:
+
+- **Authoritative brand** → Use definitive language ("The Complete...", "The Definitive...", "Everything You Need to Know")
+- **Conversational brand** → Use casual language ("Here's What...", "Why You Should...", "Let's Talk About...")
+- **Technical brand** → Use precise terminology, include technical terms, avoid simplification
+- **Witty brand** → Allow wordplay, unexpected angles, clever framing
+- **Warm/Educational brand** → Use inviting language ("Your Guide to...", "Understanding...", "A Friendly Introduction to...")
+
+#### 0.5.5 Validate Titles Against Brand Guardrails
+
+Before presenting to user, check EACH title against:
+- `terminology.prohibited_terms` — reject titles containing banned words
+- `guardrails.prohibited_claims` — reject titles making prohibited claims (e.g., "best", "#1", "guaranteed" if brand prohibits absolute claims)
+- Google SERP character limit — titles should be ≤60 characters to avoid truncation in search results (override the content-type defaults if they exceed 60)
+- Anti-clickbait check — ensure titles don't make promises the content can't deliver
+- Differentiation check — compare against `serp_context` to ensure titles don't duplicate what's already ranking
+
+Replace any rejected titles with alternatives that comply.
+
+#### 0.5.6 Present to User
 
 **Each title must:**
 - Include the primary keyword naturally
-- Stay within character limits for the content type:
-  - Blog: 40-60 characters
-  - Article: 50-70 characters
-  - Whitepaper: 60-100 characters
-- Be specific and differentiated (not generic)
+- Stay within 60 characters (Google SERP safe) — show character count
+- Be specific and differentiated from competitor titles
+- Match brand voice/personality
+- Be appropriate for the content type
 
-**Present all options to the user:**
+Present all options:
 
 ```
-Title Options:
-  1. [Benefit-driven title]
-  2. [How-to title]
-  3. [Data-driven title]
-  4. [Question-based title]
-  5. [Contrarian title]
+Title Options for [Content Type]:
+  1. [Title] (XX chars) — [angle description]
+  2. [Title] (XX chars) — [angle description]
+  3. [Title] (XX chars) — [angle description]
+  4. [Title] (XX chars) — [angle description]
+  5. [Title] (XX chars) — [angle description]
+
+Competitor titles ranking for "[keyword]":
+  - [Top result title]
+  - [2nd result title]
+  - [3rd result title]
 
 Which title would you like to use? You can:
   - Select a number (e.g., "2")

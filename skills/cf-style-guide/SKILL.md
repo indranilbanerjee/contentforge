@@ -589,6 +589,87 @@ To switch backends later: /cf:switch-backend
 ================================================================
 ```
 
+### Step 7: Audience Personas
+
+Ask the user about their target audience:
+
+```
+Who is the primary audience for this brand's content?
+
+Please provide:
+  1. Job title/role (e.g., "VP of Engineering", "Marketing Manager", "Small business owner")
+  2. Industry/company size (e.g., "Enterprise SaaS, 1000+ employees")
+  3. Reading level (executive summary / professional / technical / general public)
+  4. Key pain points (what problems are they trying to solve?)
+  5. Goals (what outcomes do they want from reading your content?)
+
+Optional: Secondary audience(s) if the brand targets multiple personas.
+```
+
+Store in `target_audience.primary_persona` with fields: `title`, `industry`, `company_size`, `reading_level`, `pain_points` (array), `goals` (array).
+
+If user skips: Set `target_audience.primary_persona` to default generic persona and log warning.
+
+### Step 8: Competitor Analysis
+
+Ask the user about competitors:
+
+```
+Who are your top 3-5 content competitors?
+
+These are brands whose content ranks for the same keywords or targets the same audience.
+For each competitor, provide:
+  - Name and URL
+  - What they do well in content (e.g., "great technical depth", "strong SEO")
+  - What they miss or do poorly (e.g., "no video content", "outdated stats")
+
+This helps ContentForge differentiate your content from theirs.
+```
+
+Store in `competitor_analysis.top_competitors` array. Each entry: `name`, `url`, `content_strengths` (array), `content_gaps` (array).
+
+If user skips: Leave empty but note: "Competitor analysis skipped — Phase 1 Research will still analyze SERP competitors, but won't have your strategic differentiation context."
+
+### Step 9: Content Pillars
+
+Ask the user about content strategy:
+
+```
+What are your brand's core content pillars (topic areas you want to own)?
+
+Examples:
+  - "AI in Healthcare" — our flagship thought leadership topic
+  - "Product Tutorials" — how-to content for our platform
+  - "Industry Trends" — quarterly market analysis
+
+List 3-5 pillars with a brief description and target keywords for each.
+```
+
+Store in `content_pillars` array. Each entry: `name`, `description`, `keywords` (array), `content_types` (array).
+
+If user skips: Leave empty. Content will be produced without pillar context.
+
+### Step 10: Visual Identity
+
+Ask the user about brand visuals:
+
+```
+What are your brand's visual identity elements?
+
+  1. Brand colors:
+     - Primary color (hex, e.g., #0066CC)
+     - Secondary color (hex)
+     - Accent color (hex, optional)
+  2. Preferred image style: photorealistic / illustration / flat design / mixed
+  3. Logo description (brief text description — we don't store image files)
+
+These are used for chart generation (Phase 3.5) and AI image prompts.
+```
+
+Store in `visual_identity` with fields: `brand_colors` (primary, secondary, accent), `image_style`, `logo_description`.
+
+If user skips: Use defaults (primary: #0066CC, secondary: #FF6600) and note in profile.
+
 ## Output
 
 The style guide import produces:
@@ -618,6 +699,10 @@ Results:
   Personality: data-driven, trustworthy, innovative, empathetic, precise
   Terminology: 47 approved, 23 banned, 8 conditional, 12 acronyms
   Guardrails: 4 disclaimers, 6 prohibited claims, 3 compliance rules
+  Audience: {persona_title} at {company_size} ({reading_level})
+  Competitors: {count} competitors analyzed
+  Content Pillars: {count} pillars defined
+  Visual Identity: {primary_color} / {secondary_color} | Style: {image_style}
   Import Confidence: 94%
 
 Validation: PASS (all pipeline phases compatible)
@@ -683,7 +768,7 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 
 ---
 
-**Version:** 3.6.0
+**Version:** 3.7.0
 **Agent:** None (deterministic parsing)
 **MCP:** Google Drive (optional), Notion (optional)
 **Processing Time:** 5-10 minutes

@@ -119,6 +119,40 @@ Check for: {Brand-Name}-profile-cache.json
 - **Guardrails** — NEVER violate prohibited claims
 - **Citations** — Use brand's preferred citation format (APA, MLA, Chicago, IEEE)
 
+### Step 0.1.5: Validate Brand Profile Completeness
+
+After loading the brand profile, verify critical fields are populated:
+
+- [ ] `voice.tone` is set (not null/empty)
+- [ ] `voice.formality` is set
+- [ ] `terminology.preferred_terms` has at least 3 entries
+- [ ] `terminology.prohibited_terms` has at least 1 entry
+- [ ] `guardrails.prohibited_claims` has at least 1 entry
+- [ ] `guardrails.required_disclaimers` has entries (if regulated industry)
+
+**If guardrails are EMPTY:**
+```
+⚠️ WARNING: Brand "{brand}" has empty guardrails.
+  - prohibited_claims: [] (empty)
+  - required_disclaimers: [] (empty)
+
+Content will be drafted WITHOUT compliance enforcement.
+Phase 5 (Brand Compliance) will report "zero violations" — this means
+zero CHECKS were performed, not zero issues exist.
+
+For regulated industries (pharma, BFSI, healthcare, legal), this is a critical gap.
+Recommend: Update brand profile with /cf:style-guide --update {brand}
+```
+
+Log this warning in the pipeline run metadata so Phase 7 (Reviewer) can flag it.
+
+**If industry knowledge pack is missing:**
+- Industry is set to "{industry}" but no matching file at `config/industries/{industry}.json`
+- Log: "SME calibration unavailable — using generic writing mode"
+- Note this in pipeline metadata for Phase 7 scoring adjustment
+
+---
+
 ### Step 0.2: Select Content Type Template
 
 **Load the appropriate template from `templates/content-types/`:**

@@ -1,6 +1,6 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.6.0
+**Version:** 3.7.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 

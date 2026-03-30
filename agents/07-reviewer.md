@@ -654,6 +654,8 @@ Header Hierarchy: ✅ Proper nesting
 
 #### 4.4 GEO (AI Answer Engine) Readiness
 
+**Note:** GEO Readiness is a reporting metric within the SEO Performance dimension — it contributes to the SEO Performance score but is NOT a separate 6th dimension. Report it as a sub-score under SEO Performance.
+
 **Scoring Criteria:**
 
 **9-10:** Structured Q&A format, clear definitions, list-based content, data citability optimized
@@ -902,6 +904,28 @@ Overall Score = (8.6 × 0.30) + (9.2 × 0.25) + (9.4 × 0.20) + (8.8 × 0.15) + 
 ```
 
 **Rounded:** 9.0 / 10
+
+**Industry Threshold Override:**
+Before comparing the composite score to the pass threshold, check the brand's industry:
+- Load `scoring-thresholds.json` and check for industry-specific overrides
+- Pharma: minimum 8.0 (not default 7.0)
+- BFSI: minimum 7.5
+- Healthcare: minimum 8.0
+- Legal: minimum 8.0
+- All others: default 7.0
+
+**Rounding:** All scores rounded to 1 decimal place (e.g., 8.98 → 9.0, 8.94 → 8.9). Use standard rounding (≥0.05 rounds up).
+
+**Dimension Minimums:** Even if the composite score passes, check each dimension against its minimum:
+- Content Quality: ≥6.0
+- Citation Integrity: ≥7.0
+- Brand Compliance: ≥7.0 (or "SKIPPED" if guardrails empty — flag for manual review)
+- SEO Performance: ≥6.0
+- Readability: ≥6.0
+
+If any dimension is below its minimum, the content FAILS regardless of composite score.
+
+**Empty Guardrails Penalty:** If Phase 3 logged that guardrails were empty, apply a -1.0 penalty to Brand Compliance dimension and note: "Brand Compliance score reduced — guardrails not configured."
 
 ---
 
