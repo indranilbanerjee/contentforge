@@ -1,4 +1,4 @@
-# ContentForge Testing Guide — v3.5.0
+# ContentForge Testing Guide — v3.5.1
 
 Complete testing guide for the ContentForge enterprise content production plugin.
 
@@ -71,7 +71,7 @@ rm -rf ~/.claude-marketing/
 
 **Expected Results:**
 - [ ] Marketplace loads without errors
-- [ ] ContentForge listed with version 3.5.0
+- [ ] ContentForge listed with version 3.5.1
 - [ ] Description mentions "13 agents, 19 skills, 10 industry knowledge packs"
 - [ ] Installation completes without rollback
 - [ ] No "Host key verification failed" error (uses HTTPS, not SSH)
@@ -368,7 +368,7 @@ Test each of the 19 skills individually.
 | 16 | `/cf:style-guide` | "Import style guide from [URL]" | Extracts voice, terminology, guardrails |
 | 17 | `/cf:template` | "Create a case study template" | Custom content type beyond built-in 5 |
 | 18 | `/cf:switch-backend` | `/cf:switch-backend airtable` | Validates target, offers migration, updates brand profile |
-| 19 | `/cf:help` | (no argument) | Shows v3.5.0, 13 agents, 19 skills, 7 connectors, 10-phase pipeline |
+| 19 | `/cf:help` | (no argument) | Shows v3.5.1, 13 agents, 19 skills, 7 connectors, 10-phase pipeline |
 
 **`/cf:help` Argument Tests:**
 
@@ -874,10 +874,10 @@ Run this after any changes to verify nothing is broken.
 
 ### Versioning Consistency
 
-- [ ] `plugin.json` version = 3.5.0
+- [ ] `plugin.json` version = 3.5.1
 - [ ] `hooks.json` version string = v3.5
-- [ ] `README.md` version = 3.5.0
-- [ ] Marketplace entry version = 3.5.0
+- [ ] `README.md` version = 3.5.1
+- [ ] Marketplace entry version = 3.5.1
 - [ ] `13 agents` in all descriptions (not 12)
 - [ ] `19 skills` in all descriptions (not 18)
 - [ ] `7 commands` in all descriptions
@@ -897,7 +897,7 @@ If time is limited, test in this order:
 |----------|------|---------|-----|
 | 1 | Installation | 2 | Nothing else works without this |
 | 2 | Full pipeline — blog/technology | 3.1 | Validates core product |
-| 3 | Brand setup (all steps A-G) | 4.1 | Validates v3.5.0 Steps F + G |
+| 3 | Brand setup (all steps A-G) | 4.1 | Validates v3.5.1 Steps F + G |
 | 4 | Pipeline — pharma whitepaper | 3.2 | Validates industry knowledge packs |
 | 5 | All 19 skills invocation | 5 | Validates skill registration |
 | 6 | `/cf:help` with all arguments | 5 (#19) | Validates help accuracy |

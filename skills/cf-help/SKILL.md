@@ -19,7 +19,7 @@ Display this quick orientation:
 ```
 === CONTENTFORGE — HELP ===
 
-Version: 3.5.0
+Version: 3.5.1
 Agents: 13 (10-phase pipeline + 3 post-pipeline)
 Skills: 19 slash commands — all with argument-hint autocomplete
 Connectors: 7 HTTP + 16 npx integrations

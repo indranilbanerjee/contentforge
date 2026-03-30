@@ -12,7 +12,8 @@ description: "Conducts deep research using web search, academic databases, and i
 ## INPUTS
 
 From Requirement Sheet (via Orchestrator):
-- `Topic` — Content subject/title
+- `Topic` — Content subject (e.g., "AI in Healthcare")
+- `Confirmed Title` — User-selected title from Title Curation step (if already confirmed)
 - `Primary Keywords` — Main keyword to optimize for
 - `Secondary Keywords` — Additional keywords (optional)
 - `Content Type` — Article | Blog | Whitepaper | FAQ | Research Paper
@@ -24,6 +25,8 @@ From Requirement Sheet (via Orchestrator):
 ## YOUR MISSION
 
 Build a comprehensive Research Brief that provides everything the Content Drafter needs to write excellent, well-sourced content without doing additional research.
+
+**CRITICAL:** If no confirmed title has been provided, you MUST run Title Curation (Step 0.5) before starting research. Do NOT auto-select a title or skip to SERP analysis with just a topic.
 
 ---
 
@@ -42,12 +45,57 @@ This creates a fresh pipeline-run.json and starts the Phase 1 timer.
 
 ---
 
+### Step 0.5: Title Curation — MANDATORY
+
+**If a confirmed title was NOT provided as input, you MUST complete this step before proceeding to Step 1.**
+
+**Do NOT skip this step. Do NOT auto-select a title. Do NOT start SERP analysis with just a topic.**
+
+Using the topic, content type, brand context, target audience, and primary keyword, generate **4-5 distinct title options**, each with a different angle:
+
+1. **Benefit-driven** — Leads with the value the reader gets
+2. **How-to / Tactical** — Actionable, instructional framing
+3. **Data-driven / Stat-led** — Opens with a compelling number or trend
+4. **Question-based / Curiosity** — Provokes the reader to click
+5. **Contrarian / Unexpected** — Challenges conventional thinking
+
+**Each title must:**
+- Include the primary keyword naturally
+- Stay within character limits for the content type:
+  - Blog: 40-60 characters
+  - Article: 50-70 characters
+  - Whitepaper: 60-100 characters
+- Be specific and differentiated (not generic)
+
+**Present all options to the user:**
+
+```
+Title Options:
+  1. [Benefit-driven title]
+  2. [How-to title]
+  3. [Data-driven title]
+  4. [Question-based title]
+  5. [Contrarian title]
+
+Which title would you like to use? You can:
+  - Select a number (e.g., "2")
+  - Modify one (e.g., "Option 3 but change 'Why' to 'How'")
+  - Provide your own title
+  - Ask me to generate more options
+```
+
+**Wait for the user's response.** Only after the user explicitly confirms a title, store it as the `Confirmed Title` and proceed to Step 1.
+
+---
+
 ### Step 1: SERP Analysis (Top 10 Results)
+
+**Prerequisite:** Confirmed Title must be set (from Step 0.5 or provided as input). If not, STOP and go back to Step 0.5.
 
 **Use Claude's `web_search` capability:**
 
 ```
-Search: "{Primary Keyword} {Topic}"
+Search: "{Primary Keyword} {Confirmed Title}"
 Analyze top 10 organic results
 ```
 
@@ -184,20 +232,14 @@ Example: "A data-driven guide for B2B SaaS marketers showing how multi-agent AI 
 
 ### Step 6: Structured Outline
 
-**Create a detailed H1 → H2 → H3 outline that maps to target word count:**
+**Create a detailed H1 → H2 → H3 outline that maps to target word count.**
 
-**Title Formatting:**
-- Must include primary keyword naturally
-- Benefit-driven or curiosity-generating
-- Appropriate length for content type:
-  - Blog: 40-60 characters
-  - Article: 50-70 characters
-  - Whitepaper: 60-100 characters
+**Use the Confirmed Title from Step 0.5 as the H1.** Do not generate a new title — the user already selected one.
 
 **Outline Structure:**
 
 ```markdown
-### H1: [Title with Primary Keyword]
+### H1: [Confirmed Title]
 **Primary Keyword Placement:** ✓
 
 ---

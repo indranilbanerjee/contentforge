@@ -1,6 +1,6 @@
 ---
 description: Run the full 10-phase content production pipeline — research, draft, fact-check, humanize, and publish
-argument-hint: "<topic or title> [content type]"
+argument-hint: "<topic> [content type]"
 ---
 
 # Create Content
@@ -17,7 +17,7 @@ User runs `/create-content` or asks to write, draft, create, or produce content 
 
 Gather the following from the user. If not provided, ask before proceeding:
 
-1. **Topic or title** — what the content is about (e.g., "AI in Healthcare: 2026 Trends")
+1. **Topic** — the subject the content is about (e.g., "AI in Healthcare", "remote work productivity tips")
 
 2. **Content type** — one of:
    - Article (1500-3000 words)
@@ -37,11 +37,51 @@ Gather the following from the user. If not provided, ask before proceeding:
    - Specific sources or references to include
    - Competitor URLs to differentiate from
 
+## Title Curation (Before Pipeline Starts)
+
+**This step is mandatory.** After gathering the inputs above, generate **4-5 title options** before starting Phase 1. Do NOT auto-select a title or skip straight to research.
+
+**How it works:**
+
+1. Use the topic, content type, brand context, audience, and primary keyword to generate **4-5 distinct title options**, each taking a different angle:
+   - **Benefit-driven** — Leads with the value the reader gets
+   - **How-to / Tactical** — Actionable, instructional framing
+   - **Data-driven / Stat-led** — Opens with a compelling number or trend
+   - **Question-based / Curiosity** — Provokes the reader to click
+   - **Contrarian / Unexpected** — Challenges conventional thinking
+
+2. Each title option must:
+   - Include the primary keyword naturally
+   - Stay within character limits for the content type (blog: 40-60, article: 50-70, whitepaper: 60-100)
+   - Be specific (not generic)
+
+3. Present all options to the user and ask them to **select one, modify one, or request more options**. The user may also provide their own title.
+
+4. **Only after the user confirms a title**, proceed to Phase 1 Research with the confirmed title.
+
+**Example:**
+
+```
+Topic: AI in Healthcare
+Type: Article
+Keyword: AI healthcare 2026
+
+Title Options:
+  1. How AI Is Reshaping Healthcare Delivery in 2026 — And What Leaders Must Do Now
+  2. AI in Healthcare 2026: 7 Breakthroughs That Are Actually Reaching Patients
+  3. Why 73% of Hospitals Are Betting on AI Healthcare Tools in 2026
+  4. The Healthcare AI Playbook: From Pilot Programs to Patient Outcomes
+  5. AI Healthcare in 2026: What the Hype Cycle Gets Wrong
+
+Which title would you like to use? You can select a number, modify one, or provide your own.
+```
+
 ## The 10-Phase Pipeline
 
 Each phase has a quality gate. If any phase fails, the pipeline loops back with feedback (max 5 loops before human escalation).
 
 ### Phase 1: Research Agent
+- Uses the **confirmed title** as the anchor for all research
 - SERP analysis of top-ranking content for the topic
 - Source mining — identify 10+ authoritative sources
 - Competitive content analysis — what exists, what's missing

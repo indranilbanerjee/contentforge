@@ -1,7 +1,7 @@
 ---
 name: contentforge
 description: Generate publication-ready, fact-checked, brand-compliant, SEO-optimized content through 10-phase autonomous pipeline with zero hallucinations
-argument-hint: "[topic or content brief]"
+argument-hint: "[topic]"
 ---
 
 # ContentForge — Enterprise Content Production
@@ -39,7 +39,7 @@ Runs your content through **10 specialized agents** with quality gates at each p
 ## Required Inputs
 
 **Minimum Required:**
-- **Topic/Title** — What the content is about (e.g., "AI in Healthcare: 2026 Trends")
+- **Topic** — What the content is about (e.g., "AI in Healthcare", "remote work productivity")
 - **Content Type** — article, blog, whitepaper, faq, research_paper
 - **Brand** — Which brand profile to use (create with `/cf:style-guide` if new brand)
 
@@ -56,17 +56,20 @@ Runs your content through **10 specialized agents** with quality gates at each p
 /contentforge
 ```
 **Prompts you for:**
-1. Topic/Title
+1. Topic (the subject — NOT the final title)
 2. Content Type (select from 5 options)
 3. Brand (select from existing profiles)
 4. Target Audience
 5. Word Count (or use default)
 6. Primary Keyword
 
-### Quick Mode (All Parameters Provided)
+**Then generates 4-5 title options** (different angles: benefit-driven, how-to, data-driven, question-based, contrarian). You select, modify, or provide your own title. Pipeline starts only after title confirmation.
+
+### Quick Mode (Topic Provided)
 ```
-/contentforge "AI in Healthcare: 2026 Trends" --type=article --brand=AcmeMed --audience="Healthcare CIOs" --keyword="AI healthcare 2026"
+/contentforge "AI in Healthcare" --type=article --brand=AcmeMed --audience="Healthcare CIOs" --keyword="AI healthcare 2026"
 ```
+Even in quick mode, the system generates title options and asks you to select before starting Phase 1. The topic you provide is the subject — the final title is always a user decision.
 
 ### Use Existing Google Sheet Requirement
 ```
@@ -76,11 +79,25 @@ Reads requirement from Row 5 of the sheet.
 
 ## What Happens
 
+### Title Curation (1-2 minutes) — MANDATORY
+
+**Before the pipeline starts**, the system generates **4-5 SEO-optimized title options** using the topic, content type, brand voice, audience, and primary keyword. Each title takes a different angle:
+- **Benefit-driven** — leads with reader value
+- **How-to / Tactical** — actionable, instructional
+- **Data-driven / Stat-led** — opens with a number or trend
+- **Question-based / Curiosity** — provokes the reader
+- **Contrarian / Unexpected** — challenges convention
+
+**You select, modify, or provide your own title.** The confirmed title becomes the anchor for the entire pipeline — research, outline, SEO, and final output all flow from it.
+
+**Do NOT skip this step or auto-select a title.** The title shapes the entire content piece.
+
 ### Phase 1: Research (3-5 minutes)
-- Performs SERP analysis for your topic
+- Uses the **confirmed title** as the anchor for all research
+- Performs SERP analysis for the topic and title angle
 - Mines 10-15 authoritative sources
 - Analyzes competitor content
-- Generates structured outline
+- Generates structured outline aligned with the confirmed title
 - **Quality Gate:** Must have 5+ live sources, differentiated angle
 
 ### Phase 2: Fact Checking (2-3 minutes)
@@ -313,18 +330,28 @@ Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` 
 ```
 Provide: Brand name (AcmeMed), Industry (Healthcare), Voice (Authoritative), Tone (Professional), Terminology, Guardrails
 
-### Step 2: Generate Content
+### Step 2: Start Content Production
 ```
-/contentforge "AI-Powered Diagnostics: The Future of Precision Medicine" --type=article --brand=AcmeMed --audience="Healthcare Executives" --keyword="AI diagnostics precision medicine"
+/contentforge "AI-Powered Diagnostics in Precision Medicine" --type=article --brand=AcmeMed --audience="Healthcare Executives" --keyword="AI diagnostics precision medicine"
 ```
 
-### Step 3: Review Output (24 minutes later)
+### Step 3: Select Title (1-2 minutes)
+ContentForge generates 4-5 title options:
+1. "AI-Powered Diagnostics: The Future of Precision Medicine in 2026"
+2. "How AI Diagnostics Are Transforming Precision Medicine for Healthcare Leaders"
+3. "5 AI Diagnostic Breakthroughs Reshaping Precision Medicine Right Now"
+4. "The Executive's Guide to AI-Powered Precision Medicine Diagnostics"
+5. "Why AI Diagnostics in Precision Medicine Are Finally Delivering on the Promise"
+
+You select Option 1 → Pipeline starts with that title as the anchor.
+
+### Step 4: Review Output (24 minutes later)
 - Quality Score: 9.1/10 ✅
 - Word Count: 1,922 ✅
 - Citations: 12 sources ✅
 - SEO: Keyword density 2.3% ✅
 
-### Step 4: Publish
+### Step 5: Publish
 ```
 /cf:publish --platform=webflow
 ```
@@ -350,7 +377,7 @@ Provide: Brand name (AcmeMed), Industry (Healthcare), Voice (Authoritative), Ton
 
 ---
 
-**Version:** 3.4.0
+**Version:** 3.5.1
 **Agents:** 13 agents (Research, Fact Checker, Drafter, Visual Asset Annotator, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
 **Processing Time:** 20-30 minutes avg
 **Quality Guarantee:** ≥8.5/10 avg score, zero hallucinations, 95%+ citation accuracy

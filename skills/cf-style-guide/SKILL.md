@@ -682,7 +682,7 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 
 ---
 
-**Version:** 3.5.0
+**Version:** 3.5.1
 **Agent:** None (deterministic parsing)
 **MCP:** Google Drive (optional), Notion (optional)
 **Processing Time:** 5-10 minutes

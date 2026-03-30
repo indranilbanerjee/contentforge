@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.5.1] - 2026-03-30
+
+### Fixed — Title Curation Pipeline Gap
+
+The content production pipeline was skipping title selection — when a user provided a topic, the system would auto-generate a single title and immediately start Phase 1 Research. This wasted time and produced content anchored to titles the user never approved.
+
+**What changed:**
+
+- **`commands/create-content.md`** — Added mandatory Title Curation section before the pipeline. Input changed from "Topic or title" to "Topic". System now generates 4-5 title options (benefit-driven, how-to, data-driven, question-based, contrarian) and requires user selection before proceeding.
+
+- **`skills/contentforge/SKILL.md`** — Interactive mode now includes title generation and selection as an explicit step. Quick mode also pauses for title selection. Documentation, examples, and argument-hint updated to reflect topic-first flow.
+
+- **`agents/01-researcher.md`** — Added Step 0.5 (Title Curation) with explicit instructions: generate 4-5 titles, present to user, wait for confirmation, store as Confirmed Title. Step 1 SERP analysis now uses the confirmed title. Step 6 outline uses the confirmed title as H1 (no longer auto-generates).
+
+- **`README.md`** — Pipeline diagram updated to show Title Curation as the first step before Phase 1.
+
+**Why this matters:** The title anchors the entire content piece — research angle, outline structure, SEO optimization, and reader expectations all flow from it. Skipping user approval on the title meant the pipeline was building on an unvalidated foundation.
+
+---
+
 ## [3.5.0] - 2026-03-05
 
 ### Added — Pipeline Performance Tracking + Multi-Backend I/O

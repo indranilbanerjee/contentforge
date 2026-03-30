@@ -1,6 +1,6 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.5.0
+**Version:** 3.5.1
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
@@ -157,7 +157,9 @@ These 7 commands appear in the **Commands** section of the Customize sidebar, pr
 ## The 10-Phase Pipeline
 
 ```
-Phase 1: Research Agent
+Title Curation: Generate 4-5 title options → User selects → Confirmed title anchors pipeline
+↓
+Phase 1: Research Agent (uses confirmed title)
 ↓ Quality Gate 1: 5+ live sources, competitor analysis, differentiated angle
 Phase 2: Fact Checker
 ↓ Quality Gate 2: 80%+ verified claims, zero flagged items, all URLs live
