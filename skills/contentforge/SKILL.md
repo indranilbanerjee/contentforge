@@ -166,32 +166,41 @@ Reads requirement from Row 5 of the sheet.
 
 ## Output Example
 
-**Article: "AI in Healthcare: 2026 Trends"**
-```
-Processing Time: 24 minutes
-Quality Score: 9.2/10 (Grade A+)
+Every pipeline run ends with a **Completion Card** showing scores, stats, timing, and delivery status. This card is mandatory — it's shown in the conversation AND added as an appendix in the .docx file.
 
-Dimension Breakdown:
-- Content Quality: 9.5/10 (Excellent depth, actionable insights)
-- Citation Integrity: 9.0/10 (14 sources, 93% strongly verified)
-- Brand Compliance: 9.5/10 (Perfect voice match, all terminology correct)
-- SEO Performance: 8.8/10 (Keyword density 2.1%, all placements hit)
-- Readability: 9.0/10 (Grade 11.2, target 10-12 for articles)
+**Example Completion Card:**
+```
+CONTENTFORGE — COMPLETION CARD
+
+Content:  "AI in Healthcare: 2026 Trends" | AcmeMed | Article | ✅ APPROVED
+
+Quality Score: 9.2/10 (Grade A+)
+  Content Quality:    9.5/10 (30%) ✅
+  Citation Integrity: 9.0/10 (25%) ✅
+  Brand Compliance:   9.5/10 (20%) ✅
+  SEO Performance:    8.8/10 (15%) ✅
+  Readability:        9.0/10 (10%) ✅
 
 Content Stats:
-- Word Count: 1,947 (Target: 1,500-2,000)
-- Citations: 14 sources (1 citation per 139 words)
-- Keyword Density: 2.1% for "AI in healthcare"
-- Readability: Flesch-Kincaid Grade 11.2
-- Humanization: Burstiness 0.78, zero AI patterns detected
-- Loops Used: 0 (approved on first review)
+  Words: 1,947 (target 1,500-2,000) ✅ | Citations: 14 sources ✅
+  Keyword: "AI healthcare 2026" at 2.1% ✅ | Readability: Grade 11.2 ✅
+  Burstiness: 0.78 ✅ | AI Patterns: 0 remaining ✅ | Hallucinations: 0 ✅
 
-Factual Accuracy: 100%
-Hallucinations: 0
-Broken Links: 0
+SEO Package:
+  Meta Title: "AI in Healthcare: 2026 Trends..." (58 chars) ✅
+  Meta Description: "Discover how AI is transforming..." (152 chars) ✅
+  Internal Links: 4 applied | Feature Image: generated (user-approved)
 
-Output Location:
-Google Drive: ContentForge Output/AcmeMed/AI-in-Healthcare-2026-Trends_v1.0.docx
+Pipeline: 24 min total | 0 loops | Guardrails: verified
+  Research 4m | Fact-Check 3m | Draft 6m | Visuals 2m | Validate 2m
+  Structure 2m | SEO 2m | Humanize 1m | Review 2m | Output 1m
+
+Delivery:
+  .docx: ✅ Generated
+  Google Drive: ✅ ContentForge Output/AcmeMed/AI-in-Healthcare-2026-Trends_v1.0.docx
+  Tracking: ✅ Row 5 updated
+
+Next: /cf:publish | /cf:social-adapt | /cf:translate | /cf:variants
 ```
 
 ## Content Types & Specifications

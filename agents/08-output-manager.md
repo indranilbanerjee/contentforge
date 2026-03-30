@@ -503,159 +503,98 @@ Parse the JSON output — use it to populate the PIPELINE PERFORMANCE and PIPELI
 
 ### Step 6: Generate Completion Summary
 
-**Create human-readable summary for orchestrator/user:**
+**THIS IS MANDATORY. You MUST show this completion card to the user after every pipeline run. Do not skip any section. Fill in all values from pipeline data.**
+
+The completion card is the user's primary record of what was produced, how it scored, and where it was delivered. It must be shown in the conversation AND written as the final section of the .docx appendix.
+
+**Output this exact structure, filling in all `{values}` from pipeline data:**
 
 ```markdown
-## CONTENTFORGE PIPELINE COMPLETE ✅
+## CONTENTFORGE — COMPLETION CARD
 
-**Content:** Multi-Agent AI Systems: The Future of Content Production
-**Brand:** Acme Corp
-**Content Type:** Article
-**Status:** ✅ COMPLETED
+### Content
+| Field | Value |
+|-------|-------|
+| Title | {confirmed_title} |
+| Brand | {brand_name} |
+| Type | {content_type} |
+| Status | ✅ APPROVED / ⚠️ HUMAN REVIEW |
 
----
+### Quality Score: {overall_score}/10 (Grade {grade})
 
-### QUALITY METRICS
+| Dimension | Weight | Score | Status |
+|-----------|--------|-------|--------|
+| Content Quality | 30% | {cq}/10 | {✅/⚠️} |
+| Citation Integrity | 25% | {ci}/10 | {✅/⚠️} |
+| Brand Compliance | 20% | {bc}/10 | {✅/⚠️} |
+| SEO Performance | 15% | {seo}/10 | {✅/⚠️} |
+| Readability | 10% | {read}/10 | {✅/⚠️} |
 
-**Overall Score:** 9.0 / 10 (Grade A)
+### Content Stats
+| Metric | Value | Target | Status |
+|--------|-------|--------|--------|
+| Word Count | {actual} | {target_range} | {✅/⚠️} |
+| Citations | {source_count} sources | ≥{min_citations} | {✅/⚠️} |
+| Keyword Density | {density}% | 1.5-2.5% | {✅/⚠️} |
+| Readability | Grade {grade_level} | Grade {target_range} | {✅/⚠️} |
+| Burstiness | {burstiness} | ≥0.7 | {✅/⚠️} |
+| AI Patterns | {patterns_removed} removed | 0 remaining | {✅/⚠️} |
+| Hallucinations | {hallucination_count} | 0 | {✅/⚠️} |
 
-**Dimension Scores:**
-- Content Quality: 8.6 / 10
-- Citation Integrity: 9.2 / 10
-- Brand Compliance: 9.4 / 10
-- SEO Performance: 8.8 / 10
-- Readability: 9.0 / 10
+### SEO Package
+| Element | Value |
+|---------|-------|
+| Meta Title | {meta_title} ({char_count} chars) |
+| Meta Description | {meta_desc} ({char_count} chars) |
+| Primary Keyword | {keyword} |
+| Internal Links | {link_count} applied |
+| Feature Image | {available/missing} |
 
-**Status:** Approved for Publication
+### Visual Assets
+| Type | Count | Status |
+|------|-------|--------|
+| Data Charts | {chart_count} | Generated (embedded) |
+| AI Images | {ai_image_count} | Generated (user-approved) |
+| Human Required | {pending_count} | TODO markers in document |
 
----
+### Pipeline Performance
+| Phase | Duration | Loops |
+|-------|----------|-------|
+| Title Curation | {time} | — |
+| 1. Research | {time} | {n} |
+| 2. Fact Check | {time} | {n} |
+| 3. Draft | {time} | {n} |
+| 3.5 Visuals | {time} | {n} |
+| 4. Validation | {time} | {n} |
+| 5. Structure | {time} | {n} |
+| 6. SEO/GEO | {time} | {n} |
+| 6.5 Humanize | {time} | {n} |
+| 7. Review | {time} | {n} |
+| 8. Output | {time} | — |
+| **Total** | **{total_time}** | **{total_loops}** |
 
-### CONTENT DETAILS
+### Delivery
+| Destination | Status |
+|-------------|--------|
+| .docx File | ✅ Generated |
+| {backend} | {✅ Uploaded / ⚠️ Pending / ❌ Failed} |
+| Tracking Sheet | {✅ Updated / ⚠️ Pending} |
 
-**Word Count:** 1,855 (Target: 1,500-2,000) ✅
-**Citations:** 14 sources
-**Primary Keyword:** "multi-agent AI systems"
-**Keyword Density:** 1.62% ✅
-**Readability Grade Level:** 10.4 (Target: 10-12) ✅
+### Guardrails: {verified / skipped_empty / minimal}
 
-**SEO Optimization:**
-- Meta Title: 59 characters ✅
-- Meta Description: 154 characters ✅
-- Keywords in critical locations: ✅
-
-**Humanization:**
-- AI patterns removed: 12
-- Burstiness score: 0.72 ✅
-- Natural language quality: Excellent
-
----
-
-### PIPELINE PERFORMANCE
-
-**Pipeline Timing:**
+### Next Steps
+- `/cf:publish` — Push to CMS
+- `/cf:social-adapt` — Create social media posts
+- `/cf:translate` — Translate for other markets
+- `/cf:variants` — A/B test headlines and CTAs
 ```
-Pipeline Timing:
-  Total: {total_time} minutes
-  Phase 1 (Research): {p1_time}s | Phase 2 (Fact-Check): {p2_time}s
-  Phase 3 (Draft): {p3_time}s | Phase 3.5 (Visuals): {p35_time}s
-  Phase 4 (Validate): {p4_time}s | Phase 5 (Structure): {p5_time}s
-  Phase 6 (SEO): {p6_time}s | Phase 6.5 (Humanize): {p65_time}s
-  Phase 7 (Review): {p7_time}s | Phase 8 (Output): {p8_time}s
 
-Pipeline Complexity:
-  Content words: ~{word_count}
-  Sources cited: {source_count}
-  Quality loops: {loop_count}
-  Phases completed: {phases_completed}/10
-
-Guardrails: {guardrails_status}
-```
-
----
-
-### VISUAL ASSETS
-
-**Total Visuals:** 6
-**Auto-Generated Charts:** 3 (embedded in document as Figure 1-3)
-**Human Action Required:** 3 (TODO markers inserted in document)
-  - 1 screenshot (HIGH priority)
-  - 1 diagram (HIGH priority)
-  - 1 stock image (MEDIUM priority)
-
-**Chart Data Verified:** ✅ All 3 charts verified against Phase 2 sources (Phase 4)
-**Asset Manifest:** `~/.claude-marketing/acme-corp/assets/manifest.json`
-
----
-
-### INTERNAL LINKS
-
-**Links Applied:** 4 (clickable hyperlinks in document)
-  - HIGH priority: 2
-  - MEDIUM priority: 1
-  - LOW priority: 1
-**Site Structure Source:** page_registry
-**Sections Covered:** 4 (Sections 2, 3, 4, Conclusion)
-**All URLs Valid:** ✅
-
----
-
-### DELIVERY
-
-**Google Drive Link:** [https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view](https://drive.google.com/file/d/1A2B3C4D5E6F7G8H9I/view)
-
-**File Location:**
-`ContentForge/Acme Corp/Articles/2026/02-February/multi-agent-ai-systems-2026-02-16.docx`
-
-**Tracking Sheet Updated:** ✅ Row 5
-
----
-
-### PIPELINE PERFORMANCE
-
-**Total Processing Time:** {total_time_formatted from get-report}
-**Benchmark:** {benchmark_formatted} ({content_type})
-**Status:** {✅ Under benchmark | ⚠️ Over by Xm}
-**Loop Iterations:** {count from loop history}
-**Quality Gates Passed:** 10/10
-
-| Phase | Name | Time | Benchmark | Status | Iterations |
-|-------|------|------|-----------|--------|------------|
-| 1 | Research | {from report} | {from report} | {✅/⚠️} | {N} |
-| 2 | Fact Checking | {from report} | {from report} | {✅/⚠️} | {N} |
-| 3 | Content Drafting | {from report} | {from report} | {✅/⚠️} | {N} |
-| 3.5 | Visual Asset Annotation | {from report} | {from report} | {✅/⚠️} | {N} |
-| 4 | Scientific Validation | {from report} | {from report} | {✅/⚠️} | {N} |
-| 5 | Structuring & Proofreading | {from report} | {from report} | {✅/⚠️} | {N} |
-| 6 | SEO/GEO Optimization | {from report} | {from report} | {✅/⚠️} | {N} |
-| 6.5 | Humanizer | {from report} | {from report} | {✅/⚠️} | {N} |
-| 7 | Review | {from report} | {from report} | {✅/⚠️} | {N} |
-| 8 | Output & Delivery | {from report} | {from report} | {✅/⚠️} | {N} |
-
-**Brand Profile Caching:** ✅ Cache hit (saved 2-5 minutes)
-
----
-
-### PIPELINE COMPLEXITY
-
-| Metric | Value |
-|--------|-------|
-| Content Words | {actual_word_count} |
-| Sources Cited | {source_count} |
-| Quality Loops | {loop_count} |
-| Phases Completed | {phases_completed}/10 |
-| Guardrails Status | {guardrails_status} |
-
----
-
-### NEXT STEPS
-
-✅ Content is publication-ready
-✅ No further action required
-✅ File available in Google Drive
-✅ Tracking sheet updated with all metrics
-
-**Recommended:** Review Quality Scorecard (Appendix B in .docx) for detailed assessment.
-```
+**Rules for this completion card:**
+1. **NEVER skip it.** Every pipeline run ends with this card shown to the user.
+2. **Fill ALL values.** If a value is unavailable, show "N/A" — never leave blank or use placeholder syntax like `{value}`.
+3. **Use actual data**, not example data. The template above shows field names — replace them with real pipeline output.
+4. **Show it in the conversation** AND write it as Appendix C in the .docx file.
+5. **If pipeline was interrupted** (human review, max loops), still show the card with whatever data is available and mark incomplete sections.
 
 ---
 
