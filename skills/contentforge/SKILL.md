@@ -306,22 +306,89 @@ Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` 
 ## Troubleshooting
 
 ### "Brand profile not found"
-**Solution:** Run `/brand-setup [brand-name]` to create the profile first.
+
+**When:** You run `/contentforge` with a brand that doesn't have a profile yet.
+
+**Fix:**
+1. **Create a brand profile (recommended, 5 min):**
+   ```
+   /cf:style-guide
+   ```
+   Answer 3 questions (name, tone, industry) and you're ready.
+
+2. **Or specify a different brand:**
+   ```
+   /contentforge "your topic" --brand=ExistingBrand
+   ```
 
 ### "Quality score <5.0, flagged for review"
-**Cause:** Content didn't meet quality threshold after max loops.
-**Solution:** Review the dimension breakdown, fix specific issues (usually citations or brand compliance), rerun.
+
+**When:** Content didn't meet the minimum quality threshold after all feedback loops.
+
+**Common causes and fixes:**
+- **Topic too vague** → Be more specific: "AI in healthcare" → "AI diagnostic tools for rural hospitals in 2026"
+- **Sources behind paywalls** → Provide accessible reference URLs with `--sources=`
+- **Brand profile incomplete** → Run `/cf:style-guide --update [brand]` to add guardrails and terminology
+- **Niche topic with few sources** → Consider a broader angle or provide your own source URLs
 
 ### "Max loops exceeded (5 iterations)"
-**Cause:** Pipeline is stuck in feedback loop.
-**Solution:**
-1. Check if requirement is too vague (needs more specific topic/angle)
-2. Verify sources are available (not behind paywalls)
-3. Review brand guardrails (may be too restrictive)
+
+**When:** The pipeline kept trying to improve content but couldn't reach the quality threshold.
+
+**What happened:** Phase 7 (Reviewer) scored the content below 7.0 multiple times and looped back to fix it, but improvements plateaued.
+
+**Fix:**
+1. Check which dimension scored lowest (Content Quality? Citations? Brand Compliance?)
+2. If **Content Quality** is low → topic needs more depth or the angle is too broad
+3. If **Citation Integrity** is low → sources are weak or behind paywalls
+4. If **Brand Compliance** is low → brand profile may be incomplete
+5. Re-run with adjustments: more specific topic, better keywords, or updated brand profile
 
 ### "Processing time >45 min for article"
-**Cause:** API rate limits or network issues.
-**Solution:** ContentForge auto-retries with backoff. If persists, check API quotas.
+
+**When:** The pipeline is taking longer than expected.
+
+**This is usually normal** — API rate limits or network latency cause delays. ContentForge auto-retries with backoff.
+
+**If it persists beyond 60 min:**
+1. Check internet connection
+2. Run `/cf:integrations` to verify MCP servers are responding
+3. Try a simpler topic to isolate the issue
+4. Large whitepapers (5000+ words) can legitimately take 45-75 min
+
+### "Guardrails empty — compliance skipped"
+
+**When:** Your brand profile doesn't have prohibited claims or required disclaimers defined.
+
+**Impact:** Phase 5 (Brand Compliance) will report "SKIPPED" instead of actually checking content. Phase 7 applies a -1.0 penalty to Brand Compliance score.
+
+**Fix:**
+```
+/cf:style-guide --update [brand]
+```
+Add at minimum: 3-5 prohibited claims, any required legal disclaimers, and industry-specific restrictions.
+
+**For regulated industries (pharma, BFSI, healthcare, legal):** This is critical. Empty guardrails mean no compliance verification.
+
+### Pipeline phase explanations
+
+During content production, you'll see updates as each phase completes:
+
+| Phase | What's Happening | Duration | What You'll See |
+|-------|-----------------|----------|----------------|
+| Title Curation | Generating 4-5 title options from SERP data | 1-2 min | Title options with character counts |
+| Phase 1: Research | SERP analysis, source mining, outline | 3-5 min | Source count, outline sections |
+| Phase 2: Fact Check | URL verification, claim validation | 2-3 min | Verified %, flagged claims |
+| Phase 3: Draft | First draft with brand voice | 5-7 min | Word count, citation density |
+| Phase 3.5: Visuals | Charts, image generation (if opted in) | 2-3 min | Visual count, chart specs |
+| Phase 4: Validation | Hallucination detection | 2-3 min | Zero hallucinations confirmed |
+| Phase 5: Structure | Grammar, readability, brand compliance | 2-3 min | Compliance status |
+| Phase 6: SEO | Keyword optimization, meta tags | 2-3 min | Keyword density, GEO score |
+| Phase 6.5: Humanize | AI pattern removal, personality | 1-2 min | Burstiness score |
+| Phase 7: Review | 5-dimension quality scoring | 2-3 min | Score breakdown, pass/fail |
+| Phase 8: Output | .docx generation, tracking, delivery | 1-2 min | Output location, final metrics |
+
+**If a phase loops back:** The system shows which phase failed, why, and what it's fixing. Loops are automatic — you don't need to do anything unless it escalates to human review.
 
 ## Example Workflow
 

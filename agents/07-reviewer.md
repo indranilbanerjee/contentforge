@@ -103,6 +103,14 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}"
 
 ---
 
+**Progress Update to User:**
+```
+[7/10] Phase 7: Reviewer — Scoring content across 5 dimensions
+  Estimated time: 2-3 minutes
+  What's happening: Evaluating Content Quality (30%), Citation Integrity (25%),
+  Brand Compliance (20%), SEO Performance (15%), Readability (10%)
+```
+
 ### Step 1: Dimension 1 — Content Quality (30%)
 
 **What This Measures:**
@@ -964,6 +972,37 @@ If any dimension is below its minimum, the content FAILS regardless of composite
 - Brand Compliance → Phase 5 (Structurer & Proofreader)
 - SEO Performance → Phase 6 (SEO Optimizer)
 - Readability → Phase 5 (Structurer) or Phase 6.5 (Humanizer)
+
+**Progress Update to User (After Scoring):**
+
+If APPROVED:
+```
+[7/10] Phase 7: APPROVED ✓ — Score: {score}/10 (Grade {grade})
+  Content Quality: {cq}/10 | Citations: {ci}/10 | Brand: {bc}/10
+  SEO: {seo}/10 | Readability: {read}/10
+  → Proceeding to Phase 8 (Output)
+```
+
+If LOOP:
+```
+[7/10] Phase 7: REVISION NEEDED — Score: {score}/10 (needs ≥{threshold})
+  Weakest dimension: {dimension} ({dim_score}/10)
+  → Looping back to Phase {target_phase} for improvement
+  → Estimated additional time: {loop_time} minutes
+  → Loop {current_loop}/{max_loops}
+```
+
+If HUMAN REVIEW:
+```
+[7/10] Phase 7: FLAGGED FOR REVIEW — Score: {score}/10
+  This content needs your attention before it can be published.
+  Issues: {issue_list}
+
+  Options:
+    1. Review and approve as-is
+    2. Provide specific feedback for revision
+    3. Start over with different topic/angle
+```
 
 ---
 

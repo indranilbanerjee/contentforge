@@ -193,6 +193,13 @@ Which title would you like to use? You can:
 
 **Prerequisite:** Confirmed Title must be set (from Step 0.5 or provided as input). If not, STOP and go back to Step 0.5.
 
+**Progress Update to User:**
+```
+[1/10] Phase 1: Research Agent — Starting SERP analysis for "{Confirmed Title}"
+  Estimated time: 3-5 minutes
+  What's happening: Analyzing top 10 search results, mining 10-15 sources, building outline
+```
+
 **Use Claude's `web_search` capability:**
 
 ```

@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.7.0",
-  "description": "Enterprise content production pipeline with 13 agents, 19 skills, 10 industry knowledge packs, and zero hallucinations. v3.6 adds optional AI image generation (feature images, contextual illustrations, social graphics) via fal.ai, Replicate, Stability AI, and Canva MCP servers with human-in-the-loop approval. New hooks: SubagentStart brand injection, Stop quality gate. All skills have effort frontmatter. Persistent storage via ${CLAUDE_PLUGIN_DATA}.",
+  "version": "3.7.1",
+  "description": "Enterprise content production pipeline with 13 agents, 19 skills, 9 HTTP connectors, 6 evals, 10 industry knowledge packs. v3.7 adds SERP-informed title curation, pre-flight brand validation, scoring fixes, AI image generation (opt-in), phase progress indicators, expanded brand profiles, and user guidance overhaul.",
   "author": {
     "name": "Indranil Banerjee"
   }

@@ -238,6 +238,15 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}"
 
 ---
 
+**Progress Update to User:**
+```
+[3/10] Phase 3: Content Drafter — Writing first draft
+  Title: "{Confirmed Title}"
+  Target: {word_count} words | Brand: {brand} | Voice: {tone}
+  Estimated time: 5-7 minutes
+  What's happening: Generating draft with brand voice, SME calibration, inline citations
+```
+
 ### Step 1: Write the Title (H1)
 
 **Requirements from Verified Outline:**

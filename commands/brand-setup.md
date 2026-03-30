@@ -7,6 +7,28 @@ argument-hint: "<brand name> [--source=url|document|manual]"
 
 > If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../CONNECTORS.md).
 
+## Quick Start (5 minutes)
+
+**Most users only need these 3 things to get started:**
+
+1. **Brand name** — Your company or client name
+2. **Voice/tone** — Pick one: authoritative, conversational, technical, witty, warm, educational
+3. **Industry** — Pick one: pharma, bfsi, healthcare, legal, technology, b2b_saas, ecommerce, consumer_goods, real_estate, education
+
+That's it. Run `/cf:style-guide` and answer these 3 questions. ContentForge creates a working brand profile in under 5 minutes.
+
+**You can always add more later:**
+- Terminology and banned words → `/cf:style-guide --update [brand]`
+- Compliance guardrails → same command
+- Audience personas, competitors, content pillars, visual identity → same command
+- Tracking backend (Google Sheets / Airtable / Local) → `/cf:switch-backend`
+
+**Don't let setup slow you down.** A minimal brand profile works. You'll get better results as you add detail over time.
+
+---
+
+## Full Setup (When You're Ready for More)
+
 Create or update a brand voice profile that the ContentForge pipeline uses for every piece of content it produces. Import from existing style guide documents, URLs, or build interactively. Captures tone, formality, personality traits, approved and banned terminology, compliance guardrails, and industry-specific requirements.
 
 ## Trigger

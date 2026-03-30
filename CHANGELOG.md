@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.7.1] - 2026-03-31
+
+### Fixed — User Guidance, Phase Progress, Error Messages, Token Framing
+
+#### User Guidance Overhaul
+
+- **SessionStart hook** — Redesigned welcome message with numbered Quick Start (1. brand setup, 2. create content, 3. help). Explicitly tells first-time users to set up brand first. Shows `/cf:help` link.
+- **brand-setup.md** — New "Quick Start (5 minutes)" section at top: 3 questions only (name, tone, industry). Detailed setup moved to "Full Setup (When You're Ready for More)" section below. Reduces first-time setup anxiety.
+- **Troubleshooting expanded** — 6 detailed error explanations with When/Fix/Common Causes structure. New pipeline phase timing table showing all 11 phases with duration and what user sees at each step.
+
+#### Phase Progress Indicators
+
+- **Phase 1 (Research)** — Shows `[1/10] Phase 1: Research Agent` with title, estimated time, and what's happening
+- **Phase 3 (Drafter)** — Shows `[3/10] Phase 3: Content Drafter` with title, word count target, brand, voice
+- **Phase 7 (Reviewer)** — Shows `[7/10] Phase 7: Reviewer` with 5 dimensions listed, then conditional post-decision updates:
+  - APPROVED: score + dimension breakdown + "Proceeding to Phase 8"
+  - REVISION NEEDED: weakest dimension + loop target + estimated additional time + loop count
+  - HUMAN REVIEW: issues + user options (approve/revise/restart)
+
+#### Token Tracking Reframed
+
+Removed "token estimate" language from all user-facing output. Replaced with genuinely useful **Pipeline Complexity** metrics:
+- Content words, sources cited, quality loops, phases completed
+- Tracking sheet column AF changed from "Token Estimate" to "Content Words"
+- Rationale: Claude Code/Cowork users are on subscriptions, not per-token billing. Token counts give false precision. Pipeline complexity metrics help users understand relative effort.
+
+---
+
 ## [3.7.0] - 2026-03-31
 
 ### Fixed — Title Curation, Brand Validation, Scoring, Tracking
