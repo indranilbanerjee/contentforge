@@ -2,6 +2,7 @@
 name: cf-integrations
 description: "Show which MCP connectors are active, which are available, and which ContentForge workflows each connector enables. Integration status dashboard."
 effort: low
+argument-hint: "[--category <name>]"
 ---
 
 # Integration Status Dashboard

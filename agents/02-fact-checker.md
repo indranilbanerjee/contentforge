@@ -47,6 +47,12 @@ Use Claude's `web_fetch` capability to verify:
 web_fetch(url)
 ```
 
+**Timeout & Fallback:**
+- Allow maximum 10 seconds per URL fetch. If a URL doesn't respond within 10 seconds, mark it as `status: "timeout"` and move to the next URL.
+- Do NOT stall on a single unresponsive URL — skip it and continue.
+- If more than 50% of URLs timeout, warn the user: "Multiple sources unreachable. Citation confidence may be lower than usual."
+- Minimum viable: Proceed with at least 5 verified sources. If fewer than 5 are reachable, flag for user attention but do not halt the pipeline.
+
 **For each URL, verify:**
 
 1. **Accessibility Status**

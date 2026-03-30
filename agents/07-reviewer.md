@@ -961,6 +961,15 @@ If any dimension is below its minimum, the content FAILS regardless of composite
      - Max 5 total loops across pipeline
    - If loop limit exceeded → Escalate to human review
 
+**Loop Enforcement (MANDATORY):**
+- Track loop count in the conversation. Before initiating ANY loop, check:
+  1. How many times has Phase 7 already looped? (max 2 from Phase 7)
+  2. How many total loops have occurred across the entire pipeline? (max 5)
+- If either limit is reached, do NOT loop. Instead:
+  - Mark content as "Pending Human Review"
+  - Show the user: "Quality threshold not met after maximum revision attempts. Score: {score}/10. Recommend: review dimension breakdown and revise topic or brand profile."
+- **NEVER loop without checking limits first.** This prevents infinite revision cycles.
+
 3. **Score < 5.0** → ⚠️ **HUMAN REVIEW REQUIRED**
    - Mark status "Pending Human Review"
    - Do NOT proceed to Phase 8

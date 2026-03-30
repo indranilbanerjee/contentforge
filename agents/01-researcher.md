@@ -207,6 +207,11 @@ Search: "{Primary Keyword} {Confirmed Title}"
 Analyze top 10 organic results
 ```
 
+**Timeout & Fallback:**
+- Allow maximum 90 seconds for SERP analysis. If web_search doesn't return within 90 seconds, proceed with whatever results are available.
+- If web_search fails entirely (network error, rate limit), inform the user: "Web search unavailable. Proceeding with topic-based outline using general knowledge. Citation quality may be lower."
+- Do NOT stall indefinitely waiting for search results.
+
 **For EACH of the top 10 results, document:**
 
 1. **Title** — Full page title
