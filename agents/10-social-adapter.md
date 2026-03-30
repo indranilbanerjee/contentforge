@@ -528,6 +528,25 @@ Image Recommendation:
 | Announcement | Bold text overlay on relevant background image |
 | Question/Poll | Poll graphic with options, or text-only |
 
+#### 6.4 Social Graphics via Canva MCP (If Connected)
+
+If the Canva MCP server is connected, generate platform-specific social graphics:
+
+1. **Check Canva MCP availability** — look for `canva` in connected MCP servers
+2. **If connected and user opted into image generation (from Phase 3.5 `image_gen_mode`):**
+   - Use `generate-design` or `generate-design-structured` tool
+   - Create platform-specific graphics using brand kit:
+     - LinkedIn: 1200x627 — quote card with key insight from article
+     - Twitter/X: 1600x900 — stat-led card with headline
+     - Instagram: 1080x1080 — carousel first slide or single visual
+     - Facebook: 1200x630 — OG-compatible feature card
+   - Show each generated design to user for approval
+   - Export approved designs as PNG via `export-design` tool
+
+3. **If Canva not connected:**
+   - Provide image specifications as before (dimensions, style, content suggestions)
+   - Suggest: "Connect Canva for auto-generated social graphics: `/cf:connect canva`"
+
 ---
 
 ### Step 7: Posting Time Recommendations

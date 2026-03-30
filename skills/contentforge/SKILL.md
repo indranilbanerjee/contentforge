@@ -2,6 +2,7 @@
 name: contentforge
 description: Generate publication-ready, fact-checked, brand-compliant, SEO-optimized content through 10-phase autonomous pipeline with zero hallucinations
 argument-hint: "[topic]"
+effort: max
 ---
 
 # ContentForge — Enterprise Content Production
@@ -377,7 +378,7 @@ You select Option 1 → Pipeline starts with that title as the anchor.
 
 ---
 
-**Version:** 3.5.1
+**Version:** 3.6.0
 **Agents:** 13 agents (Research, Fact Checker, Drafter, Visual Asset Annotator, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
 **Processing Time:** 20-30 minutes avg
 **Quality Guarantee:** ≥8.5/10 avg score, zero hallucinations, 95%+ citation accuracy

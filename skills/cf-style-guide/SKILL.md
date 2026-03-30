@@ -2,6 +2,7 @@
 name: cf-style-guide
 description: Import and manage brand voice profiles from style guide documents or URLs, extracting tone, terminology, guardrails, and compliance requirements into structured brand profile JSON
 argument-hint: "[brand-name or URL]"
+effort: medium
 ---
 
 # Brand Style Guide Importer
@@ -682,7 +683,7 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 
 ---
 
-**Version:** 3.5.1
+**Version:** 3.6.0
 **Agent:** None (deterministic parsing)
 **MCP:** Google Drive (optional), Notion (optional)
 **Processing Time:** 5-10 minutes

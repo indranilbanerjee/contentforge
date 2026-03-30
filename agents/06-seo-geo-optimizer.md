@@ -939,6 +939,16 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" -
 <meta name="twitter:image" content="[Featured Image URL]">
 ```
 
+**Feature Image Meta Tag:**
+If Phase 3.5 generated a feature image (check `manifest.json` for an asset with `type: "image"` or `type: "chart"` at `placement: "feature"` or with `ai_generated: true` and `file_path` pointing to `feature-image.png`):
+- Use the generated image path for `og:image`
+- Generate appropriate `og:image:width` (1200) and `og:image:height` (630) tags
+- Generate `og:image:alt` from the approved alt text
+
+If no feature image was generated:
+- Note in output: "Feature image missing — og:image meta tag requires manual image URL before publishing"
+- Include a placeholder: `og:image: [FEATURE_IMAGE_URL]`
+
 ---
 
 ## STEP 7: AI OVERVIEW OPTIMIZATION (v3.0)

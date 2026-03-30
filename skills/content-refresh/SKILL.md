@@ -2,6 +2,7 @@
 name: content-refresh
 description: Update existing content with fresh data, current statistics, new sources, and maintain brand compliance while preserving SEO rankings
 argument-hint: "[content-path or URL]"
+effort: high
 ---
 
 # Content Refresh Workflow

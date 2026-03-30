@@ -16,6 +16,7 @@ Plugins are **tool-agnostic** — they describe workflows in terms of categories
 | Chat | `~~chat` | Slack | Microsoft Teams | Batch status notifications, content approval alerts |
 | Email | `~~email` | Gmail | Outlook | Draft delivery, review notifications |
 | Calendar | `~~calendar` | Google Calendar | Outlook Calendar | Content calendar events — enables `/cf:calendar` |
+| Image generation | `~~image gen` | fal.ai, Replicate | Stability AI (npx), Gemini/nanobanana (npx) | Feature images, contextual illustrations, social graphics — enables Phase 3.5 AI generation |
 
 ## Platform-level integrations
 
@@ -56,6 +57,7 @@ The following integrations require local npx/stdio MCP servers. They work in Cla
 | Translation | DeepL, Sarvam AI | Machine translation for `/cf:translate` |
 | Social media | Twitter/X, LinkedIn, Instagram | Direct publishing for `/cf:social-adapt` |
 | Analytics | Google Analytics, Google Search Console | Performance data for `/cf:analytics` and `/cf:audit` |
+| Image generation (extras) | Stability AI, Gemini nanobanana, mcp-imagenate | Additional image gen providers for Claude Code — alternatives to fal.ai/Replicate HTTP |
 
 ## Managing connectors
 

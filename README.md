@@ -1,6 +1,6 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.5.1
+**Version:** 3.6.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
@@ -198,7 +198,7 @@ Phase 8: Output Manager ⬆ UPGRADED (Visual + Link Integration)
 
 ### Connectors (MCP Integrations)
 
-ContentForge ships with **7 HTTP connectors** that work in both Cowork and Claude Code — Notion (knowledge base), Canva (design), Figma (design), Webflow (publishing), Slack (notifications), Gmail (delivery), and Google Calendar (scheduling).
+ContentForge ships with **9 HTTP connectors** that work in both Cowork and Claude Code — Notion (knowledge base), Canva (design), Figma (design), Webflow (publishing), Slack (notifications), Gmail (delivery), Google Calendar (scheduling), **fal.ai (AI image generation)**, and **Replicate (AI image generation)**. v3.6 adds optional AI image generation for feature images, contextual illustrations, and social graphics with human-in-the-loop approval.
 
 **The plugin works fully WITHOUT any connectors** — you can run the complete content pipeline and get output locally. Connectors unlock platform integrations.
 

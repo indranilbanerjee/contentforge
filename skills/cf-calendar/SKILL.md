@@ -2,6 +2,7 @@
 name: cf-calendar
 description: Plan content calendars with production scheduling, deadline tracking, team assignments, and Google Calendar integration for 30/60/90 day periods
 argument-hint: "[month or quarter]"
+effort: low
 ---
 
 # Content Calendar Planner

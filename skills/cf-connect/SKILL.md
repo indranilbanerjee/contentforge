@@ -2,6 +2,7 @@
 name: cf-connect
 description: "Set up a specific MCP connector for ContentForge — step-by-step instructions for connecting Notion, Canva, Webflow, Google Sheets, etc."
 argument-hint: "[connector-name]"
+effort: low
 ---
 
 # Guided Connector Setup

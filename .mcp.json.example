@@ -22,6 +22,32 @@
         "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}"
       },
       "description": "REQUIRED: Google Drive — brand knowledge vault, output file storage, folder organization"
+    },
+    "stability-ai": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-stability-ai"],
+      "env": {
+        "STABILITY_AI_API_KEY": "${STABILITY_AI_API_KEY}"
+      },
+      "description": "Stability AI — generate, edit, upscale images, remove backgrounds, outpaint. 11 image tools."
+    },
+    "nanobanana": {
+      "command": "npx",
+      "args": ["-y", "gemini-nanobanana-mcp"],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      },
+      "description": "Gemini-powered image generation and editing via Google AI Studio. Free tier available."
+    },
+    "imagenate": {
+      "command": "npx",
+      "args": ["-y", "mcp-imagenate"],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
+        "BFL_API_KEY": "${BFL_API_KEY}"
+      },
+      "description": "Multi-provider image generation — Gemini, OpenAI gpt-image, Flux 2. Configure one or more API keys."
     }
   }
 }

@@ -2,6 +2,7 @@
 name: cf-translate
 description: Translate content into 15+ languages while preserving brand voice, citations, and SEO — with literal, adapted, or transcreated localization levels
 argument-hint: "[target-language]"
+effort: high
 ---
 
 # Content Translation — Multilingual Publishing

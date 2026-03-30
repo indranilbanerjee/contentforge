@@ -21,7 +21,14 @@ from pathlib import Path
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 MCP_JSON = PLUGIN_ROOT / ".mcp.json"
 SCRIPTS_DIR = PLUGIN_ROOT / "scripts"
-GOOGLE_CREDS_DEFAULT = Path.home() / ".claude-marketing" / "google-credentials.json"
+
+# Persistent data: prefer ${CLAUDE_PLUGIN_DATA} (official, survives updates),
+# fall back to ~/.claude-marketing/ (legacy)
+import os
+PLUGIN_DATA = Path(os.environ.get("CLAUDE_PLUGIN_DATA", ""))
+if not PLUGIN_DATA or not PLUGIN_DATA.exists():
+    PLUGIN_DATA = Path.home() / ".claude-marketing"
+GOOGLE_CREDS_DEFAULT = PLUGIN_DATA / "google-credentials.json"
 
 
 def check_google_integration():
@@ -84,8 +91,10 @@ def main():
     else:
         print("GOOGLE_PACKAGES=not_installed (will auto-install on first script run)")
 
+    # Report persistent data directory
+    print(f"PLUGIN_DATA={PLUGIN_DATA}")
+
     # Check Airtable integration
-    import os
     airtable_token = os.environ.get("AIRTABLE_TOKEN")
     if airtable_token:
         print("AIRTABLE_TOKEN=configured")

@@ -2,6 +2,7 @@
 name: cf-help
 description: "Show the ContentForge user guide, available skills, pipeline overview, examples, and troubleshooting"
 argument-hint: "[--pipeline | --skills | --examples]"
+effort: low
 ---
 
 # /cf:help
@@ -19,10 +20,10 @@ Display this quick orientation:
 ```
 === CONTENTFORGE — HELP ===
 
-Version: 3.5.1
+Version: 3.6.0
 Agents: 13 (10-phase pipeline + 3 post-pipeline)
 Skills: 19 slash commands — all with argument-hint autocomplete
-Connectors: 7 HTTP + 16 npx integrations
+Connectors: 9 HTTP + 19 npx integrations (incl. image generation)
 Tracking: 3 backends (Google Sheets + Drive, Airtable, Local)
 
 Getting Started:
