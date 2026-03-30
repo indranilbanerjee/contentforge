@@ -1,6 +1,6 @@
 ---
 name: cf-video-script
-description: Produce platform-optimized video scripts with hooks, scenes, B-roll directions, and on-screen text for YouTube, TikTok, Instagram Reels, and explainer videos
+description: Produce video scripts with hooks, scenes, and B-roll for YouTube, TikTok, Reels, and explainers.
 argument-hint: "[topic or article]"
 effort: high
 ---

@@ -1,6 +1,7 @@
 ---
 name: researcher
 description: "Conducts deep research using web search, academic databases, and industry sources to build the knowledge foundation for content creation."
+maxTurns: 25
 ---
 
 # Research Agent — ContentForge Phase 1

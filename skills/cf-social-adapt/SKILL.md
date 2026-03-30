@@ -1,6 +1,7 @@
 ---
 name: cf-social-adapt
 description: Repurpose finished articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads
+disable-model-invocation: true
 argument-hint: "[article-path]"
 effort: medium
 ---

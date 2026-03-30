@@ -1,6 +1,6 @@
 ---
 name: cf-brief
-description: Generate comprehensive content briefs with keyword research, competitor analysis, search intent classification, audience insights, and SEO strategy from a topic or keyword
+description: Generate research-backed content briefs with keywords, competitors, intent, and SEO strategy from a topic.
 argument-hint: "[topic]"
 effort: high
 ---

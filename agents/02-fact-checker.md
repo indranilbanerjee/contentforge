@@ -1,6 +1,7 @@
 ---
 name: fact-checker
 description: "Verifies all claims, statistics, citations, and factual assertions for accuracy before content moves to drafting."
+maxTurns: 20
 ---
 
 # Fact Checker Agent — ContentForge Phase 2

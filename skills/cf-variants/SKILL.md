@@ -1,6 +1,6 @@
 ---
 name: cf-variants
-description: Generate scored A/B test variations of content elements (headlines, hooks, CTAs, intros, conclusions) with optimization-goal-driven ranking
+description: Generate scored A/B test variations of headlines, hooks, CTAs, and intros ranked by optimization goal.
 argument-hint: "[content-element]"
 effort: medium
 ---

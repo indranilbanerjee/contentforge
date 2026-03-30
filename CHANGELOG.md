@@ -7,6 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.8.0] - 2026-03-31
+
+### Changed — Context Optimization, Agent Safety, Skill Budget
+
+Major structural release to fix context window exhaustion, runaway execution, and skill discovery issues.
+
+#### Agent Compression (57% total reduction)
+
+All 8 oversized agents compressed by removing verbose examples and redundant text. ALL core logic, quality gates, scoring formulas, decision trees, and error handling preserved.
+
+| Agent | Before | After | Reduction |
+|-------|--------|-------|-----------|
+| 07-reviewer | 1,600 | 378 | -76% |
+| 06-seo-geo-optimizer | 1,048 | 319 | -70% |
+| 04-scientific-validator | 1,025 | 274 | -73% |
+| 08-output-manager | 996 | 433 | -57% |
+| 06.5-humanizer | 986 | 273 | -72% |
+| 03-content-drafter | 966 | 264 | -73% |
+| 05-structurer-proofreader | 947 | 269 | -72% |
+| 11-translator | 901 | 291 | -68% |
+| 10-social-adapter | 865 | 287 | -67% |
+| **Total (all 13 agents)** | **11,503** | **4,957** | **-57%** |
+
+**Why this matters:** Agent files are loaded entirely into context as system prompts. The previous 1,600-line Phase 7 reviewer consumed ~6,400 tokens per invocation. At 378 lines (~1,500 tokens), Claude retains full attention on scoring logic instead of losing instructions from context overflow.
+
+#### Agent Safety (maxTurns)
+
+`maxTurns` added to all 13 agent frontmatter files — prevents runaway execution:
+- Phase 3 (Drafter): 30 turns | Phase 9 (Batch): 50 turns
+- Research, Fact-Check, Visuals, SEO, Output, Translator: 20-25 turns
+- Validator, Structurer, Humanizer, Reviewer, Social: 15 turns
+
+#### Skill Budget Optimization
+
+- All 19 skill descriptions trimmed to <130 characters (from 130-200+). Fits within the ~15,500 character skill discovery budget.
+- `disable-model-invocation: true` added to 4 more execution skills: cf-social-adapt, cf-translate, cf-switch-backend, cf-add-integration. Prevents Claude from auto-triggering side-effect skills.
+
+### Summary
+
+| Metric | v3.7.2 | v3.8.0 |
+|--------|--------|--------|
+| Total agent lines | 11,503 | 4,957 (-57%) |
+| Largest agent (07-reviewer) | 1,600 lines | 378 lines |
+| Agents with maxTurns | 0 | 13 (all) |
+| Skills <130 char description | 5 | 19 (all) |
+| Execution skills with invocation safety | 1 | 5 |
+
+---
+
 ## [3.7.1] - 2026-03-31
 
 ### Fixed — User Guidance, Phase Progress, Error Messages, Token Framing

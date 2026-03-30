@@ -1,6 +1,6 @@
 ---
 name: cf-audit
-description: Audit existing content library for freshness decay, coverage gaps, and optimization opportunities with prioritized refresh recommendations
+description: Audit content library for freshness decay, coverage gaps, and optimization opportunities.
 argument-hint: "[content-path or URL]"
 effort: medium
 ---

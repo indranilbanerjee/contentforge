@@ -1,6 +1,6 @@
 ---
 name: contentforge
-description: Generate publication-ready, fact-checked, brand-compliant, SEO-optimized content through 10-phase autonomous pipeline with zero hallucinations
+description: Produce publication-ready, fact-checked, brand-aligned content via 10-phase autonomous pipeline. Use for any content need.
 argument-hint: "[topic]"
 effort: max
 ---

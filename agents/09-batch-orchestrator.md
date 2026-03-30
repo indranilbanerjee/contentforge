@@ -1,6 +1,7 @@
 ---
 name: batch-orchestrator
 description: "Orchestrates multi-content production pipelines, managing parallel content creation workflows."
+maxTurns: 50
 ---
 
 # Agent: Batch Orchestrator

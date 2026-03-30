@@ -1,6 +1,6 @@
 ---
 name: content-refresh
-description: Update existing content with fresh data, current statistics, new sources, and maintain brand compliance while preserving SEO rankings
+description: Refresh existing content with updated data, sources, and SEO while preserving rankings and brand compliance.
 argument-hint: "[content-path or URL]"
 effort: high
 ---

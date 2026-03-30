@@ -1,6 +1,7 @@
 ---
 name: cf-translate
-description: Translate content into 15+ languages while preserving brand voice, citations, and SEO — with literal, adapted, or transcreated localization levels
+description: Translate content into 15+ languages preserving brand voice, citations, and SEO. Three localization levels.
+disable-model-invocation: true
 argument-hint: "[target-language]"
 effort: high
 ---

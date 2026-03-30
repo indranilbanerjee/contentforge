@@ -1,6 +1,7 @@
 ---
 name: cf-switch-backend
 description: Switch tracking backend (local/airtable/google) with optional data migration
+disable-model-invocation: true
 argument-hint: "[local | airtable | google] [--migrate]"
 effort: high
 ---
