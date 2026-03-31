@@ -52,7 +52,15 @@ When `--pipeline` is specified, show the 10-phase pipeline:
 ```
 === CONTENTFORGE PIPELINE ===
 
+Step 0.5: Title Curation (1-2 min) — MANDATORY, runs before pipeline
+  → SERP recon on top 5 results for your keyword
+  → Generates 4-5 SEO-optimized title options (angles vary by content type)
+  → Validates against brand guardrails, 60-char SERP limit, anti-clickbait
+  → YOU select, modify, combine, or provide your own title
+  → Pipeline only starts after you confirm a title
+
 Phase 1: Researcher (3-5 min)
+  → Uses your confirmed title as anchor for all research
   → Web research, 15-25 sources, relevance scoring
 
 Phase 2: Fact Checker (2-3 min)
@@ -170,10 +178,17 @@ Step 2: Generate content brief (optional but recommended)
   → Gets: Keyword analysis, competitor review, recommended outline
 
 Step 3: Run the pipeline
-  /contentforge "AI-Powered Diagnostics: The Future of Precision Medicine"
+  /contentforge "AI-Powered Diagnostics in Healthcare"
     --type=article --brand=AcmeMed --audience="Healthcare Executives"
     --keyword="AI diagnostics precision medicine"
-  → 20-30 minutes → Quality score 9.1/10
+  → Title Curation: 4-5 options generated from SERP + brand voice
+    1. "AI Diagnostics in Healthcare: What Clinicians Need to Know" (54 chars) — authority
+    2. "How AI Is Transforming Medical Diagnostics in 2026" (50 chars) — trending
+    3. "5 Ways AI Diagnostics Improve Patient Outcomes" (47 chars) — listicle
+    4. "AI-Powered Diagnostics: The Future of Precision Medicine" (56 chars) — future-focused
+    5. "Why Top Hospitals Are Betting on AI Diagnostics" (48 chars) — expert
+  → You pick, modify, or write your own title
+  → Pipeline runs with confirmed title → 20-30 min → Quality score 9.1/10
 
 Step 4: Publish
   /cf:publish --platform=webflow

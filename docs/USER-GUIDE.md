@@ -495,8 +495,11 @@ Business casual. Use contractions (it's, we're) but avoid slang.
 
 ContentForge will:
 1. Ask which brand to use (or use defaults if none exist)
-2. Run the 10-phase pipeline
-3. Output a quality scorecard + the content
+2. Run a quick SERP scan on your topic keyword
+3. Generate **4-5 SEO-optimized title options** (different angles per content type)
+4. Wait for you to **select, modify, or provide your own title**
+5. Run the 10-phase pipeline using your confirmed title as the anchor
+6. Output a quality scorecard + the content
 
 ### Interactive Mode (Recommended for First Time)
 
@@ -505,12 +508,19 @@ ContentForge will:
 ```
 
 You'll be prompted for:
-1. **Topic/Title** — e.g., "AI-Powered Diagnostics: The Future of Precision Medicine"
+1. **Topic** — The subject area (e.g., "AI in Healthcare") — NOT the final title
 2. **Content Type** — Select: article, blog, whitepaper, faq, research_paper
 3. **Brand** — Select from existing profiles (or "default")
 4. **Target Audience** — e.g., "Healthcare Executives"
 5. **Word Count** — e.g., 1800 (or press Enter for default)
 6. **Primary Keyword** — e.g., "AI diagnostics precision medicine"
+
+Then **Title Curation** begins (mandatory before pipeline starts):
+- Quick SERP scan of top 5 results for your keyword
+- 4-5 title options generated (angles vary by content type)
+- Each validated against brand guardrails, 60-char SERP limit, competitor differentiation
+- You choose: select a number, modify one, combine elements, or write your own
+- Pipeline starts only after you confirm a title
 
 ### Full Parameters Mode
 
@@ -528,9 +538,18 @@ Reads requirement from Row 5 of the sheet.
 
 ### What to Expect
 
-After you provide inputs, the pipeline runs through 10 phases. You'll see progress updates:
+After you provide inputs, title curation runs first, then the pipeline:
 
 ```
+Title Curation — Scanning SERP for "AI diagnostics"...
+  1. "AI Diagnostics in Healthcare: What Clinicians Need to Know" (54 chars)
+  2. "How AI Is Transforming Medical Diagnostics in 2026" (50 chars)
+  3. "5 Ways AI Diagnostics Improve Patient Outcomes" (47 chars)
+  4. "AI-Powered Diagnostics: The Future of Precision Medicine" (56 chars)
+  5. "Why Top Hospitals Are Betting on AI Diagnostics" (48 chars)
+  Which title? (pick, modify, or provide your own) → User selects "4"
+✓ Title confirmed
+
 Phase 1: Research Agent — Finding sources for "AI Diagnostics"...
 ✓ Phase 1 complete — 12 sources found, outline generated
 Phase 2: Fact Checker — Verifying 12 sources...
