@@ -1,10 +1,22 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.7.0
+**Version:** 3.8.0
 **Platform:** Claude Code & Cowork
 **Status:** Production-Ready
 
 > Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 19 skills and 10 industry knowledge packs. **New in v3.5:** Pipeline performance tracking with actual wall-clock timing per phase and token usage estimation. Multi-backend I/O — choose Google Sheets + Drive, Airtable, or local filesystem for tracking and delivery. Backend migration with `/cf:switch-backend`. Brand setup Step G asks users to choose their tracking backend. **v3.4:** Industry Knowledge Packs for subject matter expertise with SME calibration and domain-specific validation. Brand setup auto-generates key files. **v3.2/v3.3:** Visual Asset Annotator (Phase 3.5) with auto-generated matplotlib charts, structured internal linking markers, Google Sheets tracking, and Google Drive delivery. **v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents.
+
+### What's New in v3.6–3.8
+
+- **AI Image Generation (v3.6)** — Optional feature image, contextual illustration, and social graphic generation via fal.ai, Replicate (HTTP), Stability AI, nanobanana (npx). Human-in-the-loop approval for every generated image. Max 5 per piece.
+- **SERP-Informed Title Curation (v3.7)** — Quick SERP reconnaissance before generating 4-5 titles. Content-type-specific angles (blog/article/whitepaper/FAQ/research paper). Brand personality adaptation. Guardrails validation on titles. 60-char SERP limit enforced.
+- **Pre-Flight Brand Validation (v3.7)** — Validates brand profile completeness before pipeline starts. Regulated industries (pharma, BFSI, healthcare, legal) get explicit guardrails warnings.
+- **Scoring Consistency (v3.7)** — Industry threshold overrides (pharma 8.0, BFSI 7.5), dimension minimums, empty guardrails penalty, GEO as SEO sub-score.
+- **Agent Compression (v3.8)** — 11,503 → 4,957 agent lines (-57%). All quality gates and scoring preserved. ~20,000 tokens saved per pipeline run.
+- **Agent Safety (v3.8)** — `maxTurns` on all 13 agents, `disable-model-invocation` on 5 execution skills, `effort` frontmatter on all 19 skills.
+- **Quality Hooks (v3.6)** — `SubagentStart` auto-injects brand voice, `Stop` hook verifies citations/compliance before completion.
+- **Phase Progress (v3.7.1)** — Real-time `[N/10]` status indicators with ETAs and conditional post-decision updates.
+- **Expanded Brand Profiles (v3.7)** — Visual identity, content pillars, competitor analysis, audience personas collected during brand setup.
 
 ### What's New in v3.5.0
 

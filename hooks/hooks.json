@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "timeout 30 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/setup.py 2>/dev/null; echo '✓ ContentForge v3.7 loaded' && echo '' && echo 'Quick Start:' && echo '  1. /cf:style-guide — Set up brand profile (do this first, 5 min)' && echo '  2. /contentforge  — Create content (20-30 min per piece)' && echo '  3. /cf:help        — Full guide, examples, troubleshooting' && echo '' && echo 'Already have a brand? Jump straight to /contentforge [topic]' && echo '' && echo 'Commands: /batch-process | /content-refresh | /cf:social-adapt | /cf:publish' && echo 'Status:   /cf:integrations | /cf:analytics'"
+            "command": "timeout 30 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/setup.py 2>/dev/null; echo '✓ ContentForge v3.8 loaded' && echo '' && echo 'Quick Start:' && echo '  1. /cf:style-guide — Set up brand profile (do this first, 5 min)' && echo '  2. /contentforge  — Create content (20-30 min per piece)' && echo '  3. /cf:help        — Full guide, examples, troubleshooting' && echo '' && echo 'Already have a brand? Jump straight to /contentforge [topic]' && echo '' && echo 'Commands: /batch-process | /content-refresh | /cf:social-adapt | /cf:publish' && echo 'Status:   /cf:integrations | /cf:analytics'"
           }
         ]
       }

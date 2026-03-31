@@ -1,4 +1,4 @@
-# ContentForge v3.4 — Complete User Guide
+# ContentForge v3.8 — Complete User Guide
 
 **From zero to first published article.** This guide walks you through every step of using ContentForge in Claude Cowork or Claude Code, from initial setup to running the full content production pipeline.
 
@@ -115,7 +115,7 @@ Run immediately after install:
 /cf:integrations
 ```
 
-This shows which connectors are active and what they unlock. You should see at least 7 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar) if the plugin installed correctly.
+This shows which connectors are active and what they unlock. You should see at least 9 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar, fal-ai, Replicate) if the plugin installed correctly.
 
 ---
 
@@ -127,7 +127,7 @@ When ContentForge loads, the `setup.py` script runs automatically and reports:
 [ContentForge] Python 3.10.12 ✓
 [ContentForge] PLUGIN_ROOT=/home/user/.claude/plugins/contentforge
 [ContentForge] SCRIPTS_DIR=/home/user/.claude/plugins/contentforge/scripts
-[ContentForge] CONNECTORS=7 HTTP connectors loaded
+[ContentForge] CONNECTORS=9 HTTP connectors loaded
 ```
 
 This tells you:
@@ -1247,7 +1247,7 @@ All 5 articles scored ≥7.0 → APPROVED.
 ```
 contentforge/
 ├── .claude-plugin/plugin.json     # Manifest (name, version, description, author)
-├── .mcp.json                      # 7 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Calendar)
+├── .mcp.json                      # 9 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Calendar, fal-ai, Replicate)
 ├── .mcp.json.example              # 67 npx servers (opt-in, copy to .mcp.json)
 ├── CONNECTORS.md                  # Full connector reference
 ├── README.md                      # Project overview

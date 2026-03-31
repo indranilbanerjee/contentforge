@@ -1,4 +1,4 @@
-# ContentForge Testing Guide — v3.7.0
+# ContentForge Testing Guide — v3.8.0
 
 Complete testing guide for the ContentForge enterprise content production plugin.
 
@@ -71,7 +71,7 @@ rm -rf ~/.claude-marketing/
 
 **Expected Results:**
 - [ ] Marketplace loads without errors
-- [ ] ContentForge listed with version 3.7.0
+- [ ] ContentForge listed with version 3.8.0
 - [ ] Description mentions "13 agents, 19 skills, 10 industry knowledge packs"
 - [ ] Installation completes without rollback
 - [ ] No "Host key verification failed" error (uses HTTPS, not SSH)
@@ -98,13 +98,17 @@ rm -rf ~/.claude-marketing/
 - [ ] SessionStart hook fires — setup.py runs without errors
 - [ ] Version banner displays:
   ```
-  ✓ ContentForge v3.5 loaded — Enterprise content production with zero hallucinations
-    /contentforge — Single piece (20-30 min)
-    /batch-process — Multiple pieces in parallel (4-5x faster)
-    /content-refresh — Update old content with fresh data
-    /cf:integrations — See connected integrations
-    /cf:social-adapt — Repurpose content for social
-    /cf:publish — Push to CMS
+  ✓ ContentForge v3.8 loaded
+
+  Quick Start:
+    1. /cf:style-guide — Set up brand profile (do this first, 5 min)
+    2. /contentforge  — Create content (20-30 min per piece)
+    3. /cf:help        — Full guide, examples, troubleshooting
+
+  Already have a brand? Jump straight to /contentforge [topic]
+
+  Commands: /batch-process | /content-refresh | /cf:social-adapt | /cf:publish
+  Status:   /cf:integrations | /cf:analytics
   ```
 - [ ] 7 commands visible in Customize panel (create-content, content-brief, social-adapt, publish, translate, brand-setup, audit-content)
 - [ ] 19 skills visible in Skills section
@@ -122,7 +126,7 @@ rm -rf ~/.claude-marketing/
 - [ ] `config/` — 7 config files + `industries/` subdirectory with 10 JSON packs
 - [ ] `templates/` — 10 template files
 - [ ] `utilities/` — 6 utility files
-- [ ] `.mcp.json` — 7 HTTP connectors
+- [ ] `.mcp.json` — 9 HTTP connectors
 - [ ] `hooks/hooks.json` — 2 hook events (SessionStart, PreToolUse)
 
 ---
@@ -338,7 +342,7 @@ Test each of the 19 skills individually.
 
 | # | Skill | Test Prompt | Key Checks |
 |---|-------|-------------|------------|
-| 4 | `/cf:integrations` | (no argument) | Shows 7 HTTP connectors, grouped by category, connected vs available |
+| 4 | `/cf:integrations` | (no argument) | Shows 9 HTTP connectors, grouped by category, connected vs available |
 | 5 | `/cf:connect` | `/cf:connect notion` | Step-by-step Notion setup instructions |
 | 6 | `/cf:add-integration` | `/cf:add-integration "I want to connect Airtable"` | Custom connector setup guide, no crash |
 | 7 | `/cf:publish` | `/cf:publish [content] to webflow` | CMS publishing with preview |
@@ -368,7 +372,7 @@ Test each of the 19 skills individually.
 | 16 | `/cf:style-guide` | "Import style guide from [URL]" | Extracts voice, terminology, guardrails |
 | 17 | `/cf:template` | "Create a case study template" | Custom content type beyond built-in 5 |
 | 18 | `/cf:switch-backend` | `/cf:switch-backend airtable` | Validates target, offers migration, updates brand profile |
-| 19 | `/cf:help` | (no argument) | Shows v3.7.0, 13 agents, 19 skills, 7 connectors, 10-phase pipeline |
+| 19 | `/cf:help` | (no argument) | Shows v3.8.0, 13 agents, 19 skills, 9 connectors, 10-phase pipeline |
 
 **`/cf:help` Argument Tests:**
 
@@ -392,7 +396,7 @@ Test each of the 19 skills individually.
 **Expected output:**
 - [ ] Plugin root path printed
 - [ ] Scripts directory path printed
-- [ ] .mcp.json validated (7 HTTP connectors)
+- [ ] .mcp.json validated (9 HTTP connectors)
 - [ ] Google credentials check (present or not)
 - [ ] pip package check (gspread, google-auth)
 
@@ -401,7 +405,7 @@ Test each of the 19 skills individually.
 **Trigger:** Via `/cf:integrations` skill
 
 **Expected:**
-- [ ] Lists all 7 HTTP connectors with status (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar)
+- [ ] Lists all 9 HTTP connectors with status (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar, fal-ai, Replicate)
 - [ ] Shows Google Sheets/Drive as "script" transport type
 - [ ] Reports which connectors are configured vs available
 - [ ] Platform-level integration notes for Google Drive/Docs
@@ -853,7 +857,7 @@ Run this after any changes to verify nothing is broken.
 - [ ] All 19 skills respond to invocation
 - [ ] All 7 commands appear in Customize panel
 - [ ] `/cf:help` shows complete, accurate information
-- [ ] `/cf:integrations` shows 7 HTTP connectors with correct status
+- [ ] `/cf:integrations` shows 9 HTTP connectors with correct status
 - [ ] Argument hints show in Skills UI when typing `/cf:` (spot check 3-5 skills)
 - [ ] `/cf:publish` cannot be triggered by Claude without explicit user invocation (disable-model-invocation)
 - [ ] `/cf:help` has `name: cf-help` in frontmatter
@@ -864,7 +868,7 @@ Run this after any changes to verify nothing is broken.
 ### Scripts
 
 - [ ] setup.py runs on session start without errors
-- [ ] connector-status.py lists 7 HTTP + script connectors
+- [ ] connector-status.py lists 9 HTTP + script connectors
 - [ ] sheets-tracker.py operations work (if Google credentials configured)
 - [ ] drive-uploader.py operations work (if Google credentials configured)
 - [ ] pipeline-tracker.py init/phase-start/phase-end/get-report all produce valid JSON
@@ -874,14 +878,14 @@ Run this after any changes to verify nothing is broken.
 
 ### Versioning Consistency
 
-- [ ] `plugin.json` version = 3.7.0
-- [ ] `hooks.json` version string = v3.5
-- [ ] `README.md` version = 3.7.0
-- [ ] Marketplace entry version = 3.7.0
+- [ ] `plugin.json` version = 3.8.0
+- [ ] `hooks.json` version string = v3.8
+- [ ] `README.md` version = 3.8.0
+- [ ] Marketplace entry version = 3.8.0
 - [ ] `13 agents` in all descriptions (not 12)
 - [ ] `19 skills` in all descriptions (not 18)
 - [ ] `7 commands` in all descriptions
-- [ ] `7 HTTP connectors` in all descriptions (not 6)
+- [ ] `9 HTTP connectors` in all descriptions (not 7)
 - [ ] `8 scripts` in all descriptions (not 4)
 - [ ] `10 industry knowledge packs` mentioned
 - [ ] `10-phase pipeline` everywhere (not 9-phase)
@@ -897,7 +901,7 @@ If time is limited, test in this order:
 |----------|------|---------|-----|
 | 1 | Installation | 2 | Nothing else works without this |
 | 2 | Full pipeline — blog/technology | 3.1 | Validates core product |
-| 3 | Brand setup (all steps A-G) | 4.1 | Validates v3.7.0 Steps F + G |
+| 3 | Brand setup (all steps A-G) | 4.1 | Validates v3.8.0 Steps F + G |
 | 4 | Pipeline — pharma whitepaper | 3.2 | Validates industry knowledge packs |
 | 5 | All 19 skills invocation | 5 | Validates skill registration |
 | 6 | `/cf:help` with all arguments | 5 (#19) | Validates help accuracy |
