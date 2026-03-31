@@ -226,10 +226,15 @@ See [CONNECTORS.md](CONNECTORS.md) for the full connector reference.
 
 ### Step 1: Install Plugin
 
-**Option A: Claude Marketplace (Recommended)**
-```bash
-# Search for "ContentForge" in Claude Code marketplace
-claude plugins install contentforge
+**Option A: From Marketplace (Recommended)**
+```
+/plugin marketplace add indranilbanerjee/neels-plugins
+/plugin install contentforge@neels-plugins
+```
+
+**Option B: Direct from GitHub**
+```
+claude plugins add github:indranilbanerjee/contentforge
 ```
 
 **Option B: Manual Install**
@@ -512,7 +517,7 @@ Yes. `/cf:translate` supports 15+ languages with 3 localization levels (literal,
 - [x] Structured evals on 3 key skills (contentforge, cf-brief, cf-style-guide)
 - [x] Fixed cf-help missing `name` field in frontmatter
 
-### v3.5.0 (Current)
+### v3.5.0
 - [x] Pipeline performance tracking — actual wall-clock timing per phase, token usage estimation
 - [x] Multi-backend I/O — Google Sheets + Drive, Airtable, or local filesystem
 - [x] Backend migration — `/cf:switch-backend` with optional data + file migration
