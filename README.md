@@ -250,6 +250,22 @@ mv contentforge ~/.claude/plugins/
 mv contentforge %USERPROFILE%\.claude\plugins\
 ```
 
+### Updating to Latest Version
+
+Plugins do NOT auto-update. When a new version is released, run:
+```
+claude plugin marketplace update neels-plugins
+claude plugin update contentforge@neels-plugins
+```
+
+If the version number hasn't changed but content was updated, force a reinstall:
+```
+claude plugin uninstall contentforge@neels-plugins
+claude plugin install contentforge@neels-plugins
+```
+
+After updating, start a new conversation for changes to take effect.
+
 ### Step 2: Verify Installation
 
 ```bash
