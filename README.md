@@ -589,4 +589,25 @@ MIT License — see [LICENSE](LICENSE) file.
 
 ---
 
+## Neelverse Marketing Suite
+
+ContentForge is part of the **Neelverse Marketing Suite** — three plugins that work together for end-to-end marketing:
+
+| Plugin | What It Does | Install |
+|--------|-------------|---------|
+| **[Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro)** | Strategy, SEO, paid ads, analytics, email, social, PR — 141 skills, 25 agents | `claude plugin install digital-marketing-pro@neels-plugins` |
+| **ContentForge** (this plugin) | Publication-ready content via 10-phase pipeline — research, draft, fact-check, SEO, humanize | `claude plugin install contentforge@neels-plugins` |
+| **[SocialForge](https://github.com/indranilbanerjee/socialforge)** | Social media calendar automation with AI image + video generation (Vertex AI + Kling v3.0) | `claude plugin install socialforge@neels-plugins` |
+
+**Use together:** Plan campaigns in DM Pro, produce long-form articles with ContentForge, then repurpose into social media posts with SocialForge. All share the same brand profiles and marketplace.
+
+```
+claude plugin marketplace add indranilbanerjee/neels-plugins
+claude plugin install digital-marketing-pro@neels-plugins
+claude plugin install contentforge@neels-plugins
+claude plugin install socialforge@neels-plugins
+```
+
+---
+
 **ContentForge v3.5.0** — 13 agents, 19 skills, 10 industry knowledge packs, zero hallucinations. Transform requirements into publication-ready, domain-expert content in 20-30 minutes with pipeline performance tracking and multi-backend I/O.
