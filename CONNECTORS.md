@@ -4,19 +4,31 @@
 
 Plugin files use `~~category` as a placeholder for whatever tool the user connects in that category. For example, `~~knowledge base` might mean Notion, Confluence, or any other knowledge management tool with an MCP server.
 
-Plugins are **tool-agnostic** — they describe workflows in terms of categories (knowledge base, design, CMS, etc.) rather than specific products. The `.mcp.json` pre-configures specific MCP servers, but any MCP server in that category works.
+Plugins are **tool-agnostic** — they describe workflows in terms of categories (knowledge base, design, CMS, etc.) rather than specific products. As of v3.9.0, no MCP servers are pre-configured: `.mcp.json` ships empty and the catalog of supported HTTP connectors lives in `.mcp.json.connectors-reference`. This is an opt-in model — see "Connectors for this plugin" and "Enabling connectors" below.
 
 ## Connectors for this plugin
 
-| Category | Placeholder | Included servers | Other options | Workflow impact |
-|----------|-------------|-----------------|---------------|----------------|
+The HTTP connector catalog (opt-in via `.mcp.json.connectors-reference`):
+
+| Category | Placeholder | Reference catalog entry | Other options | Workflow impact |
+|----------|-------------|------------------------|---------------|----------------|
 | Knowledge base | `~~knowledge base` | Notion | Confluence, Guru, Google Drive | Core requirement storage — powers all content workflows |
 | Design | `~~design` | Canva, Figma | Adobe Creative Cloud | Featured images, social graphics, infographics |
-| CMS | `~~CMS` | Webflow | WordPress, HubSpot CMS | Publishing destination — enables `/cf:publish` |
+| CMS | `~~CMS` | Webflow | WordPress, HubSpot CMS | Publishing destination — enables `/contentforge:publish` |
 | Chat | `~~chat` | Slack | Microsoft Teams | Batch status notifications, content approval alerts |
 | Email | `~~email` | Gmail | Outlook | Draft delivery, review notifications |
-| Calendar | `~~calendar` | Google Calendar | Outlook Calendar | Content calendar events — enables `/cf:calendar` |
+| Calendar | `~~calendar` | Google Calendar | Outlook Calendar | Content calendar events |
 | Image generation | `~~image gen` | fal.ai, Replicate | Stability AI (npx), Gemini/nanobanana (npx) | Feature images, contextual illustrations, social graphics — enables Phase 3.5 AI generation |
+
+## Enabling connectors (opt-in model, v3.9.0+)
+
+ContentForge no longer auto-connects MCP servers on plugin enable. To activate a specific connector:
+
+1. **Interactive walkthrough:** ask Claude to use the `cf-connect` skill (e.g., "Use cf-connect to enable Notion")
+2. **Slash command:** run `/contentforge:cf-add-integration` and follow prompts
+3. **Manual edit:** copy the entry you want from `.mcp.json.connectors-reference` into the `mcpServers` object in `.mcp.json`
+
+Most HTTP connectors require platform-side OAuth on first connection. Auth is handled by Claude Code, not by ContentForge.
 
 ## Platform-level integrations
 
@@ -72,10 +84,14 @@ Use these skills to discover and manage your integrations:
 
 ## Advanced configuration (Claude Code)
 
-For Claude Code CLI users who need Google Sheets, Google Drive, and other npx integrations, rename the example file:
+For Claude Code CLI users who need Google Sheets, Google Drive, Stability AI, or Gemini/nanobanana via local npx servers, **merge** entries from `.mcp.json.example` into `.mcp.json` (do not overwrite — that would discard the empty default + readme):
 
 ```bash
-cp .mcp.json.example .mcp.json
+# Inspect the npx connector catalog
+cat .mcp.json.example
+
+# Add the entries you need to .mcp.json under "mcpServers"
+# (manual edit, or use /contentforge:cf-add-integration)
 ```
 
-This adds npx servers alongside the HTTP connectors. Requires Node.js, npx, and the appropriate API keys configured as environment variables.
+Requires Node.js, npx, and the appropriate API keys configured as environment variables. Note that as of v3.9.0, plugin-bundled MCP servers auto-start when the plugin is enabled (no per-server opt-in), so add only the servers you actively need.

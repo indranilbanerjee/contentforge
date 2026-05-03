@@ -7,6 +7,111 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.9.0] - 2026-05-03
+
+### Added — World-Class Humanizer (Phase 6.5 Overhaul)
+
+The Phase 6.5 humanizer was benchmarked against [blader/humanizer](https://github.com/blader/humanizer) (16.9k stars), itself based on Wikipedia: Signs of AI writing maintained by WikiProject AI Cleanup. ContentForge's pipeline scaffolding (SEO preservation gates, burstiness math, industry compliance) was already strong. The pattern catalog was thinner. This release fixes that.
+
+#### 1. 29-Pattern AI Detection Catalog ([config/humanization-patterns.json](config/humanization-patterns.json))
+
+New top-level `signs_of_ai_writing_catalog` section organizes 29 distinct AI writing patterns into 5 buckets, each with `phrases_to_watch`, `problem`, `fix_strategy`, and (where useful) `example_transform`:
+
+- **Content Patterns (6)** — significance inflation, notability puffery, superficial -ing analyses, promotional language, vague attributions, formulaic challenges/future-outlook sections
+- **Language & Grammar Patterns (7)** — AI vocabulary, copula avoidance ("serves as" → "is"), negative parallelisms + tailing negations, rule of three overuse, elegant variation (synonym cycling), false ranges, passive/subjectless fragments
+- **Style Patterns (6)** — em dash overuse, boldface overuse, inline-header bullet lists, title case headings, emoji decoration, curly quotation marks
+- **Communication Patterns (3)** — chatbot artifacts ("I hope this helps"), knowledge-cutoff disclaimers, sycophantic tone
+- **Filler & Hedging Patterns (7)** — filler phrases, excessive hedging, generic positive conclusions, hyphenated word-pair overuse, persuasive authority tropes, signposting, fragmented headers
+
+Legacy `ai_telltale_phrases` lists are preserved for backward compatibility and cross-referenced from the new catalog.
+
+#### 2. Em Dash Advice Reversed
+
+Previous guidance recommended 2-3 em dashes per 500 words. Em dash overuse is a documented AI tell. New guidance: **max 1-2 per 500 words**, replace most with commas/periods/parens. The `humanization_techniques.natural_imperfections.dashes_and_parentheticals` entry now includes a warning pointer to catalog pattern #14.
+
+#### 3. Step 1 Restructured ([agents/06.5-humanizer.md](agents/06.5-humanizer.md))
+
+Step 1 was previously two short phrase lists (`absolutely_remove`, `use_sparingly`). It now walks the full 5-bucket, 29-pattern catalog with a one-line entry per pattern referencing the JSON detail.
+
+#### 4. New Step 0.1 — Voice Calibration from Sample (Optional)
+
+If the brand profile includes a `writing_sample` field, the humanizer analyzes it BEFORE applying personality profiles — sentence length pattern, word choice level, punctuation habits, paragraph openings, recurring verbal tics, transition style — and matches those patterns in the rewrite. This replaces a generic personality archetype with a real human fingerprint.
+
+#### 5. New Step 7.5 — Self-Critique Meta-Pass (CRITICAL)
+
+The single highest-leverage addition. After all rewrites, the humanizer asks itself "What makes the below text still obviously AI-generated?", lists 2-5 remaining tells, and makes surgical edits in response. Includes an "Add Soul" sub-step (opinions, mixed feelings, first-person observations, intentional rhythm variation) capped at 2-3 instances per 1000 words to prevent performative voice. Output a subjective remaining-AI-signal score (target ≤3).
+
+#### Quality Gate 6.5 Updated
+
+Two new pass/fail criteria:
+- AI patterns removed across all 5 catalog buckets
+- Self-critique meta-pass completed (remaining-AI-signal ≤3)
+
+#### Compression Discipline Maintained
+
+| File | v3.8.0 | v3.9.0 | Pre-compression baseline |
+|------|--------|--------|--------------------------|
+| agents/06.5-humanizer.md | 273 lines | 354 lines | 986 lines |
+| config/humanization-patterns.json | 482 lines | 655 lines | n/a (config, not loaded into agent context) |
+
+The agent grew 30% but remains 64% smaller than pre-compression. Pattern detail lives in JSON (read on-demand by the agent), not in the system prompt.
+
+### Attribution
+
+- Pattern catalog adapted from [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (CC BY-SA), maintained by WikiProject AI Cleanup
+- Catalog structure and self-critique meta-pass technique influenced by [blader/humanizer](https://github.com/blader/humanizer) (MIT)
+
+### Changed — Plugin Hygiene (Multi-Plugin Coexistence Fixes)
+
+Audit of the v3.8 install footprint surfaced two issues that interfered with users running multiple Claude Code plugins or working in non-ContentForge projects with ContentForge installed. As of April-May 2026, Claude Code plugin hooks and bundled MCP servers fire/connect *globally* when a plugin is enabled — there is no per-directory or per-project scoping. Earlier ContentForge versions registered global handlers that worked well inside the plugin's own context but added latency, token cost, and noise everywhere else.
+
+#### 1. Removed All 4 Global Hooks
+
+The previously-active SessionStart banner, PreToolUse Write/Edit hallucination check, SubagentStart rule injection, and Stop completion verification hooks have been removed from [hooks/hooks.json](hooks/hooks.json). The file now contains an empty `hooks: {}` object plus a `_readme` explaining the rationale.
+
+The work each hook did is preserved — just at the right architectural layer:
+- **Hallucination checks** → already performed by `agents/07-reviewer.md` at Phase 7, in proper context with full draft visibility
+- **Brand-voice rule injection** → already encoded in each agent's instructions via the YAML frontmatter and body
+- **Completion verification** → already performed by the Quality Gate criteria at the end of every phase
+- **Session banner** → setup info now available on demand via `cf-help` skill instead of every Claude Code launch
+
+The full prior hook config is preserved for reference at [hooks/hooks-reference.example.json](hooks/hooks-reference.example.json) with notes on why each hook was problematic. Users who specifically want a behavior back can copy the relevant entry into `hooks/hooks.json`.
+
+#### 2. Empty Default `.mcp.json` (Opt-In Connector Model)
+
+Earlier ContentForge versions shipped [.mcp.json](.mcp.json) with 9 HTTP MCP servers (Notion, Canva, Webflow, Slack, Gmail, Google Calendar, Figma, fal-ai, Replicate) that auto-connected when the plugin was enabled. Most of these require platform-side OAuth or API keys most users have not set up — producing connection errors and noisy auth prompts on first install.
+
+`.mcp.json` now ships with `mcpServers: {}`. The 9-server catalog with verified endpoints and per-server purpose notes lives at [.mcp.json.connectors-reference](.mcp.json.connectors-reference). Users opt in to specific connectors via:
+- The existing `cf-connect` skill (interactive walkthrough)
+- `/contentforge:cf-add-integration` command
+- Manual copy-paste from the reference file
+
+This eliminates the 9 unsolicited connection attempts on plugin install while keeping the full connector catalog discoverable.
+
+#### 3. Platform Notes (April-May 2026)
+
+Audit confirmed via current Claude Code docs that:
+- Plugin manifest schema is stable; only `name` is required
+- Plugin commands are auto-namespaced as `/pluginname:commandname` — bare names cannot collide
+- `SubagentStart` (alongside `SubagentStop`, `SessionEnd`, `PreCompact`, `PostCompact`, `Notification`, etc.) is a valid hook event
+- Both `type: "command"` and `type: "prompt"` hooks are supported with no documented preference
+- Plugin-bundled MCP servers auto-start with no opt-in toggle (motivating fix #2 above)
+- The `source: "github"` marketplace format the user employs in `neels-plugins` remains current
+
+### Migration
+
+No breaking changes to commands, skills, agents, or the pipeline. Specifically:
+- All slash commands and skills work identically (auto-namespacing applies them as `/contentforge:*`)
+- The Phase 6.5 humanizer continues to function — it now references the expanded 29-pattern catalog
+- Brand profiles, SEO gates, industry compliance, burstiness scoring, personality profiles, and humanization report format are all preserved
+- Optional `writing_sample` field can be added to brand profiles to activate Step 0.1 voice calibration
+
+**For existing users who relied on the global hooks:** the same logic now runs in the right place (Phase 7 reviewer, agent files, Quality Gates). Output quality should be unchanged or better. If you specifically want one of the prior hooks back, copy it from `hooks/hooks-reference.example.json` into `hooks/hooks.json` — but consider whether the agent-level placement isn't already serving you.
+
+**For existing users who configured MCP connectors:** if you previously edited `.mcp.json` to add credentials, your edits will be lost on update. Re-add only the connectors you actively use, sourced from `.mcp.json.connectors-reference`. The new opt-in default is friendlier to fresh installs and to multi-plugin setups.
+
+---
+
 ## [3.8.0] - 2026-03-31
 
 ### Changed — Context Optimization, Agent Safety, Skill Budget

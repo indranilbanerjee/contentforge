@@ -3,8 +3,9 @@
 # ===========================
 # Credentials & Secrets
 # ===========================
-# Note: .mcp.json is NOT ignored — it contains HTTP connector URLs (no credentials)
-# User-specific npx configs should use .mcp.json.local
+# Note: .mcp.json IS ignored (see bottom of file) so users' local connector configs and
+# any embedded credentials never get committed. Ship .mcp.json.example and
+# .mcp.json.connectors-reference for the catalogs instead.
 *.json.local
 credentials.json
 google-credentials.json

@@ -1,0 +1,52 @@
+{
+  "_readme": "REFERENCE catalog of HTTP MCP connectors that integrate with the ContentForge pipeline. Copy any entry you want into '.mcp.json' under 'mcpServers' to enable it. Most require platform-side authentication (OAuth or API key) the first time. The 'cf-connect' and 'cf-add-integration' skills can walk you through enabling individual connectors interactively. NOTE on April-May 2026 platform changes: Plugin-bundled MCP servers auto-start when the plugin is enabled with no per-server opt-in toggle. ContentForge therefore ships an empty .mcp.json by default to avoid forcing 9 connection attempts on first install. The HTTP MCP endpoints below were verified working as of 2026-05-03; check the provider's docs if a connection fails.",
+  "mcpServers_reference": {
+    "notion": {
+      "type": "http",
+      "url": "https://mcp.notion.com/mcp",
+      "_purpose": "Brand knowledge intake, output destination, content calendar"
+    },
+    "canva": {
+      "type": "http",
+      "url": "https://mcp.canva.com/mcp",
+      "_purpose": "Visual asset generation, brand kit access"
+    },
+    "webflow": {
+      "type": "http",
+      "url": "https://mcp.webflow.com/sse",
+      "_purpose": "Publish target — articles, blog posts"
+    },
+    "slack": {
+      "type": "http",
+      "url": "https://mcp.slack.com/mcp",
+      "_purpose": "Notifications, draft review, team handoff"
+    },
+    "gmail": {
+      "type": "http",
+      "url": "https://gmail.mcp.claude.com/mcp",
+      "_purpose": "Distribute drafts to stakeholders"
+    },
+    "google-calendar": {
+      "type": "http",
+      "url": "https://gcal.mcp.claude.com/mcp",
+      "_purpose": "Editorial calendar, deadline scheduling"
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp",
+      "_purpose": "Pull design assets, brand visual reference"
+    },
+    "fal-ai": {
+      "type": "http",
+      "url": "https://mcp.fal.ai/mcp",
+      "_purpose": "Image generation (alternative to Stability/Gemini paths)",
+      "_status": "Verify endpoint availability — not in user's confirmed list as of 2026-05-03"
+    },
+    "replicate": {
+      "type": "http",
+      "url": "https://mcp.replicate.com/sse",
+      "_purpose": "Image/video generation (alternative provider)",
+      "_status": "Verify endpoint availability — not in user's confirmed list as of 2026-05-03"
+    }
+  }
+}

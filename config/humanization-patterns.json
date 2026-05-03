@@ -70,6 +70,178 @@
       "seamless integration"
     ]
   },
+  "signs_of_ai_writing_catalog": {
+    "_description": "Comprehensive 29-pattern AI writing detection catalog organized into 5 buckets (Content, Language & Grammar, Style, Communication, Filler & Hedging). Used by Phase 6.5 humanizer Step 1. Expands the legacy ai_telltale_phrases lists above with patterns LLMs exhibit beyond mere word choice.",
+    "_attribution": "Pattern catalog adapted from Wikipedia: Signs of AI writing (https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) maintained by WikiProject AI Cleanup (CC BY-SA), with structure influenced by blader/humanizer (MIT). Integrated into ContentForge v3.9.0.",
+    "content_patterns": {
+      "01_significance_inflation": {
+        "phrases_to_watch": ["stands as", "serves as", "is a testament to", "is a reminder of", "a vital role", "a significant moment", "a crucial role", "a pivotal moment", "a key turning point", "underscores its importance", "highlights its significance", "reflects broader", "symbolizing its enduring", "contributing to the", "setting the stage for", "marking a shift", "represents a shift", "evolving landscape", "focal point", "indelible mark", "deeply rooted"],
+        "problem": "LLMs puff up importance by adding statements about how arbitrary aspects represent or contribute to a broader topic.",
+        "fix_strategy": "Strip the inflation. State what the thing IS and what it does. No claims about its place in history unless cited.",
+        "example_transform": {
+          "before": "The Statistical Institute of Catalonia was officially established in 1989, marking a pivotal moment in the evolution of regional statistics in Spain.",
+          "after": "The Statistical Institute of Catalonia was established in 1989 to publish regional statistics independently from Spain's national office."
+        }
+      },
+      "02_notability_puffery": {
+        "phrases_to_watch": ["independent coverage", "covered by major outlets", "featured in The New York Times, BBC, and", "written by a leading expert", "active social media presence", "with over X followers"],
+        "problem": "LLMs hit readers over the head with claims of notability, listing media outlets without context or quoting what was actually said.",
+        "fix_strategy": "Replace bare media-outlet lists with one specific quote, claim, or finding from one of those outlets."
+      },
+      "03_superficial_ing_analyses": {
+        "phrases_to_watch": ["highlighting...", "underscoring...", "emphasizing...", "ensuring...", "reflecting...", "symbolizing...", "contributing to...", "cultivating...", "fostering...", "encompassing...", "showcasing..."],
+        "problem": "AI tacks present participle (-ing) phrases onto sentences to add fake depth. The -ing clause usually restates the main clause in vaguer terms.",
+        "fix_strategy": "Delete the -ing phrase. If the information matters, make it its own sentence with a real subject and verb.",
+        "example_transform": {
+          "before": "The temple uses blue, green, and gold, symbolizing Texas bluebonnets, the Gulf of Mexico, and the diverse Texan landscapes, reflecting the community's deep connection to the land.",
+          "after": "The temple uses blue, green, and gold. The architect chose these colors to reference local bluebonnets and the Gulf coast."
+        }
+      },
+      "04_promotional_language": {
+        "phrases_to_watch": ["boasts a", "vibrant", "rich (figurative)", "profound", "enhancing its", "showcasing", "exemplifies", "commitment to", "natural beauty", "nestled", "in the heart of", "groundbreaking", "renowned", "breathtaking", "must-visit", "stunning"],
+        "problem": "LLMs default to travel-brochure / press-release tone, especially for places, organizations, and 'cultural heritage' topics.",
+        "fix_strategy": "Replace evaluative adjectives with concrete facts. 'Nestled in the breathtaking region' becomes the region's name and one verifiable feature."
+      },
+      "05_vague_attributions": {
+        "phrases_to_watch": ["industry reports", "observers have cited", "experts argue", "some critics argue", "several sources", "many publications", "studies show (no source)", "research suggests (no source)"],
+        "problem": "AI attributes opinions to vague authorities without naming a specific source.",
+        "fix_strategy": "Either cite the specific source (study name, year, author) or remove the attribution and state the claim with appropriate hedging."
+      },
+      "06_challenges_and_future_prospects": {
+        "phrases_to_watch": ["Despite its X, faces several challenges", "Despite these challenges", "Challenges and Legacy", "Future Outlook", "Looking ahead", "As we move forward"],
+        "problem": "LLMs include a formulaic 'Challenges' section near the end of articles, often as outline-like padding with no specifics.",
+        "fix_strategy": "Replace generic challenges with specific, dated, sourced events. If you cannot cite specifics, delete the section."
+      }
+    },
+    "language_and_grammar_patterns": {
+      "07_ai_vocabulary": {
+        "high_frequency_words": ["actually", "additionally", "align with", "crucial", "delve", "emphasizing", "enduring", "enhance", "fostering", "garner", "highlight (verb)", "interplay", "intricate", "intricacies", "key (adjective)", "landscape (abstract)", "pivotal", "showcase", "tapestry (abstract)", "testament", "underscore (verb)", "valuable", "vibrant"],
+        "problem": "These words appear far more frequently in post-2023 text. They co-occur — finding 3+ in one paragraph is a strong AI signal.",
+        "fix_strategy": "Replace with simpler, more specific alternatives. Cross-reference legacy ai_telltale_phrases.overused_verbs and generic_descriptors above."
+      },
+      "08_copula_avoidance": {
+        "phrases_to_watch": ["serves as", "stands as", "marks", "represents", "constitutes", "embodies", "boasts", "features", "offers"],
+        "problem": "LLMs substitute elaborate constructions for simple 'is'/'are'/'has'. One of the loudest AI tells.",
+        "fix_strategy": "When the sentence's meaning is 'X is Y' or 'X has Y', use 'is' / 'has'. Reserve 'serves as' / 'represents' for cases where the metaphor is doing real work.",
+        "example_transform": {
+          "before": "Gallery 825 serves as LAAA's exhibition space and boasts over 3,000 square feet across four rooms.",
+          "after": "Gallery 825 is LAAA's exhibition space. It has four rooms totaling 3,000 square feet."
+        }
+      },
+      "09_negative_parallelisms": {
+        "patterns_to_watch": ["Not only X but Y", "It's not just about X, it's Y", "It's not merely X, it's Y", "tailing fragments like 'no guessing', 'no wasted motion', 'no compromises'"],
+        "problem": "Overused rhetorical structures. Tailing-negation fragments are tacked on instead of written as real clauses.",
+        "fix_strategy": "Rewrite as a direct positive statement. 'It's not just a song, it's a statement' becomes 'The song is a statement' or just describes what the song does."
+      },
+      "10_rule_of_three": {
+        "problem": "LLMs force ideas into groups of three to appear comprehensive. 'Innovation, inspiration, and insights.' Triplets become a fingerprint.",
+        "fix_strategy": "Use 1, 2, or 4+ items when natural. Avoid forcing a third item just because two felt incomplete.",
+        "detection_threshold": "If 30%+ of list-like phrases are exactly three items, you have a triplet problem."
+      },
+      "11_elegant_variation": {
+        "problem": "AI's repetition-penalty causes excessive synonym substitution. The same person becomes 'the protagonist', 'the main character', 'the central figure', 'the hero' across four sentences.",
+        "fix_strategy": "Use the same noun for the same referent. Pronouns ('he', 'she', 'they', 'it') are fine. Synonym chains read as machine output."
+      },
+      "12_false_ranges": {
+        "phrases_to_watch": ["from X to Y, from A to B (where the points aren't on a meaningful scale)"],
+        "problem": "LLMs use 'from X to Y' to imply scope where no real range exists.",
+        "fix_strategy": "Replace with a plain list. 'From the Big Bang to dark matter' becomes 'including the Big Bang, star formation, and dark matter'."
+      },
+      "13_passive_voice_and_subjectless_fragments": {
+        "phrases_to_watch": ["No configuration file needed", "Results are preserved automatically", "It is recommended that", "It can be observed that"],
+        "problem": "LLMs hide the actor or drop the subject entirely.",
+        "fix_strategy": "Name the actor. 'No configuration file needed' becomes 'You do not need a configuration file' or 'The CLI requires no configuration file'."
+      }
+    },
+    "style_patterns": {
+      "14_em_dash_overuse": {
+        "problem": "LLMs use em dashes (—) more than humans, mimicking 'punchy' sales writing. One or two per 500 words can be human; 4+ per 500 words is an AI fingerprint.",
+        "fix_strategy": "Replace most em dashes with commas, periods, or parentheses. Keep at most 1-2 per 500 words. NOTE: this corrects earlier ContentForge guidance that recommended 2-3 per 500 words.",
+        "detection_threshold": "More than 3 em dashes per 500 words = flag for revision."
+      },
+      "15_boldface_overuse": {
+        "problem": "AI emphasizes mechanically — bolding every acronym expansion or key term in a sentence.",
+        "fix_strategy": "Use bold sparingly for genuine emphasis (1-3 instances per 500 words max). Acronyms after first definition do not need bolding."
+      },
+      "16_inline_header_vertical_lists": {
+        "pattern": "- **User Experience:** description here\\n- **Performance:** description here\\n- **Security:** description here",
+        "problem": "AI loves bulleted lists where each item starts with a bolded header followed by a colon. Reads like a mechanical brief.",
+        "fix_strategy": "Convert to prose paragraphs OR use a real heading hierarchy OR use a table. Avoid the bolded-colon pattern."
+      },
+      "17_title_case_headings": {
+        "problem": "AI capitalizes Every Main Word In Headings.",
+        "fix_strategy": "Use sentence case for headings unless the brand style guide specifies title case. 'Strategic negotiations and global partnerships' not 'Strategic Negotiations And Global Partnerships'."
+      },
+      "18_emoji_decoration": {
+        "problem": "AI decorates headings and bullets with leading emojis (🚀 Launch Phase, 💡 Key Insight, ✅ Next Steps).",
+        "fix_strategy": "Remove all decorative emojis from body content unless brand voice explicitly calls for them (consumer social posts may keep them; B2B content should not)."
+      },
+      "19_curly_quotation_marks": {
+        "problem": "ChatGPT and other models use curly quotes (“...”) instead of straight quotes (\"...\").",
+        "fix_strategy": "Replace all curly quotes with straight quotes in code, technical content, and most web content. Curly quotes are acceptable in literary or print-style content if intentional."
+      }
+    },
+    "communication_patterns": {
+      "20_chatbot_artifacts": {
+        "phrases_to_watch": ["I hope this helps", "Of course!", "Certainly!", "You're absolutely right!", "Would you like me to", "let me know if", "Here is a", "Sure, here's"],
+        "problem": "Text meant as chatbot conversation gets pasted as content.",
+        "fix_strategy": "Delete entirely. The article should not address its own composition."
+      },
+      "21_knowledge_cutoff_disclaimers": {
+        "phrases_to_watch": ["as of my last training", "up to my last update", "while specific details are limited", "based on available information", "details about X are scarce"],
+        "problem": "AI disclaimers about incomplete information get left in published text.",
+        "fix_strategy": "Either find the specific information and state it, or remove the sentence entirely. Never publish a knowledge-cutoff disclaimer."
+      },
+      "22_sycophantic_tone": {
+        "phrases_to_watch": ["Great question!", "That's an excellent point", "You're absolutely right", "What a fantastic insight"],
+        "problem": "Overly positive, people-pleasing language that has no place in published content.",
+        "fix_strategy": "Delete the praise. State the point directly."
+      }
+    },
+    "filler_and_hedging_patterns": {
+      "23_filler_phrases": {
+        "_note": "Cross-reference legacy ai_telltale_phrases.filler_phrases above for the existing detection list.",
+        "transforms": {
+          "In order to achieve this goal": "To achieve this",
+          "Due to the fact that": "Because",
+          "At this point in time": "Now",
+          "In the event that": "If",
+          "The system has the ability to": "The system can",
+          "It is important to note that the data shows": "The data shows"
+        }
+      },
+      "24_excessive_hedging": {
+        "_note": "Cross-reference legacy ai_telltale_phrases.ai_hedging_phrases above.",
+        "problem": "Stacking qualifiers: 'It could potentially possibly be argued that the policy might have some effect'.",
+        "fix_strategy": "One qualifier per claim, max. 'The policy may affect outcomes' — not 'may potentially possibly affect'."
+      },
+      "25_generic_positive_conclusions": {
+        "phrases_to_watch": ["The future looks bright", "Exciting times lie ahead", "Continues their journey toward excellence", "Represents a major step in the right direction", "The possibilities are endless"],
+        "problem": "Vague upbeat endings that say nothing.",
+        "fix_strategy": "End with a specific fact, plan, or open question. 'The company plans to open two more locations next year' beats 'The future looks bright'."
+      },
+      "26_hyphenated_word_pair_overuse": {
+        "phrases_to_watch": ["third-party", "cross-functional", "client-facing", "data-driven", "decision-making", "well-known", "high-quality", "real-time", "long-term", "end-to-end"],
+        "problem": "AI hyphenates common modifier pairs with perfect consistency. Humans hyphenate inconsistently.",
+        "fix_strategy": "Drop the hyphen on common pairs ('cross functional', 'data driven', 'high quality') unless the brand style guide requires it. Keep hyphens for less common compound modifiers where ambiguity matters."
+      },
+      "27_persuasive_authority_tropes": {
+        "phrases_to_watch": ["The real question is", "at its core", "in reality", "what really matters", "fundamentally", "the deeper issue", "the heart of the matter"],
+        "problem": "LLMs pretend to cut through noise to deeper truth, then state an ordinary point with extra ceremony.",
+        "fix_strategy": "Strip the framing. State the point directly. 'At its core, what really matters is X' becomes 'X matters because Y'."
+      },
+      "28_signposting_and_announcements": {
+        "phrases_to_watch": ["Let's dive in", "Let's explore", "Let's break this down", "Here's what you need to know", "Now let's look at", "Without further ado", "In this article we'll cover"],
+        "problem": "LLMs announce what they are about to do instead of doing it. Tutorial-script feel that wastes the reader's time.",
+        "fix_strategy": "Delete the announcement. Start with the actual content."
+      },
+      "29_fragmented_headers": {
+        "pattern": "## Performance\\n\\nSpeed matters.\\n\\n[real content]",
+        "problem": "AI adds a generic one-liner after a heading that just restates the heading. Adds nothing.",
+        "fix_strategy": "Delete the warm-up sentence. Start the section with substance."
+      }
+    }
+  },
   "sentence_structure_patterns": {
     "too_uniform": {
       "description": "AI often creates sentences of similar length. Human writing varies.",
@@ -123,8 +295,9 @@
       },
       "dashes_and_parentheticals": {
         "appropriate": true,
-        "example": "Use a dash — like this — to add extra thought",
-        "frequency": "2-3 per 500 words"
+        "example": "Use a dash — like this — to add extra thought, sparingly",
+        "frequency": "1-2 per 500 words MAX",
+        "_warning": "Em dash overuse is a known AI tell. See signs_of_ai_writing_catalog.style_patterns.14_em_dash_overuse. More than 3 em dashes per 500 words flags the content for revision. Most em dashes can be replaced with commas, periods, or parentheses."
       },
       "starting_with_and_or_but": {
         "appropriate_in": ["blog", "article"],
