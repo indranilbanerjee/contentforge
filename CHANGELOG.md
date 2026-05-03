@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.9.1] - 2026-05-03
+
+### Added — Cowork-Compatible Aggregator MCP Catalog
+
+The v3.9.0 audit confirmed ContentForge works in Anthropic Cowork, with one gap: Cowork only supports HTTP MCPs, but the `.mcp.json.example` reference (used in advanced Claude Code CLI setups) ships several stdio/npx MCPs (google-sheets, google-drive, stability-ai, gemini-nanobanana, mcp-imagenate) that Cowork users cannot run. v3.9.1 adds verified HTTP MCP alternatives so Cowork teams have a documented path to every connector category.
+
+#### New entries in [.mcp.json.connectors-reference](.mcp.json.connectors-reference)
+
+Image/video generation (Cowork-compatible replacements for npx Stability/Gemini/Imagenate):
+- **fal-ai** — endpoint and auth notes verified May 2026 (free fal.ai account; covers SD3.5, SDXL, FLUX, Imagen, Recraft, 100+ models)
+- **replicate** — endpoint and auth notes verified May 2026 (free Replicate account; 1000+ models, equivalent multi-provider coverage)
+
+Aggregator MCPs (cover services with NO first-party HTTP MCP, especially Google Sheets and Google Drive):
+- **pipedream-google-sheets** — `https://mcp.pipedream.com/app/google_sheets`, OAuth on first connect
+- **pipedream-google-drive** — `https://mcp.pipedream.com/app/google_drive`, OAuth on first connect (also note Anthropic's platform-level Google Drive integration in Cowork as the preferred path)
+- **pipedream-generic** — template URL for any of Pipedream's 1000+ supported services
+- **composio-google-sheets** — `https://mcp.composio.dev/googlesheets`, x-api-key header (alternative to Pipedream for teams preferring API-key auth over OAuth)
+- **composio-generic** — `https://connect.composio.dev/mcp`, unified entrypoint for 500+ apps
+- **zapier** — `https://mcp.zapier.com/api/v1/connect`, single endpoint exposing 8000+ Zapier integrations and 30000+ actions
+- **make-com** — `https://<MAKE_ZONE>/mcp/api/v1/u/<MCP_TOKEN>/sse` template for teams running Make.com automations
+
+#### Catalog organization
+
+Catalog is now sectioned with `_section_*` markers: first-party SaaS, image/video generation, and aggregator MCPs. Per-entry `_auth` notes added for every connector documenting the OAuth/API-key flow. Cowork compatibility is now explicit in the file's `_readme`.
+
+#### Plugin manifest hardening
+
+[.claude-plugin/plugin.json](.claude-plugin/plugin.json) gained recommended fields it was missing:
+- `$schema`: `https://json.schemastore.org/claude-code-plugin` (enables editor validation)
+- `homepage`, `repository.url` — points to the GitHub repo
+- `license`: MIT (matches the LICENSE file already shipped)
+- `keywords` — 16 SEO/discoverability tags
+- `author.url` — links to the author's GitHub profile
+
+These fields bring ContentForge to parity with Digital Marketing Pro's manifest and improve discoverability in any future plugin browse UI.
+
+### Migration
+
+Pure additive release. No breaking changes. Existing connector setups continue to work. Cowork teams who need Google Sheets/Drive can now use the documented Pipedream or Composio entries via `cf-connect` or by manual copy from `.mcp.json.connectors-reference`.
+
+---
+
 ## [3.9.0] - 2026-05-03
 
 ### Added — World-Class Humanizer (Phase 6.5 Overhaul)

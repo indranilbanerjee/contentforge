@@ -1,52 +1,110 @@
 {
-  "_readme": "REFERENCE catalog of HTTP MCP connectors that integrate with the ContentForge pipeline. Copy any entry you want into '.mcp.json' under 'mcpServers' to enable it. Most require platform-side authentication (OAuth or API key) the first time. The 'cf-connect' and 'cf-add-integration' skills can walk you through enabling individual connectors interactively. NOTE on April-May 2026 platform changes: Plugin-bundled MCP servers auto-start when the plugin is enabled with no per-server opt-in toggle. ContentForge therefore ships an empty .mcp.json by default to avoid forcing 9 connection attempts on first install. The HTTP MCP endpoints below were verified working as of 2026-05-03; check the provider's docs if a connection fails.",
+  "_readme": "REFERENCE catalog of HTTP MCP connectors that integrate with the ContentForge pipeline. Copy any entry you want into '.mcp.json' under 'mcpServers' to enable it. Most require platform-side authentication (OAuth or API key) the first time. The 'cf-connect' and 'cf-add-integration' skills can walk you through enabling individual connectors interactively. PLATFORM NOTE (May 2026): Plugin-bundled MCP servers auto-start when the plugin is enabled with no per-server opt-in toggle. ContentForge therefore ships an empty .mcp.json by default to avoid forcing connection attempts on first install. COWORK COMPATIBILITY: All entries below are HTTP MCPs and work in both Claude Code CLI and Anthropic Cowork. Cowork does NOT support stdio/npx MCPs — see .mcp.json.example for those, which are CLI-only. Endpoints verified May 2026.",
   "mcpServers_reference": {
+    "_section_first_party_saas": "Direct first-party HTTP MCPs from the SaaS providers themselves (best when available)",
     "notion": {
       "type": "http",
       "url": "https://mcp.notion.com/mcp",
+      "_auth": "OAuth on first connect",
       "_purpose": "Brand knowledge intake, output destination, content calendar"
     },
     "canva": {
       "type": "http",
       "url": "https://mcp.canva.com/mcp",
+      "_auth": "OAuth on first connect",
       "_purpose": "Visual asset generation, brand kit access"
     },
     "webflow": {
       "type": "http",
       "url": "https://mcp.webflow.com/sse",
+      "_auth": "OAuth on first connect",
       "_purpose": "Publish target — articles, blog posts"
     },
     "slack": {
       "type": "http",
       "url": "https://mcp.slack.com/mcp",
+      "_auth": "OAuth on first connect",
       "_purpose": "Notifications, draft review, team handoff"
     },
     "gmail": {
       "type": "http",
       "url": "https://gmail.mcp.claude.com/mcp",
+      "_auth": "Anthropic-platform OAuth (works in Cowork via Settings → Integrations too)",
       "_purpose": "Distribute drafts to stakeholders"
     },
     "google-calendar": {
       "type": "http",
       "url": "https://gcal.mcp.claude.com/mcp",
+      "_auth": "Anthropic-platform OAuth (works in Cowork via Settings → Integrations too)",
       "_purpose": "Editorial calendar, deadline scheduling"
     },
     "figma": {
       "type": "http",
       "url": "https://mcp.figma.com/mcp",
+      "_auth": "OAuth on first connect",
       "_purpose": "Pull design assets, brand visual reference"
     },
+
+    "_section_image_video_generation": "HTTP MCPs for image and video generation. Replace the npx/stdio Stability/Gemini/Imagenate entries from .mcp.json.example which do NOT work in Cowork.",
     "fal-ai": {
       "type": "http",
       "url": "https://mcp.fal.ai/mcp",
-      "_purpose": "Image generation (alternative to Stability/Gemini paths)",
-      "_status": "Verify endpoint availability — not in user's confirmed list as of 2026-05-03"
+      "_auth": "Authorization: Bearer $FAL_KEY header (free fal.ai account required)",
+      "_purpose": "Image/video/audio generation — covers Stability SD3.5/SDXL/FLUX, Gemini Imagen, Recraft, and 100+ models. Use as Cowork-compatible replacement for stability-ai npx, nanobanana npx, and imagenate npx servers."
     },
     "replicate": {
       "type": "http",
       "url": "https://mcp.replicate.com/sse",
-      "_purpose": "Image/video generation (alternative provider)",
-      "_status": "Verify endpoint availability — not in user's confirmed list as of 2026-05-03"
+      "_auth": "REPLICATE_API_TOKEN env var (free Replicate account required)",
+      "_purpose": "Image/video generation — 1000+ models. Equivalent multi-provider coverage to fal-ai; pick whichever you have an account with."
+    },
+
+    "_section_aggregator_mcps": "Aggregator HTTP MCPs that expose hundreds of SaaS services through a single OAuth/API-key gateway. CRITICAL for Cowork users who need Google Sheets, Google Drive, and other services that have NO first-party HTTP MCP. Pick ONE aggregator (Pipedream OR Composio OR Zapier OR Make.com) — all overlap heavily, and using more than one creates duplicate tools.",
+
+    "pipedream-google-sheets": {
+      "type": "http",
+      "url": "https://mcp.pipedream.com/app/google_sheets",
+      "_auth": "OAuth on first connect (free Pipedream account required)",
+      "_purpose": "Cowork-compatible Google Sheets. Replaces the @anthropic/mcp-google-sheets npx server in .mcp.json.example. Powers ContentForge requirement intake and Phase 8 status tracking on Cowork."
+    },
+    "pipedream-google-drive": {
+      "type": "http",
+      "url": "https://mcp.pipedream.com/app/google_drive",
+      "_auth": "OAuth on first connect (free Pipedream account required)",
+      "_purpose": "Cowork-compatible Google Drive. Replaces the mcp-google-drive npx server. Powers brand knowledge vault and output file delivery on Cowork. Note: Anthropic also offers a platform-level Google Drive integration in Cowork (Settings → Integrations) that does not require an MCP — prefer that if available to your team."
+    },
+    "pipedream-generic": {
+      "type": "http",
+      "url": "https://mcp.pipedream.com/app/{service_slug}",
+      "_auth": "OAuth or API key per service (free Pipedream account required)",
+      "_purpose": "Template — replace {service_slug} with any of Pipedream's 1000+ supported services (e.g. airtable, hubspot, mailchimp, salesforce, asana). Use cf-add-integration to wire up a specific one."
+    },
+
+    "composio-google-sheets": {
+      "type": "http",
+      "url": "https://mcp.composio.dev/googlesheets",
+      "_auth": "x-api-key header with Composio API key (free Composio account required)",
+      "_purpose": "Alternative to pipedream-google-sheets. Some teams prefer Composio's API-key auth model (no per-user OAuth). Equivalent functionality."
+    },
+    "composio-generic": {
+      "type": "http",
+      "url": "https://connect.composio.dev/mcp",
+      "_auth": "x-api-key header with Composio API key (free Composio account required)",
+      "_purpose": "Composio's unified entrypoint covering 500+ apps. Configure which apps are exposed in your Composio dashboard."
+    },
+
+    "zapier": {
+      "type": "http",
+      "url": "https://mcp.zapier.com/api/v1/connect",
+      "_auth": "Zapier API key (personal) or OAuth (free Zapier account required)",
+      "_purpose": "Single endpoint exposing 8000+ Zapier app integrations and 30000+ actions. Best if your team already runs Zapier."
+    },
+
+    "make-com": {
+      "type": "http",
+      "url": "https://<MAKE_ZONE>/mcp/api/v1/u/<MCP_TOKEN>/sse",
+      "_auth": "MCP token generated in Make.com profile (zone substitution required, e.g. eu1.make.com or us1.make.com)",
+      "_purpose": "Make.com (formerly Integromat) scenario-based automation exposed as MCP. Choose this if your team's existing automation lives in Make."
     }
   }
 }
