@@ -1,10 +1,20 @@
 # ContentForge — Enterprise Multi-Agent Content Production Pipeline
 
-**Version:** 3.8.0
-**Platform:** Claude Code & Cowork
+**Version:** 3.9.1
+**Platform:** Claude Code & Anthropic Cowork
 **Status:** Production-Ready
 
-> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 19 skills and 10 industry knowledge packs. **New in v3.5:** Pipeline performance tracking with actual wall-clock timing per phase and token usage estimation. Multi-backend I/O — choose Google Sheets + Drive, Airtable, or local filesystem for tracking and delivery. Backend migration with `/cf:switch-backend`. Brand setup Step G asks users to choose their tracking backend. **v3.4:** Industry Knowledge Packs for subject matter expertise with SME calibration and domain-specific validation. Brand setup auto-generates key files. **v3.2/v3.3:** Visual Asset Annotator (Phase 3.5) with auto-generated matplotlib charts, structured internal linking markers, Google Sheets tracking, and Google Drive delivery. **v3.0:** Social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics dashboards, connector discovery, and upgraded agents.
+> Transform content requirements into publication-ready, fact-checked, brand-compliant, SEO-optimized content in 20-30 minutes through a 13-agent autonomous pipeline with 19 skills, 10 industry knowledge packs, and 16 opt-in HTTP MCP connectors. **New in v3.9:** the Phase 6.5 humanizer was rebuilt around a 29-pattern AI-detection catalog (adapted from Wikipedia: Signs of AI writing + blader/humanizer), with a self-critique meta-pass and optional voice calibration from a brand writing sample. ContentForge now ships zero global hooks and zero auto-connecting MCP servers — multi-plugin coexistence by default. **v3.9.1:** Cowork-compatible aggregator MCP catalog (Pipedream, Composio, Zapier, Make.com) for services with no first-party HTTP MCP. **v3.5–3.8:** pipeline performance tracking, multi-backend I/O (Google Sheets/Drive, Airtable, local), industry knowledge packs, agent compression (-57%), AI image generation (opt-in), SERP-informed title curation, pre-flight brand validation. **v3.0–v3.4:** social adaptation, CMS publishing, content briefs, A/B variants, translation, video scripts, content audits, calendars, style guides, analytics, visual asset annotator.
+
+### What's New in v3.9.x
+
+- **World-Class Humanizer (v3.9.0)** — Phase 6.5 rebuilt around a 29-pattern AI-detection catalog organized into 5 buckets (content, language/grammar, style, communication, filler/hedging). Adapted from [Wikipedia: Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (CC BY-SA, WikiProject AI Cleanup) with structure influenced by [blader/humanizer](https://github.com/blader/humanizer) (MIT). Catches what the prior catalog missed: copula avoidance, em dash overuse, rule of three, false ranges, signposting, persuasive authority tropes, fragmented headers, and 20+ more.
+- **Self-Critique Meta-Pass (v3.9.0)** — Step 7.5 of the humanizer asks itself "what makes this still obviously AI?", lists remaining tells, makes surgical fixes, optionally injects soul (opinions, mixed feelings, first-person observations). Single highest-leverage technique adopted from blader.
+- **Optional Voice Calibration (v3.9.0)** — Step 0.1: if brand profile includes a `writing_sample` field, the humanizer matches its sentence rhythm, word-choice level, punctuation habits, and verbal tics — replacing the generic personality archetype with a real human fingerprint.
+- **Multi-Plugin Coexistence (v3.9.0)** — Removed all 4 global hooks (SessionStart banner, PreToolUse Write/Edit, SubagentStart, Stop) that previously fired on every Claude Code operation in every project. Their work moved to Phase 7 reviewer + agent files + Quality Gate criteria where it belongs. Prior config preserved as reference at `hooks/hooks-reference.example.json`. `.mcp.json` ships empty so nothing auto-connects on plugin enable.
+- **Em Dash Advice Corrected (v3.9.0)** — was 2-3 per 500 words (recommended), now max 1-2 per 500 words. Em dash overuse is a documented AI tell.
+- **Cowork-Compatible Aggregator MCPs (v3.9.1)** — `.mcp.json.connectors-reference` now documents Pipedream/Composio/Zapier/Make.com paths for Google Sheets, Google Drive, and 1000+ other SaaS services. Cowork users get a documented HTTP path for every connector category.
+- **Plugin Manifest Hardening (v3.9.1)** — Added `$schema`, `homepage`, `repository`, `license`, `keywords`, `author.url` for parity with the recommended Claude Code plugin spec.
 
 ### What's New in v3.6–3.8
 
