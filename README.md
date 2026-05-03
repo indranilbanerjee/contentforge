@@ -605,7 +605,7 @@ ContentForge is part of the **Neelverse Marketing Suite** — three plugins that
 
 | Plugin | What It Does | Install |
 |--------|-------------|---------|
-| **[Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro)** | Strategy, SEO, paid ads, analytics, email, social, PR — 141 skills, 25 agents | `claude plugin install digital-marketing-pro@neels-plugins` |
+| **[Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro)** | End-to-end engagement methodology — 12-Part Strategy Flow, Four Core Documents, Two-Views Model. 149 skills, 25 agents, 10 commands, 14 HTTP connectors | `claude plugin install digital-marketing-pro@neels-plugins` |
 | **ContentForge** (this plugin) | Publication-ready content via 10-phase pipeline — research, draft, fact-check, SEO, humanize | `claude plugin install contentforge@neels-plugins` |
 | **[SocialForge](https://github.com/indranilbanerjee/socialforge)** | Social media calendar automation with AI image + video generation (Vertex AI + Kling v3.0) | `claude plugin install socialforge@neels-plugins` |
 
@@ -620,4 +620,4 @@ claude plugin install socialforge@neels-plugins
 
 ---
 
-**ContentForge v3.5.0** — 13 agents, 19 skills, 10 industry knowledge packs, zero hallucinations. Transform requirements into publication-ready, domain-expert content in 20-30 minutes with pipeline performance tracking and multi-backend I/O.
+**ContentForge v3.9.1** — 13 agents, 19 skills, 10 industry knowledge packs, 16 opt-in HTTP MCP connectors. Transform requirements into publication-ready, domain-expert content in 20-30 minutes with the v3.9 29-pattern AI-detection humanizer + self-critique meta-pass + optional voice calibration. Zero global hooks, zero auto-connecting MCPs.
