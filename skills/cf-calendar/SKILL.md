@@ -11,7 +11,7 @@ Plan and manage content production calendars with intelligent scheduling, deadli
 
 ## When to Use
 
-Use `/cf:calendar` when:
+Use `/contentforge:calendar` when:
 - You need a **30/60/90-day content plan** with specific dates and deadlines
 - You want to **schedule production timelines** that account for ContentForge processing time + review buffers
 - You need to **assign content to team members** and track who's responsible for what
@@ -20,7 +20,7 @@ Use `/cf:calendar` when:
 - You want to **identify scheduling conflicts** before they become missed deadlines
 
 **For producing content**, use `/contentforge` or `/batch-process`.
-**For auditing what needs refreshing**, use `/cf:audit` first to identify candidates.
+**For auditing what needs refreshing**, use `/contentforge:audit` first to identify candidates.
 
 ## What This Command Does
 
@@ -66,7 +66,7 @@ Sheet with columns: `title`, `content_type`, `publish_date`, `priority`, `brand`
 
 ### Interactive Mode
 ```
-/cf:calendar
+/contentforge:calendar
 ```
 **Prompts you for:**
 1. Time period (30/60/90 days)
@@ -77,19 +77,19 @@ Sheet with columns: `title`, `content_type`, `publish_date`, `priority`, `brand`
 
 ### Quick Mode with Google Sheet
 ```
-/cf:calendar --period=60 --sheet=https://docs.google.com/spreadsheets/d/ABC123 --cadence=weekly --team="Alice,Bob"
+/contentforge:calendar --period=60 --sheet=https://docs.google.com/spreadsheets/d/ABC123 --cadence=weekly --team="Alice,Bob"
 ```
 
 ### Quick Mode with Topics Array
 ```
-/cf:calendar --period=30 --topics="AI Healthcare:article:2026-03-15:1, CRM Guide:blog:2026-03-20:2" --cadence=weekly
+/contentforge:calendar --period=30 --topics="AI Healthcare:article:2026-03-15:1, CRM Guide:blog:2026-03-20:2" --cadence=weekly
 ```
 
 ### Import from Audit Recommendations
 ```
-/cf:calendar --period=90 --from-audit=latest --cadence=biweekly
+/contentforge:calendar --period=90 --from-audit=latest --cadence=biweekly
 ```
-Pulls the top refresh and new content recommendations from the most recent `/cf:audit` output and schedules them.
+Pulls the top refresh and new content recommendations from the most recent `/contentforge:audit` output and schedules them.
 
 ## What Happens
 
@@ -356,7 +356,7 @@ Without MCP connections, the calendar provides a complete text-based timeline wi
 
 ### "Calendar events not created"
 **Cause:** Google Calendar MCP not connected or authorization not granted.
-**Solution:** Run `/cf:integrations` to check Google Calendar status. Run `/cf:connect google-calendar` for setup instructions.
+**Solution:** Run `/contentforge:integrations` to check Google Calendar status. Run `/contentforge:connect google-calendar` for setup instructions.
 
 ### "Production timeline too tight"
 **Cause:** Publish dates are too close together for the number of pieces.
@@ -376,8 +376,8 @@ None. This skill uses deterministic scheduling logic (backward timeline calculat
 
 ## Related Skills
 
-- **[/cf:audit](../cf-audit/SKILL.md)** — Audit content library to identify what needs refreshing (feeds into calendar)
-- **[/cf:brief](../cf-brief/SKILL.md)** — Generate briefs for calendar topics before production
+- **[/contentforge:audit](../cf-audit/SKILL.md)** — Audit content library to identify what needs refreshing (feeds into calendar)
+- **[/contentforge:brief](../cf-brief/SKILL.md)** — Generate briefs for calendar topics before production
 - **[/contentforge](../contentforge/SKILL.md)** — Produce content for scheduled pieces
 - **[/batch-process](../batch-process/SKILL.md)** — Process multiple calendar pieces in parallel
 - **[/content-refresh](../content-refresh/SKILL.md)** — Refresh content identified in the calendar

@@ -11,7 +11,7 @@ Track ContentForge production quality, pipeline timing, brand-specific patterns,
 
 ## When to Use
 
-Use `/cf:analytics` when you need:
+Use `/contentforge:analytics` when you need:
 - **Quality trend visibility** — Are scores improving or declining over time?
 - **Pipeline performance audit** — Which phases are slowest? Where are bottlenecks?
 - **Brand comparison** — Which brands consistently score highest/lowest?
@@ -48,32 +48,32 @@ Loads historical production data from Google Sheets (if connected) or local CSV 
 
 ### Default Dashboard (Last 30 Days, All Brands)
 ```
-/cf:analytics
+/contentforge:analytics
 ```
 
 ### Specific Time Period
 ```
-/cf:analytics --period=90
+/contentforge:analytics --period=90
 ```
 
 ### Brand-Specific Analysis
 ```
-/cf:analytics --brand=AcmeMed --period=30
+/contentforge:analytics --brand=AcmeMed --period=30
 ```
 
 ### Content Type Focus
 ```
-/cf:analytics --type=whitepaper --period=90
+/contentforge:analytics --type=whitepaper --period=90
 ```
 
 ### Metric-Specific Deep Dive
 ```
-/cf:analytics --focus=timing --period=30
+/contentforge:analytics --focus=timing --period=30
 ```
 
 ### Combined Filters
 ```
-/cf:analytics --brand=AcmeMed --type=article --focus=quality --period=90
+/contentforge:analytics --brand=AcmeMed --type=article --focus=quality --period=90
 ```
 
 ## Data Sources
@@ -505,7 +505,7 @@ See [`config/analytics-config.json`](../../config/analytics-config.json) for ful
 - **[/contentforge](../contentforge/SKILL.md)** — Full content production pipeline (generates tracking data)
 - **[/batch-process](../batch-process/SKILL.md)** — Parallel content processing (generates batch tracking data)
 - **[/content-refresh](../content-refresh/SKILL.md)** — Content updates (generates refresh tracking data)
-- **[/cf:variants](../cf-variants/SKILL.md)** — A/B test variation generation
+- **[/contentforge:variants](../cf-variants/SKILL.md)** — A/B test variation generation
 
 ---
 

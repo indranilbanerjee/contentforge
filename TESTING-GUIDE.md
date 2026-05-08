@@ -101,14 +101,14 @@ rm -rf ~/.claude-marketing/
   ✓ ContentForge v3.8 loaded
 
   Quick Start:
-    1. /cf:style-guide — Set up brand profile (do this first, 5 min)
+    1. /contentforge:style-guide — Set up brand profile (do this first, 5 min)
     2. /contentforge  — Create content (20-30 min per piece)
-    3. /cf:help        — Full guide, examples, troubleshooting
+    3. /contentforge:help        — Full guide, examples, troubleshooting
 
   Already have a brand? Jump straight to /contentforge [topic]
 
-  Commands: /batch-process | /content-refresh | /cf:social-adapt | /cf:publish
-  Status:   /cf:integrations | /cf:analytics
+  Commands: /batch-process | /content-refresh | /contentforge:social-adapt | /contentforge:publish
+  Status:   /contentforge:integrations | /contentforge:analytics
   ```
 - [ ] 7 commands visible in Customize panel (create-content, content-brief, social-adapt, publish, translate, brand-setup, audit-content)
 - [ ] 19 skills visible in Skills section
@@ -342,39 +342,39 @@ Test each of the 19 skills individually.
 
 | # | Skill | Test Prompt | Key Checks |
 |---|-------|-------------|------------|
-| 4 | `/cf:integrations` | (no argument) | Shows 9 HTTP connectors, grouped by category, connected vs available |
-| 5 | `/cf:connect` | `/cf:connect notion` | Step-by-step Notion setup instructions |
-| 6 | `/cf:add-integration` | `/cf:add-integration "I want to connect Airtable"` | Custom connector setup guide, no crash |
-| 7 | `/cf:publish` | `/cf:publish [content] to webflow` | CMS publishing with preview |
+| 4 | `/contentforge:integrations` | (no argument) | Shows 9 HTTP connectors, grouped by category, connected vs available |
+| 5 | `/contentforge:connect` | `/contentforge:connect notion` | Step-by-step Notion setup instructions |
+| 6 | `/contentforge:add-integration` | `/contentforge:add-integration "I want to connect Airtable"` | Custom connector setup guide, no crash |
+| 7 | `/contentforge:publish` | `/contentforge:publish [content] to webflow` | CMS publishing with preview |
 
 ### Content Enhancement Skills
 
 | # | Skill | Test Prompt | Key Checks |
 |---|-------|-------------|------------|
-| 8 | `/cf:social-adapt` | "Adapt this article for LinkedIn and Instagram" | Platform-specific adaptations per social-platform-specs.json |
-| 9 | `/cf:translate` | "Translate to French with cultural adaptation" | Preserves voice, citations, SEO |
-| 10 | `/cf:variants` | "Generate A/B variants for this headline" | Scored variations with rationale |
-| 11 | `/cf:video-script` | "Create a YouTube script from this article" | Timestamps, B-roll, hooks |
+| 8 | `/contentforge:social-adapt` | "Adapt this article for LinkedIn and Instagram" | Platform-specific adaptations per social-platform-specs.json |
+| 9 | `/contentforge:translate` | "Translate to French with cultural adaptation" | Preserves voice, citations, SEO |
+| 10 | `/contentforge:variants` | "Generate A/B variants for this headline" | Scored variations with rationale |
+| 11 | `/contentforge:video-script` | "Create a YouTube script from this article" | Timestamps, B-roll, hooks |
 
 ### Planning & Analysis Skills
 
 | # | Skill | Test Prompt | Key Checks |
 |---|-------|-------------|------------|
-| 12 | `/cf:brief` | "Create brief for 'DevOps automation trends'" | Keyword data, competitor analysis, outline |
-| 13 | `/cf:calendar` | "Plan content calendar for Q2 2026" | Schedule, deadlines, team assignments |
-| 14 | `/cf:audit` | "Audit our blog for content decay" | Freshness analysis, gap identification |
-| 15 | `/cf:analytics` | "Show content quality trends" | Score trends, pipeline timing, insights |
+| 12 | `/contentforge:brief` | "Create brief for 'DevOps automation trends'" | Keyword data, competitor analysis, outline |
+| 13 | `/contentforge:calendar` | "Plan content calendar for Q2 2026" | Schedule, deadlines, team assignments |
+| 14 | `/contentforge:audit` | "Audit our blog for content decay" | Freshness analysis, gap identification |
+| 15 | `/contentforge:analytics` | "Show content quality trends" | Score trends, pipeline timing, insights |
 
 ### Brand & Config Skills
 
 | # | Skill | Test Prompt | Key Checks |
 |---|-------|-------------|------------|
-| 16 | `/cf:style-guide` | "Import style guide from [URL]" | Extracts voice, terminology, guardrails |
-| 17 | `/cf:template` | "Create a case study template" | Custom content type beyond built-in 5 |
-| 18 | `/cf:switch-backend` | `/cf:switch-backend airtable` | Validates target, offers migration, updates brand profile |
-| 19 | `/cf:help` | (no argument) | Shows v3.8.0, 13 agents, 19 skills, 9 connectors, 10-phase pipeline |
+| 16 | `/contentforge:style-guide` | "Import style guide from [URL]" | Extracts voice, terminology, guardrails |
+| 17 | `/contentforge:template` | "Create a case study template" | Custom content type beyond built-in 5 |
+| 18 | `/contentforge:switch-backend` | `/contentforge:switch-backend airtable` | Validates target, offers migration, updates brand profile |
+| 19 | `/contentforge:help` | (no argument) | Shows v3.8.0, 13 agents, 19 skills, 9 connectors, 10-phase pipeline |
 
-**`/cf:help` Argument Tests:**
+**`/contentforge:help` Argument Tests:**
 
 | Argument | Expected Output |
 |----------|----------------|
@@ -383,7 +383,7 @@ Test each of the 19 skills individually.
 | `--brand` | Brand profile setup methods |
 | `--examples` | Example workflows from brief to publish |
 | `--troubleshoot` | Common issues and solutions |
-| `--connectors` | Connector status (shortcut for /cf:integrations) |
+| `--connectors` | Connector status (shortcut for /contentforge:integrations) |
 
 ---
 
@@ -402,7 +402,7 @@ Test each of the 19 skills individually.
 
 ### 6.2 connector-status.py
 
-**Trigger:** Via `/cf:integrations` skill
+**Trigger:** Via `/contentforge:integrations` skill
 
 **Expected:**
 - [ ] Lists all 9 HTTP connectors with status (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar, fal-ai, Replicate)
@@ -630,10 +630,10 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 |----------|-----------|----------------|
 | Knowledge base | Notion | Core requirement storage |
 | Design | Canva, Figma | Featured images, social graphics |
-| CMS | Webflow | Publishing destination (`/cf:publish`) |
+| CMS | Webflow | Publishing destination (`/contentforge:publish`) |
 | Chat | Slack | Batch status notifications |
 | Email | Gmail | Draft delivery, review notifications |
-| Calendar | Google Calendar | Content calendar events (`/cf:calendar`) |
+| Calendar | Google Calendar | Content calendar events (`/contentforge:calendar`) |
 
 ### 9.3 Graceful Degradation
 
@@ -642,7 +642,7 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 **Expected:**
 - [ ] Skill doesn't crash
 - [ ] Clear message about which connector is needed
-- [ ] Instructions on how to connect it (or suggestion to run `/cf:connect <name>`)
+- [ ] Instructions on how to connect it (or suggestion to run `/contentforge:connect <name>`)
 - [ ] Fallback behavior (manual data input or skip)
 
 ### 9.4 Platform-Level Integrations
@@ -651,7 +651,7 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 
 **Expected:**
 - [ ] Google Drive documents accessible for brand knowledge
-- [ ] `/cf:integrations` notes that platform-level integrations exist separately
+- [ ] `/contentforge:integrations` notes that platform-level integrations exist separately
 - [ ] connector-status.py can't detect platform integrations (expected — mentions this)
 
 ---
@@ -704,13 +704,13 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 
 ### 11.1 Backend Selection During Brand Setup
 
-**Test:** Run `/brand-setup` or `/cf:style-guide` and reach Step G
+**Test:** Run `/brand-setup` or `/contentforge:style-guide` and reach Step G
 
 **Expected:**
 - [ ] Three options presented: Google Sheets + Drive, Airtable, Local
 - [ ] Google and Airtable are primary options (presented first)
 - [ ] Local available but only if explicitly chosen or skipped
-- [ ] Skipping defaults to local with a message about `/cf:switch-backend`
+- [ ] Skipping defaults to local with a message about `/contentforge:switch-backend`
 - [ ] Choosing Google triggers service account setup guidance
 - [ ] Choosing Airtable triggers token creation guidance
 - [ ] Brand profile `tracking.backend` field is set correctly
@@ -727,7 +727,7 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 
 ### 11.3 Backend Switching
 
-**Test:** `/cf:switch-backend airtable` (while currently on local)
+**Test:** `/contentforge:switch-backend airtable` (while currently on local)
 
 **Expected:**
 - [ ] Current backend identified and record count shown
@@ -781,9 +781,9 @@ Verify connectors map to the right workflow categories per CONNECTORS.md:
 |------|----------|
 | `/contentforge` (no topic) | Asks for topic, doesn't crash |
 | `/brand-setup` (no name) | Asks for brand name |
-| `/cf:translate` (no language) | Asks for target language |
-| `/cf:connect` (no service name) | Shows available connectors |
-| `/cf:help` (no argument) | Shows full help overview |
+| `/contentforge:translate` (no language) | Asks for target language |
+| `/contentforge:connect` (no service name) | Shows available connectors |
+| `/contentforge:help` (no argument) | Shows full help overview |
 
 ### 11.2 Very Long Content
 
@@ -856,11 +856,11 @@ Run this after any changes to verify nothing is broken.
 
 - [ ] All 19 skills respond to invocation
 - [ ] All 7 commands appear in Customize panel
-- [ ] `/cf:help` shows complete, accurate information
-- [ ] `/cf:integrations` shows 9 HTTP connectors with correct status
-- [ ] Argument hints show in Skills UI when typing `/cf:` (spot check 3-5 skills)
-- [ ] `/cf:publish` cannot be triggered by Claude without explicit user invocation (disable-model-invocation)
-- [ ] `/cf:help` has `name: cf-help` in frontmatter
+- [ ] `/contentforge:help` shows complete, accurate information
+- [ ] `/contentforge:integrations` shows 9 HTTP connectors with correct status
+- [ ] Argument hints show in Skills UI when typing `/contentforge:` (spot check 3-5 skills)
+- [ ] `/contentforge:publish` cannot be triggered by Claude without explicit user invocation (disable-model-invocation)
+- [ ] `/contentforge:help` has `name: cf-help` in frontmatter
 - [ ] `skills/contentforge/evals/evals.json` exists and is valid JSON with 3 test cases
 - [ ] `skills/cf-brief/evals/evals.json` exists and is valid JSON with 2 test cases
 - [ ] `skills/cf-style-guide/evals/evals.json` exists and is valid JSON with 2 test cases
@@ -904,7 +904,7 @@ If time is limited, test in this order:
 | 3 | Brand setup (all steps A-G) | 4.1 | Validates v3.8.0 Steps F + G |
 | 4 | Pipeline — pharma whitepaper | 3.2 | Validates industry knowledge packs |
 | 5 | All 19 skills invocation | 5 | Validates skill registration |
-| 6 | `/cf:help` with all arguments | 5 (#19) | Validates help accuracy |
+| 6 | `/contentforge:help` with all arguments | 5 (#19) | Validates help accuracy |
 | 7 | Hook tests | 8 | Validates compliance guardrails |
 | 8 | Google integration | 10 | Validates Sheets/Drive scripts |
 | 9 | Multi-backend I/O | 11 | Validates Airtable/local/migration |

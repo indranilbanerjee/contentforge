@@ -11,7 +11,7 @@ Generate multiple scored variations of any content element — headlines, hooks,
 
 ## When to Use
 
-Use `/cf:variants` when you need:
+Use `/contentforge:variants` when you need:
 - **A/B test candidates** for headlines, subject lines, or CTAs
 - **Higher-performing alternatives** to existing content elements
 - **Data-informed decisions** about which hook or intro to deploy
@@ -50,7 +50,7 @@ Takes a single content element and generates N variations (3-10), scores each ac
 
 ### Interactive Mode
 ```
-/cf:variants
+/contentforge:variants
 ```
 **Prompts you for:**
 1. Source content or element text
@@ -60,12 +60,12 @@ Takes a single content element and generates N variations (3-10), scores each ac
 
 ### Quick Mode (All Parameters)
 ```
-/cf:variants "AI Will Transform Your Business in 2026" --type=headline --count=5 --goal=clicks --brand=AcmeMed
+/contentforge:variants "AI Will Transform Your Business in 2026" --type=headline --count=5 --goal=clicks --brand=AcmeMed
 ```
 
 ### From Existing ContentForge Output
 ```
-/cf:variants --source-doc=https://docs.google.com/document/d/XYZ123 --element=headline --count=7 --goal=conversions
+/contentforge:variants --source-doc=https://docs.google.com/document/d/XYZ123 --element=headline --count=7 --goal=conversions
 ```
 Extracts the headline from the document and generates 7 conversion-optimized alternatives.
 
@@ -386,7 +386,7 @@ Alignment with the registered brand personality. If no brand is specified, score
 
 **After Variants:**
 - Deploy winning variant via CMS or publishing platform
-- Track performance with `/cf:analytics`
+- Track performance with `/contentforge:analytics`
 
 ## Agents Used
 
@@ -407,7 +407,7 @@ This skill uses existing **Humanizer** and **Reviewer** agent patterns — no ad
 - **[/contentforge](../contentforge/SKILL.md)** — Full content production pipeline
 - **[/content-refresh](../content-refresh/SKILL.md)** — Update existing content with fresh data
 - **[/batch-process](../batch-process/SKILL.md)** — Process multiple content pieces in parallel
-- **[/cf:analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance over time
+- **[/contentforge:analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance over time
 
 ---
 

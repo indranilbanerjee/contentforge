@@ -11,7 +11,7 @@ Show the complete integration status for your ContentForge installation — conn
 
 ## When to Use
 
-Use `/cf:integrations` when:
+Use `/contentforge:integrations` when:
 - You just installed ContentForge and want to see what's connected out of the box
 - You're troubleshooting why a skill can't reach an external service
 - You want to know which connectors to add next for maximum workflow coverage
@@ -37,25 +37,25 @@ Use `/cf:integrations` when:
 
 ### Basic Usage (Full Dashboard)
 ```
-/cf:integrations
+/contentforge:integrations
 ```
 Shows the complete status across all 12 categories.
 
 ### Filter by Category
 ```
-/cf:integrations --category=cms
+/contentforge:integrations --category=cms
 ```
 Shows only CMS connectors (Webflow, WordPress, HubSpot CMS).
 
 ### Show Only Connected
 ```
-/cf:integrations --show=connected
+/contentforge:integrations --show=connected
 ```
 Lists only the connectors that are currently active.
 
 ### Show Only Available (Not Connected)
 ```
-/cf:integrations --show=available
+/contentforge:integrations --show=available
 ```
 Lists connectors you could add, with setup effort and workflow impact for each.
 
@@ -130,17 +130,17 @@ Only connectors that are NOT already connected appear as quick wins.
 -----------------------------------------------------------
 
   1. Google Sheets (npx)
-     Unlocks: /batch-process requirement intake, /cf:analytics tracking, /cf:audit data
+     Unlocks: /batch-process requirement intake, /contentforge:analytics tracking, /contentforge:audit data
      Setup: Set GOOGLE_APPLICATION_CREDENTIALS env var
      Impact: HIGH — enables batch content production at scale
 
   2. WordPress (npx)
-     Unlocks: /cf:publish direct publishing, end-to-end content pipeline
+     Unlocks: /contentforge:publish direct publishing, end-to-end content pipeline
      Setup: Set WORDPRESS_SITE_URL and WORDPRESS_AUTH_TOKEN env vars
      Impact: HIGH — publish directly from ContentForge without manual copy-paste
 
   3. Ahrefs (HTTP)
-     Unlocks: /cf:brief keyword research, /cf:audit content gap analysis
+     Unlocks: /contentforge:brief keyword research, /contentforge:audit content gap analysis
      Setup: Already in .mcp.json — just use a skill that needs it
      Impact: MEDIUM — data-driven content briefs with real keyword volumes
 ```
@@ -176,13 +176,13 @@ Based on the dashboard results, present actionable next steps:
 -----------------------------------------------------------
 
   1. Connect Google Sheets for batch requirement intake:
-     /cf:connect google-sheets
+     /contentforge:connect google-sheets
 
   2. Connect WordPress for direct publishing:
-     /cf:connect wordpress
+     /contentforge:connect wordpress
 
   3. See setup guide for any connector:
-     /cf:connect <name>
+     /contentforge:connect <name>
 
   4. Full connector reference:
      See CONNECTORS.md
@@ -215,7 +215,7 @@ The complete dashboard includes these sections:
   -----------------------------------------------------------
   [connected]  Notion (HTTP)
                content requirements, brand docs, editorial calendars
-               Skills: /contentforge, /batch-process, /content-refresh, /cf:brief, /cf:audit, /cf:style-guide
+               Skills: /contentforge, /batch-process, /content-refresh, /contentforge:brief, /contentforge:audit, /contentforge:style-guide
   [available]  Confluence (npx)
                team wikis, brand guidelines, knowledge bases
                Needs: CONFLUENCE_URL, CONFLUENCE_TOKEN
@@ -224,16 +224,16 @@ The complete dashboard includes these sections:
   -----------------------------------------------------------
   [connected]  Canva (HTTP)
                featured images, social graphics, infographics, brand kit
-               Skills: /contentforge, /batch-process, /cf:social-adapt
+               Skills: /contentforge, /batch-process, /contentforge:social-adapt
   [connected]  Figma (HTTP)
                design assets, illustrations, visual elements
-               Skills: /contentforge, /cf:social-adapt
+               Skills: /contentforge, /contentforge:social-adapt
 
   CMS — Content management and publishing
   -----------------------------------------------------------
   [connected]  Webflow (HTTP)
                publish articles, blog posts, landing pages to CMS
-               Skills: /cf:publish, /contentforge, /batch-process
+               Skills: /contentforge:publish, /contentforge, /batch-process
   [available]  WordPress (npx)
                publish posts, pages, manage categories and metadata
                Needs: WORDPRESS_SITE_URL, WORDPRESS_AUTH_TOKEN
@@ -245,19 +245,19 @@ The complete dashboard includes these sections:
   -----------------------------------------------------------
   [connected]  Slack (HTTP)
                batch status notifications, content approval alerts, team updates
-               Skills: /batch-process, /cf:publish, /cf:calendar
+               Skills: /batch-process, /contentforge:publish, /contentforge:calendar
 
   EMAIL — Email communication
   -----------------------------------------------------------
   [connected]  Gmail (HTTP)
                share drafts, deliver finished content, review notifications
-               Skills: /batch-process, /cf:publish
+               Skills: /batch-process, /contentforge:publish
 
   CALENDAR — Calendar and scheduling
   -----------------------------------------------------------
   [connected]  Google Calendar (HTTP)
                content calendar events, publishing deadlines, review reminders
-               Skills: /cf:calendar, /batch-process
+               Skills: /contentforge:calendar, /batch-process
 
   SPREADSHEETS — Data intake and requirement management
   -----------------------------------------------------------
@@ -316,19 +316,19 @@ The complete dashboard includes these sections:
 -----------------------------------------------------------
 
   1. Google Sheets (npx) — HIGH IMPACT
-     Unlocks: /batch-process requirement intake, /cf:analytics, /cf:audit
-     Setup: Set GOOGLE_APPLICATION_CREDENTIALS, then /cf:connect google-sheets
+     Unlocks: /batch-process requirement intake, /contentforge:analytics, /contentforge:audit
+     Setup: Set GOOGLE_APPLICATION_CREDENTIALS, then /contentforge:connect google-sheets
      Why: Batch processing reads requirements from Google Sheets. Without it,
      you're limited to interactive mode or CSV uploads.
 
   2. Ahrefs (HTTP) — MEDIUM IMPACT
-     Unlocks: /cf:brief keyword data, /cf:audit content gaps, /content-refresh SEO
+     Unlocks: /contentforge:brief keyword data, /contentforge:audit content gaps, /content-refresh SEO
      Setup: Already in .mcp.json — authorize on first use
      Why: Data-driven content briefs with real search volumes instead of estimates.
 
   3. Google Drive (npx) — MEDIUM IMPACT
      Unlocks: Brand knowledge vault, output delivery for all skills
-     Setup: Set GOOGLE_APPLICATION_CREDENTIALS, then /cf:connect google-drive
+     Setup: Set GOOGLE_APPLICATION_CREDENTIALS, then /contentforge:connect google-drive
      Why: Centralized brand assets and automatic output file delivery.
 
 -----------------------------------------------------------
@@ -350,10 +350,10 @@ The complete dashboard includes these sections:
 -----------------------------------------------------------
 
   Connect your top quick win:
-    /cf:connect google-sheets
+    /contentforge:connect google-sheets
 
   See setup guide for any connector:
-    /cf:connect <name>
+    /contentforge:connect <name>
 
   Full connector reference:
     See CONNECTORS.md
@@ -386,7 +386,7 @@ The complete dashboard includes these sections:
 
 HTTP connectors are pre-configured in ContentForge's `.mcp.json` and work immediately in both Cowork and Claude Code. When you first use a skill that needs an HTTP connector, the platform prompts you to authorize via OAuth. No manual credential management required.
 
-npx connectors require local Node.js, the appropriate npm package, and API keys set as environment variables. They work in Claude Code only. Use `/cf:connect <name>` for step-by-step setup.
+npx connectors require local Node.js, the appropriate npm package, and API keys set as environment variables. They work in Claude Code only. Use `/contentforge:connect <name>` for step-by-step setup.
 
 ## Troubleshooting
 
@@ -415,7 +415,7 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ## Related Skills
 
-- **[/cf:connect](../cf-connect/SKILL.md)** — Guided setup for a specific connector
+- **[/contentforge:connect](../cf-connect/SKILL.md)** — Guided setup for a specific connector
 - **[/contentforge](../contentforge/SKILL.md)** — Main content production pipeline
 - **[/batch-process](../batch-process/SKILL.md)** — Parallel content processing
 

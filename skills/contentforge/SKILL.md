@@ -42,7 +42,7 @@ Runs your content through **10 specialized agents** with quality gates at each p
 **Minimum Required:**
 - **Topic** — What the content is about (e.g., "AI in Healthcare", "remote work productivity")
 - **Content Type** — article, blog, whitepaper, faq, research_paper
-- **Brand** — Which brand profile to use (create with `/cf:style-guide` if new brand)
+- **Brand** — Which brand profile to use (create with `/contentforge:style-guide` if new brand)
 
 **Pre-Flight Validation:** After gathering inputs, the system validates your brand profile for completeness (voice, guardrails, audience, industry pack). For regulated industries (pharma, BFSI, healthcare, legal), guardrails are required — the system will warn if they're empty and ask whether to proceed or update the profile first.
 
@@ -200,7 +200,7 @@ Delivery:
   Google Drive: ✅ ContentForge Output/AcmeMed/AI-in-Healthcare-2026-Trends_v1.0.docx
   Tracking: ✅ Row 5 updated
 
-Next: /cf:publish | /cf:social-adapt | /cf:translate | /cf:variants
+Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:translate | /contentforge:variants
 ```
 
 ## Content Types & Specifications
@@ -218,7 +218,7 @@ Next: /cf:publish | /cf:social-adapt | /cf:translate | /cf:variants
 **Before using ContentForge**, create a brand profile:
 
 ```
-/cf:style-guide
+/contentforge:style-guide
 ```
 
 Provide your brand name, industry, voice guidelines (or share existing documents/URLs), and ContentForge generates the profile JSON automatically.
@@ -284,29 +284,29 @@ Content is flagged for human review if:
 ## Integration with Other Skills
 
 **Before ContentForge:**
-- `/cf:style-guide` — Create brand profile if new brand
-- `/cf:brief` — Generate research-backed content brief with keyword analysis
+- `/contentforge:style-guide` — Create brand profile if new brand
+- `/contentforge:brief` — Generate research-backed content brief with keyword analysis
 
 **Instead of ContentForge (for scale):**
 - `/batch-process` — Process 10-50+ pieces in parallel (4-5x faster)
 
 **After ContentForge:**
 - `/content-refresh` — Update content 6-12 months later with fresh data
-- `/cf:variants` — Create A/B test headline/hook/CTA variations
-- `/cf:publish` — Publish to Webflow or WordPress via MCP
-- `/cf:social-adapt` — Transform article into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
-- `/cf:translate` — Translate preserving brand voice (15+ languages)
-- `/cf:video-script` — Generate timestamped video scripts from the article
-- `/cf:analytics` — Record quality scores for trend tracking
+- `/contentforge:variants` — Create A/B test headline/hook/CTA variations
+- `/contentforge:publish` — Publish to Webflow or WordPress via MCP
+- `/contentforge:social-adapt` — Transform article into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
+- `/contentforge:translate` — Translate preserving brand voice (15+ languages)
+- `/contentforge:video-script` — Generate timestamped video scripts from the article
+- `/contentforge:analytics` — Record quality scores for trend tracking
 
 ## Requirements
 
 ### MCP Integrations (Optional)
 - **Google Sheets** — Requirement intake for batch processing, quality tracking
 - **Google Drive** — Brand knowledge vault, output .docx storage
-- **Webflow/WordPress** — Direct CMS publishing via `/cf:publish`
+- **Webflow/WordPress** — Direct CMS publishing via `/contentforge:publish`
 
-Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` for setup guides.
+Run `/contentforge:integrations` to check your connector status. Run `/contentforge:connect <name>` for setup guides.
 
 ### Environment
 - Claude Code or Cowork (latest version)
@@ -321,7 +321,7 @@ Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` 
 **Fix:**
 1. **Create a brand profile (recommended, 5 min):**
    ```
-   /cf:style-guide
+   /contentforge:style-guide
    ```
    Answer 3 questions (name, tone, industry) and you're ready.
 
@@ -337,7 +337,7 @@ Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` 
 **Common causes and fixes:**
 - **Topic too vague** → Be more specific: "AI in healthcare" → "AI diagnostic tools for rural hospitals in 2026"
 - **Sources behind paywalls** → Provide accessible reference URLs with `--sources=`
-- **Brand profile incomplete** → Run `/cf:style-guide --update [brand]` to add guardrails and terminology
+- **Brand profile incomplete** → Run `/contentforge:style-guide --update [brand]` to add guardrails and terminology
 - **Niche topic with few sources** → Consider a broader angle or provide your own source URLs
 
 ### "Max loops exceeded (5 iterations)"
@@ -361,7 +361,7 @@ Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` 
 
 **If it persists beyond 60 min:**
 1. Check internet connection
-2. Run `/cf:integrations` to verify MCP servers are responding
+2. Run `/contentforge:integrations` to verify MCP servers are responding
 3. Try a simpler topic to isolate the issue
 4. Large whitepapers (5000+ words) can legitimately take 45-75 min
 
@@ -373,7 +373,7 @@ Run `/cf:integrations` to check your connector status. Run `/cf:connect <name>` 
 
 **Fix:**
 ```
-/cf:style-guide --update [brand]
+/contentforge:style-guide --update [brand]
 ```
 Add at minimum: 3-5 prohibited claims, any required legal disclaimers, and industry-specific restrictions.
 
@@ -405,7 +405,7 @@ During content production, you'll see updates as each phase completes:
 
 ### Step 1: Create Brand Profile (One-Time Setup)
 ```
-/cf:style-guide
+/contentforge:style-guide
 ```
 Provide: Brand name (AcmeMed), Industry (Healthcare), Voice (Authoritative), Tone (Professional), Terminology, Guardrails
 
@@ -432,7 +432,7 @@ You select Option 1 → Pipeline starts with that title as the anchor.
 
 ### Step 5: Publish
 ```
-/cf:publish --platform=webflow
+/contentforge:publish --platform=webflow
 ```
 
 **Total Time:** 25 minutes (setup once, then 20-30 min per piece)
@@ -447,12 +447,12 @@ You select Option 1 → Pipeline starts with that title as the anchor.
 
 - **[/batch-process](../batch-process/SKILL.md)** — Process 10-50+ pieces in parallel (4-5x faster)
 - **[/content-refresh](../content-refresh/SKILL.md)** — Update old content with fresh data
-- **[/cf:variants](../cf-variants/SKILL.md)** — A/B test headline/hook/CTA variations
-- **[/cf:analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance
-- **[/cf:social-adapt](../cf-social-adapt/SKILL.md)** — Transform article into social media posts
-- **[/cf:publish](../cf-publish/SKILL.md)** — Publish to Webflow/WordPress
-- **[/cf:translate](../cf-translate/SKILL.md)** — Translate preserving brand voice
-- **[/cf:brief](../cf-brief/SKILL.md)** — Generate research-backed content briefs
+- **[/contentforge:variants](../cf-variants/SKILL.md)** — A/B test headline/hook/CTA variations
+- **[/contentforge:analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance
+- **[/contentforge:social-adapt](../cf-social-adapt/SKILL.md)** — Transform article into social media posts
+- **[/contentforge:publish](../cf-publish/SKILL.md)** — Publish to Webflow/WordPress
+- **[/contentforge:translate](../cf-translate/SKILL.md)** — Translate preserving brand voice
+- **[/contentforge:brief](../cf-brief/SKILL.md)** — Generate research-backed content briefs
 
 ---
 

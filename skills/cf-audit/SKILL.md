@@ -11,7 +11,7 @@ Audit your existing content library for freshness decay, coverage gaps, and opti
 
 ## When to Use
 
-Use `/cf:audit` when:
+Use `/contentforge:audit` when:
 - You need a **quarterly or annual content health check** across your library
 - Search rankings are declining and you need to **identify which content to refresh first**
 - You want to find **coverage gaps** — topics your competitors rank for but you don't
@@ -20,7 +20,7 @@ Use `/cf:audit` when:
 - You're planning next quarter's content calendar and need to **balance new vs refresh**
 
 **For refreshing specific pieces**, use `/content-refresh` after the audit identifies candidates.
-**For producing new content** for identified gaps, use `/cf:brief` then `/contentforge`.
+**For producing new content** for identified gaps, use `/contentforge:brief` then `/contentforge`.
 
 ## What This Command Does
 
@@ -52,28 +52,28 @@ Use `/cf:audit` when:
 
 ### Basic Usage (Google Drive)
 ```
-/cf:audit https://drive.google.com/drive/folders/ABC123
+/contentforge:audit https://drive.google.com/drive/folders/ABC123
 ```
 **Prompt:** "Audit scope? (freshness / gaps / both)"
 
 ### WordPress Site Audit
 ```
-/cf:audit https://blog.acme.com --scope=both --threshold=12
+/contentforge:audit https://blog.acme.com --scope=both --threshold=12
 ```
 
 ### CSV Inventory Audit
 ```
-/cf:audit content-inventory.csv --scope=freshness --threshold=6
+/contentforge:audit content-inventory.csv --scope=freshness --threshold=6
 ```
 
 ### Freshness-Only Audit
 ```
-/cf:audit https://drive.google.com/drive/folders/ABC123 --scope=freshness --threshold=18
+/contentforge:audit https://drive.google.com/drive/folders/ABC123 --scope=freshness --threshold=18
 ```
 
 ### Gap Analysis Only
 ```
-/cf:audit https://drive.google.com/drive/folders/ABC123 --scope=gaps --keywords=target-keywords.csv
+/contentforge:audit https://drive.google.com/drive/folders/ABC123 --scope=gaps --keywords=target-keywords.csv
 ```
 
 ## What Happens
@@ -311,7 +311,7 @@ Produce a prioritized action list combining freshness scores, coverage gaps, and
 
 **Recommendation Types:**
 1. **Refresh Candidates** — Existing content to update with `/content-refresh`
-2. **New Content Opportunities** — Coverage gaps to fill with `/cf:brief` + `/contentforge`
+2. **New Content Opportunities** — Coverage gaps to fill with `/contentforge:brief` + `/contentforge`
 3. **Quality Improvements** — Content with low quality scores to re-run through pipeline
 4. **Retire Candidates** — Content so outdated it should be removed or redirected
 
@@ -334,7 +334,7 @@ IMMEDIATE ACTIONS (This Week):
 THIS QUARTER:
   3. NEW: Create "AI Diagnostics in Precision Medicine" article
      Coverage gap: 2,400/mo volume, KD 62, no existing content
-     Command: /cf:brief "AI diagnostics precision medicine"
+     Command: /contentforge:brief "AI diagnostics precision medicine"
 
   4. REFRESH: "HIPAA Compliance Guide 2024" — Freshness 31, high value
      Scope: Medium refresh, update for 2026 regulations
@@ -342,7 +342,7 @@ THIS QUARTER:
 
   5. NEW: Create "Healthcare API Integration Guide" whitepaper
      Coverage gap: 1,800/mo volume, KD 45
-     Command: /cf:brief "healthcare API integration"
+     Command: /contentforge:brief "healthcare API integration"
 
 NEXT QUARTER:
   6-10. [Additional refresh and new content recommendations]
@@ -396,7 +396,7 @@ Without analytics MCP, the audit provides freshness scoring and coverage gap ana
 
 ### "Performance data unavailable"
 **Cause:** Google Analytics or Google Search Console MCP not connected.
-**Solution:** Run `/cf:integrations` to check connector status. Performance analysis is optional; freshness scoring and gap analysis work without it.
+**Solution:** Run `/contentforge:integrations` to check connector status. Performance analysis is optional; freshness scoring and gap analysis work without it.
 
 ## Limitations
 
@@ -413,10 +413,10 @@ None. This skill uses deterministic analysis (freshness scoring algorithm, keywo
 ## Related Skills
 
 - **[/content-refresh](../content-refresh/SKILL.md)** — Refresh content identified by the audit
-- **[/cf:brief](../cf-brief/SKILL.md)** — Generate briefs for coverage gap topics
+- **[/contentforge:brief](../cf-brief/SKILL.md)** — Generate briefs for coverage gap topics
 - **[/contentforge](../contentforge/SKILL.md)** — Produce new content for gap topics
-- **[/cf:calendar](../cf-calendar/SKILL.md)** — Schedule refresh and new content production
-- **[/cf:integrations](../cf-integrations/SKILL.md)** — Check which analytics connectors are available
+- **[/contentforge:calendar](../cf-calendar/SKILL.md)** — Schedule refresh and new content production
+- **[/contentforge:integrations](../cf-integrations/SKILL.md)** — Check which analytics connectors are available
 
 ---
 

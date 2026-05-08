@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "/cf:brief AI-powered customer service chatbots for e-commerce",
+      "prompt": "/contentforge:brief AI-powered customer service chatbots for e-commerce",
       "expected_output": "A structured content brief with keyword analysis, competitor content gaps, audience targeting, and outline recommendations",
       "files": [],
       "assertions": [

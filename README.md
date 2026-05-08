@@ -32,7 +32,7 @@
 
 - **Pipeline Performance Tracking** — Actual wall-clock timing per phase (no more placeholder estimates). Token usage estimation with content tokens, agent instruction tokens, and configurable overhead multiplier. Phase 8 completion summary shows real timing table with benchmark comparison
 - **Multi-Backend I/O** — Choose your tracking and delivery backend: Google Sheets + Drive, Airtable, or local filesystem. Airtable handles both tracking and file delivery via record attachments (~2 min setup vs Google's ~5 min)
-- **Backend Migration** — `/cf:switch-backend` to change backends anytime with optional data + file migration. Source data is never deleted. Migration is idempotent and resumable
+- **Backend Migration** — `/contentforge:switch-backend` to change backends anytime with optional data + file migration. Source data is never deleted. Migration is idempotent and resumable
 - **Brand Setup Step G** — During brand onboarding, users choose their preferred tracking backend. Google and Airtable are the primary options; local only if explicitly chosen or skipped
 
 ### What's New in v3.4.0
@@ -64,7 +64,7 @@
 - **📅 Content Calendar** — Plan production schedules with deadline tracking and Google Calendar sync
 - **🎨 Style Guides** — Import brand voice from documents/URLs, generate brand profile JSON
 - **📄 Custom Templates** — Create content type templates beyond the 5 built-in types
-- **🔌 Connector Discovery** — `/cf:integrations` dashboard and `/cf:connect` guided setup for 22 connectors
+- **🔌 Connector Discovery** — `/contentforge:integrations` dashboard and `/contentforge:connect` guided setup for 22 connectors
 - **🤖 AI Overview Optimization** — SEO optimizer now structures content for Google AI Overviews and Perplexity
 - **📈 Comparative Scoring** — Reviewer shows percentile ranking against brand's historical content
 - **🎭 Personality Profiles** — Humanizer supports 4 configurable profiles: authoritative, conversational, technical, witty
@@ -89,7 +89,7 @@ ContentForge is an enterprise-grade content generation system that replaces 6-8 
 - **Natural Language:** Phase 6.5 Humanizer removes AI writing patterns with 4 personality profiles
 - **Quality Transparency:** Every piece scored 1-10 across 5 dimensions with comparative benchmarks
 - **Human Oversight:** Content <5.0/10 escalates to review, never auto-publishes
-- **19 Skills + 7 Commands:** Full content lifecycle — from brief to publish to repurpose, with top commands visible in the Customize panel. All skills include argument-hint autocomplete, `/cf:publish` has execution safety (`disable-model-invocation`), and 3 key skills have structured evals
+- **19 Skills + 7 Commands:** Full content lifecycle — from brief to publish to repurpose, with top commands visible in the Customize panel. All skills include argument-hint autocomplete, `/contentforge:publish` has execution safety (`disable-model-invocation`), and 3 key skills have structured evals
 
 ---
 
@@ -137,42 +137,42 @@ These 7 commands appear in the **Commands** section of the Customize sidebar, pr
 ### Publishing & Social
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Social Adaptation | `/cf:social-adapt` | Article → LinkedIn, Twitter/X, Instagram, Facebook, Threads posts |
-| CMS Publishing | `/cf:publish` | Push to Webflow/WordPress via MCP or HTML export |
+| Social Adaptation | `/contentforge:social-adapt` | Article → LinkedIn, Twitter/X, Instagram, Facebook, Threads posts |
+| CMS Publishing | `/contentforge:publish` | Push to Webflow/WordPress via MCP or HTML export |
 
 ### Content Optimization
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| A/B Variants | `/cf:variants` | Generate 3-10 headline, hook, CTA variations with scoring |
-| Analytics Dashboard | `/cf:analytics` | Quality trends, timing breakdown, brand performance |
+| A/B Variants | `/contentforge:variants` | Generate 3-10 headline, hook, CTA variations with scoring |
+| Analytics Dashboard | `/contentforge:analytics` | Quality trends, timing breakdown, brand performance |
 
 ### Multilingual & Video
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Translation | `/cf:translate` | Translate preserving brand voice, 15+ languages, 3 levels |
-| Video Scripts | `/cf:video-script` | Timestamped scripts for YouTube, TikTok, Instagram Reels |
+| Translation | `/contentforge:translate` | Translate preserving brand voice, 15+ languages, 3 levels |
+| Video Scripts | `/contentforge:video-script` | Timestamped scripts for YouTube, TikTok, Instagram Reels |
 
 ### Content Management
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Content Brief | `/cf:brief` | Research-backed brief with keyword analysis and outline |
-| Content Audit | `/cf:audit` | Freshness scoring, decay detection, gap analysis |
-| Content Calendar | `/cf:calendar` | Production scheduling with deadline tracking |
-| Style Guide | `/cf:style-guide` | Import brand voice, generate brand profile JSON |
-| Custom Template | `/cf:template` | Create content type templates beyond the 5 built-in |
+| Content Brief | `/contentforge:brief` | Research-backed brief with keyword analysis and outline |
+| Content Audit | `/contentforge:audit` | Freshness scoring, decay detection, gap analysis |
+| Content Calendar | `/contentforge:calendar` | Production scheduling with deadline tracking |
+| Style Guide | `/contentforge:style-guide` | Import brand voice, generate brand profile JSON |
+| Custom Template | `/contentforge:template` | Create content type templates beyond the 5 built-in |
 
 ### Connector & Backend Management
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Integrations | `/cf:integrations` | Dashboard showing connected vs. available connectors |
-| Connect | `/cf:connect` | Guided setup for any of 22 supported connectors |
-| Add Integration | `/cf:add-integration` | Add a custom MCP connector for any API or service |
-| Switch Backend | `/cf:switch-backend` | Switch tracking backend (local/airtable/google) with optional data migration |
+| Integrations | `/contentforge:integrations` | Dashboard showing connected vs. available connectors |
+| Connect | `/contentforge:connect` | Guided setup for any of 22 supported connectors |
+| Add Integration | `/contentforge:add-integration` | Add a custom MCP connector for any API or service |
+| Switch Backend | `/contentforge:switch-backend` | Switch tracking backend (local/airtable/google) with optional data migration |
 
 ### Help & Reference
 | Skill | Command | Purpose |
 |-------|---------|---------|
-| Help | `/cf:help` | User guide, pipeline overview, skill list, examples, troubleshooting |
+| Help | `/contentforge:help` | User guide, pipeline overview, skill list, examples, troubleshooting |
 
 ---
 
@@ -224,7 +224,7 @@ ContentForge ships with **9 HTTP connectors** that work in both Cowork and Claud
 
 **The plugin works fully WITHOUT any connectors** — you can run the complete content pipeline and get output locally. Connectors unlock platform integrations.
 
-**New in v3.0:** Run `/cf:integrations` to see which connectors are active and what they unlock. Run `/cf:connect <name>` for guided setup of any of 22 supported connectors across 12 categories.
+**New in v3.0:** Run `/contentforge:integrations` to see which connectors are active and what they unlock. Run `/contentforge:connect <name>` for guided setup of any of 22 supported connectors across 12 categories.
 
 **Claude Code users** who need Google Sheets (requirement intake) and Google Drive (brand knowledge vault) can use the advanced setup:
 
@@ -284,9 +284,9 @@ After updating, start a new conversation for changes to take effect.
 #   /contentforge — Single piece (20-30 min)
 #   /batch-process — Multiple pieces in parallel (4-5x faster)
 #   /content-refresh — Update old content with fresh data
-#   /cf:integrations — See connected integrations
-#   /cf:social-adapt — Repurpose content for social
-#   /cf:publish — Push to CMS
+#   /contentforge:integrations — See connected integrations
+#   /contentforge:social-adapt — Repurpose content for social
+#   /contentforge:publish — Push to CMS
 ```
 
 ### Step 3: Configure MCP Servers (Optional)
@@ -412,7 +412,7 @@ SHA256 hash-based caching (see [`utils/brand-cache-manager.md`](utils/brand-cach
 The Reviewer now provides:
 - **Percentile ranking** against the brand's historical content
 - **Trend tracking** across last 10 pieces (strengths, weaknesses, trajectory)
-- **Score-based recommendations** with cross-skill suggestions (e.g., "Run `/cf:social-adapt` — 5 shareworthy moments identified")
+- **Score-based recommendations** with cross-skill suggestions (e.g., "Run `/contentforge:social-adapt` — 5 shareworthy moments identified")
 
 ---
 
@@ -471,8 +471,8 @@ Burstiness Score: ≥0.7 (standard deviation / mean)
 
 **Solutions:**
 1. Review Phase 7 Quality Scorecard for weakest dimension
-2. Run `/cf:brief` — weak briefs lead to weak content
-3. Run `/cf:style-guide` — check brand profile completeness
+2. Run `/contentforge:brief` — weak briefs lead to weak content
+3. Run `/contentforge:style-guide` — check brand profile completeness
 4. Lower thresholds temporarily in `config/scoring-thresholds.json`
 
 ### Phase 6.5 Humanizer Degrades SEO
@@ -481,7 +481,7 @@ Burstiness Score: ≥0.7 (standard deviation / mean)
 
 ### Connector Not Working
 
-Run `/cf:integrations` to check status. Run `/cf:connect <name>` for guided setup.
+Run `/contentforge:integrations` to check status. Run `/contentforge:connect <name>` for guided setup.
 
 ---
 
@@ -493,7 +493,7 @@ Single-prompt tools produce content in 30 seconds but with ~15-20% hallucination
 
 ### Q: Can I use ContentForge without Google Drive/Sheets?
 
-Yes. ContentForge supports three tracking backends: Google Sheets + Drive, Airtable, and local filesystem. During brand setup (Step G), you choose your preferred backend. Airtable requires only a Personal Access Token (~2 min setup). Local works with zero setup. Run `/cf:switch-backend` to change backends anytime.
+Yes. ContentForge supports three tracking backends: Google Sheets + Drive, Airtable, and local filesystem. During brand setup (Step G), you choose your preferred backend. Airtable requires only a Personal Access Token (~2 min setup). Local works with zero setup. Run `/contentforge:switch-backend` to change backends anytime.
 
 ### Q: How much does it cost to run ContentForge?
 
@@ -501,7 +501,7 @@ ContentForge is free (open source, MIT license). Claude API costs are ~$0.50-1.5
 
 ### Q: What content types does ContentForge support?
 
-5 built-in types: Articles (1,500-2,000 words), Blog Posts (800-1,500), Whitepapers (2,500-5,000), FAQs (600-1,200), Research Papers (4,000-8,000). Use `/cf:template` to create custom types.
+5 built-in types: Articles (1,500-2,000 words), Blog Posts (800-1,500), Whitepapers (2,500-5,000), FAQs (600-1,200), Research Papers (4,000-8,000). Use `/contentforge:template` to create custom types.
 
 ### Q: Can I run multiple content pieces in parallel?
 
@@ -509,11 +509,11 @@ Yes. `/batch-process` handles 10-50+ pieces simultaneously with 4-5x speedup ove
 
 ### Q: How do I repurpose content for social media?
 
-Run `/cf:social-adapt` with any article. It generates platform-specific posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads with correct character limits, hashtags, and posting time recommendations.
+Run `/contentforge:social-adapt` with any article. It generates platform-specific posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads with correct character limits, hashtags, and posting time recommendations.
 
 ### Q: Can I translate content while preserving brand voice?
 
-Yes. `/cf:translate` supports 15+ languages with 3 localization levels (literal, adapted, transcreated). The Translator Agent maps brand voice characteristics to target language conventions.
+Yes. `/contentforge:translate` supports 15+ languages with 3 localization levels (literal, adapted, transcreated). The Translator Agent maps brand voice characteristics to target language conventions.
 
 ---
 
@@ -539,14 +539,14 @@ Yes. `/cf:translate` supports 15+ languages with 3 localization levels (literal,
 
 ### v3.4.1 (Released)
 - [x] Argument-hint autocomplete on all 16 user-invocable skills
-- [x] Execution safety on `/cf:publish` (disable-model-invocation)
+- [x] Execution safety on `/contentforge:publish` (disable-model-invocation)
 - [x] Structured evals on 3 key skills (contentforge, cf-brief, cf-style-guide)
 - [x] Fixed cf-help missing `name` field in frontmatter
 
 ### v3.5.0
 - [x] Pipeline performance tracking — actual wall-clock timing per phase, token usage estimation
 - [x] Multi-backend I/O — Google Sheets + Drive, Airtable, or local filesystem
-- [x] Backend migration — `/cf:switch-backend` with optional data + file migration
+- [x] Backend migration — `/contentforge:switch-backend` with optional data + file migration
 - [x] Brand setup Step G — active backend selection during brand onboarding
 - [x] 4 new scripts: pipeline-tracker.py, airtable-tracker.py, local-tracker.py, backend-migrator.py
 - [x] All 10 pipeline agents instrumented with timing calls

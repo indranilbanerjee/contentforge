@@ -75,7 +75,7 @@ These gaps may affect content quality:
 
 Would you like to:
   1. Continue anyway (I'll use defaults where possible)
-  2. Update the brand profile first (/cf:style-guide --update)
+  2. Update the brand profile first (/contentforge:style-guide --update)
 ```
 
 Wait for user response before proceeding.

@@ -11,7 +11,7 @@ Import brand voice profiles from existing style guide documents, URLs, or manual
 
 ## When to Use
 
-Use `/cf:style-guide` when:
+Use `/contentforge:style-guide` when:
 - You're **onboarding a new brand** and have an existing style guide document (.docx, .pdf) or URL
 - You need to **update an existing brand profile** with revised guidelines
 - You want to **extract terminology and guardrails** from compliance documents
@@ -52,32 +52,32 @@ Use `/cf:style-guide` when:
 
 ### Import from URL
 ```
-/cf:style-guide AcmeMed --source=https://acmemed.com/brand-guidelines
+/contentforge:style-guide AcmeMed --source=https://acmemed.com/brand-guidelines
 ```
 
 ### Import from Document
 ```
-/cf:style-guide AcmeMed --source=./AcmeMed-Style-Guide.docx
+/contentforge:style-guide AcmeMed --source=./AcmeMed-Style-Guide.docx
 ```
 
 ### Import from Notion Page
 ```
-/cf:style-guide AcmeMed --source=https://www.notion.so/acme/Brand-Guidelines-abc123
+/contentforge:style-guide AcmeMed --source=https://www.notion.so/acme/Brand-Guidelines-abc123
 ```
 
 ### Import Only Terminology
 ```
-/cf:style-guide AcmeMed --source=https://acmemed.com/terminology --scope=terminology
+/contentforge:style-guide AcmeMed --source=https://acmemed.com/terminology --scope=terminology
 ```
 
 ### Import Only Guardrails (Compliance)
 ```
-/cf:style-guide AcmeMed --source=./compliance-requirements.pdf --scope=guardrails
+/contentforge:style-guide AcmeMed --source=./compliance-requirements.pdf --scope=guardrails
 ```
 
 ### Manual Input (No Document)
 ```
-/cf:style-guide AcmeMed --source=manual
+/contentforge:style-guide AcmeMed --source=manual
 ```
 **Prompts you for:**
 1. Voice & Tone (select from presets or describe)
@@ -89,7 +89,7 @@ Use `/cf:style-guide` when:
 
 ### Update Existing Profile
 ```
-/cf:style-guide AcmeMed --source=https://acmemed.com/updated-guidelines --update
+/contentforge:style-guide AcmeMed --source=https://acmemed.com/updated-guidelines --update
 ```
 Merges new information into the existing profile without overwriting unchanged fields.
 
@@ -565,7 +565,7 @@ Your choice: ___
 - Default to `"local"` with a note:
   ```
   Defaulted to local tracking. You can switch to Google Sheets or
-  Airtable anytime by running /cf:switch-backend.
+  Airtable anytime by running /contentforge:switch-backend.
   ```
 
 **Example Output:**
@@ -585,7 +585,7 @@ Tracking table initialized with columns:
   brand_compliance, seo_performance, readability, actual_word_count,
   output_file (Attachment), notes
 
-To switch backends later: /cf:switch-backend
+To switch backends later: /contentforge:switch-backend
 ================================================================
 ```
 
@@ -763,8 +763,8 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 - **[/contentforge](../contentforge/SKILL.md)** — Uses brand profiles for Phase 3 (Drafting), Phase 5 (Brand Compliance), Phase 6.5 (Humanizer)
 - **[/batch-process](../batch-process/SKILL.md)** — All pieces in a batch reference a brand profile
 - **[/content-refresh](../content-refresh/SKILL.md)** — Refresh maintains brand compliance using the profile
-- **[/cf:integrations](../cf-integrations/SKILL.md)** — Check Notion and Google Drive connector status
-- **[/cf:switch-backend](../cf-switch-backend/SKILL.md)** — Switch tracking backend (local/airtable/google) after initial setup
+- **[/contentforge:integrations](../cf-integrations/SKILL.md)** — Check Notion and Google Drive connector status
+- **[/contentforge:switch-backend](../cf-switch-backend/SKILL.md)** — Switch tracking backend (local/airtable/google) after initial setup
 
 ---
 

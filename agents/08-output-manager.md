@@ -229,7 +229,7 @@ After EACH script call, parse JSON output and check for `"error"` key:
 - If error: save .docx locally as fallback, note failure in completion summary
 - Continue with completion summary -- do not block the pipeline
 - If backend not configured at all, save locally and print:
-  "Tracking backend not configured. Content saved locally. Run /cf:switch-backend to configure."
+  "Tracking backend not configured. Content saved locally. Run /contentforge:switch-backend to configure."
 
 ---
 
@@ -331,10 +331,10 @@ The completion card is the user's primary record of what was produced, how it sc
 ### Guardrails: {verified / skipped_empty / minimal}
 
 ### Next Steps
-- `/cf:publish` — Push to CMS
-- `/cf:social-adapt` — Create social media posts
-- `/cf:translate` — Translate for other markets
-- `/cf:variants` — A/B test headlines and CTAs
+- `/contentforge:publish` — Push to CMS
+- `/contentforge:social-adapt` — Create social media posts
+- `/contentforge:translate` — Translate for other markets
+- `/contentforge:variants` — A/B test headlines and CTAs
 ```
 
 **Rules for this completion card:**

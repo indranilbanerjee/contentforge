@@ -20,10 +20,10 @@ Switch ContentForge's tracking and delivery backend between **Google Sheets + Dr
 ## How to Use
 
 ```
-/cf:switch-backend airtable
-/cf:switch-backend google
-/cf:switch-backend local
-/cf:switch-backend --status
+/contentforge:switch-backend airtable
+/contentforge:switch-backend google
+/contentforge:switch-backend local
+/contentforge:switch-backend --status
 ```
 
 ## What This Command Does
@@ -117,7 +117,7 @@ Backend switched to Airtable.
   Output files → Airtable attachment fields
   Previous data preserved at: ~/.claude-marketing/{brand}/tracking/
 
-Run /cf:switch-backend --status to verify anytime.
+Run /contentforge:switch-backend --status to verify anytime.
 ```
 
 ## Backend Comparison
@@ -136,7 +136,7 @@ Run /cf:switch-backend --status to verify anytime.
 Run with `--status` flag to check current backend health:
 
 ```
-/cf:switch-backend --status
+/contentforge:switch-backend --status
 ```
 
 This runs:
@@ -154,6 +154,6 @@ python3 {scripts_dir}/backend-migrator.py --action status --brand "{brand}" --fr
 
 ## Related Skills
 
-- **[/cf:style-guide](../cf-style-guide/SKILL.md)** — Brand setup (Step G sets initial backend)
-- **[/cf:integrations](../cf-integrations/SKILL.md)** — Check all connector status
-- **[/cf:connect](../cf-connect/SKILL.md)** — Set up individual connectors
+- **[/contentforge:style-guide](../cf-style-guide/SKILL.md)** — Brand setup (Step G sets initial backend)
+- **[/contentforge:integrations](../cf-integrations/SKILL.md)** — Check all connector status
+- **[/contentforge:connect](../cf-connect/SKILL.md)** — Set up individual connectors

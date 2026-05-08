@@ -1,6 +1,6 @@
 # Utility: Pipeline Optimizer
 
-**Purpose:** Analyze pipeline performance, score content freshness, detect coverage gaps, identify bottlenecks, and generate prioritized recommendations for the `/cf:audit` skill.
+**Purpose:** Analyze pipeline performance, score content freshness, detect coverage gaps, identify bottlenecks, and generate prioritized recommendations for the `/contentforge:audit` skill.
 
 ---
 
@@ -547,7 +547,7 @@ RECOMMENDATION_TYPES = {
         'description': 'Create new content for coverage gaps',
         'effort': 'medium-high',  # 25-45 min per piece
         'impact': 'medium-high',  # new rankings, no existing equity
-        'command': '/cf:brief + /contentforge'
+        'command': '/contentforge:brief + /contentforge'
     },
     'quality_improvement': {
         'description': 'Re-run low-scoring content through pipeline',
@@ -640,7 +640,7 @@ def generate_recommendations(freshness_scores, coverage_gaps, bottlenecks,
             'keyword_difficulty': gap['keyword_difficulty'],
             'opportunity_score': gap['opportunity_score'],
             'projected_impact': f"+{gap['search_volume'] * 0.05:.0f} monthly sessions (est.)",
-            'command': f"/cf:brief \"{gap['keyword']}\""
+            'command': f"/contentforge:brief \"{gap['keyword']}\""
         })
 
     # 3. Retire candidates (expired + low quality)
@@ -665,9 +665,9 @@ def generate_recommendations(freshness_scores, coverage_gaps, bottlenecks,
 
 ## Usage
 
-### Called by /cf:audit
+### Called by /contentforge:audit
 
-The pipeline optimizer is the analytical engine behind the `/cf:audit` skill:
+The pipeline optimizer is the analytical engine behind the `/contentforge:audit` skill:
 
 ```python
 # In cf-audit SKILL.md execution:

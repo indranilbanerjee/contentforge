@@ -47,9 +47,9 @@
 |----------|----------------|
 | **Google Sheets MCP** | Requirement intake for batch processing, tracking sheets |
 | **Google Drive MCP** | Brand knowledge vault, output file storage, .docx uploads |
-| **Webflow or WordPress MCP** | Direct CMS publishing via `/cf:publish` |
+| **Webflow or WordPress MCP** | Direct CMS publishing via `/contentforge:publish` |
 | **Slack MCP** | Pipeline completion notifications |
-| **Google Calendar MCP** | Content calendar sync via `/cf:calendar` |
+| **Google Calendar MCP** | Content calendar sync via `/contentforge:calendar` |
 | **Notion MCP** | Content brief storage, knowledge base |
 
 **Key point:** ContentForge works fully without any MCP connectors. The core pipeline runs entirely within the Claude session. Connectors add platform integrations but are NOT required.
@@ -98,9 +98,9 @@ Start a new Claude session. You should see the ContentForge banner:
   /contentforge — Single piece (20-30 min)
   /batch-process — Multiple pieces in parallel (4-5x faster)
   /content-refresh — Update old content with fresh data
-  /cf:integrations — See connected integrations
-  /cf:social-adapt — Repurpose content for social
-  /cf:publish — Push to CMS
+  /contentforge:integrations — See connected integrations
+  /contentforge:social-adapt — Repurpose content for social
+  /contentforge:publish — Push to CMS
 ```
 
 **If you don't see this banner:**
@@ -112,7 +112,7 @@ Start a new Claude session. You should see the ContentForge banner:
 
 Run immediately after install:
 ```
-/cf:integrations
+/contentforge:integrations
 ```
 
 This shows which connectors are active and what they unlock. You should see at least 9 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar, fal-ai, Replicate) if the plugin installed correctly.
@@ -144,12 +144,12 @@ If you see errors here, check the [Troubleshooting](#21-troubleshooting) section
 
 **This is the most important step.** Brand profiles control voice, tone, terminology, guardrails, citation rules, and quality thresholds for all content. Without a brand profile, ContentForge uses generic defaults.
 
-### Method 1: Quick Setup with `/cf:style-guide` (Recommended)
+### Method 1: Quick Setup with `/contentforge:style-guide` (Recommended)
 
 The fastest way to create a brand profile:
 
 ```
-/cf:style-guide
+/contentforge:style-guide
 ```
 
 **What happens:**
@@ -166,7 +166,7 @@ The fastest way to create a brand profile:
 
 **Example:**
 ```
-/cf:style-guide
+/contentforge:style-guide
 
 Brand: AcmeMed
 Industry: Healthcare/Pharma
@@ -255,7 +255,7 @@ Google Drive/
 2. If unchanged → loads cached profile in <5 seconds
 3. If changed → re-processes (2-5 minutes)
 
-**Requirement:** Google Drive MCP must be connected. Run `/cf:integrations` to verify.
+**Requirement:** Google Drive MCP must be connected. Run `/contentforge:integrations` to verify.
 
 ### What If I Don't Have a Brand Profile?
 
@@ -335,11 +335,11 @@ Create a Google Sheet with these columns:
 
 ### Connecting Google Sheets
 
-**If you see "Google Sheets" as connected in `/cf:integrations`:** You're ready. No additional setup needed.
+**If you see "Google Sheets" as connected in `/contentforge:integrations`:** You're ready. No additional setup needed.
 
 **If not connected:**
 ```
-/cf:connect google-sheets
+/contentforge:connect google-sheets
 ```
 
 This walks you through the setup. Google Sheets uses npx MCP (not HTTP), so you'll need:
@@ -478,7 +478,7 @@ Business casual. Use contractions (it's, we're) but avoid slang.
 | Approach | When to Use |
 |----------|------------|
 | **Auto (via Knowledge Vault)** | You have existing brand documents. ContentForge extracts and structures them. |
-| **Auto (via `/cf:style-guide`)** | You describe your brand verbally or share a URL. ContentForge generates the profile. |
+| **Auto (via `/contentforge:style-guide`)** | You describe your brand verbally or share a URL. ContentForge generates the profile. |
 | **Manual (copy template)** | You want full control over every field. Copy `config/brand-registry-template.json` and edit. |
 
 **All three approaches produce the same result:** a structured brand profile JSON that all agents reference.
@@ -689,13 +689,13 @@ Score-Based Tier: Tier 1 — PUBLISH + REPURPOSE + AMPLIFY
 
 Immediate Actions:
 1. ✅ Proceed to publication
-2. 📱 Run /cf:social-adapt — 5 shareworthy moments identified
-3. 🎬 Run /cf:video-script — strong video potential
+2. 📱 Run /contentforge:social-adapt — 5 shareworthy moments identified
+3. 🎬 Run /contentforge:video-script — strong video potential
 
 Strategic Actions:
-4. 📊 Record to /cf:analytics for benchmark tracking
-5. 🌍 Queue for /cf:translate --language=es,de
-6. 📅 Add to /cf:calendar for 6-month refresh
+4. 📊 Record to /contentforge:analytics for benchmark tracking
+5. 🌍 Queue for /contentforge:translate --language=es,de
+6. 📅 Add to /contentforge:calendar for 6-month refresh
 ```
 
 ---
@@ -705,7 +705,7 @@ Strategic Actions:
 ### Publishing to CMS
 
 ```
-/cf:publish
+/contentforge:publish
 ```
 
 **Supported platforms:**
@@ -721,7 +721,7 @@ Strategic Actions:
 ### Social Media Adaptation
 
 ```
-/cf:social-adapt
+/contentforge:social-adapt
 ```
 
 Takes any ContentForge article and generates posts for:
@@ -736,12 +736,12 @@ Takes any ContentForge article and generates posts for:
 
 **How to use:**
 ```
-/cf:social-adapt "AI in Healthcare article we just produced"
+/contentforge:social-adapt "AI in Healthcare article we just produced"
 ```
 
 Or provide the article directly:
 ```
-/cf:social-adapt --source="path/to/article.md" --platforms=linkedin,twitter
+/contentforge:social-adapt --source="path/to/article.md" --platforms=linkedin,twitter
 ```
 
 The Social Adapter Agent (#10) identifies 10-15 shareworthy moments from your article (statistics, quotes, frameworks, surprising facts) and builds platform-specific posts around them.
@@ -848,7 +848,7 @@ Content Refresh NEVER overwrites the original. It saves as:
 ### Creating a Brief
 
 ```
-/cf:brief "AI diagnostics in healthcare"
+/contentforge:brief "AI diagnostics in healthcare"
 ```
 
 **Output includes:**
@@ -872,7 +872,7 @@ Content Refresh NEVER overwrites the original. It saves as:
 ### Generating Variants
 
 ```
-/cf:variants "headline for the AI Healthcare article"
+/contentforge:variants "headline for the AI Healthcare article"
 ```
 
 **Generates 3-10 variations** of:
@@ -903,7 +903,7 @@ HEADLINE VARIANTS
 ### Translating Content
 
 ```
-/cf:translate --content="the article we just produced" --language=es --level=adapted
+/contentforge:translate --content="the article we just produced" --language=es --level=adapted
 ```
 
 ### Three Localization Levels
@@ -934,7 +934,7 @@ The Translator Agent (#11):
 ### Generating a Video Script
 
 ```
-/cf:video-script --source="the article we produced" --platform=youtube --duration=5min
+/contentforge:video-script --source="the article we produced" --platform=youtube --duration=5min
 ```
 
 ### Supported Platforms
@@ -968,7 +968,7 @@ B-roll: Hospital technology room
 ### Content Audit
 
 ```
-/cf:audit
+/contentforge:audit
 ```
 
 **What it does:**
@@ -981,7 +981,7 @@ B-roll: Hospital technology room
 ### Content Calendar
 
 ```
-/cf:calendar
+/contentforge:calendar
 ```
 
 **What it does:**
@@ -998,7 +998,7 @@ B-roll: Hospital technology room
 ### Creating a Style Guide
 
 ```
-/cf:style-guide
+/contentforge:style-guide
 ```
 
 See [Section 4](#4-setting-up-your-brand-profile) for full details. This skill creates brand profiles from natural language descriptions, URLs, or existing documents.
@@ -1010,7 +1010,7 @@ ContentForge ships with 5 content type templates: Article, Blog, Whitepaper, FAQ
 Need a different type? Create it:
 
 ```
-/cf:template "case study"
+/contentforge:template "case study"
 ```
 
 **Define:**
@@ -1030,7 +1030,7 @@ The new template is saved and available for all future `/contentforge` and `/bat
 ### Viewing Analytics
 
 ```
-/cf:analytics
+/contentforge:analytics
 ```
 
 **Shows:**
@@ -1051,7 +1051,7 @@ The new template is saved and available for all future `/contentforge` and `/bat
 ### Checking Connector Status
 
 ```
-/cf:integrations
+/contentforge:integrations
 ```
 
 **Shows a dashboard:**
@@ -1062,17 +1062,17 @@ Connected (6):                         What They Unlock
 ─────────────────────────────────────────────────────────
 ✅ Notion (HTTP)                       Knowledge base, brief storage
 ✅ Canva (HTTP)                        Design templates, image generation
-✅ Webflow (HTTP)                      CMS publishing via /cf:publish
+✅ Webflow (HTTP)                      CMS publishing via /contentforge:publish
 ✅ Slack (HTTP)                        Pipeline completion notifications
 ✅ Gmail (HTTP)                        Content delivery via email
-✅ Google Calendar (HTTP)              Calendar sync via /cf:calendar
+✅ Google Calendar (HTTP)              Calendar sync via /contentforge:calendar
 
 Available (16):                        How to Connect
 ─────────────────────────────────────────────────────────
-○ Google Sheets (npx)                  /cf:connect google-sheets
-○ Google Drive (npx)                   /cf:connect google-drive
-○ WordPress (npx)                      /cf:connect wordpress
-○ HubSpot (HTTP)                       /cf:connect hubspot
+○ Google Sheets (npx)                  /contentforge:connect google-sheets
+○ Google Drive (npx)                   /contentforge:connect google-drive
+○ WordPress (npx)                      /contentforge:connect wordpress
+○ HubSpot (HTTP)                       /contentforge:connect hubspot
 ...
 
 Coverage: 6 of 22 (27%)
@@ -1082,7 +1082,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 ### Setting Up a Connector
 
 ```
-/cf:connect google-sheets
+/contentforge:connect google-sheets
 ```
 
 **For HTTP connectors (Notion, Slack, etc.):**
@@ -1096,7 +1096,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 3. Add the npx server config to `.mcp.json`
 4. Restart Claude session
 
-`/cf:connect` walks you through every step with copy-paste commands.
+`/contentforge:connect` walks you through every step with copy-paste commands.
 
 ---
 
@@ -1117,7 +1117,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 **Symptom:** Pipeline asks for brand but can't find your profile.
 
 **Fixes:**
-1. Create a profile: `/cf:style-guide`
+1. Create a profile: `/contentforge:style-guide`
 2. Or use default: run without specifying `--brand`
 3. If using Knowledge Vault: verify Google Drive MCP is connected
 
@@ -1127,8 +1127,8 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 **Fixes:**
 1. Check the quality scorecard — which dimension is failing?
-2. Run `/cf:brief` — a better brief leads to better content
-3. Run `/cf:style-guide` — ensure brand profile is complete
+2. Run `/contentforge:brief` — a better brief leads to better content
+3. Run `/contentforge:style-guide` — ensure brand profile is complete
 4. Lower thresholds temporarily: edit `config/scoring-thresholds.json`
 5. Check topic — very niche topics may lack sufficient sources
 
@@ -1143,8 +1143,8 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 **Symptom:** Skill says connector unavailable.
 
 **Fixes:**
-1. Run `/cf:integrations` to check status
-2. Run `/cf:connect <name>` for setup guide
+1. Run `/contentforge:integrations` to check status
+2. Run `/contentforge:connect <name>` for setup guide
 3. Verify `.mcp.json` has the connector entry
 4. For npx: check environment variables are set
 
@@ -1153,8 +1153,8 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 **Symptom:** Pieces scoring 5.0-6.5 regularly.
 
 **Root causes and fixes:**
-- **Weak briefs** → Run `/cf:brief` before `/contentforge`
-- **Incomplete brand profile** → Run `/cf:style-guide` to enhance it
+- **Weak briefs** → Run `/contentforge:brief` before `/contentforge`
+- **Incomplete brand profile** → Run `/contentforge:style-guide` to enhance it
 - **Complex topics** → ContentForge needs good source material; try broader topics first
 - **Restrictive guardrails** → Review brand profile guardrails, ensure they're not overly limiting
 
@@ -1174,39 +1174,39 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/cf:social-adapt` | Article → LinkedIn, Twitter, Instagram, Facebook, Threads | 3-5 min |
-| `/cf:publish` | Push to Webflow/WordPress or export HTML | 2-3 min |
+| `/contentforge:social-adapt` | Article → LinkedIn, Twitter, Instagram, Facebook, Threads | 3-5 min |
+| `/contentforge:publish` | Push to Webflow/WordPress or export HTML | 2-3 min |
 
 ### Content Optimization
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/cf:variants` | Generate 3-10 headline/hook/CTA variations | 2-3 min |
-| `/cf:analytics` | Quality trends, timing, brand performance | 1-2 min |
+| `/contentforge:variants` | Generate 3-10 headline/hook/CTA variations | 2-3 min |
+| `/contentforge:analytics` | Quality trends, timing, brand performance | 1-2 min |
 
 ### Multilingual & Video
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/cf:translate` | Translate preserving brand voice | 5-10 min |
-| `/cf:video-script` | Generate timestamped video scripts | 3-5 min |
+| `/contentforge:translate` | Translate preserving brand voice | 5-10 min |
+| `/contentforge:video-script` | Generate timestamped video scripts | 3-5 min |
 
 ### Content Management
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/cf:brief` | Research-backed content brief | 5-8 min |
-| `/cf:audit` | Content freshness/decay/gap analysis | 3-5 min |
-| `/cf:calendar` | Production scheduling + Google Calendar sync | 2-3 min |
-| `/cf:style-guide` | Import brand voice, generate profile JSON | 5-10 min |
-| `/cf:template` | Create custom content type templates | 3-5 min |
+| `/contentforge:brief` | Research-backed content brief | 5-8 min |
+| `/contentforge:audit` | Content freshness/decay/gap analysis | 3-5 min |
+| `/contentforge:calendar` | Production scheduling + Google Calendar sync | 2-3 min |
+| `/contentforge:style-guide` | Import brand voice, generate profile JSON | 5-10 min |
+| `/contentforge:template` | Create custom content type templates | 3-5 min |
 
 ### Connector Management
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/cf:integrations` | Dashboard of connected/available connectors | Instant |
-| `/cf:connect <name>` | Guided setup for any connector | 2-10 min |
+| `/contentforge:integrations` | Dashboard of connected/available connectors | Instant |
+| `/contentforge:connect <name>` | Guided setup for any connector | 2-10 min |
 
 ---
 
@@ -1216,17 +1216,17 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 ### Step 1: Brand Setup (One-Time, 10 min)
 ```
-/cf:style-guide
+/contentforge:style-guide
 ```
 Provide AcmeMed's brand guidelines. ContentForge generates the profile.
 
 ### Step 2: Content Briefs (10 min)
 ```
-/cf:brief "AI diagnostics in healthcare 2026"
-/cf:brief "patient data privacy regulations 2026"
-/cf:brief "telemedicine ROI for hospitals"
-/cf:brief "healthcare AI implementation roadmap"
-/cf:brief "clinical trial automation with AI"
+/contentforge:brief "AI diagnostics in healthcare 2026"
+/contentforge:brief "patient data privacy regulations 2026"
+/contentforge:brief "telemedicine ROI for hospitals"
+/contentforge:brief "healthcare AI implementation roadmap"
+/contentforge:brief "clinical trial automation with AI"
 ```
 
 ### Step 3: Set Up Requirements Sheet (5 min)
@@ -1243,17 +1243,17 @@ All 5 articles scored ≥7.0 → APPROVED.
 
 ### Step 6: Social Adaptation (15 min)
 ```
-/cf:social-adapt --source="all 5 articles" --platforms=linkedin,twitter
+/contentforge:social-adapt --source="all 5 articles" --platforms=linkedin,twitter
 ```
 
 ### Step 7: Publish (5 min)
 ```
-/cf:publish --platform=webflow
+/contentforge:publish --platform=webflow
 ```
 
 ### Step 8: Track (Ongoing)
 ```
-/cf:analytics
+/contentforge:analytics
 ```
 
 **Total time:** ~2 hours for 5 publication-ready articles + social posts + CMS publishing.

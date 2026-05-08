@@ -11,7 +11,7 @@
 3. **Detect Trends** — Linear regression on quality scores over rolling time windows
 4. **Identify Outliers** — Flag data points beyond configurable standard deviation thresholds
 5. **Generate Recommendations** — Translate metric patterns into specific improvement actions
-6. **Format Dashboard** — Render ASCII analytics display for `/cf:analytics` skill
+6. **Format Dashboard** — Render ASCII analytics display for `/contentforge:analytics` skill
 
 ---
 
@@ -517,12 +517,12 @@ where readability is high priority (blogs, FAQs).
 
 ## Usage
 
-### Called by `/cf:analytics` Skill
+### Called by `/contentforge:analytics` Skill
 
-The analytics tracker is the computation engine behind the `/cf:analytics` skill. The skill handles user interaction (parameter collection, mode selection), while this utility handles all data processing.
+The analytics tracker is the computation engine behind the `/contentforge:analytics` skill. The skill handles user interaction (parameter collection, mode selection), while this utility handles all data processing.
 
 ```python
-# Invocation flow inside /cf:analytics
+# Invocation flow inside /contentforge:analytics
 request = AnalyticsRequest(
     time_period=30,
     brand_filter='AcmeMed',

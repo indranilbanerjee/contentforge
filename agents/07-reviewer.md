@@ -275,21 +275,21 @@ If HUMAN REVIEW:
 
 | Tier | Score | Action |
 |------|-------|--------|
-| 1 | 9.0+ | PUBLISH + REPURPOSE + AMPLIFY — Run `/cf:social-adapt`, `/cf:video-script`, queue for translation, record to analytics |
+| 1 | 9.0+ | PUBLISH + REPURPOSE + AMPLIFY — Run `/contentforge:social-adapt`, `/contentforge:video-script`, queue for translation, record to analytics |
 | 2 | 7.0-8.9 | PUBLISH + SELECTIVE REPURPOSE — Address optional improvements if time permits, standard format outputs |
-| 3 | 5.0-6.9 | LOOP + TARGETED FIX — Loop to weakest phase with specific feedback. Consider if brief (`/cf:brief`) or brand profile (`/cf:style-guide`) needs work |
-| 4 | <5.0 | HUMAN REVIEW + ROOT CAUSE ANALYSIS — Escalate, investigate topic complexity / source quality / brand profile completeness. Run `/cf:audit` |
+| 3 | 5.0-6.9 | LOOP + TARGETED FIX — Loop to weakest phase with specific feedback. Consider if brief (`/contentforge:brief`) or brand profile (`/contentforge:style-guide`) needs work |
+| 4 | <5.0 | HUMAN REVIEW + ROOT CAUSE ANALYSIS — Escalate, investigate topic complexity / source quality / brand profile completeness. Run `/contentforge:audit` |
 
 **Cross-Skill Suggestions (based on content characteristics):**
 
 | Content Signal | Suggested Skill | Rationale |
 |---------------|----------------|-----------|
-| High citation count (15+) | `/cf:brief` for related topics | Research depth suggests expertise area |
-| Strong GEO score (8+) | `/cf:social-adapt` | AI-friendly content performs well on social |
-| Multiple data points | `/cf:variants` | Data-rich content produces strong A/B variants |
-| Evergreen topic | `/cf:calendar` | Schedule regular refresh cycles |
-| Regulated industry | `/cf:audit` | Queue for compliance re-review in 6 months |
-| Multi-language brand | `/cf:translate` | High-scoring content is worth translating first |
+| High citation count (15+) | `/contentforge:brief` for related topics | Research depth suggests expertise area |
+| Strong GEO score (8+) | `/contentforge:social-adapt` | AI-friendly content performs well on social |
+| Multiple data points | `/contentforge:variants` | Data-rich content produces strong A/B variants |
+| Evergreen topic | `/contentforge:calendar` | Schedule regular refresh cycles |
+| Regulated industry | `/contentforge:audit` | Queue for compliance re-review in 6 months |
+| Multi-language brand | `/contentforge:translate` | High-scoring content is worth translating first |
 
 ### Step 9: Record Phase Timing
 
@@ -370,7 +370,7 @@ Loop history JSON + current counts vs limits + status
 
 - **Missing phase reports:** Score affected dimensions conservatively (cap at 6.0) and note which report was missing
 - **Contradictory phase reports:** Flag the contradiction, use the more conservative assessment, recommend human review
-- **Brand profile incomplete:** Score Brand Compliance with available data, note gaps, recommend `/cf:brand-setup` update
+- **Brand profile incomplete:** Score Brand Compliance with available data, note gaps, recommend `/contentforge:brand-setup` update
 - **Config file missing:** Use default weights and thresholds, note "Using defaults — config/scoring-thresholds.json not found"
 
 ---

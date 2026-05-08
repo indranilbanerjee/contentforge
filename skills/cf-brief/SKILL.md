@@ -11,7 +11,7 @@ Generate a comprehensive, research-backed content brief from a keyword or topic.
 
 ## When to Use
 
-Use `/cf:brief` when:
+Use `/contentforge:brief` when:
 - You need a **structured content brief** before starting production with `/contentforge`
 - You want **data-driven keyword research** to inform topic selection
 - You need to **analyze competitor content** to find gaps and differentiation angles
@@ -20,7 +20,7 @@ Use `/cf:brief` when:
 - You want to understand **search intent** before committing to a content type
 
 **For direct content production** (brief + draft in one step), use `/contentforge` instead.
-**For multiple briefs in parallel**, run `/cf:brief` for each topic individually (batch brief support planned for v2.2).
+**For multiple briefs in parallel**, run `/contentforge:brief` for each topic individually (batch brief support planned for v2.2).
 
 ## What This Command Does
 
@@ -48,7 +48,7 @@ Use `/cf:brief` when:
 
 ### Interactive Mode (Recommended)
 ```
-/cf:brief
+/contentforge:brief
 ```
 **Prompts you for:**
 1. Keyword or topic
@@ -59,17 +59,17 @@ Use `/cf:brief` when:
 
 ### Quick Mode (All Parameters)
 ```
-/cf:brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
+/contentforge:brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
 ```
 
 ### With Competitor URLs
 ```
-/cf:brief "best CRM for startups" --audience="Startup founders" --competitors="https://example1.com/crm-guide,https://example2.com/best-crm" --goal=conversions
+/contentforge:brief "best CRM for startups" --audience="Startup founders" --competitors="https://example1.com/crm-guide,https://example2.com/best-crm" --goal=conversions
 ```
 
 ### With Brand Context
 ```
-/cf:brief "cloud security best practices" --audience="IT Directors" --brand=AcmeTech --type=whitepaper
+/contentforge:brief "cloud security best practices" --audience="IT Directors" --brand=AcmeTech --type=whitepaper
 ```
 
 ## What Happens
@@ -524,7 +524,7 @@ Brief saved to:
 
 ### Step 1: Generate Brief
 ```
-/cf:brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
+/contentforge:brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
 ```
 
 ### Step 2: Review and Approve Brief
@@ -590,8 +590,8 @@ Results are directionally accurate but less precise. The brief clearly labels es
 
 - **[/contentforge](../contentforge/SKILL.md)** — Produce content from a brief (accepts `--brief` parameter)
 - **[/batch-process](../batch-process/SKILL.md)** — Process multiple briefs into content in parallel
-- **[/cf:audit](../cf-audit/SKILL.md)** — Audit existing content to identify topics needing new briefs
-- **[/cf:calendar](../cf-calendar/SKILL.md)** — Schedule brief-to-production timelines
+- **[/contentforge:audit](../cf-audit/SKILL.md)** — Audit existing content to identify topics needing new briefs
+- **[/contentforge:calendar](../cf-calendar/SKILL.md)** — Schedule brief-to-production timelines
 - **[/content-refresh](../content-refresh/SKILL.md)** — Update existing content (generates refresh brief automatically)
 
 ---

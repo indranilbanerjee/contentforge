@@ -15,13 +15,13 @@ argument-hint: "<brand name> [--source=url|document|manual]"
 2. **Voice/tone** — Pick one: authoritative, conversational, technical, witty, warm, educational
 3. **Industry** — Pick one: pharma, bfsi, healthcare, legal, technology, b2b_saas, ecommerce, consumer_goods, real_estate, education
 
-That's it. Run `/cf:style-guide` and answer these 3 questions. ContentForge creates a working brand profile in under 5 minutes.
+That's it. Run `/contentforge:style-guide` and answer these 3 questions. ContentForge creates a working brand profile in under 5 minutes.
 
 **You can always add more later:**
-- Terminology and banned words → `/cf:style-guide --update [brand]`
+- Terminology and banned words → `/contentforge:style-guide --update [brand]`
 - Compliance guardrails → same command
 - Audience personas, competitors, content pillars, visual identity → same command
-- Tracking backend (Google Sheets / Airtable / Local) → `/cf:switch-backend`
+- Tracking backend (Google Sheets / Airtable / Local) → `/contentforge:switch-backend`
 
 **Don't let setup slow you down.** A minimal brand profile works. You'll get better results as you add detail over time.
 
@@ -130,7 +130,7 @@ Present the user with three options:
 > 3. **Local** (No setup required)
 >    Tracks in local JSON, delivers .docx to local filesystem. No auth needed.
 >
-> You can switch backends anytime with `/cf:switch-backend`.
+> You can switch backends anytime with `/contentforge:switch-backend`.
 
 ---
 
@@ -529,14 +529,14 @@ When the user chooses to **review and update** existing key files:
    }
    ```
 
-Data stored at `~/.claude-marketing/{brand}/tracking/`. Good for getting started — switch to Google or Airtable anytime with `/cf:switch-backend`.
+Data stored at `~/.claude-marketing/{brand}/tracking/`. Good for getting started — switch to Google or Airtable anytime with `/contentforge:switch-backend`.
 
 ---
 
 ### If user skips backend selection
 
 Default to `"local"` with a note:
-> "Defaulted to local tracking. You can switch to Google Sheets or Airtable anytime by running `/cf:switch-backend`."
+> "Defaulted to local tracking. You can switch to Google Sheets or Airtable anytime by running `/contentforge:switch-backend`."
 
 ---
 
@@ -564,5 +564,5 @@ Ask: "Brand profile for [name] is ready. Would you like to:
 - Import additional guidelines from another source?
 - Create a test piece to validate the voice settings?
 - Update brand knowledge files? (re-run Step F to regenerate or refresh)
-- Switch tracking backend? (`/cf:switch-backend`)
+- Switch tracking backend? (`/contentforge:switch-backend`)
 - Check which connectors are active? (`/integrations`)"

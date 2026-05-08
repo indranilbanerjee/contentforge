@@ -29,27 +29,27 @@ Upgrading from v2.1.0 to v3.0.0. No breaking changes.
 ## New Skills
 
 ### Connector Discovery
-- `/cf:integrations` — See which connectors are active and what they unlock
-- `/cf:connect <name>` — Guided setup for any of 22 supported connectors
+- `/contentforge:integrations` — See which connectors are active and what they unlock
+- `/contentforge:connect <name>` — Guided setup for any of 22 supported connectors
 
 ### Publishing & Social
-- `/cf:social-adapt` — Transform articles into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
-- `/cf:publish` — Push content to Webflow/WordPress via MCP, or export as HTML
+- `/contentforge:social-adapt` — Transform articles into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
+- `/contentforge:publish` — Push content to Webflow/WordPress via MCP, or export as HTML
 
 ### Content Optimization
-- `/cf:variants` — Generate 3-10 A/B variations of headlines, hooks, CTAs
-- `/cf:analytics` — Quality score trends, timing breakdown, brand performance
+- `/contentforge:variants` — Generate 3-10 A/B variations of headlines, hooks, CTAs
+- `/contentforge:analytics` — Quality score trends, timing breakdown, brand performance
 
 ### Multilingual & Video
-- `/cf:translate` — Translate preserving brand voice, 15+ languages, 3 localization levels
-- `/cf:video-script` — Timestamped scripts for YouTube, TikTok, Instagram Reels
+- `/contentforge:translate` — Translate preserving brand voice, 15+ languages, 3 localization levels
+- `/contentforge:video-script` — Timestamped scripts for YouTube, TikTok, Instagram Reels
 
 ### Content Management
-- `/cf:brief` — Research-backed content brief with keyword analysis and outline
-- `/cf:audit` — Content freshness scoring, decay detection, gap analysis
-- `/cf:calendar` — Production scheduling with deadline tracking
-- `/cf:style-guide` — Import brand voice, generate brand profile JSON
-- `/cf:template` — Create custom content type templates
+- `/contentforge:brief` — Research-backed content brief with keyword analysis and outline
+- `/contentforge:audit` — Content freshness scoring, decay detection, gap analysis
+- `/contentforge:calendar` — Production scheduling with deadline tracking
+- `/contentforge:style-guide` — Import brand voice, generate brand profile JSON
+- `/contentforge:template` — Create custom content type templates
 
 ---
 
@@ -77,7 +77,7 @@ New Step 7: AI Overview Optimization — structures content for Google AI Overvi
 v3.0.0 introduces a `scripts/` directory with Python utilities:
 
 - **`setup.py`** — Runs automatically on session start via hooks. Validates Python version, reports paths, checks .mcp.json
-- **`connector-status.py`** — Registry of 22 connectors across 12 categories. Powers `/cf:integrations` and `/cf:connect`
+- **`connector-status.py`** — Registry of 22 connectors across 12 categories. Powers `/contentforge:integrations` and `/contentforge:connect`
 
 **Requirements:** Python 3.8+ (available in Cowork VM as Python 3.10)
 
@@ -88,21 +88,21 @@ v3.0.0 introduces a `scripts/` directory with Python utilities:
 After upgrading, verify everything works:
 
 1. **Session startup** — Should show setup.py output + v3.0 banner
-2. `/cf:integrations` — Should show 6 connected HTTP connectors
+2. `/contentforge:integrations` — Should show 6 connected HTTP connectors
 3. `/contentforge` — Existing pipeline should work unchanged
-4. `/cf:social-adapt [article]` — Should generate social posts
-5. `/cf:brief "AI tools"` — Should generate content brief
+4. `/contentforge:social-adapt [article]` — Should generate social posts
+5. `/contentforge:brief "AI tools"` — Should generate content brief
 
 ---
 
 ## Recommended Adoption Path
 
-1. **Start with** `/cf:integrations` — understand your connector status
-2. **Try** `/cf:social-adapt` — immediate value from existing content
-3. **Try** `/cf:brief` — better briefs lead to better content
-4. **Explore** `/cf:publish` — if you have Webflow/WordPress connectors
-5. **Set up** `/cf:analytics` — start tracking quality trends
-6. **When ready** — `/cf:translate`, `/cf:video-script`, `/cf:calendar`
+1. **Start with** `/contentforge:integrations` — understand your connector status
+2. **Try** `/contentforge:social-adapt` — immediate value from existing content
+3. **Try** `/contentforge:brief` — better briefs lead to better content
+4. **Explore** `/contentforge:publish` — if you have Webflow/WordPress connectors
+5. **Set up** `/contentforge:analytics` — start tracking quality trends
+6. **When ready** — `/contentforge:translate`, `/contentforge:video-script`, `/contentforge:calendar`
 
 ---
 

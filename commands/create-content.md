@@ -64,7 +64,7 @@ For regulated industries (pharma, BFSI, healthcare, legal), guardrails are REQUI
 
 Options:
   1. Continue anyway (defaults applied where possible)
-  2. Fix brand profile first (/cf:style-guide --update [brand])
+  2. Fix brand profile first (/contentforge:style-guide --update [brand])
 ```
 
 4. **Wait for user response.** Do not auto-proceed with incomplete profiles for regulated industries.

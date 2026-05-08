@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.9.3] - 2026-05-09
+
+### Fixed — Slash Command Namespace Consistency Across All Docs and Runtime Files
+
+Claude Code auto-namespaces plugin commands as `/<plugin-name>:<command>` based on the plugin's `name` field. ContentForge's docs and runtime files (agents, skills, commands, README, USER-GUIDE, CONNECTORS, TESTING-GUIDE, UPGRADE-GUIDE, CHANGELOG) were inconsistently using the shorter `/cf:` prefix in some places, which is not the documented Claude Code form. This release sweeps every reference to use the canonical `/contentforge:` prefix so users can copy-paste any command from any doc and have it work.
+
+#### Changes
+
+- **All `/cf:` references replaced with `/contentforge:`** across every `*.md` and `*.json` file in the plugin (~300 references across ~30 files including README, USER-GUIDE, TESTING-GUIDE, UPGRADE-GUIDE, CONNECTORS, CHANGELOG, all agent files, all skill SKILL.md files, all command files, eval JSON files, and config files).
+- **Skill filenames preserved** — skill names like `cf-help`, `cf-style-guide`, `cf-publish` are unchanged because those are skill identifiers (used by the Skill tool), not slash command names. They appear in slash form as `/contentforge:cf-help` etc.
+
+#### Why this matters at runtime
+
+The replacements include AGENT files (e.g. `agents/07-reviewer.md`) which emit slash command recommendations to Claude during pipeline execution. Before this release, agents were telling Claude to invoke `/cf:audit` etc., which may not have actually fired the right command depending on Claude Code's namespace strictness. After this release, agents emit the canonical `/contentforge:audit` form that's guaranteed to work per the documented spec.
+
+### Migration
+
+No behavioral changes. If you've memorized `/cf:` shortcuts and they work in your environment, you can keep using them. New team members reading docs will see and learn the canonical form.
+
+---
+
 ## [3.9.2] - 2026-05-03
 
 ### Fixed — Plugin Manifest Install Format (CRITICAL)
@@ -228,7 +249,7 @@ All 8 oversized agents compressed by removing verbose examples and redundant tex
 
 #### User Guidance Overhaul
 
-- **SessionStart hook** — Redesigned welcome message with numbered Quick Start (1. brand setup, 2. create content, 3. help). Explicitly tells first-time users to set up brand first. Shows `/cf:help` link.
+- **SessionStart hook** — Redesigned welcome message with numbered Quick Start (1. brand setup, 2. create content, 3. help). Explicitly tells first-time users to set up brand first. Shows `/contentforge:help` link.
 - **brand-setup.md** — New "Quick Start (5 minutes)" section at top: 3 questions only (name, tone, industry). Detailed setup moved to "Full Setup (When You're Ready for More)" section below. Reduces first-time setup anxiety.
 - **Troubleshooting expanded** — 6 detailed error explanations with When/Fix/Common Causes structure. New pipeline phase timing table showing all 11 phases with duration and what user sees at each step.
 
@@ -400,7 +421,7 @@ The content production pipeline was skipping title selection — when a user pro
 - **Backend Migration** — Switch between backends anytime with data + file migration
   - `scripts/backend-migrator.py` — 2 actions: migrate (6 direction pairs), status
   - Migration is additive (source data never deleted), idempotent, resumable
-  - `/cf:switch-backend` skill — Guided backend switching with validation and optional data migration
+  - `/contentforge:switch-backend` skill — Guided backend switching with validation and optional data migration
 - **Brand Setup Step G: Tracking & Delivery Backend** — Users choose their backend during brand setup
   - Three options: Google Sheets + Drive (recommended for Google Workspace), Airtable (recommended for simplicity), Local (no setup required)
   - Local is default only if user explicitly skips — not silently assigned
@@ -417,9 +438,9 @@ The content production pipeline was skipping title selection — when a user pro
 
 **Pipeline timing** is automatic: Phase 1 initializes the pipeline run file, each phase records start/end timestamps, and Phase 8 retrieves the timing report for the completion summary. The timing table shows actual wall-clock time, benchmark comparison, pass/fail status, and iteration count per phase.
 
-**Backend selection** happens during brand setup (Step G of `/cf:style-guide`). Users choose between Google Sheets + Drive, Airtable, or Local. The choice is stored in the brand profile's `tracking.backend` field. All agents dispatch to the configured backend automatically.
+**Backend selection** happens during brand setup (Step G of `/contentforge:style-guide`). Users choose between Google Sheets + Drive, Airtable, or Local. The choice is stored in the brand profile's `tracking.backend` field. All agents dispatch to the configured backend automatically.
 
-**Backend migration** via `/cf:switch-backend` validates the target backend, offers to migrate existing records and files, updates the brand profile, and confirms the switch. Source data is never deleted.
+**Backend migration** via `/contentforge:switch-backend` validates the target backend, offers to migrate existing records and files, updates the brand profile, and confirms the switch. Source data is never deleted.
 
 ### Technical Specifications
 
@@ -439,15 +460,15 @@ The content production pipeline was skipping title selection — when a user pro
 ### Added — Skill Platform Enhancements
 
 - **`argument-hint`** added to all 16 user-invocable skills — provides autocomplete hints in the Skills UI (e.g., `"topic" --type=article --brand=name`, `[--pipeline | --skills | --examples]`)
-- **`disable-model-invocation: true`** added to `/cf:publish` — prevents Claude from auto-triggering the publish skill; user must explicitly invoke it
+- **`disable-model-invocation: true`** added to `/contentforge:publish` — prevents Claude from auto-triggering the publish skill; user must explicitly invoke it
 - **`evals/evals.json`** added to 3 key skills (contentforge, cf-brief, cf-style-guide) — structured test cases with prompts, expected outputs, and quantitative/qualitative assertions for quality benchmarking
 - **`name` field** added to `cf-help` skill frontmatter (was missing, could cause registration failure)
 
 ### How it works
 
-**Argument hints** appear as placeholder text in the Skills UI, showing what arguments each skill accepts. For example, `/contentforge` shows `"topic" --type=article --brand=name` and `/cf:brief` shows `"topic or keyword" [--depth=deep]`.
+**Argument hints** appear as placeholder text in the Skills UI, showing what arguments each skill accepts. For example, `/contentforge` shows `"topic" --type=article --brand=name` and `/contentforge:brief` shows `"topic or keyword" [--depth=deep]`.
 
-**Execution safety** on `/cf:publish` ensures content cannot be published to external platforms without the user explicitly invoking the command. This complements the existing MCP write approval hook.
+**Execution safety** on `/contentforge:publish` ensures content cannot be published to external platforms without the user explicitly invoking the command. This complements the existing MCP write approval hook.
 
 **Evals** provide reproducible test cases for key skills. Each eval includes a realistic prompt, expected output description, and assertions (quantitative/qualitative). Located at `skills/{skill-name}/evals/evals.json`.
 
@@ -540,8 +561,8 @@ Google Sheets has NO HTTP MCP endpoint. Google Drive has NO HTTP MCP endpoint (o
   - `translate` — Translate content into 15+ languages while preserving brand voice and citations
   - `brand-setup` — Configure brand voice, terminology, compliance guardrails, and style guide
   - `audit-content` — Audit content library for freshness decay and coverage gaps
-- **New `/cf:help` skill** — Pipeline overview, all skills, brand setup methods, examples, and troubleshooting
-- **New `/cf:add-integration` skill** — Natural language guide for custom connector setup
+- **New `/contentforge:help` skill** — Pipeline overview, all skills, brand setup methods, examples, and troubleshooting
+- **New `/contentforge:add-integration` skill** — Natural language guide for custom connector setup
 
 ### Fixed
 
@@ -563,22 +584,22 @@ Google Sheets has NO HTTP MCP endpoint. Google Drive has NO HTTP MCP endpoint (o
 #### Tier A: Promised Features (Delivered)
 
 **Publishing & Social Adaptation:**
-- **`/cf:social-adapt` skill** — Transform articles into platform-specific posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads with character limits, hashtags, image specs, and posting times
-- **`/cf:publish` skill** — Push content to Webflow and WordPress via MCP. Preview before publish. Fallback: HTML export for manual upload
+- **`/contentforge:social-adapt` skill** — Transform articles into platform-specific posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads with character limits, hashtags, image specs, and posting times
+- **`/contentforge:publish` skill** — Push content to Webflow and WordPress via MCP. Preview before publish. Fallback: HTML export for manual upload
 - **Social Adapter Agent** (Agent 10) — Post-pipeline agent that extracts 10-15 shareworthy moments, applies platform constraints, generates hooks and hashtag strategies
 - **`config/social-platform-specs.json`** — Platform constraints (char limits, hashtag counts, voice, format, image specs, best times)
 - **`templates/social-post-templates.md`** — 5 post frameworks (Announcement, Data-Driven, How-To, Quote, Story) with platform variations
 - **`utilities/cms-publisher.md`** — CMS publishing spec: connector check → formatting → API call → verification → tracking
 
 **Content Optimization:**
-- **`/cf:variants` skill** — Generate 3-10 A/B variations of headlines, hooks, CTAs with composite scoring across clarity, emotional appeal, specificity, curiosity, keywords, and brand voice
-- **`/cf:analytics` skill** — Track quality scores over time, pipeline timing, brand patterns. Load from Google Sheets or local CSV
+- **`/contentforge:variants` skill** — Generate 3-10 A/B variations of headlines, hooks, CTAs with composite scoring across clarity, emotional appeal, specificity, curiosity, keywords, and brand voice
+- **`/contentforge:analytics` skill** — Track quality scores over time, pipeline timing, brand patterns. Load from Google Sheets or local CSV
 - **`config/analytics-config.json`** — Thresholds, timing benchmarks, alert rules, trend analysis settings
 - **`utilities/analytics-tracker.md`** — Production data analysis spec: aggregation → trend analysis → outlier detection → recommendations
 
 **Multilingual & Video:**
-- **`/cf:translate` skill** — Translate content preserving brand voice across 15+ languages with 3 localization levels (literal, adapted, transcreated). Separates translatable text from immutable elements
-- **`/cf:video-script` skill** — Video scripts for YouTube, TikTok, Instagram Reels, explainers. 30s to 10min. Includes hooks, scene descriptions, B-roll, timestamps
+- **`/contentforge:translate` skill** — Translate content preserving brand voice across 15+ languages with 3 localization levels (literal, adapted, transcreated). Separates translatable text from immutable elements
+- **`/contentforge:video-script` skill** — Video scripts for YouTube, TikTok, Instagram Reels, explainers. 30s to 10min. Includes hooks, scene descriptions, B-roll, timestamps
 - **Translator Agent** (Agent 11) — Post-pipeline agent: element classification → translation → brand voice mapping → SEO adaptation → quality check
 - **`config/multilingual-patterns.json`** — 15+ languages with brand voice mapping, cultural adaptations, SEO considerations, readability benchmarks
 - **`templates/content-types/video-script-structure.md`** — Scene format with timestamps, dialogue, B-roll, music notes, platform-specific adaptations
@@ -588,16 +609,16 @@ Google Sheets has NO HTTP MCP endpoint. Google Drive has NO HTTP MCP endpoint (o
 
 - **`scripts/connector-status.py`** — 12-category connector registry with 22 connectors. CLI: `--action status|list-available|check|setup-guide`. JSON output
 - **`scripts/setup.py`** — Session startup validation: Python 3.8+ check, PLUGIN_ROOT/SCRIPTS_DIR paths, .mcp.json validation, connector count
-- **`/cf:integrations` skill** — Integration dashboard showing connected vs. available by category, quick wins, coverage summary
-- **`/cf:connect` skill** — Guided setup: HTTP = OAuth flow, npx = env vars + credential steps. Fuzzy name matching
+- **`/contentforge:integrations` skill** — Integration dashboard showing connected vs. available by category, quick wins, coverage summary
+- **`/contentforge:connect` skill** — Guided setup: HTTP = OAuth flow, npx = env vars + credential steps. Fuzzy name matching
 
 #### Tier C: New Capabilities
 
-- **`/cf:brief` skill** — Generate content brief from keyword/topic with keyword research, competitor analysis, search intent, audience pain points, recommended outline, SEO strategy
-- **`/cf:audit` skill** — Audit content library for decay/gaps. Freshness scoring (0-100), coverage gap analysis, top 10 refresh candidates
-- **`/cf:calendar` skill** — Content calendar planning. Work backward from publish dates, deadline conflict detection, Google Calendar sync via MCP
-- **`/cf:style-guide` skill** — Import brand voice from documents/URLs, extract tone/formality/personality/terminology/guardrails, generate brand profile JSON
-- **`/cf:template` skill** — Create custom content type templates with structure, quality standards, word count, readability target, citation minimum
+- **`/contentforge:brief` skill** — Generate content brief from keyword/topic with keyword research, competitor analysis, search intent, audience pain points, recommended outline, SEO strategy
+- **`/contentforge:audit` skill** — Audit content library for decay/gaps. Freshness scoring (0-100), coverage gap analysis, top 10 refresh candidates
+- **`/contentforge:calendar` skill** — Content calendar planning. Work backward from publish dates, deadline conflict detection, Google Calendar sync via MCP
+- **`/contentforge:style-guide` skill** — Import brand voice from documents/URLs, extract tone/formality/personality/terminology/guardrails, generate brand profile JSON
+- **`/contentforge:template` skill** — Create custom content type templates with structure, quality standards, word count, readability target, citation minimum
 - **`templates/content-brief-template.md`** — Brief output template with keyword research, competitor analysis, search intent sections
 - **`utilities/pipeline-optimizer.md`** — Audit analysis spec: freshness scoring → gap detection → recommendation ranking
 
@@ -643,7 +664,7 @@ Google Sheets has NO HTTP MCP endpoint. Google Drive has NO HTTP MCP endpoint (o
 2. New skills are additive — use when ready
 3. `scripts/` directory is new — `setup.py` runs automatically via hooks
 4. Updated `config/humanization-patterns.json` adds new sections without changing existing patterns
-5. Start with `/cf:integrations` to discover your connector status
+5. Start with `/contentforge:integrations` to discover your connector status
 
 ---
 
@@ -1055,7 +1076,7 @@ This patch release resolves the core installation and management issues reported
 - **3.4.0** (2026-03-04) — 10 industry knowledge packs, SME calibration, domain-specific validation, brand-setup key file generation, Figma connector
 - **3.3.0** (2026-03-03) — Google Sheets tracking + Google Drive delivery via Python scripts with service account
 - **3.2.0** (2026-03-03) — Visual Asset Annotator (Phase 3.5), structured internal linking, 10-phase pipeline
-- **3.1.0** (2026-02-26) — 7 commands, /cf:help, /cf:add-integration, version consistency
+- **3.1.0** (2026-02-26) — 7 commands, /contentforge:help, /contentforge:add-integration, version consistency
 - **3.0.0** (2026-02-25) — Complete modernization: 14 new skills, 2 new agents, 4 agent upgrades, connector infrastructure
 - **2.1.0** (2026-02-25) — HTTP connector architecture, kebab-case agent names
 - **2.0.2** (2026-02-24) — Agent frontmatter, Output Manager MCP fixes

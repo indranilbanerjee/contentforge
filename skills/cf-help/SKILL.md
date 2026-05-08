@@ -5,7 +5,7 @@ argument-hint: "[--pipeline | --skills | --examples]"
 effort: low
 ---
 
-# /cf:help
+# /contentforge:help
 
 Show the ContentForge user guide with setup instructions, pipeline overview, available skills, usage examples, and troubleshooting.
 
@@ -27,10 +27,10 @@ Connectors: 9 HTTP + 19 npx integrations (incl. image generation)
 Tracking: 3 backends (Google Sheets + Drive, Airtable, Local)
 
 Getting Started:
-  1. /cf:style-guide         — Create your brand profile (start here)
-  2. /cf:integrations         — See which connectors are active
+  1. /contentforge:style-guide         — Create your brand profile (start here)
+  2. /contentforge:integrations         — See which connectors are active
   3. /contentforge            — Run the full 10-phase content pipeline
-  4. /cf:help --examples      — See example prompts and workflows
+  4. /contentforge:help --examples      — See example prompts and workflows
 ```
 
 ### 2. Arguments
@@ -43,7 +43,7 @@ Getting Started:
 | `--brand` | Explain brand profile setup methods |
 | `--examples` | Show example workflows from brief to publish |
 | `--troubleshoot` | Show common issues and solutions |
-| `--connectors` | Show connector status (shortcut for /cf:integrations) |
+| `--connectors` | Show connector status (shortcut for /contentforge:integrations) |
 
 ### 3. Pipeline Overview
 
@@ -110,22 +110,22 @@ When `--skills` is specified, list all 19 skills:
 | `/contentforge` | Run the full 10-phase content production pipeline |
 | `/batch-process` | Process 10-50+ pieces in parallel from Google Sheets |
 | `/content-refresh` | Update existing content with fresh data and sources |
-| `/cf:style-guide` | Create or update a brand profile interactively |
-| `/cf:integrations` | See which connectors are active and available |
-| `/cf:connect <name>` | Step-by-step setup guide for any connector |
-| `/cf:add-integration` | Add a custom MCP connector for any API or service |
-| `/cf:publish` | Push content to Webflow/WordPress or export HTML |
-| `/cf:social-adapt` | Transform article into social posts (5 platforms) |
-| `/cf:variants` | Generate A/B test variations of headlines, hooks, CTAs |
-| `/cf:analytics` | Quality score trends, timing breakdown, brand performance |
-| `/cf:translate` | Translate preserving brand voice (15+ languages) |
-| `/cf:video-script` | Timestamped video scripts for YouTube, TikTok, Reels |
-| `/cf:brief` | Research-backed content brief with keyword analysis |
-| `/cf:audit` | Content freshness scoring, decay detection, gap analysis |
-| `/cf:calendar` | Production scheduling with deadline tracking |
-| `/cf:template` | Create custom content type templates |
-| `/cf:switch-backend` | Switch tracking backend (local/airtable/google) with migration |
-| `/cf:help` | This help guide |
+| `/contentforge:style-guide` | Create or update a brand profile interactively |
+| `/contentforge:integrations` | See which connectors are active and available |
+| `/contentforge:connect <name>` | Step-by-step setup guide for any connector |
+| `/contentforge:add-integration` | Add a custom MCP connector for any API or service |
+| `/contentforge:publish` | Push content to Webflow/WordPress or export HTML |
+| `/contentforge:social-adapt` | Transform article into social posts (5 platforms) |
+| `/contentforge:variants` | Generate A/B test variations of headlines, hooks, CTAs |
+| `/contentforge:analytics` | Quality score trends, timing breakdown, brand performance |
+| `/contentforge:translate` | Translate preserving brand voice (15+ languages) |
+| `/contentforge:video-script` | Timestamped video scripts for YouTube, TikTok, Reels |
+| `/contentforge:brief` | Research-backed content brief with keyword analysis |
+| `/contentforge:audit` | Content freshness scoring, decay detection, gap analysis |
+| `/contentforge:calendar` | Production scheduling with deadline tracking |
+| `/contentforge:template` | Create custom content type templates |
+| `/contentforge:switch-backend` | Switch tracking backend (local/airtable/google) with migration |
+| `/contentforge:help` | This help guide |
 
 ### 5. Brand Setup Quick Reference
 
@@ -135,7 +135,7 @@ When `--brand` is specified, explain the 3 setup methods:
 === BRAND PROFILE SETUP ===
 
 Method 1: Interactive (Recommended)
-  /cf:style-guide
+  /contentforge:style-guide
   → Answer questions about voice, terminology, industry, guardrails
   → Generates brand profile JSON automatically
 
@@ -159,7 +159,7 @@ Brand Profile Includes:
   - Tracking Backend (Google Sheets + Drive, Airtable, or Local)
 
 Profiles are cached (SHA256 hash) — 95% time savings on repeat runs.
-Switch backends anytime: /cf:switch-backend [airtable|google|local]
+Switch backends anytime: /contentforge:switch-backend [airtable|google|local]
 ```
 
 ### 6. Example Workflows
@@ -170,11 +170,11 @@ When `--examples` is specified, show practical end-to-end examples:
 === EXAMPLE: First Article ===
 
 Step 1: Create brand profile
-  /cf:style-guide
+  /contentforge:style-guide
   → Provide: Brand name, industry, voice, terminology, guardrails
 
 Step 2: Generate content brief (optional but recommended)
-  /cf:brief "AI-Powered Diagnostics in Healthcare"
+  /contentforge:brief "AI-Powered Diagnostics in Healthcare"
   → Gets: Keyword analysis, competitor review, recommended outline
 
 Step 3: Run the pipeline
@@ -191,15 +191,15 @@ Step 3: Run the pipeline
   → Pipeline runs with confirmed title → 20-30 min → Quality score 9.1/10
 
 Step 4: Publish
-  /cf:publish --platform=webflow
-  → Or: /cf:publish --export=html (for manual upload)
+  /contentforge:publish --platform=webflow
+  → Or: /contentforge:publish --export=html (for manual upload)
 
 Step 5: Create social posts
-  /cf:social-adapt
+  /contentforge:social-adapt
   → LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
 
 Step 6: Translate for global audience
-  /cf:translate --language=es --level=adapted
+  /contentforge:translate --language=es --level=adapted
   → Spanish version preserving brand voice
 
 
@@ -216,7 +216,7 @@ Step 2: Run batch
   → Processes 20 pieces in parallel (4-5x faster)
 
 Step 3: Review results
-  /cf:analytics --period=30
+  /contentforge:analytics --period=30
   → Quality trends, timing breakdown, brand performance
 ```
 
@@ -230,10 +230,10 @@ When showing the full help, include:
 Argument Hints (16 skills):
   All skills show autocomplete hints in the Skills UI.
   Example: /contentforge shows "topic" --type=article --brand=name
-  Example: /cf:brief shows "topic or keyword" [--depth=deep]
+  Example: /contentforge:brief shows "topic or keyword" [--depth=deep]
 
 Execution Safety:
-  /cf:publish requires explicit user invocation — Claude cannot
+  /contentforge:publish requires explicit user invocation — Claude cannot
   auto-trigger it. Prevents accidental publishing to Webflow/WordPress.
 
 Quality Evals (3 skills):
@@ -247,11 +247,11 @@ When `--troubleshoot` is specified, show common issues:
 
 | Issue | Solution |
 |-------|----------|
-| "Brand profile not found" | Run `/cf:style-guide` to create your brand profile |
+| "Brand profile not found" | Run `/contentforge:style-guide` to create your brand profile |
 | Quality score below 5.0 | Content flagged for human review — check topic complexity and source availability |
 | "Research timeout" | Check internet connection; ContentForge needs web access for Phase 1 research |
 | Google Drive not showing in connectors | Google Drive is a platform-level integration — check Claude Desktop → Settings → Integrations |
-| MCP connector not working | Run `/cf:integrations` to check status, `/cf:connect <name>` for setup |
+| MCP connector not working | Run `/contentforge:integrations` to check status, `/contentforge:connect <name>` for setup |
 | Pipeline taking too long | Normal: 20-30 min for articles. For faster: use `/batch-process` for parallel processing |
 | Humanizer removing too much | Adjust personality profile: `/contentforge --tone=conversational` for lighter touch |
 

@@ -66,7 +66,7 @@ Verify critical fields are populated: voice.tone, voice.formality, terminology.p
 Content will be drafted WITHOUT compliance enforcement.
 Phase 5 will report "zero violations" = zero CHECKS, not zero issues.
 For regulated industries, this is a critical gap.
-Recommend: Update brand profile with /cf:style-guide --update {brand}
+Recommend: Update brand profile with /contentforge:style-guide --update {brand}
 ```
 Log warning in pipeline metadata for Phase 7.
 

@@ -3,7 +3,7 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "/cf:style-guide Acme Corp — a B2B SaaS cybersecurity company targeting enterprise CISOs",
+      "prompt": "/contentforge:style-guide Acme Corp — a B2B SaaS cybersecurity company targeting enterprise CISOs",
       "expected_output": "A complete brand profile with voice guidelines, audience personas, content preferences, and guardrails configured at ~/.claude-marketing/brands/acme-corp/",
       "files": [],
       "assertions": [

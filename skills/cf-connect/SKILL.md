@@ -11,8 +11,8 @@ Set up a specific MCP integration for ContentForge with step-by-step instruction
 
 ## When to Use
 
-Use `/cf:connect <name>` when:
-- You want to connect a specific service (e.g., `/cf:connect wordpress`)
+Use `/contentforge:connect <name>` when:
+- You want to connect a specific service (e.g., `/contentforge:connect wordpress`)
 - A skill told you a connector is missing and suggested using this command
 - You're setting up a new ContentForge installation and configuring integrations
 - You need the exact environment variables and `.mcp.json` entry for an npx connector
@@ -40,25 +40,25 @@ Use `/cf:connect <name>` when:
 
 ### Basic Usage
 ```
-/cf:connect wordpress
+/contentforge:connect wordpress
 ```
 Shows step-by-step setup instructions for WordPress.
 
 ### Already Connected Connector
 ```
-/cf:connect notion
+/contentforge:connect notion
 ```
 If Notion is already configured, shows confirmation and which skills it enables.
 
 ### Unknown Connector Name
 ```
-/cf:connect wp
+/contentforge:connect wp
 ```
 Fuzzy matches to `wordpress` and shows setup guide.
 
 ### With Environment Override
 ```
-/cf:connect google-sheets --env=claude-code
+/contentforge:connect google-sheets --env=claude-code
 ```
 Forces Claude Code-specific instructions (relevant for npx connectors).
 
@@ -128,9 +128,9 @@ This returns:
   - /contentforge — content production pipeline
   - /batch-process — parallel content processing
   - /content-refresh — update existing content
-  - /cf:brief — data-driven content briefs
-  - /cf:audit — content quality audit
-  - /cf:style-guide — brand style guide management
+  - /contentforge:brief — data-driven content briefs
+  - /contentforge:audit — content quality audit
+  - /contentforge:style-guide — brand style guide management
 
   This connector is working. No action needed.
 
@@ -168,7 +168,7 @@ The 7 pre-configured HTTP connectors are the easiest to set up because they're a
 
   Step 2: Use a skill that needs Canva.
           Try: /contentforge (with image generation enabled)
-          Or:  /cf:social-adapt (for social media graphics)
+          Or:  /contentforge:social-adapt (for social media graphics)
 
   Step 3: Authorize when prompted.
           The first time a skill accesses Canva, the platform
@@ -185,7 +185,7 @@ The 7 pre-configured HTTP connectors are the easiest to set up because they're a
   -----------------------------------------------------------
   - /contentforge — generate featured images alongside content
   - /batch-process — auto-generate images for batch runs
-  - /cf:social-adapt — create platform-specific social graphics
+  - /contentforge:social-adapt — create platform-specific social graphics
 
   ENVIRONMENT:
   -----------------------------------------------------------
@@ -250,7 +250,7 @@ npx connectors require environment variables and a `.mcp.json` entry. They work 
           Restart Claude Code to pick up the new .mcp.json entry.
           Then test with:
 
-          /cf:integrations --category=cms
+          /contentforge:integrations --category=cms
 
           WordPress should appear as [connected].
 
@@ -274,7 +274,7 @@ npx connectors require environment variables and a `.mcp.json` entry. They work 
 
   SKILLS UNLOCKED:
   -----------------------------------------------------------
-  - /cf:publish — publish directly to WordPress from ContentForge
+  - /contentforge:publish — publish directly to WordPress from ContentForge
   - /contentforge — end-to-end pipeline with WordPress as publish target
   - /batch-process — auto-publish batch runs to WordPress
 
@@ -312,7 +312,7 @@ When a connector name is not found in the registry and no fuzzy match exists:
   - confluence (knowledge-base) — team wikis, brand guidelines
 
   Or browse all 22 available connectors:
-  /cf:integrations --show=available
+  /contentforge:integrations --show=available
 
   MANUAL CONFIGURATION:
   -----------------------------------------------------------
@@ -335,7 +335,7 @@ When a connector name is not found in the registry and no fuzzy match exists:
   }
 
   Note: Manually added connectors will work with Claude but
-  won't appear in /cf:integrations until added to the registry.
+  won't appear in /contentforge:integrations until added to the registry.
 
 -----------------------------------------------------------
 ```
@@ -359,7 +359,7 @@ After the user follows the setup steps for an npx connector, help them verify:
   Result: Configuration looks correct.
 
   Next step: Restart Claude Code and try:
-  /cf:publish --platform=wordpress --test
+  /contentforge:publish --platform=wordpress --test
 
   This will attempt a test connection to verify credentials
   are valid and the WordPress site is reachable.
@@ -425,7 +425,7 @@ The complete setup guide includes these sections:
 ### "Unknown connector" even though you typed the right name
 - Connector names use lowercase kebab-case: `google-sheets`, not `Google Sheets` or `googlesheets`
 - Try the fuzzy match: the skill checks common aliases automatically
-- Run `/cf:integrations --show=available` to see all valid connector names
+- Run `/contentforge:integrations --show=available` to see all valid connector names
 
 ### npx connector shows "connected" but skills still can't use it
 - Restart Claude Code after modifying `.mcp.json` — changes are read at startup only
@@ -439,7 +439,7 @@ The complete setup guide includes these sections:
 
 ### OAuth prompt never appears for HTTP connector
 - HTTP connectors authenticate only when a skill actively requests data from them
-- Try using a skill first (e.g., `/contentforge` for Notion, `/cf:social-adapt` for Canva)
+- Try using a skill first (e.g., `/contentforge` for Notion, `/contentforge:social-adapt` for Canva)
 - If the prompt still doesn't appear, check that `.mcp.json` contains the connector's URL
 
 ### "npx: command not found"
@@ -452,29 +452,29 @@ The complete setup guide includes these sections:
 - If you need this integration in Cowork, check if an HTTP alternative exists:
   - WordPress (npx) has no HTTP equivalent — Claude Code only
   - Google Sheets (npx) has no HTTP equivalent — Claude Code only
-  - Use `/cf:integrations` to see which connectors work in Cowork
+  - Use `/contentforge:integrations` to see which connectors work in Cowork
 
 ## Example Workflows
 
 ### Workflow 1: Set Up WordPress Publishing
 ```
-1. /cf:connect wordpress
+1. /contentforge:connect wordpress
    → Follow steps: get application password, set env vars, add to .mcp.json
 2. Restart Claude Code
-3. /cf:integrations --category=cms
+3. /contentforge:integrations --category=cms
    → Verify WordPress shows as [connected]
 4. /contentforge "Your Topic" --type=blog --brand=YourBrand
    → Produces content
-5. /cf:publish --platform=wordpress --status=draft
+5. /contentforge:publish --platform=wordpress --status=draft
    → Pushes to WordPress as draft
 ```
 
 ### Workflow 2: Add Google Sheets for Batch Processing
 ```
-1. /cf:connect google-sheets
+1. /contentforge:connect google-sheets
    → Follow steps: create service account, download credentials JSON, set env var
 2. Restart Claude Code
-3. /cf:integrations --category=spreadsheets
+3. /contentforge:integrations --category=spreadsheets
    → Verify Google Sheets shows as [connected]
 4. /batch-process https://docs.google.com/spreadsheets/d/ABC123
    → Reads requirements from sheet, processes in parallel
@@ -482,11 +482,11 @@ The complete setup guide includes these sections:
 
 ### Workflow 3: Connect SEO Tools for Data-Driven Briefs
 ```
-1. /cf:connect ahrefs
+1. /contentforge:connect ahrefs
    → HTTP connector, already in .mcp.json, just use it
-2. /cf:brief "AI in Healthcare 2026" --brand=AcmeMed
+2. /contentforge:brief "AI in Healthcare 2026" --brand=AcmeMed
    → Brief now includes real keyword volumes from Ahrefs
-3. /cf:connect semrush (optional, for additional data)
+3. /contentforge:connect semrush (optional, for additional data)
    → Follow npx setup steps
 ```
 
@@ -496,7 +496,7 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ## Related Skills
 
-- **[/cf:integrations](../cf-integrations/SKILL.md)** — Full integration status dashboard
+- **[/contentforge:integrations](../cf-integrations/SKILL.md)** — Full integration status dashboard
 - **[/contentforge](../contentforge/SKILL.md)** — Main content production pipeline
 - **[/batch-process](../batch-process/SKILL.md)** — Parallel content processing
 - **[/content-refresh](../content-refresh/SKILL.md)** — Update existing content

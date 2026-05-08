@@ -11,7 +11,7 @@ Create and manage custom content type templates beyond the 5 built-in types (art
 
 ## When to Use
 
-Use `/cf:template` when:
+Use `/contentforge:template` when:
 - You need a **content type not covered** by the 5 built-in templates (case study, product comparison, landing page copy, email newsletter, press release, etc.)
 - You want to **standardize a content format** your team produces regularly
 - You need to **modify an existing template** (e.g., add a section to the article template)
@@ -45,7 +45,7 @@ Use `/cf:template` when:
 
 ### Interactive Mode (Recommended)
 ```
-/cf:template
+/contentforge:template
 ```
 **Prompts you for:**
 1. Template name
@@ -57,23 +57,23 @@ Use `/cf:template` when:
 
 ### Quick Mode
 ```
-/cf:template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
+/contentforge:template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
 ```
 
 ### Import from Example File
 ```
-/cf:template product-comparison --from-example=./example-product-comparison.docx
+/contentforge:template product-comparison --from-example=./example-product-comparison.docx
 ```
 Analyzes the example file's structure (headings, sections, word count) and creates a template matching that format.
 
 ### Modify Existing Template
 ```
-/cf:template article --modify --add-section="Expert Quotes:Include 3-5 expert quotes with attribution:200-300"
+/contentforge:template article --modify --add-section="Expert Quotes:Include 3-5 expert quotes with attribution:200-300"
 ```
 
 ### List All Templates
 ```
-/cf:template --list
+/contentforge:template --list
 ```
 Shows built-in and custom templates with key specifications.
 
@@ -343,25 +343,25 @@ For reference, here are templates others commonly create:
 
 ### Case Study
 ```
-/cf:template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
+/contentforge:template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
 ```
 Sections: Executive Summary, Client Profile, Challenge, Solution, Results, Testimonial, Takeaways, CTA
 
 ### Product Comparison
 ```
-/cf:template product-comparison --base=article --words=2000-3500 --readability=9-11 --citations=12
+/contentforge:template product-comparison --base=article --words=2000-3500 --readability=9-11 --citations=12
 ```
 Sections: Overview, Comparison Criteria, Product-by-Product Analysis (3-5 products), Feature Matrix, Pricing Comparison, Use Case Recommendations, Verdict, CTA
 
 ### Landing Page Copy
 ```
-/cf:template landing-page --base=custom --words=500-1000 --readability=7-9 --citations=3
+/contentforge:template landing-page --base=custom --words=500-1000 --readability=7-9 --citations=3
 ```
 Sections: Hero Headline + Subhead, Problem Statement, Solution Overview, Key Benefits (3-5), Social Proof, Feature Highlights, FAQ (3-5 questions), CTA
 
 ### Email Newsletter
 ```
-/cf:template email-newsletter --base=blog --words=400-800 --readability=7-9 --citations=2
+/contentforge:template email-newsletter --base=blog --words=400-800 --readability=7-9 --citations=2
 ```
 Sections: Subject Line (A/B options), Preview Text, Opening Hook, Main Content (1-2 topics), Key Takeaway, CTA, PS Line
 
@@ -406,7 +406,7 @@ Templates Available (Built-In + Custom):
 
 ### List All Templates
 ```
-/cf:template --list
+/contentforge:template --list
 ```
 ```
 Available Content Templates
@@ -426,19 +426,19 @@ CUSTOM (1):
 
 ### View Template Details
 ```
-/cf:template case-study --view
+/contentforge:template case-study --view
 ```
 Displays the full template specification with all sections and quality standards.
 
 ### Delete Custom Template
 ```
-/cf:template case-study --delete
+/contentforge:template case-study --delete
 ```
 Removes the custom template file. Built-in templates cannot be deleted.
 
 ### Export Template
 ```
-/cf:template case-study --export=./case-study-template.json
+/contentforge:template case-study --export=./case-study-template.json
 ```
 Exports the template as JSON for sharing with other ContentForge installations.
 
@@ -454,11 +454,11 @@ Exports the template as JSON for sharing with other ContentForge installations.
 
 ### "Template not found when using --type=custom:name"
 **Cause:** Template file doesn't exist in `templates/content-types/` or the name doesn't match.
-**Solution:** Run `/cf:template --list` to see available templates. Names are kebab-case (e.g., `case-study`, not `Case Study`).
+**Solution:** Run `/contentforge:template --list` to see available templates. Names are kebab-case (e.g., `case-study`, not `Case Study`).
 
 ### "Can't modify built-in template"
 **Cause:** Built-in templates (article, blog, whitepaper, faq, research-paper) are read-only.
-**Solution:** Create a custom template based on the built-in one: `/cf:template my-article --base=article`. This creates a copy you can modify freely.
+**Solution:** Create a custom template based on the built-in one: `/contentforge:template my-article --base=article`. This creates a copy you can modify freely.
 
 ## Limitations
 
@@ -476,7 +476,7 @@ None. This skill uses deterministic template creation (section definition, word 
 
 - **[/contentforge](../contentforge/SKILL.md)** — Use templates with `--type=custom:template-name`
 - **[/batch-process](../batch-process/SKILL.md)** — Batch can reference custom templates
-- **[/cf:brief](../cf-brief/SKILL.md)** — Briefs can target custom template section structures
+- **[/contentforge:brief](../cf-brief/SKILL.md)** — Briefs can target custom template section structures
 
 ---
 

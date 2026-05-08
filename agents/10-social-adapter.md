@@ -208,7 +208,7 @@ If Canva MCP is available AND user opted into image generation (Phase 3.5 `image
 3. Show each design to user for approval
 4. Export approved designs as PNG via `export-design`
 
-If Canva not connected: provide specs as above and suggest `/cf:connect canva`.
+If Canva not connected: provide specs as above and suggest `/contentforge:connect canva`.
 
 ---
 

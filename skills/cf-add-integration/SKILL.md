@@ -6,7 +6,7 @@ argument-hint: "[service-name]"
 effort: medium
 ---
 
-# /cf:add-integration
+# /contentforge:add-integration
 
 ## Purpose
 
@@ -139,7 +139,7 @@ Provide a starter skeleton specific to the user's API, with:
 After configuration:
 
 1. Ask the user to restart their Claude session
-2. Run `/cf:integrations` to verify the new connector shows up
+2. Run `/contentforge:integrations` to verify the new connector shows up
 3. Try a basic read operation to confirm it works
 4. Report success or diagnose failures
 
