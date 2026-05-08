@@ -114,3 +114,6 @@ test-output/
 !templates/**/*.md
 !templates/**/*.json
 .mcp.json
+
+# Local issue tracking (screenshots, internal notes)
+Issues_*/
