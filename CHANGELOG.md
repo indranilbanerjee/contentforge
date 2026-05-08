@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.9.2] - 2026-05-03
+
+### Fixed — Plugin Manifest Install Format (CRITICAL)
+
+The v3.9.1 manifest hardening introduced two fields that Claude Code's plugin schema does not accept, causing `claude plugins install contentforge` to fail with "the manifest's `repository` field is an object when Claude Code expects a string." This release fixes both issues so install works.
+
+#### Changes
+
+- **`repository` field**: converted from npm-shorthand object form (`{type: "git", url: "..."}`) to the string URL form Claude Code's plugin schema requires. New value: `"https://github.com/indranilbanerjee/contentforge.git"`.
+- **`$schema` field removed**: although `$schema` is a standard JSON convention for editor validation, Claude Code's plugin schema parser rejects unknown top-level keys. Editor validation benefit isn't worth a broken install.
+
+Same fixes shipped same-day to digital-marketing-pro v3.2.1, socialforge v1.5.2, and the marketplace.json (neels-plugins v2.8.0). Anyone hitting the install error since v3.9.1 should now run `claude plugin update contentforge@neels-plugins` to pick up v3.9.2.
+
+### Migration
+
+Pure manifest fix. No behavioral changes. Existing installations continue to work; the fix only affects fresh installs and re-installs.
+
+---
+
 ## [3.9.1] - 2026-05-03
 
 ### Added — Cowork-Compatible Aggregator MCP Catalog
