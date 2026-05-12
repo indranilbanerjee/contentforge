@@ -66,7 +66,89 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}"
 
 ### Step 2: Generate .docx File
 
-#### 2.1 Document Structure
+#### 2.0 PRIMARY METHOD — invoke generate-docx.py (REQUIRED)
+
+The `.docx` MUST be produced by calling the bundled script. Do NOT hand-craft the file or skip this step. The script handles formatting (title page, H1/H2/H3 hierarchy, tables, lists, code blocks, hyperlinks), embeds Appendix A/B/C from the reports JSON, and auto-installs `python-docx` on first run.
+
+**Step 2.0.a — assemble the reports JSON:**
+
+```bash
+mkdir -p ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}
+cat > ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json << 'JSON'
+{
+  "seo": {
+    "primary_keyword": "{primary_keyword}",
+    "keyword_density_pct": {density},
+    "meta_title": "{meta_title}",
+    "meta_description": "{meta_description}",
+    "schema_type": "{schema}",
+    "internal_links": {n_links},
+    "seo_score": {seo_score}
+  },
+  "quality": {
+    "overall_score": {overall},
+    "grade": "{grade}",
+    "dimensions": {
+      "content_quality": {q1},
+      "citation_integrity": {q2},
+      "brand_compliance": {q3},
+      "seo_performance": {q4},
+      "readability": {q5}
+    },
+    "review_date": "{date}",
+    "reviewer_notes": "{notes}"
+  },
+  "production": {
+    "phases_completed": ["0.5","1","2","3","3.5","4","5","6","6.5","7","8"],
+    "total_processing_time_seconds": {time_s},
+    "loops": {n_loops},
+    "word_count": {words},
+    "citation_count": {n_cites},
+    "source_reliability_avg": {src_rel},
+    "flesch_kincaid_grade": {fk_grade},
+    "burstiness_score": {burst},
+    "humanizer_patterns_removed": {patterns_removed},
+    "em_dash_count": {em_dashes},
+    "ai_signal_score": {ai_score},
+    "brand_compliance_violations": {violations},
+    "factual_accuracy_pct": {fact_pct},
+    "hallucination_risk": "{risk}"
+  }
+}
+JSON
+```
+
+**Step 2.0.b — write the article markdown to a temp file:**
+
+```bash
+cat > ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.md << 'MD'
+{full_article_markdown_with_h1_title_h2_h3_paragraphs_lists_tables_citations}
+MD
+```
+
+**Step 2.0.c — run the docx generator:**
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
+    --content ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.md \
+    --output ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.docx \
+    --reports ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json \
+    --brand "{Brand Name}" \
+    --content-type {type}
+```
+
+The script returns a JSON status line on stdout — capture it and report the path + size + grade in the completion card.
+
+**Step 2.0.d — verify:**
+
+```bash
+ls -la ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.docx
+file ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.docx  # should report "Microsoft Word 2007+"
+```
+
+If the file does not exist or is < 5 KB, the script failed — investigate stderr and retry once before escalating.
+
+#### 2.1 Document Structure (reference — handled by script)
 
 | Section | Content |
 |---------|---------|

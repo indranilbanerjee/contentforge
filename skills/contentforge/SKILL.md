@@ -9,6 +9,65 @@ effort: max
 
 Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece in 20-30 minutes through a 10-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
 
+## Execution Protocol (CRITICAL — read first)
+
+This skill orchestrates 11 distinct phases. **Each phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 29-pattern catalog, and reviewer scoring that define ContentForge.
+
+### Required Per-Phase Workflow
+
+For every one of the 11 phases below:
+
+1. **Call `Bash` to mark phase start:**
+   ```bash
+   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-start --brand <slug> --phase <N>
+   ```
+2. **Call `Task` with the phase's `subagent_type`** and pass the previous phase's output as context.
+3. **Call `Bash` to mark phase end** with the output word count:
+   ```bash
+   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-end --brand <slug> --phase <N> --content-words <count>
+   ```
+4. **Emit the audit line** (so users can see real-time progress):
+   ```
+   [PHASE-AUDIT] phase=<N> name=<name> status=<PASS|FAIL> output_summary="<one line>" gate=<PASS|FAIL>
+   ```
+5. **Check the quality gate.** If `gate=FAIL`, loop back to the phase the reviewer flagged (max 5 total loops; on 5th loop, escalate to human review and halt).
+
+### Phase → Subagent Mapping
+
+| Phase | subagent_type | Purpose |
+|-------|---------------|---------|
+| 0.5 | `researcher` (mini call) OR inline title curation | SERP-informed title generation; user picks 1 of 4-5 |
+| 1 | `researcher` | Web research, source mining, structured outline |
+| 2 | `fact-checker` | URL verification, claim validation |
+| 3 | `content-drafter` | First draft with brand voice |
+| 3.5 | `visual-asset-annotator` | Chart generation + visual markers |
+| 4 | `scientific-validator` | Industry-specific accuracy + hallucination detection |
+| 5 | `structurer-proofreader` | Grammar, flow, readability |
+| 6 | `seo-geo-optimizer` | Keywords, meta, schema, internal-link markers |
+| 6.5 | `humanizer` | 29-pattern catalog + self-critique meta-pass + voice calibration |
+| 7 | `reviewer` | 5-dimension quality scoring + final gate |
+| 8 | `output-manager` | .docx generation (local or Google Drive) + reports |
+
+### Final Output Requirements
+
+After Phase 8 completes, the output-manager subagent **must produce a Microsoft Word `.docx` file** by calling:
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
+    --content <article.md> \
+    --output <local-path>.docx \
+    --reports <reports.json> \
+    --brand "<brand>" \
+    --content-type <type>
+```
+
+The `.docx` must contain: title page, full article body, sources/citations, **Appendix A (SEO Scorecard)**, **Appendix B (Quality Scorecard)**, **Appendix C (Production Details)**.
+
+If the brand has Google Drive configured (`tracking.backend == "google"`), upload the .docx via `drive-uploader.py`. Otherwise save locally to `~/.claude-marketing/<brand>/output/<type>/<YYYY-MM-DD>/<slug>.docx` and tell the user the local path.
+
+### Why This Matters
+
+Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (29-pattern AI removal won't fire), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`pipeline-run.json`, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
+
 ## When to Use
 
 Use `/contentforge` when you need:

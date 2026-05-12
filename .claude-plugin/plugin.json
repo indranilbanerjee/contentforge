@@ -1,6 +1,6 @@
 {
   "name": "contentforge",
-  "version": "3.9.3",
+  "version": "3.9.4",
   "description": "Enterprise content production pipeline with 13 agents, 19 skills, and opt-in HTTP MCP connectors. v3.9 supercharges the Phase 6.5 humanizer with a 29-pattern AI-detection catalog (adapted from Wikipedia: Signs of AI writing + blader/humanizer), a self-critique meta-pass, and optional voice calibration. v3.9.1 adds Cowork-compatible aggregator MCP catalog (Pipedream, Composio, Zapier, Make) for Google Sheets/Drive and other services that have no first-party HTTP MCP. v3.9.2 fixes the plugin manifest format so install works (repository as string, $schema removed). Multi-plugin coexistence: zero global hooks, zero auto-connecting MCPs.",
   "author": {
     "name": "Indranil Banerjee",

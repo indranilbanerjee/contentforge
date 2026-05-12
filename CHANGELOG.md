@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.9.4] - 2026-05-12
+
+### Fixed — Pipeline Orchestration + Real .docx Output (CRITICAL)
+
+Empirical pipeline test surfaced two architectural gaps that made the plugin appear to work without actually doing the work:
+
+1. **Pipeline did not invoke subagents.** The contentforge SKILL.md described the 11-phase pipeline but did not explicitly instruct Claude to dispatch each phase via the `Task` tool with `subagent_type=<phase-agent>`. In `claude --print` (one-shot) mode, Claude treated the description as "produce the deliverable in one inference pass" and skipped real research / fact-checking / humanizer / reviewer scoring. The output looked plausible, but `pipeline-run.json` was never created (proof: phase-tracker calls never fired) and the humanizer's 29-pattern catalog was never applied (proof: em dash count was 7, vs. the documented limit of 1-2 per 500 words).
+
+2. **No real .docx generation.** Phase 8 output-manager described .docx structure in prose but had no concrete code path. The "output" was a markdown file with a fabricated completion card, not a Microsoft Word document.
+
+#### Changes
+
+- **New script: [scripts/generate-docx.py](scripts/generate-docx.py)** — produces a real Microsoft Word `.docx` from the article markdown plus a reports JSON. Auto-installs `python-docx` on first run. Handles title page, full body with H1/H2/H3 hierarchy, tables, lists, hyperlinks, code blocks, and three appendices (A: SEO Scorecard, B: Quality Scorecard, C: Production Details with phase timing, em dash count, AI signal score, factual accuracy %, etc.). Verified via smoke test: produces a valid 40 KB .docx in ~2 seconds.
+
+- **[skills/contentforge/SKILL.md](skills/contentforge/SKILL.md) — new "Execution Protocol" section** at the top, marked CRITICAL. Tells Claude:
+  - For every phase, call `Bash` to run `pipeline-tracker.py --action phase-start`
+  - Then `Task` with the phase's specific `subagent_type`
+  - Then `Bash` again for `--action phase-end`
+  - Emit a `[PHASE-AUDIT]` line so users see real-time progress
+  - On gate=FAIL, loop back (max 5)
+  - Phase → subagent_type mapping table for all 11 phases
+  - Final output requirements (call `generate-docx.py`, save locally if no Google Drive, surface path to user)
+  - Explicit warning that single-pass generation skips quality gates and produces fake audit trails
+
+- **[agents/08-output-manager.md](agents/08-output-manager.md) — new Step 2.0** with concrete bash commands to: (a) assemble the reports JSON, (b) write the article markdown, (c) invoke `generate-docx.py`, (d) verify the file exists and is ≥5 KB. The prose specification of document structure is preserved as reference but the script is now the canonical execution path.
+
+#### Verification
+
+After this release, a successful pipeline run should produce all of:
+- `~/.claude-marketing/<brand>/pipeline-run.json` with timing entries for every phase that ran
+- `~/.claude-marketing/<brand>/output/<type>/<YYYY-MM-DD>/<slug>.docx` (actual Word file)
+- `~/.claude-marketing/<brand>/output/<type>/<YYYY-MM-DD>/<slug>-reports.json` (machine-readable)
+- `[PHASE-AUDIT]` lines in the chat output for each phase
+- Em dash count ≤ 1-2 per 500 words (real humanizer signal)
+- Real reviewer score from the reviewer agent's 5-dimension scoring
+
+If any of these are missing, the orchestration didn't execute — re-run with explicit "use the Task tool for each phase" reminder, or escalate as a plugin bug.
+
+### Migration
+
+No breaking changes. Existing markdown output paths are preserved as a fallback. The .docx is now an additional, primary deliverable. `python-docx` is auto-installed on first Phase 8 run.
+
+---
+
 ## [3.9.3] - 2026-05-09
 
 ### Fixed — Slash Command Namespace Consistency Across All Docs and Runtime Files
