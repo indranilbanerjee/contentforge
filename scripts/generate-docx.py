@@ -74,6 +74,116 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+# Captures Phase 6 SEO agent INTERNAL-LINK markers so the renderer can replace
+# them with real Word hyperlinks (or visibly-distinct placeholders when url=TBD).
+# Marker format produced by 06-seo-geo-optimizer.md Step 5:
+#   <!-- INTERNAL-LINK: type=topical|commercial|conversion|authority |
+#        anchor="..." | url=... | priority=... | reason="..." | section=... -->
+INTERNAL_LINK_PATTERN = re.compile(
+    r"<!--\s*INTERNAL-LINK:\s*(?P<body>[^>]+?)-->",
+    re.IGNORECASE,
+)
+
+
+def parse_internal_link_marker(marker_body):
+    """Parse the key=value | key="value" pairs inside an INTERNAL-LINK marker."""
+    fields = {}
+    for part in marker_body.split("|"):
+        if "=" not in part:
+            continue
+        k, v = part.split("=", 1)
+        k = k.strip().lower()
+        v = v.strip().strip('"').strip("'")
+        fields[k] = v
+    return fields
+
+
+def split_text_with_links(text):
+    """
+    Split text on INTERNAL-LINK markers. Returns list of segments:
+      ("text", "...")  — plain text
+      ("link", {"anchor": str, "url": str, "type": str, "placeholder": bool})
+    Anchor text from the marker REPLACES whatever the surrounding markdown
+    rendered for it (e.g. plain word "ENHERTU" becomes a hyperlink).
+    """
+    segments = []
+    pos = 0
+    for m in INTERNAL_LINK_PATTERN.finditer(text):
+        if m.start() > pos:
+            segments.append(("text", text[pos:m.start()]))
+        fields = parse_internal_link_marker(m.group("body"))
+        anchor = fields.get("anchor", "").strip()
+        url = fields.get("url", "").strip()
+        link_type = fields.get("type", "topical").strip().lower()
+        placeholder = (not url) or url.upper() in {"TBD", "TODO", "PLACEHOLDER"}
+        if anchor:
+            segments.append(("link", {
+                "anchor": anchor,
+                "url": url if not placeholder else "",
+                "type": link_type,
+                "placeholder": placeholder,
+            }))
+        pos = m.end()
+    if pos < len(text):
+        segments.append(("text", text[pos:]))
+    if not segments:
+        segments.append(("text", text))
+    return segments
+
+
+def add_hyperlink_run(paragraph, anchor_text, url, link_type="topical", placeholder=False):
+    """
+    Add a clickable hyperlink run to a python-docx paragraph using raw OOXML.
+    python-docx has no high-level hyperlink API; this is the standard pattern.
+    Placeholders render as bold + bracketed anchor with a [LINK TBD] suffix,
+    so a human reviewer can see what should be linked and fill in the URL.
+    """
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
+    from docx.shared import RGBColor
+
+    if placeholder or not url:
+        # Visibly distinct placeholder: bold + bracketed + LINK TBD suffix
+        run = paragraph.add_run(f"[{anchor_text}] [LINK TBD: {link_type}]")
+        run.bold = True
+        run.font.color.rgb = RGBColor(0xC0, 0x39, 0x2B)
+        return run
+
+    part = paragraph.part
+    r_id = part.relate_to(
+        url,
+        "http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink",
+        is_external=True,
+    )
+    hyperlink = OxmlElement("w:hyperlink")
+    hyperlink.set(qn("r:id"), r_id)
+
+    new_run = OxmlElement("w:r")
+    rPr = OxmlElement("w:rPr")
+    c = OxmlElement("w:color")
+    # color hint by link type so reviewers can spot the three categories
+    color = {
+        "topical":    "0066CC",  # blue
+        "commercial": "2E7D32",  # green = revenue
+        "conversion": "8E24AA",  # purple = funnel
+        "authority":  "455A64",  # slate grey
+    }.get(link_type, "0066CC")
+    c.set(qn("w:val"), color)
+    rPr.append(c)
+    u = OxmlElement("w:u")
+    u.set(qn("w:val"), "single")
+    rPr.append(u)
+    new_run.append(rPr)
+
+    t = OxmlElement("w:t")
+    t.text = anchor_text
+    t.set(qn("xml:space"), "preserve")
+    new_run.append(t)
+
+    hyperlink.append(new_run)
+    paragraph._p.append(hyperlink)
+    return hyperlink
+
 
 def ensure_docx():
     """Install python-docx if not present."""
@@ -181,8 +291,8 @@ def parse_markdown_to_blocks(md_text):
     return blocks
 
 
-def add_inline_runs(paragraph, text):
-    """Render simple **bold**, *italic*, [text](url), `code` markdown inline."""
+def _render_markdown_segment(paragraph, text):
+    """Render **bold**, *italic*, [md text](url), `code` inside a text segment."""
     from docx.shared import Pt, RGBColor
 
     pattern = re.compile(
@@ -204,12 +314,48 @@ def add_inline_runs(paragraph, text):
             run.font.name = "Consolas"
             run.font.size = Pt(10)
         elif link_t is not None:
-            run = paragraph.add_run(link_t)
-            run.font.color.rgb = RGBColor(0x00, 0x66, 0xCC)
-            run.font.underline = True
+            # standard markdown [text](url) link → real hyperlink (outbound citation style)
+            if link_url:
+                add_hyperlink_run(paragraph, link_t, link_url, link_type="topical", placeholder=False)
+            else:
+                run = paragraph.add_run(link_t)
+                run.font.color.rgb = RGBColor(0x00, 0x66, 0xCC)
+                run.font.underline = True
         pos = m.end()
     if pos < len(text):
         paragraph.add_run(text[pos:])
+
+
+def add_inline_runs(paragraph, text):
+    """
+    Render inline content with two passes:
+      1. Split on `<!-- INTERNAL-LINK: ... -->` markers from Phase 6 SEO agent
+         → render each as a real Word hyperlink (or visible placeholder if URL is TBD)
+      2. Within plain-text segments, render markdown bold/italic/code/[text](url)
+    """
+    segments = split_text_with_links(text)
+    for kind, payload in segments:
+        if kind == "link":
+            add_hyperlink_run(
+                paragraph,
+                payload["anchor"],
+                payload["url"],
+                link_type=payload["type"],
+                placeholder=payload["placeholder"],
+            )
+        else:
+            _render_markdown_segment(paragraph, payload)
+
+
+def collect_internal_link_markers(md_text):
+    """Walk the markdown text and return a list of all INTERNAL-LINK fields found.
+    Used by Appendix D to render the link map table."""
+    found = []
+    for m in INTERNAL_LINK_PATTERN.finditer(md_text):
+        fields = parse_internal_link_marker(m.group("body"))
+        if fields.get("anchor"):
+            found.append(fields)
+    return found
 
 
 def render_blocks(doc, blocks):
@@ -336,8 +482,81 @@ def add_title_page(doc, brand, content_type, title, score, grade):
     doc.add_page_break()
 
 
-def add_appendices(doc, reports):
-    """Add Appendix A (SEO), B (Quality), C (Production) from reports JSON."""
+def add_internal_link_map_appendix(doc, link_markers):
+    """Appendix D — Internal Link Map. Shows every <!-- INTERNAL-LINK: ... --> marker
+    the SEO agent placed in the body (real URLs + placeholders), so a human reviewer
+    can verify the marketing-funnel coverage at a glance."""
+    from docx.shared import Pt
+
+    if not link_markers:
+        return
+
+    p = doc.add_paragraph()
+    run = p.add_run("Appendix D — Internal Link Map")
+    run.bold = True
+    run.font.size = Pt(16)
+
+    p = doc.add_paragraph()
+    run = p.add_run(
+        "Every internal link inserted by Phase 6 (SEO/GEO Optimizer). "
+        "Three categories: TOPICAL (informational), COMMERCIAL (brand product/service), "
+        "CONVERSION (audience-matched CTA). Placeholder URLs (TBD) require human review "
+        "before publication."
+    )
+    run.italic = True
+    run.font.size = Pt(10)
+
+    rows = [("#", "Type", "Anchor Text", "Target URL", "Section", "Reason")]
+    for i, m in enumerate(link_markers, 1):
+        url = m.get("url", "").strip()
+        if not url or url.upper() in {"TBD", "TODO", "PLACEHOLDER"}:
+            url_cell = "[TBD — fill before publish]"
+        else:
+            url_cell = url
+        rows.append((
+            str(i),
+            m.get("type", "topical").upper(),
+            m.get("anchor", ""),
+            url_cell,
+            m.get("section", ""),
+            m.get("reason", ""),
+        ))
+    table = doc.add_table(rows=len(rows), cols=6)
+    table.style = "Light Grid Accent 1"
+    for r_idx, row in enumerate(rows):
+        for c_idx, cell_text in enumerate(row):
+            cell = table.cell(r_idx, c_idx)
+            cell.text = str(cell_text)
+            if r_idx == 0:
+                for run in cell.paragraphs[0].runs:
+                    run.bold = True
+
+    # Summary counts so the marketer sees coverage at a glance
+    by_type = {}
+    placeholders = 0
+    for m in link_markers:
+        t = m.get("type", "topical").lower()
+        by_type[t] = by_type.get(t, 0) + 1
+        url = m.get("url", "").strip()
+        if not url or url.upper() in {"TBD", "TODO", "PLACEHOLDER"}:
+            placeholders += 1
+
+    p = doc.add_paragraph()
+    summary = (
+        f"Coverage — Topical: {by_type.get('topical', 0)} | "
+        f"Commercial: {by_type.get('commercial', 0)} | "
+        f"Conversion: {by_type.get('conversion', 0)} | "
+        f"Authority: {by_type.get('authority', 0)} | "
+        f"Placeholders needing URL: {placeholders}"
+    )
+    run = p.add_run(summary)
+    run.italic = True
+    run.font.size = Pt(10)
+    doc.add_paragraph()
+
+
+def add_appendices(doc, reports, link_markers=None):
+    """Add Appendix A (SEO), B (Quality), C (Production), D (Internal Links) from reports JSON."""
     from docx.shared import Pt
     from docx.enum.text import WD_ALIGN_PARAGRAPH
 
@@ -345,7 +564,8 @@ def add_appendices(doc, reports):
     quality = reports.get("quality")
     production = reports.get("production")
 
-    if not (seo or quality or production):
+    has_links = bool(link_markers)
+    if not (seo or quality or production or has_links):
         return
 
     doc.add_page_break()
@@ -457,6 +677,10 @@ def add_appendices(doc, reports):
                     for run in cell.paragraphs[0].runs:
                         run.bold = True
 
+    if link_markers:
+        doc.add_paragraph()
+        add_internal_link_map_appendix(doc, link_markers)
+
 
 def main():
     parser = argparse.ArgumentParser(description="Generate ContentForge .docx output")
@@ -477,6 +701,7 @@ def main():
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     md_text = content_path.read_text(encoding="utf-8")
+    link_markers = collect_internal_link_markers(md_text)
     blocks = parse_markdown_to_blocks(md_text)
 
     title = args.title
@@ -511,9 +736,13 @@ def main():
     add_title_page(doc, args.brand, args.content_type, title, score, grade)
     blocks_no_title = [b for b in blocks if not (b[0] == "h1" and b[1] == title)]
     render_blocks(doc, blocks_no_title)
-    add_appendices(doc, reports)
+    add_appendices(doc, reports, link_markers=link_markers)
 
     doc.save(output_path)
+    link_summary = {}
+    for m in link_markers:
+        t = m.get("type", "topical").lower()
+        link_summary[t] = link_summary.get(t, 0) + 1
     print(json.dumps({
         "status": "success",
         "output": str(output_path),
@@ -524,6 +753,8 @@ def main():
         "score": score,
         "grade": grade,
         "reports_included": list(reports.keys()),
+        "internal_links_total": len(link_markers),
+        "internal_links_by_type": link_summary,
     }))
 
 

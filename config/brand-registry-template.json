@@ -158,6 +158,32 @@
       "page_registry": [],
       "pillar_pages": []
     },
+    "brand_pages": {
+      "_comment": "Brand-owned URLs the SEO agent links INTO content (different from outbound citations and topical internal links). Populate any subset; empty arrays disable that link category.",
+      "product_or_service_pages": [
+        {
+          "url": "https://example.com/products/example",
+          "topic": "Short topic / product name the page covers",
+          "category": "product | service | program | platform",
+          "anchor_text_hints": ["natural anchor phrase 1", "natural anchor phrase 2"]
+        }
+      ],
+      "conversion_pages": [
+        {
+          "url": "https://example.com/contact",
+          "purpose": "request demo | request rep visit | request MSL | book consult | subscribe",
+          "audience": "HCP | B2B | consumer | payer | investor | all",
+          "anchor_text_hints": ["request a demo", "talk to our team"]
+        }
+      ],
+      "authority_pages": [
+        {
+          "url": "https://example.com/about",
+          "purpose": "company about | leadership | scientific advisory | research approach | mission",
+          "audience": "all"
+        }
+      ]
+    },
     "schema_markup_types": [
       "Article",
       "FAQPage",

@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.9.4",
-  "description": "Enterprise content production pipeline with 13 agents, 19 skills, and opt-in HTTP MCP connectors. v3.9 supercharges the Phase 6.5 humanizer with a 29-pattern AI-detection catalog (adapted from Wikipedia: Signs of AI writing + blader/humanizer), a self-critique meta-pass, and optional voice calibration. v3.9.1 adds Cowork-compatible aggregator MCP catalog (Pipedream, Composio, Zapier, Make) for Google Sheets/Drive and other services that have no first-party HTTP MCP. v3.9.2 fixes the plugin manifest format so install works (repository as string, $schema removed). Multi-plugin coexistence: zero global hooks, zero auto-connecting MCPs.",
+  "version": "3.9.5",
+  "description": "Enterprise content production pipeline with 13 agents, 19 skills, and opt-in HTTP MCP connectors. v3.9.5 splits Phase 6 internal linking into THREE categories — topical (informational), commercial (brand product/service pages), and conversion (audience-matched CTA). Adds brand_pages schema to brand profiles, renders inline Word hyperlinks (color-coded by category) in the .docx, adds Appendix D internal link map, and drops the 'no site structure = full credit' reviewer free-pass. v3.9.4 fixed pipeline orchestration to actually invoke subagents via Task tool and added generate-docx.py for real Word output with SEO/Quality/Production appendices. v3.9 supercharges the humanizer with a 29-pattern AI-detection catalog, self-critique meta-pass, and optional voice calibration. Multi-plugin coexistence: zero global hooks, zero auto-connecting MCPs.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"

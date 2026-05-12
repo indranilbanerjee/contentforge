@@ -157,10 +157,18 @@ Brand Compliance Score: [X.X] / 10
 3. **On-Page SEO Elements** — H1 optimized, H2s keyword-rich, proper header hierarchy (H1→H2→H3), image alt tags.
 4. **GEO (AI Answer Engine) Readiness** — Structured Q&A format, clear definitions, list-based content, data citability. Check Phase 6 GEO scorecard. **Note:** GEO is a sub-score within SEO Performance, NOT a separate 6th dimension.
 5. **Schema Markup Recommendations** — Score 10: Article + FAQPage/HowTo schema provided. Score 8: Article schema only. Score 6: incomplete. Score 4: none.
-6. **Internal Linking Quality** — 3-5 relevant internal links with `<!-- INTERNAL-LINK: ... -->` markers, diverse anchor text, distributed across 3+ sections. Full credit (8) when no site structure is provided in brand profile. Check Phase 6 Internal Link Map.
+6. **Internal Linking Quality (three categories)** — split into three independent checks. ContentForge is a marketing system; informational links alone are not enough.
+    - **6a. Topical links** (informational, 0-10): ≥2 topical `<!-- INTERNAL-LINK: type=topical -->` markers, diverse anchor text, distributed across ≥2 sections. If brand has no site structure but agent emitted placeholder topical markers for human review → score 7. If agent emitted nothing → score 3.
+    - **6b. Brand commercial links** (revenue, 0-10): ≥1 `<!-- INTERNAL-LINK: type=commercial -->` per configured product/service page that has a natural fit. If brand has `brand_pages.product_or_service_pages` configured AND content has natural commercial anchor opportunities AND agent placed them → 9-10. Configured but agent skipped without justification → 4. No product/service pages configured at all (informational-only brand) → score N/A and exclude from average (do NOT penalize).
+    - **6c. Conversion CTA** (funnel handoff, 0-10): exactly 1 `<!-- INTERNAL-LINK: type=conversion -->` near the end, audience-matched, natural action phrase. Configured and placed correctly → 10. Configured but missing or misplaced → 4. Not configured → N/A and exclude from average.
+    - **Internal Linking sub-score** = mean of applicable categories (skip N/A).
+    - **CRITICAL:** there is no "free pass when no site structure provided" rule. The agent must emit placeholder topical markers for reviewer to verify the opportunity was identified.
 
 ```
-SEO Performance = (Keyword Optimization + Meta Tags + On-Page SEO + GEO Readiness + Schema + Internal Linking) / 6
+Sub-scores used in the average:
+  Keyword Optimization, Meta Tags, On-Page SEO, GEO Readiness, Schema, Internal Linking (mean of 6a/6b/6c applicable)
+
+SEO Performance = mean of the six applicable sub-scores
 SEO Performance Score: [X.X] / 10
 ```
 

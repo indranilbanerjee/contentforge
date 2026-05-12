@@ -109,48 +109,119 @@ For each secondary keyword:
 - **≤155 characters**, includes primary + 1-2 secondary keywords
 - **Formula:** `[Problem] [Solution with keywords] [Specific benefit/data] [CTA]`
 
-### Step 5: Structured Internal Link Mapping
+### Step 5: Internal Link Mapping (Three Categories)
 
-**Produce a machine-readable internal link map that Phase 8 (Output Manager) executes as clickable hyperlinks.**
+**This is a marketing document, not a search-engine artifact.** Internal links serve three distinct purposes, and each gets handled separately:
 
-#### 5.1 Load Site Structure
+- **5a — Topical internal links** (informational): point readers to related content on the brand's own site. Driven by sitemap / page registry / pillar pages.
+- **5b — Brand commercial links** (revenue): when content discusses a topic the brand sells into, link to the relevant product / service / program page. Driven by `seo_preferences.brand_pages.product_or_service_pages`.
+- **5c — Conversion CTA link** (funnel handoff): at a natural endpoint, link to a single audience-matched conversion page (request MSL, book demo, talk to sales, subscribe). Driven by `seo_preferences.brand_pages.conversion_pages`.
 
-Check brand profile for site structure data (in priority order):
+**Produce a machine-readable internal link map that Phase 8 (Output Manager) renders as inline hyperlinks in the final .docx.** When a URL is unknown but the opportunity exists, emit a placeholder marker so the human reviewer can fill it in — never silently skip the opportunity.
+
+#### 5a. Topical Internal Links
+
+##### 5a.1 Load Site Structure
+
+Check brand profile for site structure data (priority order):
 1. **Sitemap URL** — `seo_preferences.internal_linking.sitemap_url` → fetch/parse XML sitemap
 2. **Page Registry** — `seo_preferences.internal_linking.page_registry` → pre-curated linkable pages
 3. **Pillar Pages** — `seo_preferences.internal_linking.pillar_pages` → high-priority always-link pages
-4. **Fallback** — Note in SEO Scorecard: "No site structure provided." Provide text-only recommendations.
+4. **Fallback** — Note in SEO Scorecard: "No site structure provided — topical link anchor recommendations rendered with placeholder URLs for human review."
 
-#### 5.2 Identify Link Opportunities
+##### 5a.2 Identify Topical Link Opportunities
 
 **Matching criteria:** Keyword overlap, topical relevance, natural fit as hyperlink.
 
 **Prioritization rules:**
 1. Link to pillar/cornerstone content first
-2. Prefer phrases that appear organically (don't insert new text just for linking)
-3. Distribute links across sections — avoid 3+ links in one paragraph
-4. Each link should help the reader at that point
+2. Prefer phrases that appear organically — don't insert new text just for linking
+3. Distribute across sections — avoid 3+ links in one paragraph
+4. Each link should genuinely help the reader at that point
 
-#### 5.3 Generate Internal Link Map
+**Target:** 2–3 topical links per piece.
+
+##### 5a.3 Generate Topical Link Markers
 
 Insert structured HTML comment markers at each link position:
 
 ```html
-<!-- INTERNAL-LINK: anchor="[exact text]" | url=[target URL] | priority=[high|medium|low] | reason="[justification]" | section=[N] -->
+<!-- INTERNAL-LINK: type=topical | anchor="[exact text]" | url=[target URL or TBD] | priority=[high|medium|low] | reason="[justification]" | section=[N] -->
 ```
 
-Output full link map table in SEO Scorecard with columns: #, Anchor Text, Target URL, Priority, Section, Reason.
+When `url` is unknown, use `url=TBD` and the marker becomes a placeholder Phase 8 renders as visibly distinct bracketed anchor text in the .docx so reviewers can fill the URL before publication.
 
-#### 5.4 Internal Linking Quality Check
+#### 5b. Brand Commercial Links
+
+##### 5b.1 Load Brand Product / Service Pages
+
+Read `seo_preferences.brand_pages.product_or_service_pages`. If empty, note in scorecard: "No brand product/service pages configured — commercial link insertion skipped. Add `brand_pages.product_or_service_pages` to `brand-profile.json` to enable."
+
+##### 5b.2 Scan Content for Commercial Anchor Opportunities
+
+For each configured product/service page:
+- Search content for natural anchor opportunities matching the page's `topic` or `anchor_text_hints`
+- Insert ONE link per product/service page max — overcommercializing a thought-leadership piece reads as promotional
+- Place the link in the body of the relevant section (not in the intro, not buried in the conclusion)
+- Anchor text must read naturally in context — never reword the surrounding sentence to fit a forced anchor
+
+**Target:** 1 commercial link per configured product/service page that has a natural fit, max 3 total across the document. If no natural fit exists for a page, skip it and note "no natural anchor opportunity found in this content."
+
+##### 5b.3 Generate Commercial Link Markers
+
+```html
+<!-- INTERNAL-LINK: type=commercial | anchor="[exact text]" | url=[target URL] | priority=high | reason="brand product/service page: [topic]" | section=[N] | category=[product|service|program|platform] -->
+```
+
+#### 5c. Conversion CTA Link
+
+##### 5c.1 Select Audience-Matched Conversion Page
+
+Read `seo_preferences.brand_pages.conversion_pages`. Match on `audience` field to the content's target audience (from original requirements). Pick ONE page.
+
+- HCP audience → MSL request, medical information request, rep visit
+- B2B audience → demo, consult, sales contact
+- Consumer audience → newsletter subscribe, account signup
+- Payer audience → access program, dossier request
+- Investor audience → investor relations contact
+
+##### 5c.2 Place Single CTA Link
+
+**Placement rules:**
+- Insert exactly ONE conversion link per piece
+- Position near the end of the content, naturally — either inside the conclusion or in a brief "Next steps" callout immediately following the conclusion. NEVER as a standalone promotional banner.
+- Anchor text should read as a natural action phrase, not "click here"
+
+**If no conversion pages are configured:** note "No conversion pages configured — content ends without funnel handoff. Add `brand_pages.conversion_pages` to enable."
+
+##### 5c.3 Generate Conversion Link Marker
+
+```html
+<!-- INTERNAL-LINK: type=conversion | anchor="[exact text]" | url=[target URL] | priority=high | reason="[audience]-matched CTA: [purpose]" | section=conclusion | audience=[HCP|B2B|consumer|payer|investor] -->
+```
+
+#### 5d. Authority Link (Optional)
+
+If `seo_preferences.brand_pages.authority_pages` is populated AND the brand is referenced by name in the content, insert ONE authority link the first time the brand name appears. Marker:
+
+```html
+<!-- INTERNAL-LINK: type=authority | anchor="[brand name]" | url=[about page URL] | priority=medium | reason="brand attribution: [purpose]" | section=[N] -->
+```
+
+#### 5e. Internal Linking Quality Check
+
+Output full link map table in SEO Scorecard with columns: #, Type (topical/commercial/conversion/authority), Anchor Text, Target URL, Priority, Section, Reason.
 
 Validate:
-- **Count:** Between `min_internal_links` (default 2) and `max_internal_links` (default 5)
-- **No duplicate URLs or anchor text**
-- **Distribution:** Links span at least 2 different sections
-- **Priority mix:** At least 1 HIGH priority link
-- **URL validity:** All targets exist in site structure (if available)
+- **Topical count:** ≥2 if any site structure provided; ≥2 placeholders otherwise (do not silently skip)
+- **Commercial count:** ≥1 if product/service pages configured AND at least one natural anchor exists; 0 if none configured or none have natural fit (with note)
+- **Conversion count:** Exactly 1 if conversion pages configured; 0 with note if not configured
+- **No duplicate URLs across types**
+- **Distribution:** Topical links span at least 2 different sections
+- **Anchor text variety:** No duplicate anchor text
+- **No forced placements:** every link must read naturally in surrounding prose
 
-If checks fail: add more links, remove duplicates, or redistribute as needed.
+If checks fail: add more links, replace forced placements, or expand placeholders.
 
 ### Step 6: GEO (Generative Engine Optimization)
 

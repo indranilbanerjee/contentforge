@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.9.5] - 2026-05-13
+
+### Added — Three-Category Internal Linking (MARKETING SEMANTICS)
+
+Treats the pipeline as a **marketing system**, not a search-engine pipeline. Internal links now serve three distinct purposes, scored independently. The plugin recognizes that informational links alone don't drive any commercial outcome — a thought-leadership piece needs to handoff readers to the brand's revenue surfaces.
+
+**Three categories the SEO agent now produces:**
+
+1. **Topical** (informational) — driven by `seo_preferences.internal_linking.sitemap_url` / `page_registry` / `pillar_pages`. Points to related content on the brand's site.
+2. **Commercial** (revenue) — driven by new `brand_pages.product_or_service_pages`. Links the natural anchor opportunity in body text to the relevant product / service / program page. Max 1 per product/service page, max 3 total — overcommercializing reads as promotional.
+3. **Conversion** (funnel handoff) — driven by new `brand_pages.conversion_pages`. Inserts ONE audience-matched CTA near the end (request MSL, book demo, request rep visit, subscribe).
+4. **Authority** (optional) — driven by new `brand_pages.authority_pages`. Hyperlinks the brand name first occurrence to the about page when content names the brand.
+
+**Schema additions to `config/brand-registry-template.json`:**
+
+```json
+"seo_preferences": {
+  ...
+  "brand_pages": {
+    "product_or_service_pages": [{"url", "topic", "category", "anchor_text_hints"}],
+    "conversion_pages": [{"url", "purpose", "audience", "anchor_text_hints"}],
+    "authority_pages": [{"url", "purpose", "audience"}]
+  }
+}
+```
+
+**Marker format extended** (was: single `INTERNAL-LINK` type; now: typed):
+
+```html
+<!-- INTERNAL-LINK: type=topical|commercial|conversion|authority |
+     anchor="..." | url=URL_or_TBD | priority=high|medium|low |
+     reason="..." | section=N [| category=...] [| audience=...] -->
+```
+
+**`url=TBD` placeholders are emitted, not silently skipped.** Even when sitemap/page_registry is missing, the SEO agent still identifies topical link opportunities and emits placeholder markers — the human reviewer fills the URL before publication.
+
+### Changed — Phase 6 (`agents/06-seo-geo-optimizer.md`)
+
+Step 5 rewritten as 5a (Topical) / 5b (Commercial) / 5c (Conversion) / 5d (Authority) / 5e (Quality Check). Each sub-step has explicit load → identify → place → validate flow. Anchor text rules forbid forced placements. Conversion link enforced as exactly 1, audience-matched, near the end.
+
+### Changed — Phase 7 (`agents/07-reviewer.md`)
+
+Internal Linking sub-dimension (item 6 in SEO Performance) split into 6a/6b/6c with independent scoring. **Removed the "Full credit (8) when no site structure is provided" free-pass rule** — that was masking a real publishability gap. Agent must emit placeholder topical markers; reviewer verifies coverage. Categories where the brand has no configuration (e.g., informational-only brand with no product pages) score N/A and are excluded from the sub-dimension average — they don't penalize, but they also don't get unearned credit.
+
+### Changed — `scripts/generate-docx.py` (Phase 8)
+
+- **Real inline Word hyperlinks** for every `<!-- INTERNAL-LINK -->` marker via OOXML `w:hyperlink` element + external relationship registration. Reviewers and design teams click and the URL opens.
+- **Color-coded by category** so reviewers spot the three types at a glance: topical blue (`0066CC`), commercial green (`2E7D32`), conversion purple (`8E24AA`), authority slate grey (`455A64`).
+- **Placeholder URLs render visibly** — bold red bracketed anchor with `[LINK TBD: <type>]` suffix so the editor knows exactly where to fill in.
+- **New Appendix D — Internal Link Map** — 6-column table (#, Type, Anchor, Target URL, Section, Reason) plus coverage summary (Topical / Commercial / Conversion / Authority counts + placeholders needing URL). Marketers verify funnel coverage at a glance.
+- Stdout JSON now includes `internal_links_total` and `internal_links_by_type` for downstream tooling.
+
+### Rationale
+
+Prior versions treated all internal links as topically-driven sitemap matches. That produces content that educates the reader and ends — a "face document" with no path to brand revenue. Real marketing content needs to handoff: informational links for engagement, commercial links for revenue, conversion link for funnel entry. v3.9.5 makes the pipeline aware of all three.
+
+---
+
 ## [3.9.4] - 2026-05-12
 
 ### Fixed — Pipeline Orchestration + Real .docx Output (CRITICAL)
