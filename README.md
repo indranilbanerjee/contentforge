@@ -302,21 +302,38 @@ As of v3.9.3 the canonical namespace is `/contentforge:`. The `/cf:` prefix was 
 
 ## Updating
 
-Plugins do NOT auto-update. To pull a new release:
+**Third-party marketplaces (including this one) have auto-update DISABLED by default in Claude Code.** Anthropic's official marketplace updates itself; ours does not. So when v3.9.5 is on the marketplace and you're still running v3.9.4, nothing tells you — there is no update banner, no badge, no notification.
+
+You have two options:
+
+### Option 1 (recommended) — turn auto-update on for our marketplace once
+
+Run `/plugin`, go to the **Marketplaces** tab, find `neels-plugins`, and toggle **Enable auto-update**. From then on, Claude Code refreshes the catalog at startup and pulls the latest ContentForge automatically. After an auto-update fires you'll be prompted to run `/reload-plugins` to pick up the changes mid-session.
+
+### Option 2 — manual update each time
 
 ```
 /plugin marketplace update neels-plugins
-/plugin update contentforge@neels-plugins
-```
-
-If the version number is unchanged but you know content was updated, force reinstall:
-
-```
 /plugin uninstall contentforge@neels-plugins
 /plugin install contentforge@neels-plugins
+/reload-plugins
 ```
 
-Start a new conversation for the changes to take effect.
+`/reload-plugins` applies the change without a full Claude Code restart and preserves your current conversation context.
+
+### If a version stays the same but content changed
+
+This happens during fast-iteration debugging. Clear the cached copy and reinstall:
+
+```
+rm -rf ~/.claude/plugins/cache/neels-plugins
+/plugin install contentforge@neels-plugins
+/reload-plugins
+```
+
+### Installs in Cowork
+
+Cowork is the Anthropic Desktop computer-use product (macOS/Windows). It supports third-party plugins from custom marketplaces — same `/plugin marketplace add` install pattern. Cowork has local filesystem access, so the full ContentForge pipeline including the `generate-docx.py` step runs and produces real `.docx` files, just as in Claude Code CLI/Desktop. The only Cowork limitation that affects ContentForge is **HTTP MCPs only** (no stdio/npx) — which is why our `.mcp.json.connectors-reference` documents Pipedream / Composio / Zapier / Make.com aggregator paths for any service that doesn't ship a first-party HTTP MCP.
 
 ---
 
