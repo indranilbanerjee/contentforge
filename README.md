@@ -22,7 +22,15 @@ ContentForge turns a one-line topic into a publication-ready, fact-checked, bran
 
 > Tested in Claude Code CLI, Claude Code Desktop, and Anthropic Cowork. Web chat (`claude.ai`) does not support `/plugin` commands.
 
-### 2. Set up your first brand
+### 2. Turn on auto-update (one-time, recommended)
+
+**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.9.5 is the marketplace's latest and you're still running v3.9.4, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
+
+Open `/plugin`, go to the **Marketplaces** tab, find `neels-plugins`, and toggle **Enable auto-update**. Done — Claude Code will refresh and pull new ContentForge releases at startup from now on, prompting you to run `/reload-plugins` to pick up changes mid-session (no full restart, conversation context preserved).
+
+If you'd rather update manually each time instead, see the [Updating](#updating) section below.
+
+### 3. Set up your first brand
 
 ```
 /contentforge:brand-setup
@@ -30,7 +38,7 @@ ContentForge turns a one-line topic into a publication-ready, fact-checked, bran
 
 The agent walks you through brand voice, terminology, guardrails, citation rules, internal-linking site structure, and (if you want commercial impact) the **brand_pages** block — your product/service URLs, conversion CTAs, and authority pages. It saves a `brand-profile.json` to `~/.claude-marketing/<brand-slug>/`.
 
-### 3. Generate content
+### 4. Generate content
 
 ```
 /contentforge:create-content
@@ -38,7 +46,7 @@ The agent walks you through brand voice, terminology, guardrails, citation rules
 
 The skill prompts you for content type, brand, topic, target word count, and audience. It then runs 11 phases via specialized subagents (research → fact-check → draft → visuals → validate → proofread → SEO → humanize → review → output), enforces a quality gate after each phase, and writes a real `.docx` you can hand to your editor or design team.
 
-### 4. Find your output
+### 5. Find your output
 
 Everything lands in:
 
