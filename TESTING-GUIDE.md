@@ -149,10 +149,10 @@ The 10-phase pipeline is the core product. Test with different content types and
 | **Phase 3.5: Visual Asset Annotator** | Generates charts from Phase 2 data. Creates `<!-- VISUAL: ... -->` markers. Asset manifest written. Visual density 2-4 per 1000 words for blog. |
 | **Phase 4: Scientific Validator** | Validates chart data accuracy. Domain-specific validation (Step 5) checks technology terminology. Zero hallucinations. |
 | **Phase 5: Structurer** | Optimizes structure, fixes grammar. Preserves visual markers. |
-| **Phase 6: SEO/GEO** | Keyword optimization. Produces `<!-- INTERNAL-LINK: ... -->` markers (if site structure provided). SEO scorecard output. |
+| **Phase 6: SEO/GEO** | Keyword optimization. Produces typed `<!-- INTERNAL-LINK: type=topical|commercial|conversion|authority \| anchor=... \| url=... -->` markers — three independent categories driven by `seo_preferences.internal_linking` (topical) and `seo_preferences.brand_pages` (commercial / conversion / authority). When a URL is unknown but the opportunity exists, marker emits `url=TBD` for human review — agent must NOT silently skip. SEO scorecard output. |
 | **Phase 6.5: Humanizer** | Removes AI telltale phrases. Adds natural voice. Preserves visual + link markers. |
-| **Phase 7: Reviewer** | Scores all dimensions including Visual Asset Quality (1.6) and Internal Linking (4.6). Overall score 7+. |
-| **Phase 8: Output** | .docx generated. Charts embedded. TODO boxes for human-needed visuals. Internal links as clickable hyperlinks. Completion summary shows visual asset and internal link counts. |
+| **Phase 7: Reviewer** | Scores all dimensions including Visual Asset Quality and Internal Linking — split into 6a Topical / 6b Commercial / 6c Conversion sub-scores, averaged for the dimension. No "no site structure = full credit (8)" free-pass; agent must produce useful markers (real URLs or placeholders) to earn credit. Overall score 7+. |
+| **Phase 8: Output** | .docx generated. Charts embedded. TODO boxes for human-needed visuals. Internal links as clickable hyperlinks color-coded by category (topical blue, commercial green, conversion purple, authority slate); placeholders render as bold red `[anchor] [LINK TBD: type]`. Appendix D — Internal Link Map shows every link the SEO agent placed with target URLs, anchor text, section, and reason. Completion summary shows internal_links_total and internal_links_by_type. |
 
 **v3.4.0 Feature Checks:**
 - [ ] SME Calibration Summary appears in Draft Metadata (Phase 3)
@@ -558,6 +558,7 @@ Verify `config/scoring-thresholds.json`:
 Verify `config/brand-registry-template.json`:
 - [ ] `industry` field accepts all 10 knowledge pack names
 - [ ] `seo_preferences.internal_linking` has `sitemap_url`, `page_registry`, `pillar_pages`
+- [ ] `seo_preferences.brand_pages` has `product_or_service_pages`, `conversion_pages`, `authority_pages` (v3.9.5+ — drives commercial / conversion / authority internal links)
 - [ ] `google_integration` section present (`credentials_path`, `tracking_sheet_id`, `drive_output_folder_id`)
 - [ ] `output_preferences.brand_colors` available for chart styling
 

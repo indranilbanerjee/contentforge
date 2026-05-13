@@ -276,7 +276,12 @@ The intelligent content factory that scales brand-perfect, research-backed conte
 - Verify keyword placement: title, H1, first 100 words, at least 2 H2s, conclusion
 - Check keyword density: primary (1.5–2.5%), secondary (0.5–1%)
 - Generate: meta title (≤60 chars), meta description (≤155 chars), URL slug
-- Check internal linking opportunities (if brand content library available)
+- Internal linking — three independent categories (v3.9.5+):
+  - **Topical** (informational): driven by `seo_preferences.internal_linking.{sitemap_url,page_registry,pillar_pages}`. Target 2-3 links to related content on brand site.
+  - **Commercial** (revenue): driven by `seo_preferences.brand_pages.product_or_service_pages`. Insert natural anchor → product/service URL. Max 1 per page, 3 total. Skip with documented justification if no natural fit.
+  - **Conversion** (funnel handoff): driven by `seo_preferences.brand_pages.conversion_pages`. Exactly 1 audience-matched CTA near the end (request MSL, book demo, etc.).
+  - **Authority** (optional): driven by `seo_preferences.brand_pages.authority_pages`. One link from first brand-name occurrence to about page.
+- Emit typed `<!-- INTERNAL-LINK: type=... | anchor=... | url=... -->` markers; use `url=TBD` placeholder if site structure unknown rather than silently skipping
 - Evaluate readability vs. keyword integration balance
 - Add schema markup recommendations (FAQ schema, article schema, etc.)
 - GEO optimization: structure for AI citation (clear claims, attributable statements)
