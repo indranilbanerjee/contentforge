@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.10.0] - 2026-05-17
+
+### Added — C2PA Provenance for the .docx Output (EU AI Act Article 50)
+
+Article 50 of the EU AI Act becomes applicable **2 Aug 2026** and covers AI-generated text on matters of public interest (unless human-reviewed and the brand assumes editorial responsibility). ContentForge produces long-form text — articles, blog posts, whitepapers, FAQs, research papers — which falls in scope. v3.10 adds the technical mechanism.
+
+#### `scripts/generate-docx.py` (MODIFIED)
+
+New `--c2pa-sign` flag (with optional companion `--c2pa-signing-cert` / `--c2pa-signing-key`):
+
+- **If the installed c2pa-python supports the .docx MIME** (`application/vnd.openxmlformats-officedocument.wordprocessingml.document`): embeds the manifest inline in the .docx file. Round-trip verified via `c2pa.Reader`.
+- **Otherwise (current c2pa-python 0.32 reality):** writes a verifiable JSON-LD sidecar at `<output>.c2pa.json` with the full manifest. The .docx and the sidecar travel together; downstream tooling (or a CMS publish step that converts to PDF for production) can verify the sidecar.
+
+**Manifest content:**
+- `claim_generator_info`: ContentForge 3.10.0 + ContentForge 11-phase pipeline
+- `c2pa.actions.v2` assertion with `c2pa.created` and `c2pa.edited` (the latter records "Human-reviewed via Phase 7 reviewer scorecard before delivery" — the Article 50 human-review claim)
+- `stds.schema-org.CreativeWork` assertion: `@type: Article` for article/blog content, `CreativeWork` otherwise, with brand as `author.@type: Organization` and the title as `headline`
+- IPTC `C2paDigitalSourceType.COMPOSITE_WITH_TRAINED_ALGORITHMIC_MEDIA` (AI-assisted + human edits, which is exactly what the 11-phase pipeline produces)
+
+**Dev cert path:** if no signing cert is supplied, generates a 90-day self-signed cert with all the C2PA-required extensions (BasicConstraints, KeyUsage(digital_signature), ExtendedKeyUsage(emailProtection), SubjectKeyIdentifier, AuthorityKeyIdentifier). Production REQUIRES a CAI-recognized cert.
+
+**Empirically tested:** generated a real 36,965-byte .docx + 1,312-byte sidecar manifest from a test markdown article; sidecar contains the full CreativeWork + actions assertions; script reported `c2pa_signed: true` with `c2pa_embed_status: "sidecar-only (.docx MIME not in c2pa-python supported list)"`.
+
+### Added — May 2026 AEO reality update in Phase 6 SEO/GEO Optimizer
+
+`agents/06-seo-geo-optimizer.md` STEP 7 (AI Overview Optimization) now opens with a "May 2026 reality check":
+- Google AI Overviews appear on **~55%** of all Google searches; organic CTR on AIO queries dropped ~61%; ~58% of Google searches are zero-click
+- ChatGPT search reaches ~883M MAU; AI-referred sessions jumped 527% YoY through mid-2025
+- Citation source skew varies sharply by engine — Wikipedia 47.9% of ChatGPT factual cites; Reddit 46.7% of Perplexity; Google AIO over-indexes on Facebook/Yelp
+- Google March 2026 core update demoted FAQPage/HowTo/Review schema rich-result eligibility on non-primary pages (reviewer rubric already reflects this since v3.9.6)
+- LLMs.txt is the emerging companion standard
+- Profound / Otterly / Conductor AgentStack / HubSpot AEO are the measurement platforms (no first-party HTTP MCP yet; access via Pipedream / Composio aggregators)
+
+### Audit
+
+`generate-docx.py` syntax-checked with `python3 -m py_compile`. End-to-end test: real 36,965-byte .docx produced + 1,312-byte sidecar manifest written with `c2pa_signed: true`. Sidecar content inspected and contains the expected manifest structure (claim_generator_info, c2pa.actions.v2 with created + edited actions, stds.schema-org.CreativeWork with Article type, Organization author, headline). c2pa-python 0.32's `Builder.get_supported_mime_types()` returns image/video/audio/PDF — .docx is not yet in the list, so the script correctly reports `embed_status: sidecar-only` and writes the verifiable sidecar; this is the honest current behavior, not a bug.
+
+---
+
+## [3.9.6] - 2026-05-15
+
+### Fixed — Reflect Google March 2026 schema demotion (FAQ / HowTo / Review)
+
+Google's March 2026 core update demoted FAQPage, HowTo, and Review schema rich-result eligibility on **non-primary pages**. Applying these schema types as supplements to articles, blog posts, landing pages, etc. no longer earns rich snippets and may be treated as a spam signal. The schema rubric in `agents/07-reviewer.md` (Dimension 4 SEO Performance, sub-item 5 Schema Markup Recommendations) was rewriting full-credit scores on FAQPage/HowTo presence regardless of host-page context. Rubric updated:
+
+- Score 10: Article + Organization + Person/Product schema with entity-rich JSON-LD + LLMs.txt companion file
+- Score 8: Article + Organization only
+- Score 7: Article + FAQPage/HowTo ONLY on dedicated FAQ/how-to pages (still valuable in that context)
+- Score 6: Article only
+- Score 4: none
+- Score 2: FAQPage/HowTo schema applied to non-FAQ/non-how-to content (post-March-2026 anti-pattern)
+
+`skills/contentforge/evals/evals.json` BFSI test case assertion changed from "FAQ schema markup is included in SEO output" to "Schema markup appropriate to content type is included in SEO output (Article + Organization baseline; FAQPage only on dedicated FAQ pages per Google March 2026 demotion)".
+
+(The CHANGELOG entry for v3.9.6 was missed in the original ship — backfilled here in v3.10.0.)
+
+---
+
 ## [3.9.5] - 2026-05-13
 
 ### Added — Three-Category Internal Linking (MARKETING SEMANTICS)

@@ -342,9 +342,17 @@ Generate complete HTML meta tags including:
 - If Phase 3.5 generated a feature image (check `manifest.json` for asset with `type: "image"` at `placement: "feature"`): use generated image path for `og:image`, add width (1200), height (630), alt text
 - If no feature image: note "Feature image missing — og:image requires manual URL before publishing"
 
-## STEP 7: AI OVERVIEW OPTIMIZATION (v3.0)
+## STEP 7: AI OVERVIEW OPTIMIZATION (v3.0, updated May 2026)
 
-**Purpose:** Maximize visibility in Google AI Overviews, Perplexity featured answers, and other AI-generated search results.
+**Purpose:** Maximize visibility in Google AI Overviews, Perplexity featured answers, ChatGPT search, Claude search, Bing Copilot, and other AI-generated search results.
+
+**May 2026 reality check** — the world the optimizer is shipping into:
+- Google AI Overviews now appear on **~55% of all Google searches** (Seer Interactive, Sept 2025); organic CTR on AIO queries dropped ~61%; **~58% of Google searches are zero-click**
+- ChatGPT search reaches ~883M MAU; AI-referred sessions jumped 527% YoY through mid-2025
+- **Citation source skew varies sharply by engine** — Wikipedia = 47.9% of ChatGPT factual cites; Reddit = 46.7% of Perplexity cites; Google AIO over-indexes on Facebook/Yelp
+- **Google's March 2026 core update demoted FAQPage / HowTo / Review schema** rich-result eligibility on non-primary pages (the Phase 7 reviewer rubric reflects this — emphasize entity-rich Article + Organization JSON-LD + LLMs.txt)
+- **LLMs.txt** is the emerging companion standard (a curated map of high-value pages for AI crawlers; sits alongside sitemap.xml)
+- For ongoing AI-citation measurement integrate with a third-party platform: **Profound / Otterly / Conductor AgentStack / HubSpot AEO** — none ship a first-party HTTP MCP yet but Pipedream / Composio aggregators expose them
 
 ### 7.1 Citation-Worthiness Scoring
 
