@@ -64,7 +64,7 @@
           "type": "qualitative"
         },
         {
-          "text": "FAQ schema markup is included in SEO output",
+          "text": "Schema markup appropriate to content type is included in SEO output (Article + Organization baseline; FAQPage only on dedicated FAQ pages per Google March 2026 demotion of FAQ schema on non-primary pages)",
           "type": "quantitative"
         },
         {
