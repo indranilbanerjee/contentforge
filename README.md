@@ -4,7 +4,7 @@
 
 ContentForge turns a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document in 30–60 minutes through 13 specialized AI agents and 11 quality gates. It is built for marketing teams that produce high volumes of long-form content (articles, white papers, FAQs, research papers) and need brand voice consistency, citation integrity, and the kind of internal-link strategy that turns content into a funnel — not just a face document.
 
-> **Current version:** 3.9.5 — see [Release notes](#release-notes) at the bottom of this README.
+> **Current version:** 3.10.0 — see [Release notes](#release-notes) at the bottom of this README.
 
 ---
 
