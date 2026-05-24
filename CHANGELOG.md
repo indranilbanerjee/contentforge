@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.1] - 2026-05-24
+
+**Polish + discoverability + community-standards pass.** Patch bump — no functional changes; no new commands, skills, agents, scripts, or MCP connectors.
+
+### Added
+
+- **`CODE_OF_CONDUCT.md`** (Contributor Covenant v2.1, adapted for the Neelverse Marketing Suite scope)
+- **`SECURITY.md`** with supported-versions table (3.12.x ✅, 3.11.x ⚠️, < 3.11 ❌), private-vulnerability-reporting flow via GitHub Private Security Advisories, coordinated-disclosure timeline (Day 0 ack → Day 7 assessment → Day 30 patch → Day 45 advisory), and operator hardening recommendations (don't commit `.mcp.json`, treat brand data as sensitive, rotate keys quarterly)
+- **`.github/PULL_REQUEST_TEMPLATE.md`** — 5-platform coverage checklist, version-bump-in-all-sibling-manifests reminder, primary-source-required clause for compliance updates, AI-content disclosure clause
+- **`.github/ISSUE_TEMPLATE/`** with `bug_report.md` and `feature_request.md`
+- **Star History chart** in README — visual social proof via star-history.com
+- **"Why ContentForge" section** with 7-row comparison table covering the 11-phase pipeline, 29-pattern AI-detection humanizer, fact-checker subagent, three-category internal linking, real `.docx` output, C2PA signing, and 5-platform portability
+- **"5 coding-agent surfaces" install matrix** at the top of README
+- **"About the maintainer" section** with [indranil.in](https://indranil.in), [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow), [@askneelnow](https://x.com/askneelnow), other Neelverse plugins, Discussions, Issues, Security
+- **"Contributing" section** in README now references CoC + PR template + SECURITY.md explicitly
+- **⭐ Star CTAs** at hero, maintainer section, and footer
+
+### Changed
+
+- **Hero rewritten** — leads with "Open-source enterprise content production pipeline" positioning, badges row (version 3.12.1, license, stars, forks, issues, last-commit, Cowork-compatible, EU AI Act Article 50 ready, 5 platforms), install command moved to top of document
+- **Auto-update text** — stale version reference v3.9.5 → v3.12.1
+- **Neelverse Marketing Suite** table corrected: DMP "149 skills" → "150 skills"
+- **plugin.json description** rewritten to lead with "Open-source enterprise content production pipeline" and include all current asset counts (19 skills, 13 agents, 11 quality gates, 29-pattern humanizer, 5-platform install). Now references indranil.in explicitly.
+- **plugin.json keywords expanded 16 → 47** for Claude marketplace + Codex/Cursor/Copilot directory search. Added: `content-pipeline`, `ai-content`, `ai-writing`, `ai-humanizer`, `anti-ai-detection`, `gptzero`, `originality-ai`, `fact-checker`, `docx-generation`, `long-form-content`, `white-papers`, `blog-writing`, `ai-mode`, `ai-overviews`, `internal-linking`, `c2pa`, `content-provenance`, `eu-ai-act`, `article-50`, `claude-code-plugin`, `claude-skills`, `agent-skills`, `anthropic-claude`, `openai-codex`, `cursor-plugin`, `github-copilot`, `antigravity`, `mcp`, `model-context-protocol`, `marketing-plugin`, `ai-marketing`, `neelverse`, and more.
+
+### Fixed
+
+- **`skills/cf-help/SKILL.md`** line 230 — "Argument Hints (16 skills)" → "(19 skills)". Stale count from when the catalog had 16; current actual is 19.
+
+### Audit method (everything passed)
+
+- JSON-validated all 6 manifest/config files
+- Smoke-tested all 9 Python scripts via `--help` (9 pass / 0 fail)
+- Verified all 19 SKILL.md files have valid `name:` + `description:` frontmatter (19 valid / 0 missing)
+- Checked all internal markdown links in README.md for broken references (0 broken)
+
+### Compatibility
+
+- No breaking changes for existing Claude Code, Codex, Cursor, Copilot CLI users.
+- Plugin version: 3.12.0 → 3.12.1 (patch — docs + branding + community-standards files).
+- All 4 sibling manifests bumped to 3.12.1.
+- Skills count (19), agents count (13), commands count (7), scripts count (9): unchanged from v3.12.0.
+
+---
+
 ## [3.12.0] - 2026-05-24
 
 **Install-surface expansion: GitHub Copilot CLI (auto-discovered) + Google Antigravity 2.0 (experimental).** ContentForge now installs cleanly on five coding-agent surfaces from a single source repository — Claude Code (canonical), OpenAI Codex, Cursor (added v3.11), GitHub Copilot CLI, and Google Antigravity 2.0 (experimental).

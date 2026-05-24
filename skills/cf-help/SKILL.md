@@ -227,7 +227,7 @@ When showing the full help, include:
 ```
 === SKILL PLATFORM FEATURES ===
 
-Argument Hints (16 skills):
+Argument Hints (19 skills):
   All skills show autocomplete hints in the Skills UI.
   Example: /contentforge shows "topic" --type=article --brand=name
   Example: /contentforge:brief shows "topic or keyword" [--depth=deep]

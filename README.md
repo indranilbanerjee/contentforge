@@ -1,12 +1,56 @@
 # ContentForge
 
-**Enterprise multi-agent content production pipeline for Claude Code & Cowork.**
+**Open-source enterprise content production pipeline** — turn a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document (`.docx` with C2PA content provenance signing for EU AI Act Article 50 compliance) in 30–60 minutes. **19 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer.** Installs on **5 coding-agent surfaces**: Claude Code, Claude Cowork, OpenAI Codex, Cursor, GitHub Copilot CLI, and Google Antigravity 2.0 (experimental).
 
-ContentForge turns a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document in 30–60 minutes through 13 specialized AI agents and 11 quality gates. It is built for marketing teams that produce high volumes of long-form content (articles, white papers, FAQs, research papers) and need brand voice consistency, citation integrity, and the kind of internal-link strategy that turns content into a funnel — not just a face document.
+Built for marketing teams producing high volumes of long-form content (articles, white papers, FAQs, research papers) that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Created by [Indranil Banerjee](https://indranil.in).
 
-> **Current version:** 3.12.0 — see [Release notes](#release-notes) at the bottom of this README.
+[![Version](https://img.shields.io/badge/version-3.12.1-blue.svg)](CHANGELOG.md)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
+[![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
+[![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
+[![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
+[![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
+[![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
+[![5 platforms](https://img.shields.io/badge/installs%20on-5%20platforms-success.svg)](docs/cross-platform-install.md)
 
-> **Cross-platform install (5 surfaces):** Claude Code + Cowork (canonical), OpenAI Codex, Cursor, GitHub Copilot CLI (auto-discovers `.claude-plugin/plugin.json`), and Google Antigravity 2.0 (experimental). Single `skills/` directory, single `scripts/`, single MCP catalog — no fork. See [`docs/cross-platform-install.md`](docs/cross-platform-install.md).
+```bash
+# Install — one line on any of 5 supported platforms
+/plugin marketplace add indranilbanerjee/neels-plugins
+/plugin install contentforge@neels-plugins
+```
+
+> If ContentForge saves your team time, [give it a star ⭐](https://github.com/indranilbanerjee/contentforge/stargazers) — it's the single thing that helps other marketing teams find it.
+
+---
+
+## Why ContentForge
+
+Most AI writing tools produce one draft, in one tone, with no quality gates. The output reads like AI, factual claims are unverified, internal links don't exist, brand voice drifts, and the file format is markdown when the editor wants Word. ContentForge fixes this end-to-end:
+
+| Capability | Why it matters |
+|---|---|
+| **11-phase pipeline with quality gates after each phase** | Bad output is caught and re-run before it propagates downstream |
+| **29-pattern AI-detection humanizer** + self-critique meta-pass | Output reads human, not AI — passes GPTZero / Originality.ai checks |
+| **Fact-checker subagent** verifies URLs and cross-references claims | Citations work and aren't hallucinated |
+| **Three-category internal linking** (topical / commercial / authority) | Content becomes a funnel, not a stranded page |
+| **Real `.docx` output** with embedded SEO + Quality + Production + Internal-Link appendices | Editor / design team gets a working Word file, not markdown |
+| **C2PA content provenance signing** for EU AI Act Article 50 compliance | Long-form AI-written content distributed in EU markets needs provenance from 2 Aug 2026 |
+| **Single `skills/` directory portable across 5 platforms** | Same content workflow on Claude Code / Codex / Cursor / Copilot CLI / Antigravity |
+
+---
+
+## Installs on 5 coding-agent surfaces (one repo, no fork)
+
+| Platform | Install command | Status |
+|---|---|---|
+| **Claude Code** CLI + Desktop + **Anthropic Cowork** | `/plugin install contentforge@neels-plugins` | Full support (canonical) |
+| **OpenAI Codex** CLI | `codex plugin install indranilbanerjee/contentforge` | Full support |
+| **Cursor** IDE + CLI | `cursor plugin install indranilbanerjee/contentforge` | Skills + scripts; MCP via Cursor's global `mcp.json` |
+| **GitHub Copilot CLI** | `copilot plugin install indranilbanerjee/contentforge` | Full support — auto-discovers `.claude-plugin/plugin.json` |
+| **Google Antigravity 2.0** CLI | `agy plugin install indranilbanerjee/contentforge` | **Experimental** — manifest will firm up as Antigravity publishes v2-native spec |
+
+Agent Skills became an open standard (Dec 2025; adopted by 32+ tools by May 2026), so the same 19 SKILL.md files work everywhere. Full per-platform install guide: [`docs/cross-platform-install.md`](docs/cross-platform-install.md).
 
 ---
 
@@ -26,7 +70,7 @@ ContentForge turns a one-line topic into a publication-ready, fact-checked, bran
 
 ### 2. Turn on auto-update (one-time, recommended)
 
-**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.9.5 is the marketplace's latest and you're still running v3.9.4, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
+**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.12.1 is the marketplace's latest and you're still running v3.12.0, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
 
 Open `/plugin`, go to the **Marketplaces** tab, find `neels-plugins`, and toggle **Enable auto-update**. Done — Claude Code will refresh and pull new ContentForge releases at startup from now on, prompting you to run `/reload-plugins` to pick up changes mid-session (no full restart, conversation context preserved).
 
@@ -381,15 +425,44 @@ Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_page
 
 ---
 
+## Star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=indranilbanerjee/contentforge&type=Date)](https://star-history.com/#indranilbanerjee/contentforge&Date)
+
+---
+
+## About the maintainer
+
+ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 11-phase pipeline and 29-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
+
+- 🌐 **Website:** [indranil.in](https://indranil.in)
+- 💼 **LinkedIn:** [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)
+- 🐦 **X / Twitter:** [@askneelnow](https://x.com/askneelnow)
+- 💻 **GitHub:** [@indranilbanerjee](https://github.com/indranilbanerjee)
+- 📦 **Other plugins:** [Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro) · [SocialForge](https://github.com/indranilbanerjee/socialforge)
+- 💬 **Discussions:** [GitHub Discussions](https://github.com/indranilbanerjee/contentforge/discussions)
+- 🐛 **Bug reports:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+- 🔒 **Security:** [Private Security Advisory](https://github.com/indranilbanerjee/contentforge/security/advisories/new) (see [SECURITY.md](SECURITY.md))
+
+If ContentForge saves your team time, [⭐ star the repo](https://github.com/indranilbanerjee/contentforge/stargazers). Sharing on **LinkedIn** ([linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)) or **X** ([@askneelnow](https://x.com/askneelnow)) helps too — tag me, I'll re-share.
+
+---
+
+## Contributing
+
+PRs welcome — especially on the 29-pattern AI-detection catalog, industry-specific content templates, and platform-specific schema improvements. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) for the PR checklist, and [TESTING-GUIDE.md](TESTING-GUIDE.md) for the per-phase test checklist. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: use [Private Security Advisories](https://github.com/indranilbanerjee/contentforge/security/advisories/new) per [SECURITY.md](SECURITY.md) — do not file public issues for vulnerabilities.
+
+---
+
 ## Neelverse Marketing Suite
 
-ContentForge is part of a three-plugin suite that share the same brand profiles and marketplace:
+ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indranil.in) that share the same brand profiles and marketplace:
 
 | Plugin | What it does |
 |---|---|
-| [Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro) | End-to-end engagement methodology — 12-Part Strategy Flow, Four Core Documents, 25 agents, 149 skills |
-| **ContentForge** (this plugin) | Publication-ready content via 11-phase pipeline |
-| [SocialForge](https://github.com/indranilbanerjee/socialforge) | Social media calendar with AI image + video generation (Vertex AI / Kling v3.0) |
+| [Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro) | End-to-end engagement methodology — 12-Part Strategy Flow, Four Core Documents, 25 agents, 150 skills |
+| **ContentForge** (this plugin) | Publication-ready content via 11-phase pipeline, fact-checker, 29-pattern AI-detection humanizer, `.docx` export with C2PA signing |
+| [SocialForge](https://github.com/indranilbanerjee/socialforge) | Social media calendar with AI image (Vertex AI Nano Banana Pro) + video (WaveSpeed Kling v3.0 Pro) generation, C2PA signing |
 
 ```
 /plugin marketplace add indranilbanerjee/neels-plugins
@@ -435,6 +508,10 @@ MIT — see [LICENSE](LICENSE).
 
 ## Credits
 
-Created by Indranil Banerjee. Built for Claude Code and Cowork. Powered by Anthropic Claude.
+Created by [Indranil Banerjee](https://indranil.in). Built for Claude Code, Claude Cowork, OpenAI Codex, Cursor, GitHub Copilot CLI, and Google Antigravity 2.0. Powered by Anthropic Claude.
+
+---
+
+<sub>Made with care by [Indranil Banerjee](https://indranil.in) · MIT-licensed · [⭐ Star the repo](https://github.com/indranilbanerjee/contentforge) if it helps you</sub>
 
 Humanizer 29-pattern catalog adapted from [Wikipedia: Signs of AI Writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (CC BY-SA, WikiProject AI Cleanup) with structure influenced by [blader/humanizer](https://github.com/blader/humanizer) (MIT).
