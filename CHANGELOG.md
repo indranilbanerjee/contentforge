@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.0] - 2026-05-24
+
+**Install-surface expansion: GitHub Copilot CLI (auto-discovered) + Google Antigravity 2.0 (experimental).** ContentForge now installs cleanly on five coding-agent surfaces from a single source repository — Claude Code (canonical), OpenAI Codex, Cursor (added v3.11), GitHub Copilot CLI, and Google Antigravity 2.0 (experimental).
+
+### Added
+
+- **GitHub Copilot CLI compatibility — no new manifest needed.** Copilot CLI's plugin discovery explicitly accepts `.claude-plugin/plugin.json` as one of its manifest paths (alongside `.plugin/plugin.json`, `plugin.json`, `.github/plugin/plugin.json`). ContentForge's existing Claude Code manifest is therefore directly readable by Copilot CLI. Install: `copilot plugin install indranilbanerjee/contentforge`. The 16 opt-in HTTP MCP connectors, `hooks/hooks.json`, and SKILL.md auto-discovery all work natively.
+- **`.antigravity/plugin.json`** — Experimental manifest for Google Antigravity 2.0 CLI (launched 19 May 2026, replacing Gemini CLI). Mirrors the Gemini-CLI-extensions format that Antigravity's `agy plugin import gemini` converter accepts. Includes `_status` field flagging the experimental nature.
+- **`docs/cross-platform-install.md` — expanded** to cover all 5 platforms with install commands, what works natively per platform, the Antigravity caveat (spec not yet public), update commands per platform, and where to file platform-specific bugs.
+
+### Compatibility
+
+- No breaking changes for existing Claude Code, Codex, or Cursor users.
+- Plugin version: 3.11.0 → 3.12.0 (minor bump — new install surfaces).
+- Files added: 1 (`.antigravity/plugin.json`); 1 expanded (`docs/cross-platform-install.md`).
+- Skills count, agents count, commands count, scripts count: unchanged from v3.11.0.
+
+---
+
 ## [3.11.0] - 2026-05-24
 
 **Cross-platform compatibility pack.** ContentForge now installs cleanly on three coding-agent surfaces from a single source repository — Claude Code (canonical), OpenAI Codex, and Cursor — by adding platform-native manifest files alongside the existing Claude Code manifest. No skill duplication: all three platforms read the same `skills/`, `scripts/`, `.mcp.json`, and `hooks/hooks.json`.

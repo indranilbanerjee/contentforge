@@ -4,9 +4,9 @@
 
 ContentForge turns a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document in 30–60 minutes through 13 specialized AI agents and 11 quality gates. It is built for marketing teams that produce high volumes of long-form content (articles, white papers, FAQs, research papers) and need brand voice consistency, citation integrity, and the kind of internal-link strategy that turns content into a funnel — not just a face document.
 
-> **Current version:** 3.11.0 — see [Release notes](#release-notes) at the bottom of this README.
+> **Current version:** 3.12.0 — see [Release notes](#release-notes) at the bottom of this README.
 
-> **Cross-platform install:** v3.11.0 adds native manifests for **OpenAI Codex** and **Cursor** alongside the canonical Claude Code manifest. Same `skills/` directory, same `scripts/`, same MCP catalog. See [`docs/cross-platform-install.md`](docs/cross-platform-install.md).
+> **Cross-platform install (5 surfaces):** Claude Code + Cowork (canonical), OpenAI Codex, Cursor, GitHub Copilot CLI (auto-discovers `.claude-plugin/plugin.json`), and Google Antigravity 2.0 (experimental). Single `skills/` directory, single `scripts/`, single MCP catalog — no fork. See [`docs/cross-platform-install.md`](docs/cross-platform-install.md).
 
 ---
 
@@ -401,6 +401,8 @@ ContentForge is part of a three-plugin suite that share the same brand profiles 
 ---
 
 ## Release notes
+
+**v3.12.0 (2026-05-24)** — Install-surface expansion to 5 platforms. Adds **GitHub Copilot CLI** compatibility (no new manifest — Copilot CLI auto-discovers `.claude-plugin/plugin.json` as one of its accepted manifest paths; install: `copilot plugin install indranilbanerjee/contentforge`) and an **experimental `.antigravity/plugin.json`** for Google Antigravity 2.0 CLI (launched 19 May 2026, replacing Gemini CLI). The Antigravity manifest mirrors the Gemini-CLI-extensions format that Antigravity's `agy plugin import gemini` converter accepts; will be updated against the v2-native spec when Google publishes it. `docs/cross-platform-install.md` expanded to cover all 5 platforms. No breaking changes.
 
 **v3.11.0 (2026-05-24)** — Cross-platform compatibility pack. ContentForge now installs cleanly on **OpenAI Codex** and **Cursor** in addition to Claude Code, via two new sibling manifest files (`.codex-plugin/plugin.json` and `.cursor-plugin/plugin.json`) — same `skills/` directory, same `scripts/`, same `.mcp.json`, same `hooks/hooks.json`. No skill duplication. Works because Agent Skills became an open standard (Dec 2025) and all three platforms parse the same SKILL.md `name:` + `description:` frontmatter. Full per-platform install guide added at [`docs/cross-platform-install.md`](docs/cross-platform-install.md): install commands, what works natively per platform, the one Cursor MCP gotcha (Cursor reads MCP from a global `mcp.json` not from plugin-scoped `.mcp.json` — one-time paste required for any of the 16 opt-in connectors), update commands per platform, and where to file platform-specific bugs. No breaking changes for existing Claude Code users.
 
