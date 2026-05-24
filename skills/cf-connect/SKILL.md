@@ -397,8 +397,8 @@ The complete setup guide includes these sections:
 | Figma | Design | `https://mcp.figma.com/mcp` | Yes | contentforge, cf-social-adapt |
 | Webflow | CMS | `https://mcp.webflow.com/sse` | Yes | cf-publish, contentforge, batch-process |
 | Slack | Chat | `https://mcp.slack.com/mcp` | Yes | batch-process, cf-publish, cf-calendar |
-| Gmail | Email | `https://gmail.mcp.claude.com/mcp` | Yes | batch-process, cf-publish |
-| Google Calendar | Calendar | `https://gcal.mcp.claude.com/mcp` | Yes | cf-calendar, batch-process |
+| Gmail | Email | `https://gmailmcp.googleapis.com/mcp/v1` | Yes | batch-process, cf-publish |
+| Google Calendar | Calendar | `https://calendarmcp.googleapis.com/mcp/v1` | Yes | cf-calendar, batch-process |
 | Ahrefs | SEO | `https://api.ahrefs.com/mcp/mcp` | No | cf-brief, cf-audit, content-refresh |
 | Similarweb | SEO | `https://mcp.similarweb.com` | No | cf-brief, cf-audit |
 

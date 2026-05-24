@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.12.1",
-  "description": "Enterprise content production pipeline — 10-phase workflow, 19 skills, 13 agents, fact-checker, 29-pattern AI-detection humanizer, C2PA provenance for the .docx output (EU AI Act Article 50 compliance), May 2026 AEO/GEO reality (AI Overviews, LLMs.txt, Profound/Otterly measurement). Multi-plugin coexistence: zero global hooks, zero auto-connecting MCPs.",
+  "version": "3.12.2",
+  "description": "Enterprise content production pipeline \u2014 10-phase workflow, 19 skills, 13 agents, fact-checker, 29-pattern AI-detection humanizer, C2PA provenance for the .docx output (EU AI Act Article 50 compliance), May 2026 AEO/GEO reality (AI Overviews, LLMs.txt, Profound/Otterly measurement). Multi-plugin coexistence: zero global hooks, zero auto-connecting MCPs.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"
@@ -29,10 +29,14 @@
   "interface": {
     "displayName": "ContentForge",
     "shortDescription": "Enterprise content production pipeline with humanizer, fact-checker, C2PA provenance, and 10-phase brand-voice workflow.",
-    "longDescription": "ContentForge brings a canonical 10-phase content production pipeline to OpenAI Codex via 19 portable Agent Skills. Run the full pipeline (title curation -> research -> brief -> draft -> humanizer 29-pattern AI-detection sweep -> fact-checker -> SEO/AEO/GEO optimizer -> reviewer scorecard -> .docx export with C2PA provenance -> social adaptation) or pick individual phases. Skills are platform-portable (same SKILL.md frontmatter open standard used by Claude Code, Cursor, Copilot CLI). 16 opt-in HTTP MCP connectors (Slack, Notion, Canva, Webflow, Gmail, Google Calendar, Figma, etc.) connect only when env vars are configured — zero global hooks, zero auto-connecting MCPs for clean multi-plugin coexistence. Optional Python scripts (humanizer, fact-checker, generate-docx with --c2pa-sign for EU AI Act Article 50 compliance) run when Python 3.8+ is available.",
+    "longDescription": "ContentForge brings a canonical 10-phase content production pipeline to OpenAI Codex via 19 portable Agent Skills. Run the full pipeline (title curation -> research -> brief -> draft -> humanizer 29-pattern AI-detection sweep -> fact-checker -> SEO/AEO/GEO optimizer -> reviewer scorecard -> .docx export with C2PA provenance -> social adaptation) or pick individual phases. Skills are platform-portable (same SKILL.md frontmatter open standard used by Claude Code, Cursor, Copilot CLI). 16 opt-in HTTP MCP connectors (Slack, Notion, Canva, Webflow, Gmail, Google Calendar, Figma, etc.) connect only when env vars are configured \u2014 zero global hooks, zero auto-connecting MCPs for clean multi-plugin coexistence. Optional Python scripts (humanizer, fact-checker, generate-docx with --c2pa-sign for EU AI Act Article 50 compliance) run when Python 3.8+ is available.",
     "developerName": "Indranil Banerjee",
     "category": "marketing",
-    "capabilities": ["skills", "mcp", "scripts"],
+    "capabilities": [
+      "skills",
+      "mcp",
+      "scripts"
+    ],
     "websiteURL": "https://github.com/indranilbanerjee/contentforge",
     "defaultPrompt": "Start a new ContentForge content production pipeline."
   }

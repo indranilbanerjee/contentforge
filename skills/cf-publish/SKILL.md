@@ -105,7 +105,7 @@ No Webflow connector detected in .mcp.json.
 Falling back to HTML export mode.
 
 To enable direct publishing, add the Webflow connector:
-  /dm:connect webflow
+  /digital-marketing-pro:connect webflow
 
 Generating standalone HTML file for manual upload...
 ```
@@ -362,8 +362,8 @@ Manual Upload Instructions:
 9. Preview and publish
 
 Alternatively, connect your CMS for direct publishing:
-  /dm:connect webflow
-  /dm:connect wordpress
+  /digital-marketing-pro:connect webflow
+  /digital-marketing-pro:connect wordpress
 ===================================================
 ```
 

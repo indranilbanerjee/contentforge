@@ -28,13 +28,13 @@
     },
     "gmail": {
       "type": "http",
-      "url": "https://gmail.mcp.claude.com/mcp",
+      "url": "https://gmailmcp.googleapis.com/mcp/v1",
       "_auth": "Anthropic-platform OAuth (works in Cowork via Settings → Integrations too)",
       "_purpose": "Distribute drafts to stakeholders"
     },
     "google-calendar": {
       "type": "http",
-      "url": "https://gcal.mcp.claude.com/mcp",
+      "url": "https://calendarmcp.googleapis.com/mcp/v1",
       "_auth": "Anthropic-platform OAuth (works in Cowork via Settings → Integrations too)",
       "_purpose": "Editorial calendar, deadline scheduling"
     },

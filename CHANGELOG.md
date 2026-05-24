@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.2] - 2026-05-25
+
+**Model curator + correctness sweep.** Adds the shared model-selection infrastructure used across the Neelverse Marketing Suite, plus correctness fixes.
+
+### Added
+
+- **Model curator (`scripts/model_registry.json` + `scripts/resolve_model.py` + `scripts/refresh_models.py`)** — single source of truth for AI model ids. Resolves aliases (`latest-balanced-anthropic`, `latest-vision-google`, etc.), auto-falls-forward on deprecated ids, and reports drift against live provider catalogs. See [`docs/MODEL-CURATOR.md`](docs/MODEL-CURATOR.md).
+
+### Changed
+
+- **Gmail / Calendar MCP endpoints** — replaced dead `gmail.mcp.claude.com` and `gcal.mcp.claude.com` URLs (HTTP 404 as of May 2026) with the working Google-hosted equivalents `gmailmcp.googleapis.com/mcp/v1` and `calendarmcp.googleapis.com/mcp/v1` in `.mcp.json.connectors-reference`, `scripts/connector-status.py`, `TESTING-GUIDE.md`, `skills/cf-add-integration/SKILL.md`, and `skills/cf-connect/SKILL.md`.
+- **Slash-command refs in Python error messages** — swept shorthand `/cf:X` references and rewrote to the canonical `/contentforge:X` namespace.
+- **`docs/c2pa-production-cert.md`** — replaced the broken `contentauthenticity.org/community/cr-cli` URL with `opensource.contentauthenticity.org/docs/c2patool/` and corrected the framing.
+
+### Quality
+
+- Per-file content sweep across all `skills/**/SKILL.md` + `agents/` + reference docs. Frontmatter, slash refs, model ids, MCP URLs, and hardcoded paths all clean.
+- License compliance: MIT across all manifests; no GPL imports.
+
 ## [3.12.1] - 2026-05-24
 
 **Polish + discoverability + community-standards pass.** Patch bump — no functional changes; no new commands, skills, agents, scripts, or MCP connectors.

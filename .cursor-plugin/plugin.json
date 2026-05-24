@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.12.1",
-  "description": "Enterprise content production pipeline for Cursor — 10-phase workflow, 19 skills, 29-pattern AI-detection humanizer, C2PA provenance for .docx (EU AI Act Article 50), May 2026 AEO/GEO reality.",
+  "version": "3.12.2",
+  "description": "Enterprise content production pipeline for Cursor \u2014 10-phase workflow, 19 skills, 29-pattern AI-detection humanizer, C2PA provenance for .docx (EU AI Act Article 50), May 2026 AEO/GEO reality.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"

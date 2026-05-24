@@ -168,7 +168,7 @@ fallback_response = {
         "Set URL slug to: ai-in-healthcare-2026-trends",
         "Preview and publish"
     ],
-    "connector_setup_command": "/dm:connect webflow"
+    "connector_setup_command": "/digital-marketing-pro:connect webflow"
 }
 ```
 
@@ -196,7 +196,7 @@ def check_webflow_connector():
     return {
         'connected': False,
         'endpoint': None,
-        'setup_command': '/dm:connect webflow'
+        'setup_command': '/digital-marketing-pro:connect webflow'
     }
 ```
 

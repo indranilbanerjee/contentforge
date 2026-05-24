@@ -55,8 +55,8 @@ Search for an existing MCP server package that provides the desired integration:
    - Ahrefs: `https://api.ahrefs.com/mcp/mcp`
    - Similarweb: `https://mcp.similarweb.com`
    - Klaviyo: `https://mcp.klaviyo.com/mcp`
-   - Google Calendar: `https://gcal.mcp.claude.com/mcp`
-   - Gmail: `https://gmail.mcp.claude.com/mcp`
+   - Google Calendar: `https://calendarmcp.googleapis.com/mcp/v1`
+   - Gmail: `https://gmailmcp.googleapis.com/mcp/v1`
    - Stripe: `https://mcp.stripe.com/`
    - Asana: `https://mcp.asana.com/sse`
    - Webflow: `https://mcp.webflow.com/sse`

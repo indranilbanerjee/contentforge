@@ -618,8 +618,8 @@ Verify `config/brand-registry-template.json`:
 | 3 | **Figma** | `mcp.figma.com/mcp` | Access design file | Design data retrieved |
 | 4 | **Webflow** | `mcp.webflow.com/sse` | Publish draft content | Content appears in Webflow CMS |
 | 5 | **Slack** | `mcp.slack.com/mcp` | Send notification | Message delivered to channel |
-| 6 | **Gmail** | `gmail.mcp.claude.com/mcp` | Draft email | Email draft created |
-| 7 | **Google Calendar** | `gcal.mcp.claude.com/mcp` | Create content calendar event | Calendar event created |
+| 6 | **Gmail** | `gmailmcp.googleapis.com/mcp/v1` | Draft email | Email draft created |
+| 7 | **Google Calendar** | `calendarmcp.googleapis.com/mcp/v1` | Create content calendar event | Calendar event created |
 
 **Note:** Each connector requires OAuth authorization on first use. The Claude platform handles this — you'll see an authorization prompt. Not all testers will have accounts for all services.
 

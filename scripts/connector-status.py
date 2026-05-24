@@ -130,7 +130,7 @@ CONNECTOR_REGISTRY = {
         "connectors": {
             "gmail": {
                 "transport": "http",
-                "url": "https://gmail.mcp.claude.com/mcp",
+                "url": "https://gmailmcp.googleapis.com/mcp/v1",
                 "description": "Gmail — share drafts, deliver finished content, review notifications",
                 "env_vars": [],
                 "skills_unlocked": [
@@ -144,7 +144,7 @@ CONNECTOR_REGISTRY = {
         "connectors": {
             "google-calendar": {
                 "transport": "http",
-                "url": "https://gcal.mcp.claude.com/mcp",
+                "url": "https://calendarmcp.googleapis.com/mcp/v1",
                 "description": "Google Calendar — content calendar events, publishing deadlines, review reminders",
                 "env_vars": [],
                 "skills_unlocked": [
@@ -445,7 +445,7 @@ def check_connector(name):
                     result["setup"] = (
                         f"Requires npx server. Set environment variables: "
                         f"{', '.join(conn['env_vars'])}. "
-                        f"Then add to .mcp.json or use /cf:connect."
+                        f"Then add to .mcp.json or use /contentforge:connect."
                     )
 
             return result
@@ -516,7 +516,7 @@ def setup_guide(name):
                 guide["steps"] = [
                     f"1. Obtain API credentials from the {name} platform.",
                     f"2. Set these environment variables: {', '.join(conn['env_vars'])}",
-                    f"3. Add the connector to .mcp.json using /cf:connect {name}",
+                    f"3. Add the connector to .mcp.json using /contentforge:connect {name}",
                     f"   Or manually add this to .mcp.json:",
                 ]
                 guide["mcp_json_entry"] = {
