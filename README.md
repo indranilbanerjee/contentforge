@@ -4,7 +4,9 @@
 
 ContentForge turns a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document in 30–60 minutes through 13 specialized AI agents and 11 quality gates. It is built for marketing teams that produce high volumes of long-form content (articles, white papers, FAQs, research papers) and need brand voice consistency, citation integrity, and the kind of internal-link strategy that turns content into a funnel — not just a face document.
 
-> **Current version:** 3.10.0 — see [Release notes](#release-notes) at the bottom of this README.
+> **Current version:** 3.11.0 — see [Release notes](#release-notes) at the bottom of this README.
+
+> **Cross-platform install:** v3.11.0 adds native manifests for **OpenAI Codex** and **Cursor** alongside the canonical Claude Code manifest. Same `skills/` directory, same `scripts/`, same MCP catalog. See [`docs/cross-platform-install.md`](docs/cross-platform-install.md).
 
 ---
 
@@ -399,6 +401,10 @@ ContentForge is part of a three-plugin suite that share the same brand profiles 
 ---
 
 ## Release notes
+
+**v3.11.0 (2026-05-24)** — Cross-platform compatibility pack. ContentForge now installs cleanly on **OpenAI Codex** and **Cursor** in addition to Claude Code, via two new sibling manifest files (`.codex-plugin/plugin.json` and `.cursor-plugin/plugin.json`) — same `skills/` directory, same `scripts/`, same `.mcp.json`, same `hooks/hooks.json`. No skill duplication. Works because Agent Skills became an open standard (Dec 2025) and all three platforms parse the same SKILL.md `name:` + `description:` frontmatter. Full per-platform install guide added at [`docs/cross-platform-install.md`](docs/cross-platform-install.md): install commands, what works natively per platform, the one Cursor MCP gotcha (Cursor reads MCP from a global `mcp.json` not from plugin-scoped `.mcp.json` — one-time paste required for any of the 16 opt-in connectors), update commands per platform, and where to file platform-specific bugs. No breaking changes for existing Claude Code users.
+
+**v3.10.0 (2026-05-17)** — C2PA content provenance for the .docx output for EU AI Act Article 50 compliance (applicable 2 Aug 2026). New `--c2pa-sign` flag on `scripts/generate-docx.py` with `.docx`-embed-if-supported + verifiable `.c2pa.json` sidecar fallback (c2pa-python 0.32 does not yet support `.docx` MIME inline, so the sidecar is the pragmatic path). Plus May 2026 AEO reality update in Phase 6 SEO/GEO optimizer (Google AI Overviews 55% prevalence + 61% organic CTR drop, citation source skew by engine, LLMs.txt companion standard, Profound/Otterly/Conductor measurement integration references). Production-cert short pointer added at `docs/c2pa-production-cert.md`.
 
 **v3.9.5 (2026-05-13)** — Three-category internal linking. New `brand_pages` schema for product/service/conversion/authority pages. Real inline Word hyperlinks color-coded by category. Appendix D internal link map. Reviewer scoring split into 6a/6b/6c with no free-pass for missing site structure.
 
