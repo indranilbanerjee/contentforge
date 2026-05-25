@@ -4,7 +4,7 @@
 
 Built for marketing teams producing high volumes of long-form content (articles, white papers, FAQs, research papers) that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Created by [Indranil Banerjee](https://indranil.in).
 
-[![Version](https://img.shields.io/badge/version-3.12.5-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.12.6-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
@@ -66,11 +66,11 @@ Agent Skills became an open standard (Dec 2025; adopted by 32+ tools by May 2026
 /plugin install contentforge@neels-plugins
 ```
 
-> Tested in Claude Code CLI, Claude Code Desktop, and Anthropic Cowork. Web chat (`claude.ai`) does not support `/plugin` commands.
+> `/plugin` commands work in **Claude Code** (CLI + IDE at [claude.com/code](https://claude.com/code)) and **Anthropic Cowork**. In the standard Claude chat app (browser `claude.ai` OR the installed Claude Desktop app) plugins still install and run, but management is via the **Plugins** UI button at the bottom of the chat — not via `/plugin` slash commands. See the [Updating](#updating) section for the recovery procedure.
 
 ### 2. Turn on auto-update (one-time, recommended)
 
-**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.12.5 is the marketplace's latest and you're still running v3.12.0, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
+**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.12.6 is the marketplace's latest and you're still running v3.12.0, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
 
 Open `/plugin`, go to the **Marketplaces** tab, find `neels-plugins`, and toggle **Enable auto-update**. Done — Claude Code will refresh and pull new ContentForge releases at startup from now on, prompting you to run `/reload-plugins` to pick up changes mid-session (no full restart, conversation context preserved).
 
@@ -379,12 +379,14 @@ As of v3.9.3 the canonical namespace is `/contentforge:`. The `/cf:` prefix was 
 
 ## Updating
 
-> **If you see "/plugin isn't available in this environment"** — you're in **claude.ai web chat**, which does NOT support `/plugin` slash commands. The plugin IS installed (your `cf-*` skills work); it just can't be managed via slash command in web chat. Fix:
+> **If you see "/plugin isn't available in this environment"** — you're in the standard **Claude chat app** (browser OR installed desktop app). The `/plugin` slash command for plugin management is **only** supported in two environments: **Claude Code** (the developer CLI / IDE at [claude.com/code](https://claude.com/code), `npm install -g @anthropic-ai/claude-code`) and **Anthropic Cowork**. Everywhere else — `claude.ai` web chat, the Claude Desktop app, mobile — plugins are managed through the UI, not slash commands.
 >
-> 1. **Use the UI** — click the **Plugins** button at the bottom of the chat → **Manage plugins** → find ContentForge → look for Update / Refresh / Remove. If there's no Update button, **Remove** then **Add plugin** → re-install ContentForge from `indranilbanerjee/neels-plugins`. That re-pull fetches the latest version.
-> 2. **Or switch to Claude Code CLI / Desktop / Cowork** for plugin management — `npm install -g @anthropic-ai/claude-code` or download from [claude.com/code](https://claude.com/code). The plugins themselves run identically across every platform; you're choosing where to type the management commands.
+> The plugin IS installed (your `cf-*` skills work); only the management command is unavailable. Fix:
 >
-> Once you're on Claude Code CLI / Desktop / Cowork, the rest of this section applies.
+> 1. **In the chat UI** — click the **Plugins** button at the bottom of the chat → **Manage plugins** → find ContentForge → look for Update / Refresh / Remove. If there's no Update button, **Remove** then **Add plugin** → re-install ContentForge from `indranilbanerjee/neels-plugins`. The re-pull fetches the latest version.
+> 2. **For slash-command management** — switch to Claude Code (CLI or IDE) or Cowork. The plugin itself runs identically across every Anthropic surface; you're choosing where to type management commands.
+>
+> Once you're in Claude Code or Cowork, the rest of this section applies.
 
 **Third-party marketplaces (including this one) have auto-update DISABLED by default in Claude Code.** Anthropic's official marketplace updates itself; ours does not. So when v3.9.5 is on the marketplace and you're still running v3.9.4, nothing tells you — there is no update banner, no badge, no notification.
 

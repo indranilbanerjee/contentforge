@@ -1,6 +1,6 @@
 {
   "name": "contentforge",
-  "version": "3.12.5",
+  "version": "3.12.6",
   "description": "v3.12.3 fixes two production bugs: (1) dual-copy save \u2014 finished .docx now also written to user-visible ~/Documents/ContentForge/<brand>/<type>/<YYYY-MM>/ alongside the internal tracking copy, fixing the 'file isn't saving on local drive' report; (2) per-phase checkpointing via scripts/checkpoint-manager.py + new /contentforge:resume command \u2014 interrupted pipeline runs resume from the last completed phase instead of restarting from Phase 1. Also new: /contentforge:output-folder command to reveal the visible output folder in the OS file manager. Enterprise content production pipeline \u2014 10-phase workflow, 19 skills, 13 agents, fact-checker, 29-pattern AI-detection humanizer, C2PA provenance for the .docx output (EU AI Act Article 50 compliance), May 2026 AEO/GEO reality (AI Overviews, LLMs.txt, Profound/Otterly measurement). Multi-plugin coexistence: zero global hooks, zero auto-connecting MCPs. Shared model curator (scripts/model_registry.json + resolve_model.py): aliases like latest-balanced-anthropic / latest-vision-google resolve to concrete ids at call time; deprecated ids auto-fall-forward. See docs/MODEL-CURATOR.md.",
   "author": {
     "name": "Indranil Banerjee",
