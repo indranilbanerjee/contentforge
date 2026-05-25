@@ -108,6 +108,49 @@ Title Options:
 Which title would you like to use? You can select a number, modify one, or provide your own.
 ```
 
+## Checkpointing (v3.12.3+) — required for resumable runs
+
+Before Phase 1 starts, initialise a checkpoint run so any interruption can be resumed instead of restarted from scratch:
+
+```bash
+RUN_RESULT=$(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py init \
+    --brand "{brand}" --topic "{topic}" --content-type {content_type})
+RUN_ID=$(echo "$RUN_RESULT" | python -c "import sys,json; print(json.load(sys.stdin)['run_id'])")
+```
+
+After each phase finishes and passes its quality gate, save its output:
+
+```bash
+# Phase 0.5 — after title is confirmed:
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
+    --brand "{brand}" --run-id "$RUN_ID" --phase 0.5 --content "{confirmed_title}" --extension txt
+
+# Phase 1 — after research outline + sources are produced:
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
+    --brand "{brand}" --run-id "$RUN_ID" --phase 1 --content-file {tmp_outline_path} --extension md
+
+# Phase 2 — fact-check ledger:
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
+    --brand "{brand}" --run-id "$RUN_ID" --phase 2 --content-file {tmp_factcheck_json} --extension json
+
+# Phase 3 — first draft:
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
+    --brand "{brand}" --run-id "$RUN_ID" --phase 3 --content-file {tmp_draft_md} --extension md
+
+# ...continue for 3.5, 4, 5, 6, 6.5, 7, 8.
+```
+
+After Phase 8 produces the final `.docx` and tracking row is marked complete:
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize \
+    --brand "{brand}" --run-id "$RUN_ID" --status completed
+```
+
+If a phase fails its quality gate and loops back, **do not overwrite the saved checkpoint** for the upstream phase that already passed — just re-save the looped phase when it eventually passes.
+
+If the run is interrupted (context exhaustion, user cancel, network), the user can resume with `/contentforge:resume` — that command reloads every saved phase and continues from the next un-checkpointed phase.
+
 ## The 10-Phase Pipeline
 
 Each phase has a quality gate. If any phase fails, the pipeline loops back with feedback (max 5 loops before human escalation).

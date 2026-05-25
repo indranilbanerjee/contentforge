@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.3] - 2026-05-25
+
+**Fixes two user-reported bugs from the v3.12.2 beta cycle.** Production users on Windows reported "the final file isn't saving on local drive" and "the process stops partway through with no way to resume." Both are now fixed.
+
+### Fixed
+
+- **Final `.docx` invisible to users (dual-copy save).** The Phase 8 output manager only wrote to `~/.claude-marketing/<brand>/tracking/outputs/<year>/<month>/<slug>_v1.0.docx` — a dotfolder that Windows Explorer hides by default. End users couldn't find the file even though it was on disk. Phase 8 now writes to TWO locations:
+  - **Internal tracking copy** (unchanged): `~/.claude-marketing/<brand>/tracking/outputs/...` — system-of-record for `/contentforge:analytics`, `/contentforge:audit`.
+  - **User-visible published copy** (new): `~/Documents/ContentForge/<brand>/<content-type>/<YYYY-MM>/<slug>.docx` — visible in Explorer / Finder / file managers by default. Override the root with the `CONTENTFORGE_PUBLISH_DIR` env var (Dropbox path, team-share mount, etc.) or `--publish-dir` on `local-tracker.py`.
+  - The completion card in the conversation now quotes the **published_path** prominently with a "📂 Where your file is" callout.
+- **Pipeline interruption = total loss.** The 11-phase pipeline runs 20–60 minutes end to end. If the session terminated partway through (context-window exhaustion, network blip, Ctrl-C, machine sleep), the in-memory Phase 1..N outputs were lost — there was no resume. Now every phase saves its output to `~/.claude-marketing/<brand>/runs/<run_id>/phase-<N>-<phase>.{md,json}` via `scripts/checkpoint-manager.py`, and `/contentforge:resume` reloads the saved artefacts and continues from the next un-checkpointed phase.
+
+### Added
+
+- **`scripts/checkpoint-manager.py`** — per-phase checkpoint storage. Subcommands: `init` (start a run), `save` (write a phase output), `status`/`load` (inspect a run), `list` (all runs for a brand), `resume` (pick the latest in-progress run), `finalize` (mark a run completed/failed/abandoned), `discard` (delete a run's checkpoint dir). Atomic writes; stdlib only; works in headless / cron contexts.
+- **`commands/resume.md`** — `/contentforge:resume [run-id]`. Picks the run to resume, reloads every saved phase as context for the next phase, hands control to the agent that owns the next un-checkpointed phase, and continues until Phase 8. Warns the user if `last_updated` > 7 days (sources may have moved). Lists all in-progress runs if there's ambiguity.
+- **`commands/output-folder.md`** — `/contentforge:output-folder [brand]`. Prints the absolute path of the user-visible publish folder and opens it in the OS file manager (Windows `start`, macOS `open`, Linux `xdg-open`). Direct answer to "where did my file go?"
+
+### Changed
+
+- **`scripts/local-tracker.py`** — `mark_complete()` now copies the output to both the tracking AND publish locations, returns both paths in its JSON, exposes `--publish-dir` and `--skip-publish` flags. Backward compatible — older callers that only read `output_path` still work; the new `published_path` field is additive.
+- **`agents/08-output-manager.md`** Phase 8 step D1 now documents the dual-copy behaviour, explicitly tells the agent to quote `published_path` (not `output_path`) when surfacing the file location to the user, and adds a "📂 Where your file is" section to the mandatory completion card.
+- **`commands/create-content.md`** now has a "Checkpointing (v3.12.3+) — required for resumable runs" section between the title curation step and Phase 1, with the explicit init + per-phase save + finalize commands the orchestrator must run.
+
+### Quality
+
+- Per-file content sweep (`_shared/sweep_skill_quality.py`) clean across all SKILL.md / agent / reference docs.
+- 12 scripts (was 11) and 9 commands (was 7); counts updated in README hero + plugin.json descriptions across all 4 manifests.
+
 ## [3.12.2] - 2026-05-25
 
 **Model curator + correctness sweep.** Adds the shared model-selection infrastructure used across the Neelverse Marketing Suite, plus correctness fixes.

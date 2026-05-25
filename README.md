@@ -4,7 +4,7 @@
 
 Built for marketing teams producing high volumes of long-form content (articles, white papers, FAQs, research papers) that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Created by [Indranil Banerjee](https://indranil.in).
 
-[![Version](https://img.shields.io/badge/version-3.12.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.12.3-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
@@ -70,7 +70,7 @@ Agent Skills became an open standard (Dec 2025; adopted by 32+ tools by May 2026
 
 ### 2. Turn on auto-update (one-time, recommended)
 
-**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.12.2 is the marketplace's latest and you're still running v3.12.0, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
+**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.12.3 is the marketplace's latest and you're still running v3.12.0, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
 
 Open `/plugin`, go to the **Marketplaces** tab, find `neels-plugins`, and toggle **Enable auto-update**. Done — Claude Code will refresh and pull new ContentForge releases at startup from now on, prompting you to run `/reload-plugins` to pick up changes mid-session (no full restart, conversation context preserved).
 
@@ -94,25 +94,37 @@ The skill prompts you for content type, brand, topic, target word count, and aud
 
 ### 5. Find your output
 
-Everything lands in:
+ContentForge now writes the finished `.docx` to **two** places (v3.12.3+):
+
+**User-visible copy — this is the one to open:**
 
 ```
-~/.claude-marketing/<brand-slug>/output/<content-type>/<YYYY-MM-DD>/
-├── <slug>.docx              ← final Microsoft Word file (open this)
-├── humanized.md             ← final markdown source
-├── research-brief.md        ← Phase 1 research
-├── fact-check-report.md     ← Phase 2 verification
-├── draft.md                 ← Phase 3 raw draft
-├── scientific-validation.md ← Phase 4
-├── proofread.md             ← Phase 5
-├── seo-scorecard.md         ← Phase 6 (with internal link map)
-├── review-report.md         ← Phase 7 reviewer scoring
-├── reports.json             ← combined SEO/Quality/Production scorecards
-├── visual-manifest.md       ← Phase 3.5 chart annotations
-└── assets/                  ← rendered PNG charts
+~/Documents/ContentForge/<brand-slug>/<content-type>/<YYYY-MM>/<slug>.docx
 ```
 
-The `.docx` includes the body, references, and four appendices — **A** SEO Scorecard, **B** Quality Scorecard, **C** Production Details, **D** Internal Link Map.
+This lives in your normal Documents folder, visible in Windows Explorer / macOS Finder / Linux file managers by default. Override the root with the `CONTENTFORGE_PUBLISH_DIR` env var (e.g. point at a Dropbox or team-share path). Run `/contentforge:output-folder` any time to print the absolute path and open the folder in the OS file manager.
+
+**Internal tracking copy — the system-of-record for analytics/audit skills:**
+
+```
+~/.claude-marketing/<brand-slug>/tracking/outputs/<YYYY>/<MM-MonthName>/
+└── <slug>_v1.0.docx
+```
+
+The intermediate phase artefacts (research brief, fact-check report, draft, SEO scorecard, review report, etc.) plus rendered chart PNGs land alongside the tracking copy under `~/.claude-marketing/<brand-slug>/output/<content-type>/<YYYY-MM-DD>/`. The `.docx` includes the body, references, and four appendices — **A** SEO Scorecard, **B** Quality Scorecard, **C** Production Details, **D** Internal Link Map.
+
+> **Bug fix in v3.12.3:** earlier versions only wrote to the hidden `~/.claude-marketing/` dotfolder, which Windows Explorer hides by default. Multiple users reported "the file isn't saving on local drive" — it was saving, just somewhere they couldn't see. The dual-copy fix is the resolution; `/contentforge:output-folder` is the quick-reveal command.
+
+### 6. If the run gets interrupted, resume it
+
+The 11-phase pipeline runs 20–60 minutes end to end. If the session terminates partway through (context-window exhaustion, network blip, Ctrl-C, machine sleep), v3.12.3+ saves each completed phase to disk via `scripts/checkpoint-manager.py`. Resume the run with:
+
+```
+/contentforge:resume                 # auto-picks the most recent in-progress run for the active brand
+/contentforge:resume <run-id>        # pick a specific run from `checkpoint-manager.py list`
+```
+
+The resumer reloads the saved Phase 1..N outputs and continues from Phase N+1 — no re-running phases that already completed. (Earlier versions had no checkpointing — an interruption meant starting over from Phase 1.)
 
 ---
 
@@ -210,7 +222,7 @@ Open it in Word. You will see the body, the references, then **Appendix A** (SEO
 
 ## Commands (visible in the Customize sidebar)
 
-These 7 commands are the user-facing entry points:
+These 9 commands are the user-facing entry points:
 
 | Command | What it does |
 |---|---|
@@ -221,6 +233,8 @@ These 7 commands are the user-facing entry points:
 | `/contentforge:translate` | Translate into 15+ languages preserving brand voice, citations, SEO |
 | `/contentforge:brand-setup` | Configure brand voice, terminology, guardrails, internal linking, **brand_pages** |
 | `/contentforge:audit-content` | Audit content library for freshness decay and coverage gaps |
+| `/contentforge:output-folder` | Print + open the user-visible output folder (`~/Documents/ContentForge/<brand>/`) — answers "where did my file go?" (v3.12.3+) |
+| `/contentforge:resume` | Resume an interrupted pipeline run from the last completed phase instead of starting over (v3.12.3+) |
 
 > Slash command syntax is canonical `/<plugin-name>:<command>` — the older `/cf:` shortcuts no longer work as of v3.9.3.
 

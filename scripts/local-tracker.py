@@ -61,8 +61,36 @@ MONTH_NAMES = {
 # ── Helpers ─────────────────────────────────────────────────────────
 
 def get_tracking_dir(brand):
-    """Get the tracking directory for a brand."""
+    """Get the tracking directory for a brand (internal — hidden dotfolder)."""
     return Path.home() / ".claude-marketing" / brand / "tracking"
+
+
+def get_publish_dir(brand, content_type=None, override=None):
+    """Resolve the user-visible 'published output' directory.
+
+    Resolution order (first non-empty wins):
+      1. ``override`` argument (CLI --publish-dir)
+      2. ``CONTENTFORGE_PUBLISH_DIR`` env var (workspace default)
+      3. ``~/Documents/ContentForge/{brand}/[{content_type}/]``
+
+    The published copy is in addition to the tracking copy under
+    ``~/.claude-marketing/{brand}/tracking/outputs/...`` — internal tracking
+    stays where the rest of the plugin expects it; this is the copy the user
+    actually opens.
+
+    On Windows, ``~/Documents`` resolves via USERPROFILE and is visible by
+    default; ``~/.claude-marketing`` is treated as a hidden dotfolder and is
+    why earlier versions felt like "the file isn't saving" to end users.
+    """
+    import os as _os
+    base = override or _os.environ.get("CONTENTFORGE_PUBLISH_DIR")
+    if base:
+        base = Path(base).expanduser()
+    else:
+        base = Path.home() / "Documents" / "ContentForge" / brand
+    if content_type:
+        base = base / content_type
+    return base
 
 
 def load_tracking(brand):
@@ -234,8 +262,18 @@ def update_row(brand, row_id, data):
     return {"error": f"No record with requirement_id={row_id}"}
 
 
-def mark_complete(brand, row_id, data, output_file=None):
-    """Mark a record as completed, copy output file to organized directory."""
+def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=None, skip_publish=False):
+    """Mark a record as completed and copy output to two locations:
+
+    1. Internal tracking copy under ``~/.claude-marketing/{brand}/tracking/outputs/...``
+       (machine-readable, used by /contentforge:analytics, /contentforge:audit, etc.)
+    2. **User-visible published copy** under ``~/Documents/ContentForge/{brand}/...``
+       (the path end users actually open — fixes the "file isn't saving on local
+       drive" report from the v3.12.2 user feedback).
+
+    Both copies are returned in the result so the orchestrator can quote the
+    visible path to the user.
+    """
     store, err = load_tracking(brand)
     if err:
         return {"error": err}
@@ -264,7 +302,8 @@ def mark_complete(brand, row_id, data, output_file=None):
             target[field] = data[field]
 
     # Copy output file to organized directory
-    dest_path = None
+    tracking_path = None
+    published_path = None
     if output_file:
         src = Path(output_file).expanduser()
         if src.exists():
@@ -272,31 +311,61 @@ def mark_complete(brand, row_id, data, output_file=None):
             month_dir = MONTH_NAMES[today.month]
             title_slug = slugify(target.get("title", row_id))
             ext = src.suffix
+            content_type = target.get("content_type", "") or None
 
-            outputs_dir = get_tracking_dir(brand) / "outputs" / str(today.year) / month_dir
-            outputs_dir.mkdir(parents=True, exist_ok=True)
+            # --- 1. Internal tracking copy (under ~/.claude-marketing/...) ---
+            tracking_outputs_dir = get_tracking_dir(brand) / "outputs" / str(today.year) / month_dir
+            tracking_outputs_dir.mkdir(parents=True, exist_ok=True)
+            tracking_dest = tracking_outputs_dir / f"{title_slug}_v1.0{ext}"
+            shutil.copy2(str(src), str(tracking_dest))
+            tracking_path = str(tracking_dest)
 
-            dest = outputs_dir / f"{title_slug}_v1.0{ext}"
-            shutil.copy2(str(src), str(dest))
-            dest_path = str(dest)
-
-            # Check for assets directory next to source file
             src_assets = src.parent / "assets"
             if src_assets.is_dir():
-                dest_assets = outputs_dir / "assets"
+                dest_assets = tracking_outputs_dir / "assets"
                 dest_assets.mkdir(parents=True, exist_ok=True)
                 for asset in src_assets.iterdir():
                     if asset.is_file():
                         shutil.copy2(str(asset), str(dest_assets / asset.name))
 
-            target["output_path"] = dest_path
+            # --- 2. User-visible published copy (under ~/Documents/...) ---
+            if not skip_publish:
+                month_short = today.strftime("%Y-%m")
+                publish_outputs_dir = get_publish_dir(brand, content_type, publish_dir_override) / month_short
+                try:
+                    publish_outputs_dir.mkdir(parents=True, exist_ok=True)
+                    publish_dest = publish_outputs_dir / f"{title_slug}{ext}"
+                    shutil.copy2(str(src), str(publish_dest))
+                    published_path = str(publish_dest)
+
+                    # Also publish assets alongside the .docx so charts/images are visible
+                    if src_assets.is_dir():
+                        publish_assets = publish_outputs_dir / f"{title_slug}-assets"
+                        publish_assets.mkdir(parents=True, exist_ok=True)
+                        for asset in src_assets.iterdir():
+                            if asset.is_file():
+                                shutil.copy2(str(asset), str(publish_assets / asset.name))
+                except (OSError, PermissionError) as exc:
+                    # Non-fatal — tracking copy is the system-of-record.
+                    # User-visible copy can be re-published with /contentforge:output-folder.
+                    published_path = None
+                    target.setdefault("notes", "")
+                    target["notes"] = (str(target["notes"]) + f" | publish failed: {exc}").strip(" |")
+
+            target["output_path"] = tracking_path
+            target["published_path"] = published_path
 
     save_tracking(brand, store)
 
     return {
         "status": "completed",
         "requirement_id": row_id,
-        "output_path": dest_path,
+        "output_path": tracking_path,
+        "published_path": published_path,
+        "published_path_note": (
+            "This is the user-visible copy under ~/Documents/ContentForge/. "
+            "Open this folder, not the tracking copy under ~/.claude-marketing/."
+        ) if published_path else None,
     }
 
 
@@ -310,6 +379,11 @@ def main():
     parser.add_argument("--row-id", help="Requirement ID for row operations")
     parser.add_argument("--data", help="JSON string with field values")
     parser.add_argument("--output-file", help="Path to output file to copy (for mark-complete)")
+    parser.add_argument("--publish-dir", default=None,
+                        help="Override the user-visible publish directory (default: "
+                             "$CONTENTFORGE_PUBLISH_DIR if set, else ~/Documents/ContentForge/{brand}/)")
+    parser.add_argument("--skip-publish", action="store_true",
+                        help="Skip the user-visible copy and only write the internal tracking copy")
     args = parser.parse_args()
 
     # Parse data JSON
@@ -342,7 +416,9 @@ def main():
         if not args.row_id:
             result = {"error": "Provide --row-id for mark-complete"}
         else:
-            result = mark_complete(args.brand, args.row_id, data, args.output_file)
+            result = mark_complete(args.brand, args.row_id, data, args.output_file,
+                                   publish_dir_override=args.publish_dir,
+                                   skip_publish=args.skip_publish)
     else:
         result = {"error": f"Unknown action: {args.action}"}
 

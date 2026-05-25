@@ -290,7 +290,7 @@ python3 {scripts_dir}/airtable-tracker.py \
 
 #### If `tracking.backend` is `"local"` (or empty/missing):
 
-**Step D1: Mark Complete + Copy Output File**
+**Step D1: Mark Complete + Dual-Copy Output File (v3.12.3+)**
 ```
 python3 {scripts_dir}/local-tracker.py \
   --action mark-complete \
@@ -299,7 +299,25 @@ python3 {scripts_dir}/local-tracker.py \
   --data '{"quality_score": {score}, "content_quality": {cq}, "citation_integrity": {ci}, "brand_compliance": {bc}, "seo_performance": {seo}, "readability": {read}, "actual_word_count": {words}, "notes": "Completed successfully."}' \
   --output-file {path to generated .docx}
 ```
-The .docx is copied to `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/`.
+
+The `.docx` is now written to **two** locations:
+
+1. **Internal tracking copy:** `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/` — system-of-record for `/contentforge:analytics`, `/contentforge:audit`, etc. Lives in a Windows-hidden dotfolder.
+2. **User-visible published copy:** `~/Documents/ContentForge/{brand}/{content_type}/{YYYY-MM}/` — the path the user actually opens. **You MUST quote this path explicitly in the completion card.** (Override via `--publish-dir <path>` or the `CONTENTFORGE_PUBLISH_DIR` env var.)
+
+Parse the JSON returned by `local-tracker.py` and use the `published_path` field, not `output_path`, when telling the user where the file is. Example output:
+
+```json
+{
+  "status": "completed",
+  "requirement_id": "REQ-001",
+  "output_path": "C:\\Users\\indra\\.claude-marketing\\...\\tracking\\outputs\\2026\\05-May\\ai-in-pharma_v1.0.docx",
+  "published_path": "C:\\Users\\indra\\Documents\\ContentForge\\Acme\\whitepaper\\2026-05\\ai-in-pharma.docx",
+  "published_path_note": "This is the user-visible copy under ~/Documents/ContentForge/..."
+}
+```
+
+If `published_path` is `null` (publish step failed — e.g., the user's `~/Documents` is on a read-only mount), fall back to `output_path` and tell the user explicitly that the visible copy failed, suggest `/contentforge:output-folder` to investigate.
 
 #### For ALL backends: New Single Request Handling
 
@@ -409,6 +427,18 @@ The completion card is the user's primary record of what was produced, how it sc
 | .docx File | ✅ Generated |
 | {backend} | {✅ Uploaded / ⚠️ Pending / ❌ Failed} |
 | Tracking Sheet | {✅ Updated / ⚠️ Pending} |
+
+### 📂 Where your file is
+
+**Open this folder to find the finished .docx:**
+
+```
+{published_path}
+```
+
+(Internal tracking copy at `{output_path}` — that's a hidden dotfolder; the line above is the one to open in Explorer / Finder.)
+
+Tip: `/contentforge:output-folder` reveals this folder in the OS file manager.
 
 ### Guardrails: {verified / skipped_empty / minimal}
 
