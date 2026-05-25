@@ -296,6 +296,15 @@ Single-pass fact-checking misses 15–20% of hallucinations. ContentForge uses t
 
 29-pattern AI-detection catalog (5 buckets: content, language/grammar, style, communication, filler/hedging) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, burstiness 0.50 → 0.72, AI signal score ≤3/10, em dashes ≤2 per 500 words.
 
+### Model curator (v3.12.2+) — no hardcoded model ids
+
+Frontier models change every ~6 weeks. ContentForge ships a shared registry + resolver so model ids are never hardcoded across scripts: edit `scripts/model_registry.json` in one place and every script picks up the change next call. Aliases like `latest-balanced-anthropic`, `latest-vision-google`, `latest-image-google` resolve at call time; deprecated ids auto-fall-forward to their replacement; `scripts/refresh_models.py` polls live provider catalogs and reports drift. See [`docs/MODEL-CURATOR.md`](docs/MODEL-CURATOR.md).
+
+```bash
+python scripts/resolve_model.py --alias latest-balanced-anthropic
+python scripts/resolve_model.py --check gemini-2.0-flash      # warns: deprecated, use gemini-3.5-flash
+```
+
 ---
 
 ## Connectors (MCP integrations)

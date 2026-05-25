@@ -2,7 +2,7 @@
   "_status": "experimental \u2014 Antigravity 2.0 (launched 19 May 2026) has not yet published an open plugin manifest spec. This file mirrors the Gemini CLI Extensions format that Antigravity's `agy plugin import gemini` converter accepts. When Antigravity publishes a v2-native plugin manifest spec, this file will be updated to match. See docs/cross-platform-install.md for the current install workflow.",
   "name": "contentforge",
   "version": "3.12.2",
-  "description": "Enterprise content production pipeline \u2014 10-phase workflow, 19 skills, 13 agents, 29-pattern AI-detection humanizer, C2PA provenance for the .docx output (EU AI Act Article 50 compliance), May 2026 AEO/GEO reality.",
+  "description": "Enterprise content production pipeline \u2014 10-phase workflow, 19 skills, 13 agents, 29-pattern AI-detection humanizer, C2PA provenance for the .docx output (EU AI Act Article 50 compliance), May 2026 AEO/GEO reality. Shared model curator (scripts/model_registry.json + resolve_model.py): aliases like latest-balanced-anthropic / latest-vision-google resolve to concrete ids at call time; deprecated ids auto-fall-forward. See docs/MODEL-CURATOR.md.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"
