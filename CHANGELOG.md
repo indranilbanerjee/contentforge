@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.4] - 2026-05-25
+
+**Fixes a quality bug discovered during the full production simulation of v3.12.3.** Headings in the generated `.docx` were rendering as plain bold text with manual font sizing instead of using Word's semantic `Title` / `Heading 1` / `Heading 2` / `Heading 3` paragraph styles. The end-user impact: no Navigation Pane in Word, no auto-generated Table of Contents, no PDF bookmarks when exporting to PDF, and screen readers do not recognise sections as headings (accessibility regression).
+
+### Fixed
+
+- **`scripts/generate-docx.py` `render_blocks()`** — H1/H2/H3 markdown headings now apply Word's `Heading 1` / `Heading 2` / `Heading 3` paragraph styles via `doc.add_heading(level=...)` instead of just bolding the text in a default paragraph. Font sizes preserved; styles now also picked up by Word's Navigation Pane, Insert > Table of Contents, PDF export-with-bookmarks, and screen-reader heading navigation.
+- **Appendix headers (A/B/C/D)** in `add_appendices()` and `add_internal_link_map_appendix()` — each "Appendix X" header now uses `Heading 2`; the "APPENDICES" page header now uses `Heading 1`. Same accessibility / TOC benefit.
+- **Document title** in `add_title_page()` — now uses Word's `Title` paragraph style so it's recognised as the document title by readers and PDF exporters.
+
+### How this was caught
+
+The full production simulation in `_shared/cf_production_simulation.py` (added in v3.12.3) extracted the XML of every produced `.docx` and counted `<w:pStyle w:val="HeadingN"/>` occurrences. The result was 0 across all 4 doc types (whitepaper, article, blog, research_paper) even though each had 7-12 H2 sections in the source markdown. The deep inspection in the simulation harness now confirms post-fix counts of Title=1, H1=1, H2=10-16, H3=0-15 per doc type depending on content depth.
+
+### Quality verification re-ran for v3.12.4
+
+| Doc type | Tables | H2 sections | H3 sections | Appendices A/B/C/D | Sections present |
+|---|---|---|---|---|---|
+| Whitepaper (Generative AI in Cardiology) | 5 | 16 | 15 | A/B/C/D (5 INTERNAL-LINK markers) | 12/12 |
+| Article (Burnout as Marketing KPI) | 4 | 10 | 0 | A/B/C | 7/7 |
+| Blog (LinkedIn Patterns May 2026) | 3 | 10 | 0 | A/B/C | 7/7 |
+| Research paper (Causal Inference for MMM) | 4 | 14 | 12 | A/B/C | 11/11 |
+
+All 4 also: dual-copy save works (tracking + `~/Documents/ContentForge/`), valid Microsoft Word file (ZIP + `word/document.xml` round-trip), interruption-resume works for each at a different kill phase (whitepaper killed at phase 3, article at 6, blog at 0.5, research paper at 7), checkpoint manager preserves all saved phase artifacts.
+
 ## [3.12.3] - 2026-05-25
 
 **Fixes two user-reported bugs from the v3.12.2 beta cycle.** Production users on Windows reported "the final file isn't saving on local drive" and "the process stops partway through with no way to resume." Both are now fixed.

@@ -365,22 +365,21 @@ def render_blocks(doc, blocks):
 
     for kind, content in blocks:
         if kind == "h1":
-            p = doc.add_paragraph()
+            # Use Word's semantic Heading 1 style so Navigation Pane, TOC,
+            # PDF bookmarks, and screen readers recognise it as a heading.
+            p = doc.add_heading(level=1)
             run = p.add_run(content)
-            run.bold = True
             run.font.size = Pt(24)
             p.paragraph_format.space_after = Pt(12)
         elif kind == "h2":
-            p = doc.add_paragraph()
+            p = doc.add_heading(level=2)
             run = p.add_run(content)
-            run.bold = True
             run.font.size = Pt(18)
             p.paragraph_format.space_before = Pt(18)
             p.paragraph_format.space_after = Pt(8)
         elif kind == "h3":
-            p = doc.add_paragraph()
+            p = doc.add_heading(level=3)
             run = p.add_run(content)
-            run.bold = True
             run.font.size = Pt(14)
             p.paragraph_format.space_before = Pt(12)
             p.paragraph_format.space_after = Pt(6)
@@ -459,10 +458,11 @@ def add_title_page(doc, brand, content_type, title, score, grade):
 
     doc.add_paragraph()
 
-    p = doc.add_paragraph()
+    # Use Word's semantic Title style so Navigation Pane / PDF bookmarks
+    # recognise this as the document title.
+    p = doc.add_paragraph(style="Title")
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = p.add_run(title)
-    run.bold = True
     run.font.size = Pt(20)
 
     doc.add_paragraph()
@@ -491,9 +491,8 @@ def add_internal_link_map_appendix(doc, link_markers):
     if not link_markers:
         return
 
-    p = doc.add_paragraph()
+    p = doc.add_heading(level=2)
     run = p.add_run("Appendix D — Internal Link Map")
-    run.bold = True
     run.font.size = Pt(16)
 
     p = doc.add_paragraph()
@@ -569,17 +568,17 @@ def add_appendices(doc, reports, link_markers=None):
         return
 
     doc.add_page_break()
-    p = doc.add_paragraph()
+    # Heading 1 so Navigation Pane / PDF bookmarks / Word TOC pick it up
+    p = doc.add_heading(level=1)
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = p.add_run("APPENDICES")
-    run.bold = True
     run.font.size = Pt(20)
     doc.add_paragraph()
 
     if seo:
-        p = doc.add_paragraph()
+        # Heading 2 — appendix sub-headers nest under the Heading 1 above
+        p = doc.add_heading(level=2)
         run = p.add_run("Appendix A — SEO Scorecard")
-        run.bold = True
         run.font.size = Pt(16)
         rows = [
             ("Metric", "Value"),
@@ -603,9 +602,8 @@ def add_appendices(doc, reports, link_markers=None):
         doc.add_paragraph()
 
     if quality:
-        p = doc.add_paragraph()
+        p = doc.add_heading(level=2)
         run = p.add_run("Appendix B — Quality Scorecard")
-        run.bold = True
         run.font.size = Pt(16)
         dims = quality.get("dimensions", {})
         rows = [
@@ -645,9 +643,8 @@ def add_appendices(doc, reports, link_markers=None):
         doc.add_paragraph()
 
     if production:
-        p = doc.add_paragraph()
+        p = doc.add_heading(level=2)
         run = p.add_run("Appendix C — Production Details")
-        run.bold = True
         run.font.size = Pt(16)
 
         rows = [
