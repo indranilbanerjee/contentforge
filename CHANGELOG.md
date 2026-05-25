@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.5] - 2026-05-25
+
+**README fix for the "claude.ai web" gotcha.** User-team feedback from Shreea (v3.12.2-cycle WhatsApp screenshot): she ran `/plugin update contentforge@neels-plugins` in claude.ai web chat and saw `"/plugin isn't available in this environment"`. The plugin was installed (her `cf-*` skills showed up correctly), but the `/plugin` slash command itself is not supported in claude.ai web — only in Claude Code CLI / Desktop / Cowork. Our previous README did not surface this.
+
+### Changed
+
+- **`README.md`** — added a prominent "If you see /plugin isn't available in this environment" callout at the top of the Updating section. Documents the two recovery paths: (1) use the **Plugins** UI button at the bottom of the web chat → **Manage plugins** → Remove + Add to force a re-pull of the latest version, OR (2) switch to Claude Code CLI / Desktop / Cowork for plugin management commands. Clarifies that the plugin itself runs identically across every platform; only the management commands differ.
+
 ## [3.12.4] - 2026-05-25
 
 **Fixes a quality bug discovered during the full production simulation of v3.12.3.** Headings in the generated `.docx` were rendering as plain bold text with manual font sizing instead of using Word's semantic `Title` / `Heading 1` / `Heading 2` / `Heading 3` paragraph styles. The end-user impact: no Navigation Pane in Word, no auto-generated Table of Contents, no PDF bookmarks when exporting to PDF, and screen readers do not recognise sections as headings (accessibility regression).
