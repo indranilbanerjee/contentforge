@@ -515,7 +515,19 @@ You select Option 1 → Pipeline starts with that title as the anchor.
 
 ---
 
-**Version:** 3.8.0
-**Agents:** 13 agents (Research, Fact Checker, Drafter, Visual Asset Annotator, Validator, Structurer, SEO/GEO Optimizer, Humanizer, Reviewer, Output Manager, Batch Orchestrator, Social Adapter, Translator)
-**Processing Time:** 20-30 minutes avg
-**Quality Guarantee:** ≥8.5/10 avg score, zero hallucinations, 95%+ citation accuracy
+<!-- Version, agent count, and asset counts are pulled live by /contentforge:cf-help
+     from scripts/plugin-metadata.py. Do not bake version strings into skill
+     bodies -- they drift out of sync every release. The canonical source of
+     truth is .claude-plugin/plugin.json + the agents/ + skills/ directories. -->
+
+**Pipeline:** 10 phases plus Step 0.5 (Title Curation). Phase agents are
+defined in `agents/*.md` and enumerated by `scripts/plugin-metadata.py
+--section pipeline`. Post-pipeline agents include Batch Orchestrator,
+Social Adapter, and Translator.
+
+**Processing Time:** 20-30 minutes avg for an article on Opus 4.7. Slower
+on smaller models and for whitepaper / research-paper content types.
+
+**Quality target:** composite Reviewer score ≥7.0 to pass; max 2 loops per
+phase; three-layer verification (Fact Checker → Scientific Validator →
+Reviewer) for zero-hallucination production output.

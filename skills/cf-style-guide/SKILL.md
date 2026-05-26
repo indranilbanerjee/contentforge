@@ -763,13 +763,15 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 - **[/contentforge](../contentforge/SKILL.md)** — Uses brand profiles for Phase 3 (Drafting), Phase 5 (Brand Compliance), Phase 6.5 (Humanizer)
 - **[/batch-process](../batch-process/SKILL.md)** — All pieces in a batch reference a brand profile
 - **[/content-refresh](../content-refresh/SKILL.md)** — Refresh maintains brand compliance using the profile
-- **[/contentforge:integrations](../cf-integrations/SKILL.md)** — Check Notion and Google Drive connector status
-- **[/contentforge:switch-backend](../cf-switch-backend/SKILL.md)** — Switch tracking backend (local/airtable/google) after initial setup
+- **[/contentforge:cf-integrations](../cf-integrations/SKILL.md)** — Check Notion and Google Drive connector status
+- **[/contentforge:cf-switch-backend](../cf-switch-backend/SKILL.md)** — Switch tracking backend (local/airtable/google) after initial setup
 
 ---
 
-**Version:** 3.8.0
+<!-- Version is pulled live by /contentforge:cf-help. The source of truth is
+     .claude-plugin/plugin.json. Don't hardcode versions in skill bodies. -->
+
 **Agent:** None (deterministic parsing)
-**MCP:** Google Drive (optional), Notion (optional)
+**MCP:** Google Drive (optional via Anthropic platform integration / Pipedream / Composio / Zapier / Make aggregator), Notion (optional)
 **Processing Time:** 5-10 minutes
 **Output:** Brand profile JSON, voice summary, terminology count, guardrails list, validation status, tracking backend config

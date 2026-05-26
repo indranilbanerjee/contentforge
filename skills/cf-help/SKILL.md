@@ -1,275 +1,188 @@
 ---
 name: cf-help
 description: "Show the ContentForge user guide, available skills, pipeline overview, examples, and troubleshooting"
-argument-hint: "[--pipeline | --skills | --examples]"
+argument-hint: "[--pipeline | --skills | --commands | --examples | --connectors | --troubleshoot | --brand]"
 effort: low
 ---
 
 # /contentforge:help
 
-Show the ContentForge user guide with setup instructions, pipeline overview, available skills, usage examples, and troubleshooting.
+Show the ContentForge user guide with live plugin state (version, asset counts, connector counts, runtime environment) pulled from disk — not hardcoded — plus pipeline overview, available skills, usage examples, and troubleshooting.
+
+## CRITICAL: never hardcode version, asset counts, or connector counts
+
+Versions and counts in this plugin used to be baked into this skill body as
+strings like "Version: 3.8.0" / "Agents: 13 · Skills: 19 · Connectors: 9 HTTP
++ 19 npx". Those drifted out of sync with the actual install every release
+(reported by users in v3.12.7 testing: "I'm on 3.12.7, but `/contentforge:help`
+shows 3.8.0").
+
+**Always read live values from `scripts/plugin-metadata.py`. Never quote a
+version number, skill count, agent count, or connector count from memory or
+from this skill body.**
 
 ## Behavior
 
-When invoked, display a structured help overview. Use the comprehensive documentation in `docs/USER-GUIDE.md` for full details.
+### Step 1 — Fetch live plugin metadata
 
-### 1. Quick Start Summary
+Run **first**, every time this skill is invoked (any argument or none):
 
-Display this quick orientation:
+```bash
+python scripts/plugin-metadata.py --section all-with-environment
+```
+
+This returns JSON with `version`, `assets` (agent/skill/command/script counts),
+`connectors` (HTTP + npx counts), `skills` list, `commands` list,
+`pipeline_phases` list (read from agent file names), and `environment`
+(detects Cowork sandbox vs local Claude Code, with a warning if filesystem
+writes won't reach the user's host).
+
+Substitute the values from this JSON into every place the help output
+references a count, a version, or a slash-command list. Do **not** invent
+or quote numbers from elsewhere.
+
+### Step 2 — Default rendering (no args)
+
+Render a clean help overview using the live data. Suggested format:
 
 ```
-=== CONTENTFORGE — HELP ===
-
-Version: 3.8.0
-Agents: 13 (10-phase pipeline + 3 post-pipeline)
-Skills: 19 slash commands — all with argument-hint autocomplete
-Connectors: 9 HTTP + 19 npx integrations (incl. image generation)
-Tracking: 3 backends (Google Sheets + Drive, Airtable, Local)
+=== CONTENTFORGE ===
+Version: <version from JSON>
+Agents: <agents> | Skills: <skills_total> | Commands: <commands> | Scripts: <scripts>
+Connectors: <available_http> HTTP + <available_npx> npx available
+  (<active_count> currently active in your .mcp.json)
+  Cowork-compatible: <cowork_compatible_count> (HTTP only — npx connectors don't run in Cowork)
+Environment: <environment from JSON>
+<if environment.cowork_warning is non-null, show it as a WARNING block>
 
 Getting Started:
-  1. /contentforge:style-guide         — Create your brand profile (start here)
-  2. /contentforge:integrations         — See which connectors are active
-  3. /contentforge            — Run the full 10-phase content pipeline
-  4. /contentforge:help --examples      — See example prompts and workflows
+  1. /contentforge:brand-setup           -- Configure brand voice, terminology, guardrails
+  2. /contentforge:cf-integrations       -- See which connectors are active
+  3. /contentforge:create-content        -- Run the full content pipeline
+  4. /contentforge:cf-help --examples    -- Worked example workflows
 ```
 
-### 2. Arguments
+### Step 3 — Cowork warning (when applicable)
 
-| Argument | Effect |
-|----------|--------|
-| (none) | Show the full help overview |
-| `--pipeline` | Show the 10-phase pipeline with timing and quality gates |
-| `--skills` | List all 19 skills with descriptions |
-| `--brand` | Explain brand profile setup methods |
-| `--examples` | Show example workflows from brief to publish |
-| `--troubleshoot` | Show common issues and solutions |
-| `--connectors` | Show connector status (shortcut for /contentforge:integrations) |
-
-### 3. Pipeline Overview
-
-When `--pipeline` is specified, show the 10-phase pipeline:
+If `environment.cowork_warning` is non-null, surface it prominently after
+the orientation block:
 
 ```
-=== CONTENTFORGE PIPELINE ===
+⚠ COWORK SANDBOX DETECTED
+<cowork_warning text from JSON>
 
-Step 0.5: Title Curation (1-2 min) — MANDATORY, runs before pipeline
-  → SERP recon on top 5 results for your keyword
-  → Generates 4-5 SEO-optimized title options (angles vary by content type)
-  → Validates against brand guardrails, 60-char SERP limit, anti-clickbait
-  → YOU select, modify, combine, or provide your own title
-  → Pipeline only starts after you confirm a title
-
-Phase 1: Researcher (3-5 min)
-  → Uses your confirmed title as anchor for all research
-  → Web research, 15-25 sources, relevance scoring
-
-Phase 2: Fact Checker (2-3 min)
-  → URL verification, claim validation, source grading
-
-Phase 3: Content Drafter (5-8 min)
-  → Brand-voiced draft with inline citations, SME calibration via industry knowledge packs
-
-Phase 3.5: Visual Asset Annotator (1-2 min)
-  → Chart generation from verified stats, visual markers, asset manifest
-
-Phase 4: Scientific Validator (2-3 min)
-  → Hallucination detection, domain-specific validation, claim cross-referencing
-
-Phase 5: Structurer & Proofreader (2-3 min)
-  → Heading hierarchy, readability, grammar, formatting
-
-Phase 6: SEO/GEO Optimizer (2-3 min)
-  → Keywords, meta tags, schema, AI Overview optimization, internal linking
-
-Phase 6.5: Humanizer (2-3 min)
-  → AI pattern removal, personality profiles, industry patterns
-
-Phase 7: Reviewer (2-3 min)
-  → 5-dimension scoring (needs ≥7.0), visual + link quality, comparative analysis
-
-Phase 8: Output Manager (1-2 min)
-  → .docx with embedded charts, internal links, backend-dispatched delivery + tracking
-  → Pipeline performance report: actual timing per phase, token estimate, benchmarks
-
-Post-Pipeline:
-  → Social Adapter (#10): Article → social posts
-  → Translator (#11): Multilingual with brand voice
-  → Batch Orchestrator (#9): Parallel processing
-
-Quality Gates: Score ≥7.0 required | Max 2 loops per phase | 5 total loops max
-Three-Layer Verification: Fact Checker → Scientific Validator → Reviewer
-Result: Zero hallucinations in production
+What this means in practice:
+  - File writes to ~/Documents/ContentForge/ and ~/.claude-marketing/
+    land inside the sandbox, NOT on your Windows / macOS host
+  - Files persist only for this Cowork session
+  - The full /contentforge:create-content pipeline can run, but the
+    dual-copy save and per-phase checkpointing target the sandbox FS
+  - For full host-filesystem behavior, run ContentForge in local
+    Claude Code (CLI or VS Code / JetBrains IDE extension) instead
 ```
 
-### 4. All Skills
+### Step 4 — Argument routing
 
-When `--skills` is specified, list all 19 skills:
+| Argument | What to render |
+|----------|---------------|
+| (none) | Steps 2 + 3 + Quick command list |
+| `--pipeline` | Steps 2 + 3 + full phase-by-phase overview (use `pipeline_phases` from JSON) |
+| `--skills` | Steps 2 + 3 + list every skill from JSON `skills` array with slash command + description |
+| `--commands` | Steps 2 + 3 + list every command from JSON `commands` array with slash command + description |
+| `--connectors` | Steps 2 + 3 + redirect: "For active/available connector status, run /contentforge:cf-integrations" |
+| `--examples` | Steps 2 + 3 + the worked-example workflows (see below) |
+| `--troubleshoot` | Steps 2 + 3 + troubleshooting matrix (see below) |
+| `--brand` | Steps 2 + 3 + brand setup methods (see below) |
 
-| Skill | Description |
-|-------|-------------|
-| `/contentforge` | Run the full 10-phase content production pipeline |
-| `/batch-process` | Process 10-50+ pieces in parallel from Google Sheets |
-| `/content-refresh` | Update existing content with fresh data and sources |
-| `/contentforge:style-guide` | Create or update a brand profile interactively |
-| `/contentforge:integrations` | See which connectors are active and available |
-| `/contentforge:connect <name>` | Step-by-step setup guide for any connector |
-| `/contentforge:add-integration` | Add a custom MCP connector for any API or service |
-| `/contentforge:publish` | Push content to Webflow/WordPress or export HTML |
-| `/contentforge:social-adapt` | Transform article into social posts (5 platforms) |
-| `/contentforge:variants` | Generate A/B test variations of headlines, hooks, CTAs |
-| `/contentforge:analytics` | Quality score trends, timing breakdown, brand performance |
-| `/contentforge:translate` | Translate preserving brand voice (15+ languages) |
-| `/contentforge:video-script` | Timestamped video scripts for YouTube, TikTok, Reels |
-| `/contentforge:brief` | Research-backed content brief with keyword analysis |
-| `/contentforge:audit` | Content freshness scoring, decay detection, gap analysis |
-| `/contentforge:calendar` | Production scheduling with deadline tracking |
-| `/contentforge:template` | Create custom content type templates |
-| `/contentforge:switch-backend` | Switch tracking backend (local/airtable/google) with migration |
-| `/contentforge:help` | This help guide |
+When rendering the skills/commands list, **iterate over the JSON arrays** —
+do not paste a hand-maintained list. Each row should show the
+`slash_command` field as the user-facing label and the `description` field
+as the explanation.
 
-### 5. Brand Setup Quick Reference
+### Pipeline phase rendering (--pipeline)
 
-When `--brand` is specified, explain the 3 setup methods:
+The pipeline phases come from agent file names (`01-researcher.md` →
+"Phase 01: Researcher"). Iterate `pipeline_phases` from the JSON and render
+phase + role + description. Add this preamble:
 
 ```
-=== BRAND PROFILE SETUP ===
+=== CONTENTFORGE PIPELINE (10 phases) ===
+Step 0.5: Title Curation runs BEFORE Phase 1 (SERP recon + 4-5 SEO title options;
+          user selects before draft starts).
 
-Method 1: Interactive (Recommended)
-  /contentforge:style-guide
-  → Answer questions about voice, terminology, industry, guardrails
-  → Generates brand profile JSON automatically
+Quality gates: composite score >=7.0 to pass | max 2 loops per phase |
+3-layer verification (Fact Checker -> Scientific Validator -> Reviewer).
+```
+
+Then list every phase from the JSON. **Do not invent timing estimates** —
+they vary by topic complexity and model speed. If the agent description in
+the JSON includes a timing hint, surface it; otherwise omit.
+
+### Brand setup rendering (--brand)
+
+Show the three brand-setup methods (interactive / JSON template / Drive Knowledge Vault), referencing the actual current commands. v3.12.7 added Drive MCP autodetection at the start of brand-setup — call this out as the recommended path for Cowork and Anthropic-platform users.
+
+```
+=== BRAND PROFILE SETUP (3 methods) ===
+
+Method 1: Interactive (recommended)
+  /contentforge:brand-setup "Brand Name"
+  -> Walks you through voice, terminology, industry, guardrails
+  -> v3.12.7+ first probes .mcp.json for Drive MCPs (Anthropic platform
+     integration, Pipedream / Composio / Zapier / Make Drive aggregator)
+     and short-circuits the legacy service-account flow if one is found
 
 Method 2: Manual JSON
-  → Copy config/brand-registry-template.json
-  → Fill in your brand details
-  → Save to your brand config directory
+  -> Copy config/brand-registry-template.json
+  -> Fill in your brand details
+  -> Save to ~/.claude-marketing/<brand-slug>/profile.json
 
 Method 3: Google Drive Knowledge Vault
-  → Create a folder: "ContentForge Brands/[Brand Name]/Knowledge Vault"
-  → Add documents: voice-and-tone.md, terminology.md, prohibited-claims.md
-  → ContentForge auto-extracts on first run (SHA256 cached)
-
-Brand Profile Includes:
-  - Voice & Tone (authoritative, conversational, technical, witty)
-  - Terminology (approved terms, banned phrases)
-  - Style Guide (formatting, citation style)
-  - Guardrails (topics to avoid, compliance)
-  - Industry Context (Pharma, BFSI, Healthcare, Legal)
-  - Personality Profile (4 profiles for Humanizer)
-  - Tracking Backend (Google Sheets + Drive, Airtable, or Local)
-
-Profiles are cached (SHA256 hash) — 95% time savings on repeat runs.
-Switch backends anytime: /contentforge:switch-backend [airtable|google|local]
+  -> Create a Drive folder: <Brand Name>/
+  -> Subfolders: Brand-Guidelines/, Guardrails/, Reference-Content/
+  -> Run /contentforge:brand-setup -- it will offer to verify or
+     scaffold the structure
 ```
 
-### 6. Example Workflows
+### Troubleshooting (--troubleshoot)
 
-When `--examples` is specified, show practical end-to-end examples:
+Surface this matrix. Use the live skill/command names from the JSON; the
+table below references the user-visible behaviors.
 
-```
-=== EXAMPLE: First Article ===
+| Issue | What to try |
+|-------|-------------|
+| "Brand profile not found" | Run `/contentforge:brand-setup` to create the brand profile first |
+| Files don't appear in ~/Documents/ContentForge/ | Check Cowork sandbox warning above. In local Claude Code: `/contentforge:output-folder` shows the resolved path; verify `CONTENTFORGE_PUBLISH_DIR` env var if you've customized it |
+| Headers in .docx aren't semantic Heading 1/2/3 | Verified fixed in v3.12.4 -- if you see this, you're on an older version; run `/plugin update contentforge@neels-plugins` |
+| Pipeline interrupted, lost work | Use `/contentforge:resume` to pick up from the last completed phase (v3.12.3+) |
+| Google Drive connector ignored at brand-setup | Fixed in v3.12.7. Run `python scripts/detect-drive-mcp.py` to verify the autodetect can see your MCP |
+| Quality score below 5.0 | Content flagged for human review -- check topic complexity, source availability, and brand profile completeness |
+| Pipeline taking too long | Normal: 20-30 min for articles. Use batch-process from a Google Sheet for parallel runs |
 
-Step 1: Create brand profile
-  /contentforge:style-guide
-  → Provide: Brand name, industry, voice, terminology, guardrails
-
-Step 2: Generate content brief (optional but recommended)
-  /contentforge:brief "AI-Powered Diagnostics in Healthcare"
-  → Gets: Keyword analysis, competitor review, recommended outline
-
-Step 3: Run the pipeline
-  /contentforge "AI-Powered Diagnostics in Healthcare"
-    --type=article --brand=AcmeMed --audience="Healthcare Executives"
-    --keyword="AI diagnostics precision medicine"
-  → Title Curation: 4-5 options generated from SERP + brand voice
-    1. "AI Diagnostics in Healthcare: What Clinicians Need to Know" (54 chars) — authority
-    2. "How AI Is Transforming Medical Diagnostics in 2026" (50 chars) — trending
-    3. "5 Ways AI Diagnostics Improve Patient Outcomes" (47 chars) — listicle
-    4. "AI-Powered Diagnostics: The Future of Precision Medicine" (56 chars) — future-focused
-    5. "Why Top Hospitals Are Betting on AI Diagnostics" (48 chars) — expert
-  → You pick, modify, or write your own title
-  → Pipeline runs with confirmed title → 20-30 min → Quality score 9.1/10
-
-Step 4: Publish
-  /contentforge:publish --platform=webflow
-  → Or: /contentforge:publish --export=html (for manual upload)
-
-Step 5: Create social posts
-  /contentforge:social-adapt
-  → LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
-
-Step 6: Translate for global audience
-  /contentforge:translate --language=es --level=adapted
-  → Spanish version preserving brand voice
-
-
-=== EXAMPLE: Batch Processing ===
-
-Step 1: Prepare Google Sheets with columns A-N:
-  A: Requirement ID | B: Content Type | C: Title | D: Audience
-  E: Brand | F: Primary Keyword | G: Target Words | H: Priority
-  I: Tone Override | J: Status | K: Score | L: Output URL
-  M: Processing Time | N: Completed At
-
-Step 2: Run batch
-  /batch-process --sheet="Content Q1 2026" --rows=1-20
-  → Processes 20 pieces in parallel (4-5x faster)
-
-Step 3: Review results
-  /contentforge:analytics --period=30
-  → Quality trends, timing breakdown, brand performance
-```
-
-### 7. Skill Platform Features
-
-When showing the full help, include:
-
-```
-=== SKILL PLATFORM FEATURES ===
-
-Argument Hints (19 skills):
-  All skills show autocomplete hints in the Skills UI.
-  Example: /contentforge shows "topic" --type=article --brand=name
-  Example: /contentforge:brief shows "topic or keyword" [--depth=deep]
-
-Execution Safety:
-  /contentforge:publish requires explicit user invocation — Claude cannot
-  auto-trigger it. Prevents accidental publishing to Webflow/WordPress.
-
-Quality Evals (3 skills):
-  contentforge, cf-brief, and cf-style-guide have evals/evals.json
-  with structured test cases for quality benchmarking.
-```
-
-### 8. Troubleshooting
-
-When `--troubleshoot` is specified, show common issues:
-
-| Issue | Solution |
-|-------|----------|
-| "Brand profile not found" | Run `/contentforge:style-guide` to create your brand profile |
-| Quality score below 5.0 | Content flagged for human review — check topic complexity and source availability |
-| "Research timeout" | Check internet connection; ContentForge needs web access for Phase 1 research |
-| Google Drive not showing in connectors | Google Drive is a platform-level integration — check Claude Desktop → Settings → Integrations |
-| MCP connector not working | Run `/contentforge:integrations` to check status, `/contentforge:connect <name>` for setup |
-| Pipeline taking too long | Normal: 20-30 min for articles. For faster: use `/batch-process` for parallel processing |
-| Humanizer removing too much | Adjust personality profile: `/contentforge --tone=conversational` for lighter touch |
-
-### 9. Documentation References
-
-Point users to these resources:
+### Documentation references
 
 | Guide | What it covers |
 |-------|---------------|
-| `docs/USER-GUIDE.md` | Comprehensive end-to-end guide (1,300+ lines) |
-| `UPGRADE-GUIDE.md` | v2.1.0 → v3.0.0 migration guide (historical) |
-| `CONNECTORS.md` | All available connectors by category |
-| `CHANGELOG.md` | Full version history and release notes |
+| `docs/USER-GUIDE.md` | Comprehensive end-to-end guide |
+| `CHANGELOG.md` | Full version history (the canonical record of what's in your install) |
+| `CONNECTORS.md` | Connector categories and setup paths |
 | `config/brand-registry-template.json` | Brand profile JSON template |
-| `config/social-platform-specs.json` | Social platform constraints and specs |
-| `config/multilingual-patterns.json` | Language-specific brand voice patterns |
-| `templates/` | Content type templates and formats |
 
-## Output Format
+## Output formatting rules
 
-Present information in clean, scannable tables and code blocks. Keep the output concise. Link to `docs/USER-GUIDE.md` for full walkthroughs.
+- Render in clean, scannable tables and code blocks
+- **Always** quote `version` and counts from the JSON, never from this file
+- Match each user invocation argument to its section above; the help body
+  contains only instructions, not pre-rendered output
+- If `scripts/plugin-metadata.py` fails to run (e.g. Python not available),
+  fall back to: "Live metadata script could not run. Plugin version is in
+  .claude-plugin/plugin.json; skill list is in skills/; command list is in
+  commands/." Do not invent numbers in the fallback either.
+
+## What this skill explicitly avoids
+
+- Quoting version numbers from this file body
+- Quoting count strings ("13 agents", "19 skills") from this file body
+- Listing slash commands manually -- always derived from the JSON
+- Personalized advice for any specific user (this skill is for everyone)
+- Stale references to deprecated skill names (always use the names from JSON)

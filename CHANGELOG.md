@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.8] - 2026-05-26
+
+**Fixes a real bug from the v3.12.7 production test: `/contentforge:help` was showing `Version: 3.8.0` even on a v3.12.7 install (and "13 agents · 19 skills · 9 HTTP + 19 npx connectors" — all stale).** Root cause: the cf-help skill body had hardcoded version strings and asset counts that drifted out of sync every release. Also honestly documents Cowork's filesystem sandbox limits, which surfaced during the same test (the .docx produced in Cowork didn't land in `~/Documents/ContentForge/...` because Cowork is a Linux sandbox that can't write to the Windows host).
+
+### Added
+
+- **`scripts/plugin-metadata.py`** — single source of truth for live plugin metadata. Sections: `version` (from plugin.json), `assets` (live count of agents/skills/commands/scripts/docs), `connectors` (count of HTTP + npx in `.mcp.json.connectors-reference` and `.mcp.json.example`, plus active count from `.mcp.json`), `skills-list` (every skill with its slash command + first-line description, derived from `skills/*/SKILL.md`), `commands-list` (same for `commands/*.md`), `pipeline-phases` (derived from agent file names like `01-researcher.md`), `environment` (classifies runtime as `cowork-sandbox` / `claude-code-windows` / `claude-code-mac` / `claude-code-linux` / `unknown`, with a Cowork warning when applicable). All sections read live state — nothing hardcoded.
+- **`skills/cf-environment/SKILL.md`** — new `/contentforge:cf-environment` skill. Surfaces a per-capability matrix for the current runtime: which MCP transports work (HTTP yes, npx no in Cowork), where files actually land (host vs sandbox), whether `/contentforge:resume` survives sessions, whether the full pipeline can produce its canonical filesystem layout. Recommended after install or whenever a user is confused about file paths.
+
+### Changed
+
+- **`skills/cf-help/SKILL.md`** rewritten as instructions, not pre-rendered content. The skill now tells Claude to run `scripts/plugin-metadata.py --section all-with-environment` first, then render the help using the live JSON values. Every count, version, and slash command name comes from the script — none baked into the skill body. When the JSON `environment.cowork_warning` is non-null, a prominent warning block is shown.
+- **`skills/contentforge/SKILL.md`** — removed the stale `**Version:** 3.8.0` footer + hardcoded `Agents: 13 agents (Research, Fact Checker, ...)` list. Replaced with a comment block explaining that version + asset counts must come from `scripts/plugin-metadata.py` (never baked in).
+- **`skills/cf-style-guide/SKILL.md`** — same treatment: removed stale `**Version:** 3.8.0` footer; updated 2 broken slash refs (`/contentforge:integrations` → `/contentforge:cf-integrations`, `/contentforge:switch-backend` → `/contentforge:cf-switch-backend`).
+- **`README.md` — Cross-platform compatibility section rewritten.** Previously claimed Cowork was "✅ Full support". Now honest: Cowork is **⚠️ Partial support** because the Linux sandbox can't write to the user's Windows/Mac host filesystem. Specific limits enumerated (dual-copy save targets sandbox FS only, sessions don't persist, recommended use cases vs not-recommended). Tells users to run `/contentforge:cf-environment` for the per-capability matrix in their actual runtime.
+
+### Verified
+
+- `plugin-metadata.py --section version` returns the current install's version (3.12.8 after this commit)
+- `plugin-metadata.py --section assets` returns live counts (13 agents, 19 skills, 9 commands, 14 scripts, 4 docs)
+- `plugin-metadata.py --section connectors` returns 16 HTTP + 5 npx (the help skill previously claimed 9 HTTP + 19 npx — both wrong)
+- `plugin-metadata.py --section environment` correctly classifies local Windows as `claude-code-windows`; Cowork sandbox heuristics (`/sessions/` / `/mnt/` / `remote-plugins` in cwd) trigger the warning
+- All 6 phantom slash command references from v3.12.7 stay fixed
+- `CONTENTFORGE_PUBLISH_DIR` env-var resolution still passes
+
+### Why
+
+User report from v3.12.7 testing (production session): "Installed version is 3.12.7. When I go to /contentforge/help, it shows 3.8.0." Plus discovered during the same test that files produced in Cowork land in the sandbox `outputs/` folder, not in `~/Documents/ContentForge/` on the host — which means the v3.12.3 dual-copy save fix doesn't actually fire in Cowork. Both issues now addressed: metadata is live (never stale) and Cowork's real behavior is documented honestly.
+
 ## [3.12.7] - 2026-05-26
 
 **Fixes a real production gap reported during the v3.12.6 testing cycle: when a user already had a Google Drive MCP configured (Anthropic platform integration, Pipedream / Composio / Zapier / Make Drive aggregator), brand-setup ignored it and walked them through the full service-account JSON flow as if no Drive existed.** Also fixes 6 broken slash-command references in brand-setup.md that pointed to phantom commands.
