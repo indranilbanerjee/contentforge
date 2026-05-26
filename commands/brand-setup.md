@@ -117,9 +117,22 @@ Profiles are saved as structured JSON and used automatically by every pipeline p
 
 After setting up voice, terminology, compliance, and key files, **choose where ContentForge tracks quality scores and delivers output files**. Do NOT ask the user to edit JSON manually — handle it conversationally.
 
-### Step G.0 — PROBE EXISTING CONFIG FIRST (v3.12.7)
+### Step G.0 — PROBE ENVIRONMENT + EXISTING CONFIG FIRST (v3.12.7+, expanded v3.12.9)
 
-**Before** offering the three-option menu, run the connector autodetect to see what the user already has configured. This avoids the prior bug where users who already added a Google Drive MCP were walked through the whole service-account flow as if no Drive existed.
+**Before** offering the three-option menu, run TWO probes back to back to see what the user has and where they're running.
+
+**First, detect the runtime environment:**
+
+```bash
+python scripts/plugin-metadata.py --section environment
+```
+
+If `environment == "cowork-sandbox"`, this changes the default backend logic significantly. In Cowork:
+- The "Local" backend writes to the Linux sandbox, NOT the user's host -- files vanish at session end
+- This means Drive (via the Anthropic platform integration or a Pipedream/Composio/Zapier/Make Drive aggregator MCP) is REQUIRED for any persistent output, not optional
+- Recommended path in Cowork: scan available tools for a Drive MCP; if found, use it. If not, prompt the user to add one before proceeding (or accept ephemeral output and warn them)
+
+**Then, run the connector autodetect:**
 
 ```bash
 python scripts/detect-drive-mcp.py
@@ -129,12 +142,14 @@ The script probes both `.mcp.json` (for MCP-based Drive routes — Anthropic pla
 
 Use the recommendation to short-circuit the menu:
 
-| Detector says | What you (the agent) do |
-|---|---|
-| `recommended_path: "mcp"` | Confirm: "I see you already have `<primary_connector>` connected. Want me to use that for the input/output folder structure?" Then go straight to **Step F** (MCP-based Drive folder setup — read/list/upload via MCP tool calls). Skip the service-account flow entirely. |
-| `recommended_path: "service_account"` | Confirm: "Found Google service account credentials for `<client_email>`. Want me to use that?" Then go to **Step A** (existing service-account path, Steps A–E). |
-| `recommended_path: "mcp_or_service_account"` | Tell the user both are present, and ask which to use. Default to MCP (works in Cowork, simpler auth). Service account is for unattended uploads like cron. |
-| `recommended_path: "none"` | Then and only then show the three-option menu below. |
+| Environment | Detector says | What you (the agent) do |
+|---|---|---|
+| Cowork | `recommended_path: "mcp"` OR Drive MCP visible in your tool list | **Recommended team setup.** Confirm: "I see you have `<connector>` connected — perfect for Cowork. I'll save your brand profile and all generated content to Google Drive at `My Drive/ContentForge/{brand}/...`. Want me to proceed?" Save brand profile to Drive at `My Drive/ContentForge/_brands/{brand-slug}/profile.json` so it persists across sessions. |
+| Cowork | `recommended_path: "none"` AND no Drive MCP in tool list | Warn the user that local-only output in Cowork is ephemeral. Recommend: "Connect Google Drive in Cowork Settings → Integrations → Google Drive (one click), then continue. Without Drive, your generated files will only exist for this session." Offer to proceed anyway with the warning. |
+| Local | `recommended_path: "mcp"` | Confirm: "I see you already have `<primary_connector>` connected. Want me to use that for the input/output folder structure?" Then go straight to **Step F** (MCP-based Drive folder setup). Skip the service-account flow entirely. |
+| Local | `recommended_path: "service_account"` | Confirm: "Found Google service account credentials for `<client_email>`. Want me to use that?" Then go to **Step A** (existing service-account path, Steps A–E). |
+| Local | `recommended_path: "mcp_or_service_account"` | Tell the user both are present, and ask which to use. Default to MCP (works in Cowork too if they switch later, simpler auth). Service account is for unattended uploads like cron. |
+| Local | `recommended_path: "none"` | Show the three-option menu below. Local default is fine on the user's host because `~/Documents/ContentForge/` is reachable. |
 
 ### Step G.1 — Three-option menu (only if Step G.0 found nothing)
 

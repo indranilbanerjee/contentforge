@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.9] - 2026-05-26
+
+**Architectural pivot: Cowork is now the recommended environment for marketing teams, with proper Google Drive routing for outputs.**
+
+User feedback during v3.12.8 testing was direct: Cowork is the friendliest Anthropic surface for non-CLI users (most marketing teams), Claude Code CLI is too technical for everyday team use, and "I want my team to use these things on the plugin in Cowork". v3.12.8 documented Cowork as "partial support" with the workaround being "use local Claude Code instead" — which contradicts how teams actually want to work.
+
+v3.12.9 fixes this properly by adding environment-aware output routing: when ContentForge detects it's running in Cowork AND a Google Drive MCP is connected (Anthropic platform integration, Pipedream, Composio, Zapier, or Make), file outputs are uploaded to Drive instead of the ephemeral sandbox. The pipeline runs identically; only the delivery target changes. Teams can now use Cowork as their primary ContentForge surface with full output persistence.
+
+### Added
+
+- **`skills/cf-cowork-setup/SKILL.md`** — `/contentforge:cf-cowork-setup` one-shot setup wizard. Verifies Cowork environment, checks for a Drive MCP (Anthropic platform integration preferred), creates the canonical Drive folder layout (`My Drive/ContentForge/_brands/`, `_runs/`, brand subfolders auto-created on first run), and stores the configuration so subsequent sessions auto-route. Run this once after install in Cowork; from then on, every `/contentforge:create-content` lands in Drive automatically. Includes the explicit "if no Drive MCP found" recovery path (Cowork → Settings → Integrations → Google Drive, 60 seconds).
+
+### Changed
+
+- **`agents/08-output-manager.md`** — new **Step D0** runs BEFORE the existing backend dispatch. Probes `scripts/plugin-metadata.py --section environment`. If `cowork-sandbox` is detected, scans the available tools list for any Drive MCP (Anthropic platform, Pipedream, Composio, Zapier, Make heuristics). When Drive is available, the agent uploads the final `.docx` to `My Drive/ContentForge/{brand}/{content_type}/{YYYY-MM}/{slug}.docx` via the MCP tool, captures the Drive URL, and surfaces it in the completion card — skipping the local-filesystem dispatch entirely. When no Drive MCP is available in Cowork, the completion card prominently warns the user that the file is ephemeral and offers three recovery paths (download from Cowork file panel, connect Drive integration, or switch to local Claude Code).
+- **`commands/brand-setup.md`** — Step G.0 now runs the environment probe BEFORE the connector probe. The decision matrix splits on Cowork vs local: in Cowork with a Drive MCP, the brand profile is saved to Drive (`My Drive/ContentForge/_brands/{brand-slug}/profile.json`) so it persists across sessions and is team-shareable. In Cowork without Drive, the user is warned that local-only output is ephemeral and walked through the integration setup. Local Claude Code behavior is unchanged.
+- **`skills/cf-environment/SKILL.md`** — the Cowork capability matrix is now split into two columns: "Cowork + Drive" (recommended for teams, all checkmarks) and "Cowork alone" (single-session only, warning). Removed the "for full functionality, switch to local Claude Code" framing — Cowork+Drive IS the full team setup as of v3.12.9.
+- **`README.md` cross-platform compatibility section** rewritten to lead with **"Anthropic Cowork + Google Drive — ✅ Recommended for teams"** as the first row. Added a clear "How to pick" decision guide: marketing teams → Cowork+Drive; solo developers / content engineers → local Claude Code; strict on-prem data policies → local Claude Code. The previous v3.12.8 framing of "Cowork = Partial Support, use local instead" is replaced — Cowork is the recommended path for ContentForge's actual target audience.
+
+### Why this matters
+
+ContentForge's target users are marketing operators producing client deliverables at scale — not CLI-native developers. The original local-Claude-Code-first design implicitly assumed the user could navigate `~/Documents/ContentForge/` in File Explorer and was comfortable with terminal tools. Teams trying to roll ContentForge out to non-technical contributors hit this immediately: "How do I install Claude Code on every marketer's laptop?" The answer is now: you don't — they all use Cowork in a browser, which they already have, and outputs land in your team's shared Drive automatically.
+
+### What still needs work (honest roadmap)
+
+- **Cross-session checkpoint resume in Cowork** — the per-phase checkpoint files (`scripts/checkpoint-manager.py`) currently write to `~/.claude-marketing/{brand}/runs/{run-id}/` in the sandbox. For `/contentforge:resume` to work across Cowork sessions / browser tabs, the checkpoint manager needs to write to Drive too. This is the next iteration (v3.12.10).
+- **Drive-as-input** — brand setup currently uploads the brand profile JSON to Drive but the read-back path (subsequent sessions reading the existing profile from Drive instead of regenerating it) requires `cf-style-guide` updates. Also queued for v3.12.10.
+- **Multi-team isolation** — when multiple ContentForge users share the same Drive `_brands/` folder, there's no per-user namespacing yet. Fine for an in-house team sharing one Drive; needs work for an agency running 50+ clients.
+
+### Verified
+
+- Output-manager agent definition has the explicit Step D0 logic with detection heuristics for the 5 known Drive MCPs + a heuristic fallback for any tool name combining "drive" with "create"/"upload"/"write"
+- brand-setup.md Step G.0 decision matrix covers all 6 combinations (Cowork+mcp, Cowork+none, Local+mcp, Local+service_account, Local+both, Local+none)
+- README "How to pick" guide concretely names the three personas (marketing teams, solo developers, on-prem)
+- `cf-cowork-setup` skill has explicit "if no Drive MCP" recovery (the 60-second Settings → Integrations path)
+- All counts in cf-help still come from `scripts/plugin-metadata.py` (no regression to hardcoded values)
+
 ## [3.12.8] - 2026-05-26
 
 **Fixes a real bug from the v3.12.7 production test: `/contentforge:help` was showing `Version: 3.8.0` even on a v3.12.7 install (and "13 agents · 19 skills · 9 HTTP + 19 npx connectors" — all stale).** Root cause: the cf-help skill body had hardcoded version strings and asset counts that drifted out of sync every release. Also honestly documents Cowork's filesystem sandbox limits, which surfaced during the same test (the .docx produced in Cowork didn't land in `~/Documents/ContentForge/...` because Cowork is a Linux sandbox that can't write to the Windows host).

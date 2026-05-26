@@ -242,6 +242,59 @@ Month format: `01-January`, `02-February`, etc.
 
 ContentForge supports three tracking/delivery backends. Check `tracking.backend` from brand profile (default: `"local"`).
 
+#### Step D0: Cowork environment routing (v3.12.9+) — RUN THIS FIRST
+
+Before dispatching to the configured backend, probe the runtime environment:
+
+```bash
+python3 {scripts_dir}/plugin-metadata.py --section environment
+```
+
+Parse the JSON. **If `environment == "cowork-sandbox"`** (the user is running ContentForge inside Cowork's Linux sandbox, not local Claude Code), the configured backend's filesystem writes target the sandbox — which is NOT visible to the user's host (Windows / macOS) and does NOT persist beyond the session. You MUST route the final `.docx` (and brand profile updates, and assets) to Google Drive instead, using whichever Drive MCP tool is available in this session.
+
+**Detection:** scan your available tools list for any Drive-capable MCP. Common names:
+- Anthropic-platform Google Drive integration (Cowork Settings → Integrations) — tools usually appear as `mcp__<some-id>__create_file`, `mcp__<some-id>__read_file_content`, `mcp__<some-id>__search_files`, etc.
+- `mcp__pipedream-google-drive__*` (Pipedream aggregator)
+- `mcp__composio-google-drive__*` (Composio)
+- `mcp__zapier-google-drive__*` (Zapier)
+- Any other tool whose name combines "drive" with "create", "upload", or "write"
+
+**If a Drive MCP is available, route the .docx to Drive:**
+
+Target Drive folder structure (canonical — create folders if missing):
+```
+My Drive/
+└── ContentForge/
+    └── {brand_name}/
+        └── {content_type}/
+            └── {YYYY-MM}/
+                └── {slug}.docx
+```
+
+Procedure:
+1. Use the Drive MCP's "search folders" / "find folder by name" tool to check if `ContentForge/{brand_name}/{content_type}/{YYYY-MM}/` exists; create the missing parents if needed.
+2. Read the `.docx` bytes from the sandbox path produced by the local pipeline.
+3. Use the Drive MCP's create-file / upload tool to upload the bytes to the target folder.
+4. Capture the returned Drive file ID and `webViewLink` (or equivalent).
+5. **Skip the configured-backend dispatch below — Drive IS the delivery.** Still call `local-tracker.py --action mark-complete` for tracking-state purposes, BUT pass `--published-path=<Drive URL>` so the tracking record points to Drive, not a non-existent Windows path.
+6. In the completion card, lead with the Drive link as a clickable URL. Do NOT quote a Windows / Documents path — that path is empty in Cowork.
+
+**If NO Drive MCP is available in Cowork** (the user hasn't set up the Anthropic platform Drive integration or any aggregator):
+
+DO NOT silently write to a sandbox path the user can't reach. Instead, in the completion card, prominently warn:
+
+> ⚠ **Your file is in the Cowork sandbox**, not on your local machine. It will not persist after this session ends. To preserve it, choose ONE:
+>
+> a) **Download it now** from the Cowork file panel (the .docx will appear there) — drag to your Downloads folder
+> b) **Connect Google Drive** in Cowork Settings → Integrations → Google Drive, then re-run `/contentforge:create-content` — future runs will land directly in Drive
+> c) **Switch to local Claude Code** (CLI or VS Code / JetBrains extension at claude.com/code) — files will land in `~/Documents/ContentForge/...` on your machine
+
+Still call `local-tracker.py --action mark-complete` so the tracking record exists for this session, but mark `published_path` as `null` and include the Cowork sandbox path with a note that it's ephemeral.
+
+**If `environment != "cowork-sandbox"`** (i.e., local Claude Code on Windows / Mac / Linux), proceed normally with the configured-backend dispatch below — file writes will reach the user's host.
+
+#### Standard backend dispatch (skipped if Cowork + Drive MCP routed above)
+
 #### If `tracking.backend` is `"google_sheets"`:
 
 **Step D1: Upload .docx to Google Drive**

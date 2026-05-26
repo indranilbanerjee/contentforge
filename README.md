@@ -4,7 +4,7 @@
 
 Built for marketing teams producing high volumes of long-form content (articles, white papers, FAQs, research papers) that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Created by [Indranil Banerjee](https://indranil.in).
 
-[![Version](https://img.shields.io/badge/version-3.12.8-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.12.9-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
@@ -449,15 +449,20 @@ Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_page
 
 | Platform | Status | Notes |
 |---|---|---|
-| Claude Code CLI | ✅ Full support | Reference environment. Every feature tested here first. |
-| Claude Code IDE extension (VS Code / JetBrains) | ✅ Full support | Same as CLI; uses host filesystem. |
-| Anthropic Cowork | ⚠️ Partial support | `/plugin` + slash commands + HTTP MCPs work, but **file writes land in the Cowork Linux sandbox, NOT your Windows/Mac host**. The dual-copy save (`~/Documents/ContentForge/...` + `~/.claude-marketing/...`) targets the sandbox FS only. Files persist for the session, not after. Run `/contentforge:cf-environment` after install for the full capability matrix. **Recommended for**: connector setup walkthroughs, single-shot content where you download the .docx from the file panel. **Not recommended for**: multi-session work, checkpointed long runs, production client deliverables that need the canonical host folder layout. |
+| **Anthropic Cowork + Google Drive** | ✅ **Recommended for teams** | The friendliest UX for non-CLI marketing teams. `/plugin` commands + HTTP MCPs work natively. Pipeline outputs route to Google Drive (via Anthropic platform integration in Settings → Integrations) instead of the Cowork sandbox — files persist, are team-shareable, and accessible from any device. One-time setup: `/contentforge:cf-cowork-setup` after install. |
+| Anthropic Cowork (without Drive) | ⚠️ Single-session only | All ContentForge commands run, but generated files land in the Cowork Linux sandbox — visible during the session, **gone after**. Connect Google Drive in Cowork Settings → Integrations (60 seconds) to upgrade to the team-ready setup above. |
+| Claude Code CLI | ✅ Full local support | Reference environment for developers. Files land in `~/Documents/ContentForge/<brand>/...` on your host. Every feature tested here first. |
+| Claude Code IDE extension (VS Code / JetBrains) | ✅ Full local support | Same as CLI; uses host filesystem. |
 | Standard Claude chat (browser `claude.ai` OR installed Claude Desktop app) | ❌ `/plugin` slash commands not available | Plugins still install and run via the **Plugins** UI button at the bottom of the chat. |
 | OpenAI Codex / Cursor / Gemini CLI / Copilot CLI / Antigravity | ✅ Skills portable | SKILL.md frontmatter format is universal. Each platform has its own sibling manifest in this repo. |
 
-**Why Cowork is partial**: ContentForge's file-system layer assumes the user's host OS. Cowork is a Linux sandbox that can't reach `C:\Users\<you>\Documents\` (Windows) or `/Users/<you>/Documents/` (Mac). The pipeline runs logically, but every `.docx`, brand profile, and checkpoint lands in the sandbox — visible during the session, gone after. For production use, run ContentForge in local Claude Code (CLI or IDE extension) where the host filesystem is directly accessible.
+### How to pick
 
-Run `/contentforge:cf-environment` after install to see exactly what's available in your runtime, with a per-capability matrix.
+- **For agencies, in-house content teams, or anyone whose team isn't deep in CLI tools** → Use Cowork + Drive. Run `/contentforge:cf-cowork-setup` once, then everyone uses `/contentforge:create-content` normally and outputs land in your shared Drive folder. No local installs needed per team member.
+- **For solo developers or technical content engineers** → Use local Claude Code (CLI or IDE extension). Files land in `~/Documents/ContentForge/` on your machine. Git-friendly. No Drive setup needed.
+- **For shipping to clients with strict on-prem-only data policies** → Use local Claude Code (no cloud dependency).
+
+Run `/contentforge:cf-environment` after install to see exactly what's available in your specific runtime, with a per-capability matrix. Run `/contentforge:cf-cowork-setup` if you're in Cowork and haven't wired Drive yet.
 
 ---
 

@@ -36,49 +36,33 @@ Render one of the three matrices below based on the JSON `environment`.
 
 #### `cowork-sandbox`
 
+Cowork is **the recommended environment for teams** as of v3.12.9 — it has the friendliest UX, lowest setup friction, and works for non-CLI users. But it requires one extra setup step (connecting Google Drive) because the sandbox filesystem doesn't persist. After Drive is wired, everything works.
+
+**Also check: is a Drive MCP available in this session?** Scan your available tools for `mcp__*drive*` or the Anthropic-platform Drive integration. The capability matrix below splits on that.
+
 ```
 === ContentForge in Cowork ===
 
-| Capability                                  | Works in Cowork?            |
-|---------------------------------------------|------------------------------|
-| /plugin commands (install / update / list)  | YES                         |
-| All HTTP MCP connectors (Slack, HubSpot,    | YES                         |
-|   Klaviyo, Ahrefs, Notion, Canva, etc.)     |                              |
-| npx / stdio MCP connectors (Google Ads,     | NO (sandbox blocks npx)     |
-|   Meta Ads, mcp-mailchimp, mcp-sendgrid,    |                              |
-|   etc.) -- need aggregator alternative      |                              |
-| Google Drive via Anthropic platform         | YES (Settings -> Integrations) |
-| Google Drive via Pipedream aggregator       | YES (HTTP)                  |
-| Google Drive via service-account JSON       | LIMITED (sandbox FS only)   |
-| Reading files from your Windows / Mac host  | NO                          |
-| Writing to ~/Documents/ContentForge/        | NO -- writes go to sandbox  |
-| Writing to ~/.claude-marketing/             | NO -- writes go to sandbox  |
-| Dual-copy save (host + tracking dir)        | NO -- sandbox-only          |
-| /contentforge:resume across sessions        | LIMITED -- sandbox FS may   |
-|                                             |   be recycled between tabs  |
-| Running the full 10-phase pipeline          | LOGICALLY YES, but file     |
-|                                             |   outputs are sandbox-only  |
-
-WARNING: Cowork is a Linux sandbox. ContentForge's file-system layer assumes
-the user's host filesystem (Windows / Mac). In Cowork, every write lands in
-the sandbox -- which is fine for testing the logical flow but means the
-.docx you produce won't be in your real ~/Documents folder.
-
-RECOMMENDED IN COWORK:
-- Brand setup walkthrough (logical flow + MCP connector wiring)
-- HTTP-connector integrations (Slack, HubSpot, Klaviyo, etc.)
-- Single-shot content production where you'll download the .docx
-  from the Cowork file panel before closing the session
-
-NOT RECOMMENDED IN COWORK:
-- Production-grade client work requiring the canonical filesystem layout
-- Multi-session work that relies on checkpoint resume
-- Any workflow requiring service-account-based Drive uploads to your host
-- Any workflow that needs to read files from your Windows / Mac home dir
-
-FOR FULL FUNCTIONALITY, RUN CONTENTFORGE IN LOCAL CLAUDE CODE
-(CLI or the VS Code / JetBrains extension at claude.com/code).
+| Capability                                  | Cowork + Drive   | Cowork alone   |
+|---------------------------------------------|-------------------|----------------|
+| /plugin commands                            | YES               | YES            |
+| HTTP MCP connectors (Slack, HubSpot, ...)   | YES               | YES            |
+| npx / stdio MCP connectors                  | NO                | NO             |
+|                                             |                   |                |
+| Final .docx delivery                        | -> Drive folder   | -> sandbox (gone after session) |
+| Brand profile persistence                   | -> Drive          | sandbox only   |
+| Per-phase checkpoint files                  | -> Drive          | sandbox only   |
+| /contentforge:resume across sessions        | YES (via Drive)   | NO             |
+| Team sharing of outputs                     | YES (Drive)       | NO             |
+| Files visible to user without download      | YES (Drive)       | NO             |
+| Full 10-phase pipeline                      | YES               | LOGICAL ONLY -- outputs sandbox-only |
 ```
+
+**If Cowork + Drive:** This is the recommended team setup. Run `/contentforge:cf-cowork-setup` once to wire the Drive folder layout, then use ContentForge normally. Every `.docx`, brand profile, and run record lands in `My Drive/ContentForge/...` where your team can access it from anywhere.
+
+**If Cowork without Drive:** Connect Drive first. Easiest path: Cowork → **Settings** → **Integrations** → **Google Drive** → Connect (60 seconds). Then run `/contentforge:cf-cowork-setup`. Until that's done, generated files will only exist for the current session and won't be retrievable after you close the chat.
+
+Local Claude Code (CLI or IDE extension) is the alternative if you don't want to use Drive — files land directly in `~/Documents/ContentForge/<brand>/...` on your machine. But for team usage, Cowork+Drive is simpler.
 
 #### `claude-code-windows`, `claude-code-mac`, `claude-code-linux`
 
