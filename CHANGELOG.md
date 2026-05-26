@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.7] - 2026-05-26
+
+**Fixes a real production gap reported during the v3.12.6 testing cycle: when a user already had a Google Drive MCP configured (Anthropic platform integration, Pipedream / Composio / Zapier / Make Drive aggregator), brand-setup ignored it and walked them through the full service-account JSON flow as if no Drive existed.** Also fixes 6 broken slash-command references in brand-setup.md that pointed to phantom commands.
+
+### Added
+
+- **`scripts/detect-drive-mcp.py`** — pre-flight probe for brand-setup. Reads `.mcp.json` for known Drive connectors (`google-drive` / `pipedream-google-drive` / `composio-google-drive` / `zapier-google-drive` / `make-google-drive` / `drive-mcp` / `mcp-google-drive`) AND heuristic-matches any other server whose name contains "google" + "drive". Also reads `~/.claude-marketing/google-credentials.json` for the legacy service-account route. Returns a structured `recommendation.recommended_path` of `mcp` / `service_account` / `mcp_or_service_account` / `none`. Exit code 0 if any Drive route exists, 1 if none. Stdlib only; no dependencies.
+
+### Changed
+
+- **`commands/brand-setup.md`** — new **Step G.0** runs `detect-drive-mcp.py` BEFORE the tracking-backend menu. If a Drive MCP is already configured, brand-setup short-circuits to a confirmation ("I see you already have <connector>; want me to use that?") and skips the entire service-account flow. The three-option menu only fires when nothing is configured.
+- **`commands/brand-setup.md` Step E (Knowledge Vault verification)** — now documents two routes. Route A (MCP) asks the configured Drive MCP tool to list folder contents and parses the response; works in Cowork. Route B (service-account) calls the existing `scripts/drive-uploader.py --action verify-structure`; requires the credentials JSON. brand-setup picks the route based on what Step G.0 detected.
+- **`commands/brand-setup.md` — 6 phantom slash command references fixed**:
+  - `/contentforge:style-guide` (×2) → `/contentforge:cf-style-guide` (the actual skill name)
+  - `/contentforge:switch-backend` (×4) → `/contentforge:cf-switch-backend`
+  - `/integrations` → `/contentforge:cf-integrations`
+  - Before this fix, clicking any of these would return "command not found" — even though the underlying skills existed under the `cf-` prefix.
+
+### Verified
+
+- `detect-drive-mcp.py` self-test:
+  - empty `.mcp.json` → `recommended_path: "none"` (or `"service_account"` if creds file exists)
+  - `.mcp.json` containing `pipedream-google-drive` → `recommended_path: "mcp"` with primary_connector set
+  - both routes configured → `recommended_path: "mcp_or_service_account"` (defaults to MCP)
+- `CONTENTFORGE_PUBLISH_DIR` env var verification — three-tier resolution still works as designed: CLI `--publish-dir` override (highest) → `CONTENTFORGE_PUBLISH_DIR` env var (middle) → `~/Documents/ContentForge/{brand}/` default (lowest).
+
+### Why
+
+User report from the v3.12.6 testing cycle: "Even if Google Drive is added or the Google Drive connector is saved, the Google Drive-based input/output folder structure is not getting triggered or is not properly set up at the beginning." Root cause was structural — `brand-setup.md` had no awareness of the MCP path. It assumed Drive integration meant a service-account JSON, full stop. With the autodetect, brand-setup now recognizes both routes and offers the right path based on what the user has actually configured.
+
 ## [3.12.6] - 2026-05-25
 
 **Corrects an inaccuracy in the v3.12.5 README callout.** v3.12.5 said the `/plugin isn't available in this environment` error applies to **claude.ai web chat**. User correction: it also applies to the **Claude Desktop app** (the standard Anthropic chat client). The actual rule is: `/plugin` slash commands are supported **only** in Claude Code (CLI / IDE at claude.com/code) and Anthropic Cowork — not in the standard Claude chat app, whether browser OR installed desktop. Both return the same error.

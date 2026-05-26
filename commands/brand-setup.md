@@ -15,13 +15,13 @@ argument-hint: "<brand name> [--source=url|document|manual]"
 2. **Voice/tone** — Pick one: authoritative, conversational, technical, witty, warm, educational
 3. **Industry** — Pick one: pharma, bfsi, healthcare, legal, technology, b2b_saas, ecommerce, consumer_goods, real_estate, education
 
-That's it. Run `/contentforge:style-guide` and answer these 3 questions. ContentForge creates a working brand profile in under 5 minutes.
+That's it. Run `/contentforge:cf-style-guide` and answer these 3 questions. ContentForge creates a working brand profile in under 5 minutes.
 
 **You can always add more later:**
-- Terminology and banned words → `/contentforge:style-guide --update [brand]`
+- Terminology and banned words → `/contentforge:cf-style-guide --update [brand]`
 - Compliance guardrails → same command
 - Audience personas, competitors, content pillars, visual identity → same command
-- Tracking backend (Google Sheets / Airtable / Local) → `/contentforge:switch-backend`
+- Tracking backend (Google Sheets / Airtable / Local) → `/contentforge:cf-switch-backend`
 
 **Don't let setup slow you down.** A minimal brand profile works. You'll get better results as you add detail over time.
 
@@ -117,12 +117,35 @@ Profiles are saved as structured JSON and used automatically by every pipeline p
 
 After setting up voice, terminology, compliance, and key files, **choose where ContentForge tracks quality scores and delivers output files**. Do NOT ask the user to edit JSON manually — handle it conversationally.
 
+### Step G.0 — PROBE EXISTING CONFIG FIRST (v3.12.7)
+
+**Before** offering the three-option menu, run the connector autodetect to see what the user already has configured. This avoids the prior bug where users who already added a Google Drive MCP were walked through the whole service-account flow as if no Drive existed.
+
+```bash
+python scripts/detect-drive-mcp.py
+```
+
+The script probes both `.mcp.json` (for MCP-based Drive routes — Anthropic platform integration, Pipedream / Composio / Zapier / Make Drive aggregators) AND `~/.claude-marketing/google-credentials.json` (for the legacy service-account route). It returns a JSON `recommendation.recommended_path` of one of: `mcp`, `service_account`, `mcp_or_service_account`, `none`.
+
+Use the recommendation to short-circuit the menu:
+
+| Detector says | What you (the agent) do |
+|---|---|
+| `recommended_path: "mcp"` | Confirm: "I see you already have `<primary_connector>` connected. Want me to use that for the input/output folder structure?" Then go straight to **Step F** (MCP-based Drive folder setup — read/list/upload via MCP tool calls). Skip the service-account flow entirely. |
+| `recommended_path: "service_account"` | Confirm: "Found Google service account credentials for `<client_email>`. Want me to use that?" Then go to **Step A** (existing service-account path, Steps A–E). |
+| `recommended_path: "mcp_or_service_account"` | Tell the user both are present, and ask which to use. Default to MCP (works in Cowork, simpler auth). Service account is for unattended uploads like cron. |
+| `recommended_path: "none"` | Then and only then show the three-option menu below. |
+
+### Step G.1 — Three-option menu (only if Step G.0 found nothing)
+
 Present the user with three options:
 
 > **Choose your tracking and delivery backend:**
 >
 > 1. **Google Sheets + Drive** (Recommended if you have Google Workspace)
->    Tracks in Google Sheets, delivers .docx to Google Drive. Requires service account (~5 min setup).
+>    Tracks in Google Sheets, delivers .docx to Google Drive. Two sub-routes:
+>      a. **MCP route** (preferred — works in Cowork) — add `pipedream-google-drive` to `.mcp.json` via `/contentforge:cf-add-integration`, no service-account JSON needed
+>      b. **Service-account route** (for unattended automation) — generate a Google Cloud service-account JSON (~5 min setup)
 >
 > 2. **Airtable** (Recommended for simplicity)
 >    Tracks in Airtable, delivers .docx as record attachments. Requires Personal Access Token (~2 min setup).
@@ -130,7 +153,7 @@ Present the user with three options:
 > 3. **Local** (No setup required)
 >    Tracks in local JSON, delivers .docx to local filesystem. No auth needed.
 >
-> You can switch backends anytime with `/contentforge:switch-backend`.
+> You can switch backends anytime with `/contentforge:cf-switch-backend`.
 
 ---
 
@@ -235,7 +258,16 @@ If Google integration was configured (Steps A-D completed), check whether the br
 - Extract folder ID from URL: `https://drive.google.com/drive/folders/FOLDER_ID_HERE`
 - This is a DIFFERENT folder from the output folder (Step C). This is where brand knowledge lives, not where content is delivered.
 
-**Run the verification script:**
+**Two verification routes (v3.12.7+):**
+
+**Route A — MCP path** (use if Step G.0 found a Drive MCP):
+Ask the Drive MCP tool (the one identified by `detect-drive-mcp.py`) to list the folder contents:
+```
+"List the files and subfolders inside Drive folder <brand_folder_id>"
+```
+Then parse the response to check for the 3 expected subfolders (`Brand-Guidelines/`, `Guardrails/`, `Reference-Content/`) and the key files described below. This route works in Cowork and Claude Code, no Python SDK needed.
+
+**Route B — Service-account path** (use if Step G.0 found `~/.claude-marketing/google-credentials.json`):
 ```
 python scripts/drive-uploader.py \
   --action verify-structure \
@@ -529,14 +561,14 @@ When the user chooses to **review and update** existing key files:
    }
    ```
 
-Data stored at `~/.claude-marketing/{brand}/tracking/`. Good for getting started — switch to Google or Airtable anytime with `/contentforge:switch-backend`.
+Data stored at `~/.claude-marketing/{brand}/tracking/`. Good for getting started — switch to Google or Airtable anytime with `/contentforge:cf-switch-backend`.
 
 ---
 
 ### If user skips backend selection
 
 Default to `"local"` with a note:
-> "Defaulted to local tracking. You can switch to Google Sheets or Airtable anytime by running `/contentforge:switch-backend`."
+> "Defaulted to local tracking. You can switch to Google Sheets or Airtable anytime by running `/contentforge:cf-switch-backend`."
 
 ---
 
@@ -564,5 +596,5 @@ Ask: "Brand profile for [name] is ready. Would you like to:
 - Import additional guidelines from another source?
 - Create a test piece to validate the voice settings?
 - Update brand knowledge files? (re-run Step F to regenerate or refresh)
-- Switch tracking backend? (`/contentforge:switch-backend`)
-- Check which connectors are active? (`/integrations`)"
+- Switch tracking backend? (`/contentforge:cf-switch-backend`)
+- Check which connectors are active? (`/contentforge:cf-integrations`)"
