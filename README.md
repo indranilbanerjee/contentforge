@@ -4,7 +4,7 @@
 
 Built for marketing teams producing high volumes of long-form content (articles, white papers, FAQs, research papers) that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Created by [Indranil Banerjee](https://indranil.in).
 
-[![Version](https://img.shields.io/badge/version-3.12.9-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.12.10-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
@@ -15,9 +15,14 @@ Built for marketing teams producing high volumes of long-form content (articles,
 [![5 platforms](https://img.shields.io/badge/installs%20on-5%20platforms-success.svg)](docs/cross-platform-install.md)
 
 ```bash
-# Install — one line on any of 5 supported platforms
+# Install in Claude Code (CLI or VS Code/JetBrains extension):
 /plugin marketplace add indranilbanerjee/neels-plugins
 /plugin install contentforge@neels-plugins
+
+# Install in Cowork: use the Plugins panel in the UI -- /plugin slash
+# commands DON'T work in Cowork (or Claude.ai / Claude Desktop).
+# Open Plugins panel -> Add marketplace -> paste indranilbanerjee/neels-plugins
+# -> Install ContentForge from the listed plugins.
 ```
 
 > If ContentForge saves your team time, [give it a star ⭐](https://github.com/indranilbanerjee/contentforge/stargazers) — it's the single thing that helps other marketing teams find it.
@@ -44,7 +49,8 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 | Platform | Install command | Status |
 |---|---|---|
-| **Claude Code** CLI + Desktop + **Anthropic Cowork** | `/plugin install contentforge@neels-plugins` | Full support (canonical) |
+| **Claude Code** CLI + IDE extension | `/plugin install contentforge@neels-plugins` | Full support (canonical for solo devs) |
+| **Anthropic Cowork** | Plugins panel in UI → Add marketplace → Install ContentForge (NOT `/plugin` — that's Claude-Code-only) | Full support with `/contentforge:cf-cowork-setup` wiring Drive for team-shareable output |
 | **OpenAI Codex** CLI | `codex plugin install indranilbanerjee/contentforge` | Full support |
 | **Cursor** IDE + CLI | `cursor plugin install indranilbanerjee/contentforge` | Skills + scripts; MCP via Cursor's global `mcp.json` |
 | **GitHub Copilot CLI** | `copilot plugin install indranilbanerjee/contentforge` | Full support — auto-discovers `.claude-plugin/plugin.json` |
@@ -58,15 +64,21 @@ Agent Skills became an open standard (Dec 2025; adopted by 32+ tools by May 2026
 
 ### 1. Install the plugin
 
-```bash
-# Add the marketplace (one time)
-/plugin marketplace add indranilbanerjee/neels-plugins
+**In Claude Code (CLI or VS Code/JetBrains extension):**
 
-# Install ContentForge
+```bash
+/plugin marketplace add indranilbanerjee/neels-plugins
 /plugin install contentforge@neels-plugins
 ```
 
-> `/plugin` commands work in **Claude Code** (CLI + IDE at [claude.com/code](https://claude.com/code)) and **Anthropic Cowork**. In the standard Claude chat app (browser `claude.ai` OR the installed Claude Desktop app) plugins still install and run, but management is via the **Plugins** UI button at the bottom of the chat — not via `/plugin` slash commands. See the [Updating](#updating) section for the recovery procedure.
+**In Anthropic Cowork:**
+
+1. Open the **Plugins** panel in the Cowork UI (sidebar / settings)
+2. Click **Add marketplace**, paste `indranilbanerjee/neels-plugins`
+3. After the marketplace syncs, find **ContentForge** in the listed plugins and click **Install**
+4. Then run `/contentforge:cf-cowork-setup` once to wire Google Drive as your team's output destination
+
+> ⚠ `/plugin` slash commands work **only in Claude Code (CLI + IDE extension)**. They do NOT work in Cowork, Claude.ai web, or Claude Desktop — use UI navigation in those environments. The `/contentforge:*` skills (like `/contentforge:create-content`) work in all environments where plugins are loaded; only the `/plugin` management family is Claude-Code-only.
 
 ### 2. Turn on auto-update (one-time, recommended)
 
@@ -379,14 +391,15 @@ As of v3.9.3 the canonical namespace is `/contentforge:`. The `/cf:` prefix was 
 
 ## Updating
 
-> **If you see "/plugin isn't available in this environment"** — you're in the standard **Claude chat app** (browser OR installed desktop app). The `/plugin` slash command for plugin management is **only** supported in two environments: **Claude Code** (the developer CLI / IDE at [claude.com/code](https://claude.com/code), `npm install -g @anthropic-ai/claude-code`) and **Anthropic Cowork**. Everywhere else — `claude.ai` web chat, the Claude Desktop app, mobile — plugins are managed through the UI, not slash commands.
+> **If you see "/plugin isn't available in this environment"** — you're in Cowork, Claude.ai web, or the Claude Desktop app. The `/plugin` slash command for plugin management is **only** supported in **Claude Code** (CLI + IDE extension at [claude.com/code](https://claude.com/code), `npm install -g @anthropic-ai/claude-code`). Everywhere else — Cowork, `claude.ai`, Claude Desktop, mobile — plugins are managed through the UI panel, not slash commands.
 >
-> The plugin IS installed (your `cf-*` skills work); only the management command is unavailable. Fix:
+> The plugin IS installed (your `/contentforge:*` skills still work in chat); only the management command is unavailable. Fix:
 >
-> 1. **In the chat UI** — click the **Plugins** button at the bottom of the chat → **Manage plugins** → find ContentForge → look for Update / Refresh / Remove. If there's no Update button, **Remove** then **Add plugin** → re-install ContentForge from `indranilbanerjee/neels-plugins`. The re-pull fetches the latest version.
-> 2. **For slash-command management** — switch to Claude Code (CLI or IDE) or Cowork. The plugin itself runs identically across every Anthropic surface; you're choosing where to type management commands.
+> 1. **In Cowork** — open the **Plugins** panel (sidebar / Settings → Plugins). Find ContentForge → look for Update / Refresh. If there's no Update option, **Remove** the plugin, then re-install it from the `neels-plugins` marketplace — the re-pull fetches the latest version. If the marketplace itself is stale, also Remove + re-add the marketplace.
+> 2. **In Claude.ai web or Claude Desktop** — same UI flow as Cowork: open the chat's Plugins UI button at the bottom → **Manage plugins** → Remove + Add to re-pull.
+> 3. **For slash-command management** — switch to **Claude Code (CLI or IDE extension)**. The plugin runs identically across every Anthropic surface; you're choosing where to type management commands.
 >
-> Once you're in Claude Code or Cowork, the rest of this section applies.
+> Once you're in Claude Code, the rest of this section applies.
 
 **Third-party marketplaces (including this one) have auto-update DISABLED by default in Claude Code.** Anthropic's official marketplace updates itself; ours does not. So when v3.9.5 is on the marketplace and you're still running v3.9.4, nothing tells you — there is no update banner, no badge, no notification.
 

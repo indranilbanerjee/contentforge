@@ -95,6 +95,52 @@ Merges new information into the existing profile without overwriting unchanged f
 
 ## What Happens
 
+### Step 0: Check Drive for existing brand profile (v3.12.10+, Cowork only)
+
+Before parsing any new source, check whether this brand already has a profile saved in Drive from a previous session. This is critical in Cowork because the sandbox FS is recycled — without this check, every Cowork session would re-create the same brand from scratch.
+
+```bash
+python3 {scripts_dir}/drive-sync-state.py --action read-config
+```
+
+If the config returns `configured: false` OR `environment != "cowork-sandbox"`, skip to Step 1 (this is the local-mode flow).
+
+If the config returns `configured: true` AND a Drive MCP is available in your tool list:
+
+1. Use the Drive MCP to search for `{drive_root_folder_name}/_brands/{brand-slug}/profile.json`
+2. If found:
+   - Download the profile.json via the MCP, write to `~/.claude-marketing/{brand-slug}/profile.json`
+   - Compute the content hash of the downloaded file
+   - Mark synced state:
+     ```bash
+     python3 {scripts_dir}/drive-sync-state.py --action profile-mark-downloaded \
+         --brand "{brand}" --drive-file-id "<id>" --content-hash "sha256:<hash>"
+     ```
+   - Tell the user: "Loaded existing brand profile for `{brand}` from Drive (last updated {timestamp}). Skipping new setup. To update voice/terminology, run `/contentforge:cf-style-guide --update {brand}`."
+   - Skip Steps 1-6 (no re-creation needed)
+3. If not found in Drive: proceed to Step 1 (normal creation flow). After Step 6 (Save and Validate), upload the new profile to Drive (Step 6.5 below).
+
+### Step 6.5: Push new profile to Drive (v3.12.10+, Cowork only)
+
+After Step 6 saves the profile locally, check if it needs uploading:
+
+```bash
+python3 {scripts_dir}/drive-sync-state.py --action profile-needs-upload --brand "{brand}"
+```
+
+If `needs_upload: true` AND Cowork+Drive is configured AND a Drive MCP is available:
+
+1. Use the Drive MCP to upload `~/.claude-marketing/{brand-slug}/profile.json` to `{drive_root}/_brands/{brand-slug}/profile.json` (create the folder structure if missing).
+2. Capture the returned Drive file ID and URL.
+3. Mark synced:
+   ```bash
+   python3 {scripts_dir}/drive-sync-state.py --action profile-mark-uploaded \
+       --brand "{brand}" --drive-file-id "<id>" --drive-url "<url>"
+   ```
+4. Tell the user: "Brand profile saved to Drive: `{drive_url}` (persists across sessions and is team-shareable)."
+
+If local-mode (no Cowork config), skip — the profile is fine where it is on the host filesystem.
+
 ### Step 1: Load Style Guide Source (1-2 minutes)
 
 **From URL:**

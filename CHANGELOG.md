@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.10] - 2026-05-26
+
+**Closes the three v3.12.9 roadmap items + fixes the `/plugin` scope error.**
+
+v3.12.9 shipped Cowork-with-Drive routing for the final `.docx` but deferred three items: (1) cross-session checkpoint resume, (2) Drive-as-input read-back of existing brand profiles, (3) multi-team namespace isolation. v3.12.10 ships all three. Also fixes a long-standing documentation error: the `/plugin` slash command family was wrongly documented as working in Cowork — it doesn't (only Claude Code CLI + IDE extension).
+
+### Added
+
+- **`scripts/drive-sync-state.py`** — single source of truth for the local-side state that backs the Cowork+Drive routing. Three concerns: (a) Cowork+Drive root config (per-environment, set by `cf-cowork-setup`), (b) brand profile sync state (hash-based — local `profile.json` SHA-256 vs last-uploaded hash; agent uses this to decide whether to call the Drive MCP), (c) per-run checkpoint pending list (which phase artifact files still need uploading). All actions are JSON in / JSON out. Stdlib only. Architecture note: Python scripts cannot directly call MCP tools (MCPs are exposed to the agent, not subprocess), so this script manages the local state and the agent (output-manager / resume / cf-style-guide) reads it and performs the actual Drive transfers via the connected MCP.
+- **`_shared/cf_drive_sync_test_harness.py`** — 15 tests against the drive-sync-state script, covering: config round-trip, never-uploaded vs uploaded vs modified profile states, per-run pending lifecycle (add → list → mark-uploaded), aggregate `list-runs-needing-sync` query, brand-slug consistency for names with spaces, content-hash stability, error handling for missing pending file, plus 2 integration tests that verify checkpoint-manager auto-marks files for Drive sync when Cowork is configured AND skips marking when running locally. All 15 pass.
+
+### Changed — three v3.12.9 roadmap items now closed
+
+- **`scripts/checkpoint-manager.py` `save_phase()`** — automatically marks every saved artifact + `_manifest.json` as pending Drive upload when a Cowork+Drive config exists. Returns a `drive_sync_hint` block in the save response so the agent knows to consume the pending list. Local-mode (no Cowork config) is unchanged — no sync overhead. **Closes roadmap item 2.**
+- **`agents/08-output-manager.md`** — new **Step D0b** consumes `_sync-pending.json` for the current run, iterates over pending files, uploads each via the Drive MCP to `{drive_root}/_runs/{run_id}/<file>`, and calls `drive-sync-state.py --action mark-uploaded` to record the Drive file ID. Now the full per-phase checkpoint history is in Drive — a future Cowork session can pull it for resume. **Closes roadmap item 2 (orchestration side).**
+- **`commands/resume.md`** — new **Step 0** runs in Cowork+Drive mode: before listing local runs, the agent uses the Drive MCP to list `{drive_root}/_runs/`, identifies any in-progress runs that aren't yet in the local sandbox, downloads their checkpoint files from Drive into `~/.claude-marketing/{brand}/runs/{run_id}/`, and then lets the normal `checkpoint-manager.py resume` flow take over. Resume now works across Cowork sessions / browser tabs / sandbox recycles. **Closes roadmap item 2 (resume side).**
+- **`skills/cf-style-guide/SKILL.md`** — new **Step 0** (Drive read-back) and **Step 6.5** (Drive write-back). On entry in Cowork+Drive mode, agent searches Drive for `{drive_root}/_brands/{brand-slug}/profile.json`; if found, downloads and marks synced (skipping the whole creation flow). On create/update, uploads the new profile to Drive. **Closes roadmap item 1.**
+- **`skills/cf-cowork-setup/SKILL.md`** — Step 4 now asks the user for the Drive root folder name (default: `ContentForge`). Different teams pick different folder names → automatic namespace isolation. Config is written via `drive-sync-state.py --action write-config` (the canonical writer; format stays in sync with everything else that reads the config). **Closes roadmap item 3.**
+
+### Fixed — `/plugin` scope documentation error
+
+Multiple docs claimed `/plugin` works in Cowork — verified wrong via Indranil's live Cowork testing on 2026-05-26. Corrected in:
+
+- **`README.md`** — Quick start hero block, "Installs on 5 surfaces" table row, and step 1 of Quick Start all now correctly say: `/plugin` works only in Claude Code (CLI + IDE extension). In Cowork, use the Plugins panel in the UI. The Updating section is similarly corrected — Cowork is now explicitly named alongside claude.ai web and Claude Desktop as environments where `/plugin` doesn't work.
+- **MEMORY note** — corrected. New rule: `/plugin` works ONLY in Claude Code (CLI + IDE extension). Cowork uses UI panel.
+
+(CHANGELOG entries for prior versions are historical records and left intact even where they reference the old wrong rule.)
+
+### Architecture explanation (for future contributors)
+
+The Python ↔ agent split in this release matters. Python scripts running in Cowork's sandbox cannot directly call MCP tools — those are exposed only to Claude (the orchestrator). So every "upload to Drive" operation is split across two layers:
+
+1. **Python side** (`drive-sync-state.py`, `checkpoint-manager.py`) — writes state markers to local sandbox FS saying "these files need uploading to Drive" or "this brand profile differs from last-synced hash".
+2. **Agent side** (output-manager, cf-style-guide, resume command) — reads those markers, performs the actual Drive read/write via whichever Drive MCP is connected (Anthropic platform integration, Pipedream, Composio, Zapier, Make), then calls back into Python (`mark-uploaded` / `mark-downloaded`) to update the sync state.
+
+This split keeps Python scripts pure (no MCP dep, fully testable from local Claude Code) while still letting Cowork orchestrate Drive transfers via MCP. The 15-test harness exercises the Python side end-to-end; the agent side is documented in the skill/command/agent definitions but only fully exercisable in actual Cowork (because the MCP tools aren't visible from local).
+
+### Verified
+
+- All 15 drive-sync state tests pass (config round-trip, profile hash transitions, checkpoint pending lifecycle, multi-run aggregation, brand-slug edge cases, hash stability, error handling, 2 checkpoint-manager integration tests)
+- `scripts/plugin-metadata.py --section environment` correctly detects Cowork sandbox vs local Claude Code
+- `scripts/checkpoint-manager.py save` returns a `drive_sync_hint` block that correctly reports `cowork_drive_configured: true/false` based on the live config state
+- All previous CF v3.12.x test harnesses still pass (no regression)
+- README counts still come from `scripts/plugin-metadata.py` (introduced v3.12.8 — no hardcoded staleness)
+
+### What still needs Cowork-side validation (you / Shreea)
+
+These flows are documented and the Python side is tested, but the actual MCP interactions can only be verified in a live Cowork session:
+
+- Brand profile read-back: start fresh Cowork session for a brand that was previously set up; verify cf-style-guide pulls profile.json from Drive instead of re-creating
+- Checkpoint resume across sessions: start a content run in Cowork session A, complete Phase 1-3, close session, open Cowork session B, run `/contentforge:resume`, verify it picks up at Phase 4
+- Multi-team namespace: two teams (or two test runs) using different `drive_root_folder_name` values; verify their data doesn't mix
+
+If any of these fail in live testing, the bug is in the agent orchestration layer (not the Python side, which is fully tested).
+
 ## [3.12.9] - 2026-05-26
 
 **Architectural pivot: Cowork is now the recommended environment for marketing teams, with proper Google Drive routing for outputs.**

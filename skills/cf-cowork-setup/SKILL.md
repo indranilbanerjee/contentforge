@@ -83,21 +83,33 @@ ContentForge/
 
 Don't create empty brand subfolders yet — those are auto-created by the output-manager agent during the first content run for that brand. Just `_brands/` and `_runs/` need to exist.
 
-### Step 4 — Store the Drive root reference
+### Step 4 — Store the Drive root reference + team namespace (v3.12.10)
 
-Write the Drive folder ID to `~/.claude-marketing/_cowork-config.json` (sandbox is fine here — this is per-session config):
+**Multi-team isolation**: ask the user "what's your team's Drive root folder name?" (default: `ContentForge`). Different teams use different folder names → automatic namespace isolation. Examples:
+- Solo / small team: `ContentForge` (default)
+- Agency named "ACME": `ACME ContentForge`
+- Two distinct teams sharing one Drive: each picks their own name
 
-```json
-{
+Then write the config via the canonical script (NOT a hand-written JSON file — use the script so the format stays in sync with the rest of the toolchain):
+
+```bash
+python scripts/drive-sync-state.py --action write-config --data '{
   "environment": "cowork-sandbox",
+  "drive_root_folder_name": "<team folder name chosen>",
   "drive_root_folder_id": "<id from Step 3>",
   "drive_root_folder_url": "<webViewLink from Step 3>",
-  "drive_mcp_tool_prefix": "<prefix detected in Step 2, e.g. 'mcp__abc123__'>",
-  "configured_at": "<ISO 8601 timestamp>"
-}
+  "drive_mcp_tool_prefix": "<prefix detected in Step 2, e.g. mcp__abc123__>"
+}'
 ```
 
-Future Cowork sessions read this file first to skip the setup — if it exists AND the Drive folder still exists, all subsequent ContentForge operations route to that root.
+The script writes to `~/.claude-marketing/_cowork-config.json` and adds a `configured_at` timestamp automatically.
+
+Future Cowork sessions: every ContentForge operation (`brand-setup`, `create-content`, `resume`, etc.) reads this config first. If it exists AND the Drive folder still exists, all I/O routes to that root. If a different team picked a different folder name, their config lives at the same path but points elsewhere — no collision.
+
+To verify it was written correctly:
+```bash
+python scripts/drive-sync-state.py --action read-config
+```
 
 ### Step 5 — Set the user's expectations
 

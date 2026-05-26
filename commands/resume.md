@@ -17,6 +17,28 @@ ContentForge's 10-phase pipeline runs 20-60 minutes end to end. If the underlyin
 
 ## Process
 
+### Step 0: Cross-session checkpoint download (v3.12.10+, Cowork only)
+
+Before listing local runs, check if we're in Cowork+Drive mode — if so, the user might be resuming from a DIFFERENT Cowork session (different sandbox), and the local FS has no record of the run. Pull the run's checkpoint state from Drive first.
+
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/drive-sync-state.py --action read-config
+```
+
+If `configured: false` OR `environment != "cowork-sandbox"`, skip to Step 1 (local-mode flow).
+
+If `configured: true` AND a Drive MCP is available:
+
+1. Use the Drive MCP to list contents of `{drive_root_folder_name}/_runs/`
+2. For each `<run_id>` subfolder, check if it has phase artifacts (`phase-*.md`, `_manifest.json`, `_sync-pending.json`)
+3. Identify in-progress runs (manifest exists but `phase_artifacts` doesn't include `phase 8` — i.e., output-manager hasn't completed)
+4. For each in-progress run that doesn't yet exist locally at `~/.claude-marketing/{brand}/runs/{run_id}/`:
+   - Use the Drive MCP to download every file from `{drive_root}/_runs/{run_id}/` into the local sandbox path
+   - This restores the run's full checkpoint history so Step 2 below can load artifacts normally
+5. Tell the user: "Pulled {N} run(s) from Drive for resume eligibility: {run_id list}"
+
+Then proceed to Step 1.
+
 ### Step 1: Pick the run to resume
 
 If the user supplied a `run-id`, use it directly. Otherwise list the in-progress runs for the active brand and either auto-pick the most recent or ask the user to choose if there's ambiguity.

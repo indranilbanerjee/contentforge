@@ -160,6 +160,13 @@ def save_phase(brand: str, run_id: str, phase: str, content: str, extension: str
     manifest["last_updated"] = _now_iso()
     _save_manifest(brand, run_id, manifest)
 
+    # v3.12.10: if Cowork+Drive is configured, mark this artifact as needing
+    # upload to Drive. The agent (output-manager / orchestrator) consumes
+    # ~/.claude-marketing/<brand>/runs/<run_id>/_sync-pending.json after each
+    # phase and uploads via the Drive MCP. We also mark the manifest itself
+    # because every phase save updates it.
+    drive_sync_hint = _maybe_mark_pending(brand, run_id, [filename, "_manifest.json"])
+
     return {
         "status": "saved",
         "run_id": run_id,
@@ -167,7 +174,52 @@ def save_phase(brand: str, run_id: str, phase: str, content: str, extension: str
         "phase_label": PHASE_LABELS[phase],
         "artifact": str(out),
         "completed_phases": manifest["completed_phases"],
+        "drive_sync_hint": drive_sync_hint,
     }
+
+
+def _maybe_mark_pending(brand: str, run_id: str, files: list) -> dict:
+    """If a Cowork+Drive config exists, append these files to the run's
+    _sync-pending.json so the agent knows to upload them. Returns a small
+    hint dict the caller can surface ("agent_should_upload: 2 files"). If
+    Cowork is not configured, returns {"cowork_drive_configured": false}
+    and does nothing."""
+    cowork_config = Path.home() / ".claude-marketing" / "_cowork-config.json"
+    if not cowork_config.exists():
+        return {"cowork_drive_configured": False}
+    try:
+        cfg = json.loads(cowork_config.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {"cowork_drive_configured": False,
+                "error": "cowork-config.json present but unreadable"}
+    if cfg.get("environment") != "cowork-sandbox":
+        # local-mode user — sync not needed
+        return {"cowork_drive_configured": False,
+                "reason": "config exists but environment is not cowork-sandbox"}
+
+    pending_path = _run_dir(brand, run_id) / "_sync-pending.json"
+    try:
+        if pending_path.exists():
+            data = json.loads(pending_path.read_text(encoding="utf-8"))
+            data.setdefault("pending", [])
+            data.setdefault("uploaded", [])
+        else:
+            data = {"pending": [], "uploaded": []}
+        for f in files:
+            if f not in data["pending"] and f not in {u["file"] for u in data["uploaded"]}:
+                data["pending"].append(f)
+        data["last_updated"] = _now_iso()
+        pending_path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        return {
+            "cowork_drive_configured": True,
+            "files_marked_pending": files,
+            "total_pending_after": len(data["pending"]),
+            "drive_root": cfg.get("drive_root_folder_name"),
+            "note": "Agent: read _sync-pending.json and upload listed files via the Drive MCP tool. Use drive-sync-state.py --action mark-uploaded after each successful upload.",
+        }
+    except OSError as e:
+        return {"cowork_drive_configured": True,
+                "error": f"failed to write _sync-pending.json: {e}"}
 
 
 def get_status(brand: str, run_id: str) -> dict:

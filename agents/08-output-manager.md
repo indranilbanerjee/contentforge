@@ -242,24 +242,61 @@ Month format: `01-January`, `02-February`, etc.
 
 ContentForge supports three tracking/delivery backends. Check `tracking.backend` from brand profile (default: `"local"`).
 
-#### Step D0: Cowork environment routing (v3.12.9+) — RUN THIS FIRST
+#### Step D0: Cowork environment routing (v3.12.9, expanded v3.12.10) — RUN THIS FIRST
 
-Before dispatching to the configured backend, probe the runtime environment:
+Before dispatching to the configured backend, probe the runtime environment AND read the Cowork+Drive config (set by `/contentforge:cf-cowork-setup`):
 
 ```bash
 python3 {scripts_dir}/plugin-metadata.py --section environment
+python3 {scripts_dir}/drive-sync-state.py --action read-config
 ```
 
-Parse the JSON. **If `environment == "cowork-sandbox"`** (the user is running ContentForge inside Cowork's Linux sandbox, not local Claude Code), the configured backend's filesystem writes target the sandbox — which is NOT visible to the user's host (Windows / macOS) and does NOT persist beyond the session. You MUST route the final `.docx` (and brand profile updates, and assets) to Google Drive instead, using whichever Drive MCP tool is available in this session.
+**Decision tree:**
 
-**Detection:** scan your available tools list for any Drive-capable MCP. Common names:
+1. `environment == "cowork-sandbox"` AND `read-config` returns `configured: true` with `environment: "cowork-sandbox"`:
+   - **Fully-routed mode.** Use the Drive MCP for: (a) final .docx upload, (b) any pending checkpoint files for this run (see Step D0b below), (c) brand profile updates if any. Use the `drive_root_folder_name` + `drive_root_folder_id` from the config as the target root.
+
+2. `environment == "cowork-sandbox"` AND `read-config` returns `configured: false`:
+   - **Setup needed.** Stop and tell the user: "Cowork detected but `/contentforge:cf-cowork-setup` hasn't been run yet — your file will be ephemeral. Run `/contentforge:cf-cowork-setup` now (60 seconds) and re-run `/contentforge:create-content`, OR proceed and accept that the .docx exists only for this session." Offer to proceed; if they say yes, fall through to the legacy "Cowork without Drive" warning logic below.
+
+3. `environment != "cowork-sandbox"`:
+   - **Local mode.** Skip all Drive-routing — proceed with the configured backend dispatch (the existing local-tracker / sheets-tracker / airtable-tracker logic). Host filesystem writes work as designed.
+
+(The previous detection paragraph said "if Cowork detected, route to Drive." v3.12.10 splits this into the three explicit cases above to handle the unconfigured-Cowork case cleanly.)
+
+#### Step D0a: Drive MCP detection
+
+Scan your available tools list for any Drive-capable MCP. Common names:
 - Anthropic-platform Google Drive integration (Cowork Settings → Integrations) — tools usually appear as `mcp__<some-id>__create_file`, `mcp__<some-id>__read_file_content`, `mcp__<some-id>__search_files`, etc.
 - `mcp__pipedream-google-drive__*` (Pipedream aggregator)
 - `mcp__composio-google-drive__*` (Composio)
 - `mcp__zapier-google-drive__*` (Zapier)
 - Any other tool whose name combines "drive" with "create", "upload", or "write"
 
-**If a Drive MCP is available, route the .docx to Drive:**
+#### Step D0b: Sync pending checkpoint files (v3.12.10+)
+
+Every phase save in this run has been writing files to `~/.claude-marketing/{brand}/runs/{run_id}/` AND marking them in `_sync-pending.json` (via the v3.12.10 checkpoint-manager auto-hook). Before the final .docx upload, sync any unsynced phase files to Drive so `/contentforge:resume` works across sessions.
+
+List what's pending for this run:
+```bash
+python3 {scripts_dir}/drive-sync-state.py --action list-pending-uploads --brand "{brand}" --run-id "{run_id}"
+```
+
+For each file in the `pending` array:
+1. Read the file content from `~/.claude-marketing/{brand}/runs/{run_id}/<file>`
+2. Use the Drive MCP to upload it to `<root>/_runs/{run_id}/<file>` (creates the `_runs/{run_id}/` folder structure if missing)
+3. After successful upload, mark it synced:
+   ```bash
+   python3 {scripts_dir}/drive-sync-state.py --action mark-uploaded \
+       --brand "{brand}" --run-id "{run_id}" \
+       --file "<file>" --drive-file-id "<id from MCP response>"
+   ```
+
+After processing all pending files, the run's full checkpoint history lives in Drive. A future Cowork session can pull it back via `/contentforge:resume`.
+
+#### Step D0c: Final .docx upload
+
+**Route the .docx to Drive:**
 
 Target Drive folder structure (canonical — create folders if missing):
 ```
