@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.12.11] - 2026-05-26
+
+**Honest positioning: removed invented multi-platform manifests. Zero functional change for Claude Code + Cowork users.**
+
+A May 2026 deep research pass (saved at `memory/antigravity-plugin-spec-may-2026.md` and `memory/codex-plugin-spec-may-2026.md`) confirmed that the v3.11 / v3.12 era `.codex-plugin/`, `.cursor-plugin/`, `.antigravity/` manifests and the GitHub Copilot CLI auto-discovery claim were all invented or unverified:
+
+- **Antigravity** uses `gemini-extension.json` at repo root — not `.antigravity/plugin.json`. Google's reference repo (`gemini-cli-extensions/data-agent-kit-starter-pack`) and the `agy plugin import gemini` migrator both confirm this.
+- **OpenAI Codex** uses the `.codex-plugin/plugin.json` path (that part was right), but the schema we hand-rolled was invented. The real schema is published at `developers.openai.com/codex/plugins/build`.
+- **Cursor** plugin format we shipped was not a real Cursor manifest path.
+- **GitHub Copilot CLI** auto-discovery of `.claude-plugin/plugin.json` was unverified.
+
+Honest position from v3.12.11 onwards: **Claude Code (CLI + IDE extensions) + Anthropic Cowork.** Real OpenAI Codex / Cursor / GitHub Copilot CLI / Google Antigravity 2.0 support is on the roadmap with research complete — build deferred.
+
+### Removed
+
+- `.antigravity/plugin.json` — wrong path entirely. Real Antigravity manifest is `gemini-extension.json` at repo root.
+- `.codex-plugin/plugin.json` — path was right, schema was invented and would fail real Codex install.
+- `.cursor-plugin/plugin.json` — invented format.
+- `docs/cross-platform-install.md` — documented install commands that did not work.
+
+### Changed
+
+- `.claude-plugin/plugin.json` — description rewritten to advertise Claude Code + Cowork only. Misleading keywords dropped (`openai-codex`, `cursor-plugin`, `github-copilot`, `antigravity`). Version bumped to 3.12.11.
+- `README.md` — hero, badge row, "Installs on 5 coding-agent surfaces" matrix, capability table row, cross-platform compatibility table row, release notes, and credits line all updated to reflect supported surfaces (Claude Code + Cowork). The "5 platforms" badge is gone.
+- `.github/PULL_REQUEST_TEMPLATE.md` — platform-checkbox list reduced to Claude Code + Cowork.
+- `SECURITY.md` — scope + reporting fields updated to Claude Code + Cowork only.
+
+### Not changed
+
+- Zero changes to `skills/`, `commands/`, `agents/`, `scripts/`, `hooks/hooks.json`, `.mcp.json`, `.mcp.json.connectors-reference`. ContentForge behavior in Claude Code + Cowork is byte-identical to v3.12.10.
+- 19 skills, 13 agents, all commands, all scripts, 16 opt-in HTTP MCP connectors, shared model curator — all unchanged.
+- v3.12.10's three Cowork-with-Drive flows (cross-session checkpoint resume, brand-profile read-back, multi-team namespace isolation) — all unchanged.
+- Historical CHANGELOG entries for v3.11.0, v3.12.0 are intact below — they describe what was shipped at the time. v3.12.11 is the correction.
+
+### Verified
+
+- `.claude-plugin/plugin.json` parses cleanly (`python3 -c "import json; json.load(open('.claude-plugin/plugin.json'))"`).
+- Shreea's test flows (brand-setup, create-content, resume, output-folder, cf-cowork-setup) untouched.
+
 ## [3.12.10] - 2026-05-26
 
 **Closes the three v3.12.9 roadmap items + fixes the `/plugin` scope error.**
