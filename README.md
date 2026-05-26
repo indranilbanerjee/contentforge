@@ -1,10 +1,12 @@
 # ContentForge
 
-**Open-source enterprise content production pipeline** — turn a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document (`.docx` with C2PA content provenance signing for EU AI Act Article 50 compliance) in 30–60 minutes. **19 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer.** **Installs on 5 verified agent surfaces** from a single source repo: **Claude Code** (CLI + IDE extensions), **Anthropic Cowork**, **OpenAI Codex** (CLI + IDE + App), **Cursor 2.5+**, **GitHub Copilot CLI**, and **Google Antigravity 2.0** (CLI + IDE).
+> **You need to ship 30 articles this quarter that pass GPTZero, sound human, cite real sources, and route to the right internal pages. Your team is three people. You have nine weeks. Your last "AI-written" batch got flagged by the editor for hallucinated stats.**
 
-Built for marketing teams producing high volumes of long-form content (articles, white papers, FAQs, research papers) that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Created by [Indranil Banerjee](https://indranil.in).
+Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 29-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.7. No re-edits for AI voice. No hallucinated citations. No orphan content.
 
-[![Version](https://img.shields.io/badge/version-3.13.0-blue.svg)](CHANGELOG.md)
+Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, and **Google Antigravity 2.0**. Created by [Indranil Banerjee](https://indranil.in).
+
+[![Version](https://img.shields.io/badge/version-3.14.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
@@ -44,7 +46,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.13.0)
+## Supported surfaces (v3.14.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|

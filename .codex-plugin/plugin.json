@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.13.0",
-  "description": "Open-source enterprise content production pipeline — 19 skills, 13 specialist agents, 11 quality gates, 29-pattern AI-detection humanizer, fact-checker subagent, three-category internal linking, real .docx output with embedded SEO + Quality + Production + Internal-Link appendices. EU AI Act Article 50 ready via --c2pa-sign on scripts/generate-docx.py. 16 opt-in HTTP MCP connectors. v3.13.0 (2026-05-27): native OpenAI Codex manifest with real published schema (replaces the invented schema correctly removed in v3.12.11). Same skills/ directory shared with .claude-plugin/ and gemini-extension.json (Agent Skills open standard).",
+  "version": "3.14.0",
+  "description": "Open-source enterprise content pipeline — 21 skills, 13 agents, 29-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"
@@ -26,11 +26,14 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ContentForge",
-    "shortDescription": "Enterprise content production pipeline — title curation, research, brief, draft, 29-pattern humanizer, fact-checker, SEO/AEO/GEO optimizer, .docx export with C2PA signing.",
-    "longDescription": "ContentForge brings a canonical 11-phase content production pipeline to OpenAI Codex via 19 portable Agent Skills. Run the full pipeline (title curation → research → brief → draft → humanizer 29-pattern AI-detection sweep → fact-checker → SEO/AEO/GEO optimizer → reviewer scorecard → .docx export with C2PA provenance → social adaptation) or pick individual phases. Skills are platform-portable (same SKILL.md format used by Claude Code, Cursor, Antigravity, Copilot CLI). 16 opt-in HTTP MCP connectors (Slack, Notion, Canva, Webflow, Gmail, Google Calendar, Figma, etc.) connect only when env vars are configured — zero global hooks, zero auto-connecting MCPs. Python scripts (humanizer, fact-checker, generate-docx with --c2pa-sign for EU AI Act Article 50 compliance) run when Python 3.8+ is available.",
+    "shortDescription": "Open-source enterprise content pipeline — 21 skills, 13 agents, 29-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
+    "longDescription": "21 skills + 13 specialist agents + 11 quality gates + 29-pattern AI-detection humanizer + fact-checker subagent + three-category internal linking. Produces real .docx with embedded SEO/Quality/Production/Internal-Link appendices. EU AI Act Article 50 ready via C2PA .docx signing. Zero global hooks. 16 opt-in HTTP MCP connectors. Per-phase checkpoint resume. Portable across Claude Code, Codex, Cursor, and Antigravity via the Agent Skills open standard.",
     "developerName": "Indranil Banerjee",
     "category": "Productivity",
-    "capabilities": ["Read", "Write"],
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
     "websiteURL": "https://indranil.in",
     "defaultPrompt": [
       "Run the ContentForge 11-phase pipeline for an article on EU AI Act compliance.",

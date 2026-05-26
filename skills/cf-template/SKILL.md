@@ -9,6 +9,10 @@ effort: high
 
 Create and manage custom content type templates beyond the 5 built-in types (article, blog, whitepaper, faq, research-paper). Define section structure, word count ranges, readability targets, citation requirements, and quality standards — then use the template with `/contentforge` for consistent, repeatable content production.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/contentforge:template` when:

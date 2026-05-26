@@ -9,6 +9,10 @@ effort: low
 
 Set up a specific MCP integration for ContentForge with step-by-step instructions tailored to the connector's transport type. Handles HTTP connectors (OAuth-based, zero config), npx connectors (API keys, environment variables, `.mcp.json` entry), unknown connector names (fuzzy matching), and post-setup verification.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/contentforge:connect <name>` when:

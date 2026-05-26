@@ -9,6 +9,10 @@ effort: medium
 
 Audit your existing content library for freshness decay, coverage gaps, and optimization opportunities. The audit scores every piece for freshness, identifies content that needs refreshing, maps coverage gaps against keyword opportunities, and produces a prioritized action list with projected impact.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/contentforge:audit` when:

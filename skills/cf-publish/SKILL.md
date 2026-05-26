@@ -10,6 +10,10 @@ effort: low
 
 Push publication-ready content from the ContentForge pipeline directly to your CMS (Webflow or WordPress) via MCP connectors. Preview before publishing, verify post-publish, and fall back to HTML export when no connector is available.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/cf-publish` when:

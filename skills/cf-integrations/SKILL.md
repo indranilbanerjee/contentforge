@@ -9,6 +9,10 @@ argument-hint: "[--category <name>]"
 
 Show the complete integration status for your ContentForge installation — connected vs available connectors, grouped by category, with workflow impact analysis and quick-win recommendations.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/contentforge:integrations` when:

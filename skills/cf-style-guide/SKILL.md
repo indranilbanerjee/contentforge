@@ -9,6 +9,10 @@ effort: medium
 
 Import brand voice profiles from existing style guide documents, URLs, or manual input. Extracts tone, formality, personality traits, writing style, approved/banned terminology, and compliance guardrails into a structured brand profile JSON that the ContentForge pipeline uses for every piece of content it produces.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/contentforge:style-guide` when:

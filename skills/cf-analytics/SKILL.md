@@ -9,6 +9,10 @@ argument-hint: "[--export json|csv] [--period 30d|90d|all]"
 
 Track ContentForge production quality, pipeline timing, brand-specific patterns, and compliance trends over configurable time periods with automated insights and alert flags.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/contentforge:analytics` when you need:

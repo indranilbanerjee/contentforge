@@ -10,6 +10,10 @@ effort: medium
 
 Repurpose any ContentForge article into ready-to-publish social media posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads. Each post is tailored to platform character limits, audience expectations, hashtag conventions, and optimal posting times.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/cf-social-adapt` when:
@@ -159,7 +163,6 @@ Brand: AcmeMed
 Platforms: 5 | Posts Per Platform: 3 | Total Posts: 15
 ===================================================
 
-
 LINKEDIN (3 posts)
 ---------------------------------------------------
 
@@ -255,7 +258,6 @@ Image: Split-screen comparison: manual vs AI-assisted diagnosis (1200x627 px)
 
 ===================================================
 
-
 TWITTER / X (3 posts)
 ---------------------------------------------------
 
@@ -316,7 +318,6 @@ Character Count: 228 / 280
 Image: None (text-only engagement post)
 
 ===================================================
-
 
 INSTAGRAM (3 posts)
 ---------------------------------------------------
@@ -404,7 +405,6 @@ Character Count: 278 / 2,200
 Video: Vertical 9:16 (1080x1920 px), 30 seconds
 
 ===================================================
-
 
 FACEBOOK (3 posts)
 ---------------------------------------------------
@@ -494,7 +494,6 @@ Character Count: 701 / 63,206
 Image: Cleveland Clinic case study graphic (1200x630 px)
 
 ===================================================
-
 
 THREADS (3 posts)
 ---------------------------------------------------

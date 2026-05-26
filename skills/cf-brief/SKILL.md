@@ -9,6 +9,10 @@ effort: high
 
 Generate a comprehensive, research-backed content brief from a keyword or topic. The brief includes keyword data, competitor content analysis, search intent classification, audience pain points, a recommended outline, and an actionable SEO strategy — everything a writer needs to produce high-ranking content on the first draft.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## When to Use
 
 Use `/contentforge:brief` when:

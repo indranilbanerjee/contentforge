@@ -9,6 +9,10 @@ effort: max
 
 Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece in 20-30 minutes through a 10-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
 
+## Context efficiency
+
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+
 ## Execution Protocol (CRITICAL — read first)
 
 This skill orchestrates 11 distinct phases. **Each phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 29-pattern catalog, and reviewer scoring that define ContentForge.

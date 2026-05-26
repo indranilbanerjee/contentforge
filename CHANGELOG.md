@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.14.0] - 2026-05-27
+
+**Distribution & context-efficiency polish — discoverability + leaner pipeline-phase loads.**
+
+### Changed
+
+- **Plugin descriptions trimmed to ~150 chars across all 5 manifests** (`.claude-plugin/`, `.codex-plugin/`, `.cursor-plugin/`, `.github/plugin/`, `gemini-extension.json`). Install-UI now reads as one clear sentence across Claude Code, Codex, Cursor, Copilot CLI, and Antigravity. Long-form positioning lives in README + `interface.longDescription` (Codex). Inspired by the Understand-Anything distribution pattern (35k★).
+- **Skill count corrected** from "19" to actual "21" in plugin manifests + per-platform manifests.
+- **README hero rewritten pain-first.** Opens with the real scenario the plugin solves ("You need to ship 30 articles this quarter that pass GPTZero, sound human, cite real sources…") then states what the plugin does.
+- **GitHub repo topics curated to 20-max with platform-skill topics added**: `cursor-plugin`, `copilot-cli-plugin`, `gemini-cli-extension` joined `claude-code` / `claude-plugin` / `openai-codex` / `agent-skills` for discoverability via GitHub's topic browser.
+- **Context-efficiency callout added to the 10 heaviest skills** (`cf-style-guide`, `cf-social-adapt`, `cf-brief`, `contentforge`, `cf-analytics`, `cf-connect`, `cf-publish`, `cf-template`, `cf-audit`, `cf-integrations`). Tells the agent to grep-before-read `references/` and `humanization-patterns.json`, pass earlier-phase outputs by path + line range (not by reloading), and on `/contentforge:resume` load only the failed phase's state.
+
+### Unchanged
+
+- 21 skills (all frontmatter intact, names match folders, all pass Codex `[a-z0-9-]+` regex)
+- 13 specialist agents
+- 9 commands
+- 11-phase pipeline + 11 quality gates + per-phase checkpointing
+- 29-pattern AI-detection humanizer
+- C2PA .docx signing
+- Shared model curator + dual-copy save under `~/Documents/ContentForge/<brand>/`
+- Zero global hooks, zero auto-connecting MCPs (`.mcp.json` remains gitignored)
+
+### How to update
+
+```bash
+/plugin update contentforge@neels-plugins
+/reload-plugins
+```
+
+If on Cowork / claude.ai / Desktop: Plugins panel → Update.
+
+---
+
 ## [3.13.0] - 2026-05-27
 
 **Real native manifests for 5 verified agent surfaces.** Ships verified-real manifests for OpenAI Codex, Google Antigravity 2.0, Cursor 2.5+, and GitHub Copilot CLI — replacing the v3.11/v3.12 era invented manifests that were correctly removed in v3.12.11.
