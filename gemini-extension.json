@@ -1,0 +1,7 @@
+{
+  "name": "contentforge",
+  "version": "3.13.0",
+  "description": "Open-source enterprise content production pipeline — 19 skills, 13 specialist agents, 11 quality gates, 29-pattern AI-detection humanizer, fact-checker subagent, three-category internal linking (topical / commercial / authority), real .docx output with embedded SEO + Quality + Production + Internal-Link appendices. EU AI Act Article 50 ready via --c2pa-sign on scripts/generate-docx.py. 16 opt-in HTTP MCP connectors (catalogued in .mcp.json.connectors-reference). v3.13.0 (2026-05-27): native Antigravity manifest at repo root (replaces the invented .antigravity/plugin.json that was correctly removed in v3.12.11). Same skills/ directory shared with .claude-plugin/ and .codex-plugin/ (Agent Skills open standard).",
+  "contextFileName": "AGENTS.md",
+  "excludeTools": []
+}

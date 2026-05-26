@@ -1,10 +1,10 @@
 # ContentForge
 
-**Open-source enterprise content production pipeline** — turn a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document (`.docx` with C2PA content provenance signing for EU AI Act Article 50 compliance) in 30–60 minutes. **19 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer.** Installs on **Claude Code** (CLI + IDE extensions) and **Anthropic Cowork**.
+**Open-source enterprise content production pipeline** — turn a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document (`.docx` with C2PA content provenance signing for EU AI Act Article 50 compliance) in 30–60 minutes. **19 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer.** **Installs on 5 verified agent surfaces** from a single source repo: **Claude Code** (CLI + IDE extensions), **Anthropic Cowork**, **OpenAI Codex** (CLI + IDE + App), **Cursor 2.5+**, **GitHub Copilot CLI**, and **Google Antigravity 2.0** (CLI + IDE).
 
 Built for marketing teams producing high volumes of long-form content (articles, white papers, FAQs, research papers) that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Created by [Indranil Banerjee](https://indranil.in).
 
-[![Version](https://img.shields.io/badge/version-3.12.11-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.13.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
@@ -44,14 +44,18 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces
+## Supported surfaces (v3.13.0)
 
-| Platform | Install command | Status |
-|---|---|---|
-| **Claude Code** CLI + IDE extension | `/plugin install contentforge@neels-plugins` | Full support (canonical for solo devs) |
-| **Anthropic Cowork** | Plugins panel in UI → Add marketplace → Install ContentForge (NOT `/plugin` — that's Claude-Code-only) | **Recommended for teams** — `/contentforge:cf-cowork-setup` wires Google Drive for team-shareable output |
+| Platform | Install command | Manifest path | Status |
+|---|---|---|---|
+| **Claude Code** CLI + IDE extension | `/plugin install contentforge@neels-plugins` | `.claude-plugin/plugin.json` | Full support (canonical for solo devs) |
+| **Anthropic Cowork** | Plugins panel in UI → Add marketplace → `indranilbanerjee/neels-plugins` → Install ContentForge | same `.claude-plugin/` files | **Recommended for teams** — `/contentforge:cf-cowork-setup` wires Google Drive for team-shareable output |
+| **OpenAI Codex** CLI + IDE + App | `codex plugin marketplace add indranilbanerjee/neels-plugins` then `codex plugin install contentforge@neels-plugins` | `.codex-plugin/plugin.json` (published OpenAI schema) | Full skills + MCP support |
+| **Cursor 2.5+** | In any Cursor Agent chat: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` | `.cursor-plugin/plugin.json` (verified Cursor 2.5+ JSON Schema) | Full skills + agents + commands support |
+| **GitHub Copilot CLI** | `copilot plugin marketplace add indranilbanerjee/neels-plugins` then `copilot plugin install contentforge@neels-plugins` | `.github/plugin/plugin.json` (Copilot also recognizes `.claude-plugin/plugin.json` as fallback) | Full skills + MCP support |
+| **Google Antigravity 2.0** CLI + IDE | `agy plugin install https://github.com/indranilbanerjee/contentforge` | `gemini-extension.json` (at repo root, per Google's reference pattern) | Full skills + hooks support |
 
-OpenAI Codex / Cursor / GitHub Copilot CLI / Google Antigravity 2.0 support is on the roadmap. The v3.11 / v3.12 era manifests for those platforms were invented (did not match the platforms' actual install specs) and were removed in v3.12.11. Research is saved at `memory/{antigravity,codex}-plugin-spec-may-2026.md`; real build is deferred.
+**Why this works:** Agent Skills became an open standard in December 2025 (~40 agent products by May 2026). All 19 SKILL.md files in ContentForge are platform-portable as written. The sibling manifests are thin platform-specific wrappers around the same `skills/` directory — no skill duplication.
 
 ---
 
@@ -462,7 +466,10 @@ Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_page
 | Claude Code CLI | ✅ Full local support | Reference environment for developers. Files land in `~/Documents/ContentForge/<brand>/...` on your host. Every feature tested here first. |
 | Claude Code IDE extension (VS Code / JetBrains) | ✅ Full local support | Same as CLI; uses host filesystem. |
 | Standard Claude chat (browser `claude.ai` OR installed Claude Desktop app) | ❌ `/plugin` slash commands not available | Plugins still install and run via the **Plugins** UI button at the bottom of the chat. |
-| OpenAI Codex / Cursor / Gemini CLI / Copilot CLI / Antigravity | ⏳ Not supported yet | The v3.11 / v3.12 era sibling manifests were invented and removed in v3.12.11. Real support is on the roadmap. |
+| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 19 skills, same scripts, same MCP catalog as Claude Code. |
+| **Cursor 2.5+** | ✅ Full skills + agents + commands | `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` in any Cursor Agent chat. |
+| **GitHub Copilot CLI** | ✅ Full skills + MCP | `copilot plugin install contentforge@neels-plugins`. Custom slash commands not yet supported in Copilot CLI (open issue) — invoke skills by natural language. |
+| **Google Antigravity 2.0** CLI + IDE | ✅ Full skills + hooks | `agy plugin install https://github.com/indranilbanerjee/contentforge`. Subagents need `/agent` CLI spawning; slash commands fold into skills. |
 
 ### How to pick
 
@@ -524,7 +531,9 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v3.12.11 (2026-05-26)** — Honest positioning. Removed the v3.11 / v3.12 era invented manifests (`.codex-plugin/`, `.cursor-plugin/`, `.antigravity/`) + `docs/cross-platform-install.md`. A May 2026 research pass confirmed those manifests did not match the platforms' actual install specs and would have failed real install attempts. Supported surfaces from v3.12.11 onwards: Claude Code (CLI + IDE extensions) + Anthropic Cowork. Real OpenAI Codex / Cursor / GitHub Copilot CLI / Google Antigravity 2.0 support is deferred (research saved at `memory/{antigravity,codex}-plugin-spec-may-2026.md`). Zero changes to skills, agents, scripts, commands, hooks, MCP — ContentForge behaves identically in Claude Code + Cowork.
+**v3.13.0 (2026-05-27)** — Real native manifests for 5 verified surfaces. Ships `.codex-plugin/plugin.json` (per the published OpenAI schema), `gemini-extension.json` at repo root (per Google's `gemini-cli-extensions/data-agent-kit-starter-pack` reference pattern), `.cursor-plugin/plugin.json` (per the verified Cursor 2.5+ JSON Schema), and `.github/plugin/plugin.json` (verified GitHub Copilot CLI schema). Adds `AGENTS.md` at root (auto-loaded by Codex + Antigravity + Copilot + Cursor agent context chains). All 19 skills share via the Agent Skills open standard — no duplication. Replaces the v3.11/v3.12 era invented manifests correctly removed in v3.12.11.
+
+**v3.12.11 (2026-05-26)** — Honest positioning. Removed the v3.11 / v3.12 era invented manifests + `docs/cross-platform-install.md`. Zero functional changes; ContentForge behaved identically in Claude Code + Cowork.
 
 **v3.10.0 (2026-05-17)** — C2PA content provenance for the .docx output for EU AI Act Article 50 compliance (applicable 2 Aug 2026). New `--c2pa-sign` flag on `scripts/generate-docx.py` with `.docx`-embed-if-supported + verifiable `.c2pa.json` sidecar fallback (c2pa-python 0.32 does not yet support `.docx` MIME inline, so the sidecar is the pragmatic path). Plus May 2026 AEO reality update in Phase 6 SEO/GEO optimizer (Google AI Overviews 55% prevalence + 61% organic CTR drop, citation source skew by engine, LLMs.txt companion standard, Profound/Otterly/Conductor measurement integration references). Production-cert short pointer added at `docs/c2pa-production-cert.md`.
 

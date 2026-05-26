@@ -1,0 +1,34 @@
+{
+  "name": "contentforge",
+  "displayName": "ContentForge",
+  "version": "3.13.0",
+  "description": "Open-source enterprise content production pipeline — 19 skills, 13 specialist agents, 11 quality gates, 29-pattern AI-detection humanizer, fact-checker subagent, real .docx output with C2PA signing for EU AI Act Article 50 compliance. Installable on Cursor 2.5+ via /add-plugin contentforge@https://github.com/indranilbanerjee/contentforge in any Agent chat.",
+  "author": {
+    "name": "Indranil Banerjee",
+    "email": "neel@neelverse.com"
+  },
+  "publisher": "indranilbanerjee",
+  "homepage": "https://indranil.in",
+  "repository": "https://github.com/indranilbanerjee/contentforge",
+  "license": "MIT",
+  "keywords": [
+    "content-marketing",
+    "content-production",
+    "humanizer",
+    "ai-detection",
+    "fact-checking",
+    "docx-generation",
+    "seo",
+    "aeo",
+    "geo",
+    "c2pa",
+    "eu-ai-act",
+    "agent-skills"
+  ],
+  "category": "productivity",
+  "tags": ["content", "writing", "humanizer", "fact-checker", "seo"],
+  "skills": "./skills/",
+  "agents": "./agents/",
+  "commands": "./commands/",
+  "mcpServers": "./.mcp.json"
+}
