@@ -4,7 +4,7 @@
 
 Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 29-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.7. No re-edits for AI voice. No hallucinated citations. No orphan content.
 
-Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, and **Google Antigravity 2.0**. Created by [Indranil Banerjee](https://indranil.in).
+Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, and **Google Antigravity 2.0**. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
 [![Version](https://img.shields.io/badge/version-3.14.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
