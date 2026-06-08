@@ -4,16 +4,20 @@
 
 Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 29-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.7. No re-edits for AI voice. No hallucinated citations. No orphan content.
 
-Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, and **Google Antigravity 2.0**. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.14.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.15.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
+[![Tests](https://img.shields.io/badge/tests-23%2F23%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3150)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
+
+> 🆕 **Just shipped — v3.15.0 (June 9, 2026):** Native **Hermes Agent** + **OpenClaw** support · 23-test stdlib suite · ContentForge now runs on **8 native platforms + 35+ Agent Skills clients**. [Full changelog →](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -24,6 +28,12 @@ Open-source enterprise content production pipeline — **21 skills · 13 special
 # commands DON'T work in Cowork (or Claude.ai / Claude Desktop).
 # Open Plugins panel -> Add marketplace -> paste indranilbanerjee/neels-plugins
 # -> Install ContentForge from the listed plugins.
+
+# Install on Hermes Agent (Nous Research):
+hermes plugins install indranilbanerjee/contentforge
+
+# Install on OpenClaw:
+openclaw plugins install git:github.com/indranilbanerjee/contentforge
 ```
 
 > If ContentForge saves your team time, [give it a star ⭐](https://github.com/indranilbanerjee/contentforge/stargazers) — it's the single thing that helps other marketing teams find it.
@@ -472,7 +482,7 @@ Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_page
 | Claude Code CLI | ✅ Full local support | Reference environment for developers. Files land in `~/Documents/ContentForge/<brand>/...` on your host. Every feature tested here first. |
 | Claude Code IDE extension (VS Code / JetBrains) | ✅ Full local support | Same as CLI; uses host filesystem. |
 | Standard Claude chat (browser `claude.ai` OR installed Claude Desktop app) | ❌ `/plugin` slash commands not available | Plugins still install and run via the **Plugins** UI button at the bottom of the chat. |
-| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 19 skills, same scripts, same MCP catalog as Claude Code. |
+| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 21 skills, same scripts, same MCP catalog as Claude Code. |
 | **Cursor 2.5+** | ✅ Full skills + agents + commands | `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` in any Cursor Agent chat. |
 | **GitHub Copilot CLI** | ✅ Full skills + MCP | `copilot plugin install contentforge@neels-plugins`. Custom slash commands not yet supported in Copilot CLI (open issue) — invoke skills by natural language. |
 | **Google Antigravity 2.0** CLI + IDE | ✅ Full skills + hooks | `agy plugin install https://github.com/indranilbanerjee/contentforge`. Subagents need `/agent` CLI spawning; slash commands fold into skills. |
@@ -537,7 +547,11 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v3.13.0 (2026-05-27)** — Real native manifests for 5 verified surfaces. Ships `.codex-plugin/plugin.json` (per the published OpenAI schema), `gemini-extension.json` at repo root (per Google's `gemini-cli-extensions/data-agent-kit-starter-pack` reference pattern), `.cursor-plugin/plugin.json` (per the verified Cursor 2.5+ JSON Schema), and `.github/plugin/plugin.json` (verified GitHub Copilot CLI schema). Adds `AGENTS.md` at root (auto-loaded by Codex + Antigravity + Copilot + Cursor agent context chains). All 19 skills share via the Agent Skills open standard — no duplication. Replaces the v3.11/v3.12 era invented manifests correctly removed in v3.12.11.
+**v3.15.0 (2026-06-09)** — Multi-harness expansion: native **Hermes Agent** + native **OpenClaw** + 23-test stdlib suite. Brings ContentForge to parity with DMP's 8-platform native support. Ships `plugin.yaml` + `__init__.py` at repo root for Hermes (walks `skills/` at register time, exposes all 21 CF skills via `ctx.register_skill()`); ships `openclaw.plugin.json` at repo root for OpenClaw native install. Install: `hermes plugins install indranilbanerjee/contentforge` or `openclaw plugins install git:github.com/indranilbanerjee/contentforge`. Tests cover plugin.yaml schema, adapter import + register, mock ctx integration, graceful degradation on bad ctx/None, cross-manifest version consistency. Zero impact on existing platforms — each reads only its own manifest path.
+
+**v3.14.0 (2026-05-27)** — Distribution & context-efficiency polish. Trimmed install-UI descriptions to ~150 chars across all 5 platform manifests + 4 marketplace JSONs. Pain-first README hero. GitHub topics refreshed (`cursor-plugin`, `copilot-cli-plugin`, `gemini-cli-extension`, `google-antigravity` added for cross-platform discoverability). Context-efficiency callouts inserted in heavy SKILL.md files (grep-before-read, `${CLAUDE_PLUGIN_DATA}` directory-list-before-open, offset+limit on partial reads). Skill count corrected 19 → **21**.
+
+**v3.13.0 (2026-05-27)** — Real native manifests for 5 verified surfaces. Ships `.codex-plugin/plugin.json` (per the published OpenAI schema), `gemini-extension.json` at repo root (per Google's `gemini-cli-extensions/data-agent-kit-starter-pack` reference pattern), `.cursor-plugin/plugin.json` (per the verified Cursor 2.5+ JSON Schema), and `.github/plugin/plugin.json` (verified GitHub Copilot CLI schema). Adds `AGENTS.md` at root (auto-loaded by Codex + Antigravity + Copilot + Cursor agent context chains). All 21 skills share via the Agent Skills open standard — no duplication. Replaces the v3.11/v3.12 era invented manifests correctly removed in v3.12.11.
 
 **v3.12.11 (2026-05-26)** — Honest positioning. Removed the v3.11 / v3.12 era invented manifests + `docs/cross-platform-install.md`. Zero functional changes; ContentForge behaved identically in Claude Code + Cowork.
 
