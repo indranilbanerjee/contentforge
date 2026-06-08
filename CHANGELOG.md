@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.15.1] - 2026-06-09
+
+**Test-infrastructure polish — release-consistency suite.**
+
+A short follow-up to v3.15.0 that hardens the release pipeline against the kinds of cross-manifest drift that escaped earlier ships. Inspired by DMP's v3.13.1 polish round.
+
+### Added — Release-consistency test suite (`tests/test_release_consistency.py`, +30 tests)
+
+The suite catches drift before it reaches users by checking:
+- All 7 platform manifest versions are in sync (5 Claude-family + Hermes `plugin.yaml` + OpenClaw)
+- The Hermes `__init__.py` `PLUGIN_VERSION` constant matches the canonical version
+- The README version badge matches the canonical version
+- The README `## Supported surfaces (vX.Y.Z)` section heading matches the canonical version
+- The README "Just shipped — vX.Y.Z" hero callout matches the canonical version
+- The CHANGELOG's most recent `## [X.Y.Z]` header matches the canonical version
+- All 5 Claude-family manifest descriptions are byte-identical
+- Every Claude-family description mentions the actual `21 skills` count
+- The README test-count badge matches the actual count of `def test_*` methods
+- All 7 native platform install commands appear verbatim in the README
+- All 12 critical README sections (Why ContentForge, Supported surfaces, Quick start, What ContentForge does, Architecture, Connectors, Troubleshooting, Updating, FAQ, Cross-platform compatibility, Release notes, plus an 8-platform name-mention check) are present
+- Every internal anchor link in the README resolves to a real heading
+
+Test count: 23 → **53**. All passing.
+
+### Changed
+
+- README test badge bumped: `tests-23%2F23` → `tests-53%2F53`
+- README hero "Just shipped" callout updated to mention v3.15.1 + new test count
+- All 8 version declarations bumped to 3.15.1: `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `.github/plugin/plugin.json`, `gemini-extension.json`, `openclaw.plugin.json`, `plugin.yaml`, `__init__.py`
+
+### Why this matters
+
+The v3.15.0 ship surfaced two patterns we hadn't tested for and almost shipped broken:
+1. Manifest version-string drift across the 7 platform files when a release rushes
+2. Section-heading staleness when the canonical version moves but the heading doesn't follow
+
+Both are now caught by `pytest tests/test_release_consistency.py` (or `python -m unittest discover -s tests`). Zero runtime behavior change.
+
+---
+
 ## [3.15.0] - 2026-06-09
 
 **Multi-harness expansion: native Hermes Agent + native OpenClaw + test suite.**
