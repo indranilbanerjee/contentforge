@@ -1,0 +1,42 @@
+{
+  "name": "@indranilbanerjee/contentforge",
+  "version": "3.15.1",
+  "description": "Open-source enterprise content production plugin — 21 skills, 13 agents, 29-pattern AI humanizer, fact-checker, real .docx output with C2PA signing. Native on Claude Code, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw.",
+  "license": "MIT",
+  "homepage": "https://github.com/indranilbanerjee/contentforge",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/indranilbanerjee/contentforge.git"
+  },
+  "author": {
+    "name": "Indranil Banerjee",
+    "url": "https://indranil.in"
+  },
+  "keywords": [
+    "claude-code",
+    "claude-plugin",
+    "agent-skills",
+    "openai-codex",
+    "cursor-plugin",
+    "copilot-cli-plugin",
+    "google-antigravity",
+    "hermes-plugin",
+    "openclaw-plugin",
+    "content-marketing",
+    "ai-humanizer",
+    "fact-checking",
+    "seo",
+    "c2pa",
+    "eu-ai-act"
+  ],
+  "openclaw": {
+    "type": "bundle",
+    "skills": ["./skills"],
+    "compat": {
+      "pluginApi": ">=2026.3.24-beta.2"
+    },
+    "build": {
+      "openclawVersion": "2026.3.24-beta.2"
+    }
+  }
+}
