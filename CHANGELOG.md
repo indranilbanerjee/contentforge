@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.15.2] - 2026-06-28
+
+**June 2026 market-refresh sync — model registry + MODEL-CURATOR docs refreshed (docs-only, no runtime change).**
+
+Mirrors the DMP v3.14.0 suite-wide refresh. ContentForge's content pipeline already routes through the resolver, so the alias re-pointings flow through automatically.
+
+### Added — registry-handled retired status
+
+`scripts/resolve_model.py` now unconditionally rewrites `retired` model IDs to their `replacement_id`. Net effect: any cached config referencing now-dead model IDs (Gemini 2.0 family, Gemini 3 preview image variants, Veo 2/3 family) gets routed to the working replacement instead of HTTP 404. New test `test_retired_falls_forward_unconditionally` covers this.
+
+### Added — `--check-params` scanner for Anthropic param 400 protection
+
+`python scripts/resolve_model.py --check-params <file>` flags unsafe `temperature` / `top_p` / `top_k` near Claude Opus 4.7+ targets. Pre-flight scan of `contentforge/scripts/*.py` was clean.
+
+### Added — model registry rebuilt against vendor primary docs
+
+47 entries verified against Anthropic / OpenAI / Google deprecation pages. Notable adds: `claude-opus-4-8`, `gpt-5.5` family, `gpt-image-2`, `gemini-3.1-pro-preview`. Notable retired/deprecated: Gemini 2.0 family (shutdown 2026-06-01), Veo 2/3 family (shutdown 2026-06-30), Gemini 2.5 family (shutdown 2026-10-16), Imagen 4 (deprecated 2026-06-15).
+
+### Added — `docs/MODEL-CURATOR.md` refresh
+
+Aliases table refreshed; new § **Parameter compatibility — Claude Opus 4.7 and later** explains the HTTP 400 risk.
+
+### Changed
+
+- All 9 version declarations bumped 3.15.1 → 3.15.2
+- README "Just shipped" callout updated for v3.15.2
+- Registry `last_updated` 2026-06-28
+
+### Tests
+
+- 53/53 passing
+
+---
+
 ## [3.15.1] - 2026-06-09
 
 **Test-infrastructure polish — release-consistency suite.**
