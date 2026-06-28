@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.15.3] - 2026-06-28
+
+**README-sync patch — Release notes catch-up + test-coverage extension.**
+
+After v3.15.2 shipped, the user flagged that several README sections across the suite had stale version refs. CF's specific gap: Release notes still ended at v3.15.0 — v3.15.1 (release-consistency tests) and v3.15.2 (market refresh) had shipped without README updates.
+
+### Fixed (CF README)
+
+- Added v3.15.3 (this), v3.15.2, v3.15.1 entries to "## Release notes" section
+- README hero callout + Supported surfaces heading + version badge all bumped to v3.15.3
+
+### Changed
+
+- All 9 CF version declarations 3.15.2 → 3.15.3
+
+### Notes
+
+- DMP's v3.14.1 patch extends its `tests/test_release_consistency.py` with section-heading + anchor-sync checks. CF's release-consistency suite already had `test_readme_supported_surfaces_section_mentions_canonical` (added in v3.15.1) — that's why CF wasn't bitten by the same heading-staleness issue DMP was.
+- Zero pipeline change.
+
+---
+
 ## [3.15.2] - 2026-06-28
 
 **June 2026 market-refresh sync — model registry + MODEL-CURATOR docs refreshed (docs-only, no runtime change).**
