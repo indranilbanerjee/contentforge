@@ -15,7 +15,7 @@ User runs `/contentforge:output-folder`, or asks any variant of "where did my fi
 
 ContentForge writes two copies of every finished `.docx`:
 
-1. **Internal tracking copy** at `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/{slug}_v1.0.docx`. This is the system-of-record for `/contentforge:analytics`, `/contentforge:audit`, etc. It lives inside a dotfolder that Windows hides by default — users rarely find it.
+1. **Internal tracking copy** at `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/{slug}_v1.0.docx`. This is the system-of-record for `/contentforge:cf-analytics`, `/contentforge:cf-audit`, etc. It lives inside a dotfolder that Windows hides by default — users rarely find it.
 2. **User-visible published copy** at `~/Documents/ContentForge/{brand}/{content_type}/{YYYY-MM}/{slug}.docx` (or wherever `$CONTENTFORGE_PUBLISH_DIR` points). This is the one to surface.
 
 The published copy was added in v3.12.3 specifically because end users reported "the file isn't saving on local drive" — it was saving, just somewhere they couldn't see.

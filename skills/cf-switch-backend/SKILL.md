@@ -17,13 +17,15 @@ Switch ContentForge's tracking and delivery backend between **Google Sheets + Dr
 - Downgrading to local when cloud access isn't needed
 - Checking current backend status before switching
 
+**Running in Cowork?** The "local" backend writes to the ephemeral sandbox filesystem — files vanish at session end. For Cowork team setups, use the Google (Drive) route and run `/contentforge:cf-cowork-setup` first to wire the Drive folder layout.
+
 ## How to Use
 
 ```
-/contentforge:switch-backend airtable
-/contentforge:switch-backend google
-/contentforge:switch-backend local
-/contentforge:switch-backend --status
+/contentforge:cf-switch-backend airtable
+/contentforge:cf-switch-backend google
+/contentforge:cf-switch-backend local
+/contentforge:cf-switch-backend --status
 ```
 
 ## What This Command Does
@@ -51,7 +53,7 @@ Output files: 42 files in ~/.claude-marketing/{brand}/tracking/outputs/
 3. Ask for the Airtable Base ID (from the base URL: `airtable.com/appXXXXXXXXX/...`)
 4. Verify access by running:
    ```
-   python3 {scripts_dir}/airtable-tracker.py --action init --base-id {base_id}
+   python {scripts_dir}/airtable-tracker.py --action init --base-id {base_id}
    ```
 
 **If switching to Google Sheets + Drive:**
@@ -67,14 +69,14 @@ Output files: 42 files in ~/.claude-marketing/{brand}/tracking/outputs/
 3. Ask for the Google Sheet ID and Drive folder ID
 4. Verify access by running:
    ```
-   python3 {scripts_dir}/sheets-tracker.py --action init --sheet-id {sheet_id}
+   python {scripts_dir}/sheets-tracker.py --action init --sheet-id {sheet_id}
    ```
 
 **If switching to Local:**
 - No setup needed — works immediately
 - Run init to ensure directory exists:
   ```
-  python3 {scripts_dir}/local-tracker.py --action init --brand "{brand}"
+  python {scripts_dir}/local-tracker.py --action init --brand "{brand}"
   ```
 
 ### Step 3: Offer Migration
@@ -91,7 +93,7 @@ Would you like to migrate this data to Airtable?
 
 **If yes**, run:
 ```
-python3 {scripts_dir}/backend-migrator.py --action migrate --brand "{brand}" --from {current} --to {target} [backend-specific args]
+python {scripts_dir}/backend-migrator.py --action migrate --brand "{brand}" --from {current} --to {target} [backend-specific args]
 ```
 
 Report migration results:
@@ -117,7 +119,7 @@ Backend switched to Airtable.
   Output files → Airtable attachment fields
   Previous data preserved at: ~/.claude-marketing/{brand}/tracking/
 
-Run /contentforge:switch-backend --status to verify anytime.
+Run /contentforge:cf-switch-backend --status to verify anytime.
 ```
 
 ## Backend Comparison
@@ -136,12 +138,12 @@ Run /contentforge:switch-backend --status to verify anytime.
 Run with `--status` flag to check current backend health:
 
 ```
-/contentforge:switch-backend --status
+/contentforge:cf-switch-backend --status
 ```
 
 This runs:
 ```
-python3 {scripts_dir}/backend-migrator.py --action status --brand "{brand}" --from {current_backend}
+python {scripts_dir}/backend-migrator.py --action status --brand "{brand}" --from {current_backend}
 ```
 
 ## Important Notes
@@ -154,6 +156,7 @@ python3 {scripts_dir}/backend-migrator.py --action status --brand "{brand}" --fr
 
 ## Related Skills
 
-- **[/contentforge:style-guide](../cf-style-guide/SKILL.md)** — Brand setup (Step G sets initial backend)
-- **[/contentforge:integrations](../cf-integrations/SKILL.md)** — Check all connector status
-- **[/contentforge:connect](../cf-connect/SKILL.md)** — Set up individual connectors
+- **[/contentforge:cf-style-guide](../cf-style-guide/SKILL.md)** — Brand setup (Step G sets initial backend)
+- **[/contentforge:cf-cowork-setup](../cf-cowork-setup/SKILL.md)** — Wire Cowork + Drive before choosing the Google backend in Cowork
+- **[/contentforge:cf-integrations](../cf-integrations/SKILL.md)** — Check all connector status
+- **[/contentforge:cf-connect](../cf-connect/SKILL.md)** — Set up individual connectors

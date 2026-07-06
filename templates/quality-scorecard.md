@@ -152,13 +152,13 @@
 - In first 100 words: [✓/✗]
 - In at least 2 H2 headings: [✓/✗]
 - In conclusion: [✓/✗]
-- Density: [X.X]% (Target: 1.5-2.5%)
+- Density: [X.X]% (Advisory: ~1-2% — placement checks are the hard gate; see config/scoring-thresholds.json phase_6_seo)
 
 **Score:** [X.X/10]
 
 **Secondary Keywords:**
-- Keyword 1 "[Keyword]": Density [X.X]% (Target: 0.5-1%)
-- Keyword 2 "[Keyword]": Density [X.X]% (Target: 0.5-1%)
+- Keyword 1 "[Keyword]": Density [X.X]% (Advisory: ~0.5-1%)
+- Keyword 2 "[Keyword]": Density [X.X]% (Advisory: ~0.5-1%)
 
 **Meta Elements (0-10):**
 - Meta title: "[Title]" ([X] chars, max 60) [✓/✗]
@@ -285,6 +285,11 @@ Overall Score = (Content Quality × 0.30) +
 - [✓/✗] All outline sections covered
 - [✓/✗] Minimum citations per 300 words
 
+**Phase 3.5 (Visual Assets):**
+- [✓/✗] Data charts verified against sourced data
+- [✓/✗] Visual density meets content-type minimum
+- [✓/✗] Alt text and captions present for all visuals
+
 **Phase 4 (Validation):**
 - [✓/✗] Zero hallucinations detected
 - [✓/✗] All claims sourced
@@ -310,6 +315,11 @@ Overall Score = (Content Quality × 0.30) +
 - [✓/✗] All dimension minimums met
 - [✓/✗] Overall score meets threshold
 - [✓/✗] No critical violations
+
+**Phase 8 (Output & Delivery):**
+- [✓/✗] .docx generated successfully
+- [✓/✗] All 3 appendices present (SEO scorecard, quality report, citation list)
+- [✓/✗] Delivery verified (file at output path, tracking record updated)
 
 ---
 

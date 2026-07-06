@@ -300,15 +300,15 @@ Future research should examine long-term effects, international generalizability
 - Accessed dates for web sources (APA 7th ed.)
 - Hanging indent formatting
 
-**Example (APA 7th Edition):**
+**Example (APA 7th Edition) — SYNTHETIC EXAMPLE: fabricated entries showing FORMAT only; never reuse these authors, titles, or URLs:**
 ```
 References
 
 Anderson, M. J., & Chen, L. (2025). Multi-agent systems for content production: A systematic review. *Journal of Artificial Intelligence Applications*, 42(3), 215-234. https://doi.org/10.xxxx/jaai.2025.xxxxx
 
-Gartner Research. (2025, October 15). *The state of marketing automation 2025: Industry benchmarks and trends*. https://www.gartner.com/reports/marketing-automation-2025
+Meridian Research Group. (2025, October 15). *The state of marketing automation: Industry benchmarks and trends*. https://example.com/reports/marketing-automation
 
-McKinsey & Company. (2026, January 12). *Generative AI in marketing: Early adoption and lessons learned*. https://www.mckinsey.com/capabilities/marketing-and-sales/gen-ai-marketing
+Northgate Advisory. (2026, January 12). *Generative AI in marketing: Early adoption and lessons learned*. https://example.com/insights/gen-ai-marketing
 
 Smith, R., Johnson, K., & Williams, P. (2024). Quality assessment frameworks for AI-generated content. In *Proceedings of the 2024 Conference on Natural Language Processing* (pp. 1234-1245). Association for Computational Linguistics. https://doi.org/10.xxxxx
 ```

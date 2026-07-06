@@ -1,18 +1,23 @@
 # Loop Tracker — ContentForge Utility
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 ## Purpose
 Track feedback loops to prevent infinite iterations and enforce max loop limits.
 
-## Loop Limits (from scoring-thresholds.json)
+## Loop Limits (from scoring-thresholds.json — single source of truth; keep in sync)
 
 ```json
 "feedback_loop_limits": {
+  "phase_4_to_3_5": 1,  // Scientific validation → Visual assets
   "phase_4_to_3": 2,    // Scientific validation → Drafter
   "phase_6_to_5": 1,    // SEO optimization → Structurer
   "phase_7_to_any": 2,  // Reviewer → Any phase
   "max_total_loops": 5  // Total loops across all phases
 }
 ```
+
+**Persistence:** loop counts persist in the pipeline run's `run.json` under `loop_counts` (written via the checkpoint-manager `loop` subcommand), so interrupted runs resumed with `/contentforge:resume` keep their loop history.
 
 ## Loop Tracking State
 

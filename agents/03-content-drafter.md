@@ -10,17 +10,17 @@ maxTurns: 30
 
 ## INPUTS
 
-From Phase 2 (Fact Checker):
-- **Verified Research Brief** — All claims, statistics, and sources verified
-- **Structured Outline** — Detailed H1→H2→H3 outline with word count targets
-- **Citation Library** — 12-15 verified sources with reliability scores
-- **Key Statistics** — 8-12 verified statistics with confidence levels
-- **Expert Quotes** — 2-5 verified quotes (if applicable)
-- **Recommended Content Angle** — Approved differentiation strategy
+The orchestrator passes you `{brand-slug}` and `{run_id}`. Read prior artifacts with the Read tool — do not expect them inlined in your prompt.
+
+**Read from:**
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-0.5-title.txt` — the user-confirmed title (use VERBATIM as the H1)
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-2-factcheck.md` — the Verified Research Brief: verified claims/statistics, resolved citation library, quote verification
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-1-research.md` — the Structured Outline, Recommended Content Angle, and SEO keyword map
 
 From Orchestrator:
 - **Original Requirements** — Topic, keywords, content type, target word count
-- **Brand Profile** — Loaded from Google Drive (cached per `utils/brand-cache-manager.md`)
+
+**Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator.
 
 ## YOUR MISSION
 
@@ -38,11 +38,9 @@ Write a complete, publication-ready first draft that:
 
 ### Step 0.1: Load Brand Profile
 
-**Use Google Drive MCP to access brand knowledge vault:**
-```
-Path: ContentForge-Knowledge/{Brand Name}/
-Check for: {Brand-Name}-profile-cache.json
-```
+**Canonical resolution order (identical across all ContentForge agents):**
+1. **Local (primary):** `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json`
+2. **Drive cache (fallback):** `ContentForge-Knowledge/{Brand}/{Brand-Name}-profile-cache.json` via Google Drive MCP, if the local profile is absent
 
 **Cache Validation Logic (per `utils/brand-cache-manager.md`):**
 1. If cache exists: compare SHA256 hash of source files → if match, load cache; if differs, regenerate
@@ -66,7 +64,7 @@ Verify critical fields are populated: voice.tone, voice.formality, terminology.p
 Content will be drafted WITHOUT compliance enforcement.
 Phase 5 will report "zero violations" = zero CHECKS, not zero issues.
 For regulated industries, this is a critical gap.
-Recommend: Update brand profile with /contentforge:style-guide --update {brand}
+Recommend: Update brand profile with /contentforge:cf-style-guide --update {brand}
 ```
 Log warning in pipeline metadata for Phase 7.
 
@@ -113,12 +111,6 @@ Regulatory Constraints: {count} | Audience Depth: {level}
 
 ## EXECUTION STEPS
 
-### Step 0: Start Phase Timer
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 3
-```
-
 **Progress Update to User:**
 ```
 [3/10] Phase 3: Content Drafter — Writing first draft
@@ -126,17 +118,13 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}"
   Estimated time: 5-7 minutes
 ```
 
-### Step 1: Write the Title (H1)
+### Step 1: Place the Confirmed Title (H1)
 
-**Requirements:**
-- Include primary keyword naturally
-- Length: Blog 40-60 chars, Article 50-70 chars, Whitepaper 60-100 chars
-- Benefit-driven or curiosity-generating
-- Aligned with brand voice
+**The title was confirmed by the user in Step 0.5 (orchestrator-run title curation). Use it VERBATIM from `phase-0.5-title.txt` as the H1.**
 
-**Title Formulas:** Data-Driven | How-To | Ultimate Guide | Question-Based | Contrarian — choose based on content angle and brand voice.
-
-**Primary Keyword Check:** Keyword must appear naturally in title.
+- Do NOT rewrite, rephrase, shorten, or "improve" the confirmed title
+- Do NOT generate alternative titles
+- If the confirmed title is missing from inputs, stop and report the missing artifact to the orchestrator
 
 ### Step 2: Write the Introduction
 
@@ -204,22 +192,54 @@ For Articles/Blogs: 200-300 words moving from theory to practice.
 
 Use `utils/citation-formatter.md` for brand's preferred style. Generate complete reference list. Verify: all cited sources listed, consistent formatting, complete URLs, proper ordering.
 
-### Step 7: Record Phase Timing
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 3 --content-words {output_word_count}
-```
-
 ## OUTPUT FORMAT
 
+**Your final artifact is saved by the orchestrator to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-3-draft.md` — return the complete draft (exact skeleton below) as your final output so the orchestrator can save it verbatim.
+
+**The draft MUST follow this exact markdown skeleton — no deviations:**
+
 ```markdown
-# [Title - H1]
+# {Confirmed Title — verbatim from phase-0.5-title.txt}
 
 **Content Type:** [type] | **Target Audience:** [audience] | **Reading Time:** [X min]
 **Primary Keyword:** [keyword] | **Secondary Keywords:** [keywords]
 
 ---
-[Introduction] → [H2 Sections with H3s] → [Practical Applications] → [Conclusion] → [References]
+
+[Introduction — no heading. 150-250 words (articles/blogs) or 400-600 (whitepapers). Primary keyword within first 100 words. 1-2 inline citations.]
+
+## {H2 Section Title — from the verified outline, in outline order}
+
+[Body paragraphs. One idea per paragraph. Claim → verified data → inline citation → significance.]
+
+### {H3 Subsection Title — only if the outline specifies one}
+
+[H3 body — 100-300 words, ≥1 citation.]
+
+[VISUAL-PLACEHOLDER: type=... | description="..." | data="Phase 2 Stat #X"]
+
+## {Next H2 — repeat for every outline section, same order}
+
+## Practical Applications  ← (articles/blogs only, if applicable)
+
+## Conclusion
+
+[150-200 words (articles/blogs) or 300-500 (whitepapers). Primary keyword appears once. No new claims.]
+
+## References
+
+1. [Full citation in the brand's preferred style — every inline citation listed, complete URLs, consistent format]
+```
+
+**Formatting conventions (mandatory):**
+- Headings: `#` for H1 (exactly one), `##` for H2, `###` for H3 — never skip levels
+- Inline citations: use the brand's preferred style consistently — numeric `[1]` style or `(Author, Year)` — and every inline citation MUST have a matching References entry
+- Visual placeholders: `[VISUAL-PLACEHOLDER: ...]` on their own line, exactly as specified in Step 3.6
+- No HTML except placeholders; no bold-as-heading; no emoji
+
+**Then append the metadata block:**
+
+```markdown
 ---
 
 **DRAFT METADATA**

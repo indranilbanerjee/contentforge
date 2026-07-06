@@ -15,14 +15,18 @@ Usage:
     python drive-uploader.py --action verify-structure --folder-id BRAND_FOLDER_ID --brand "Acme Corp"
 
 Credentials: Reads service account JSON from --credentials flag
-             (default: ~/.claude-marketing/google-credentials.json)
+             (default: <marketing-home>/google-credentials.json)
 """
 
 import argparse
-import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
 
 # ── Auto-install dependencies ───────────────────────────────────────
 try:
@@ -30,13 +34,10 @@ try:
     from googleapiclient.http import MediaFileUpload
     from google.oauth2.service_account import Credentials
 except ImportError:
-    import subprocess
-    print("Installing required packages (first run only)...", file=sys.stderr)
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "-q",
-         "google-api-python-client", "google-auth"],
-        stdout=subprocess.DEVNULL,
-    )
+    err = _common.pip_install(["google-api-python-client", "google-auth"],
+                              label="Google Drive packages")
+    if err:
+        _common.finish(err)
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload
     from google.oauth2.service_account import Credentials
@@ -44,13 +45,13 @@ except ImportError:
 # ── Constants ───────────────────────────────────────────────────────
 
 SCOPES = ["https://www.googleapis.com/auth/drive"]
-DEFAULT_CREDENTIALS = Path.home() / ".claude-marketing" / "google-credentials.json"
 
-MONTH_NAMES = {
-    1: "01-January", 2: "02-February", 3: "03-March", 4: "04-April",
-    5: "05-May", 6: "06-June", 7: "07-July", 8: "08-August",
-    9: "09-September", 10: "10-October", 11: "11-November", 12: "12-December",
-}
+
+def default_credentials() -> Path:
+    return _common.marketing_home() / "google-credentials.json"
+
+
+MONTH_NAMES = _common.MONTH_NAMES
 
 MIME_TYPES = {
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -79,6 +80,31 @@ def get_service(credentials_path):
         return None, f"Authentication failed: {e}"
 
 
+# ── Listing (paginated) ────────────────────────────────────────────
+
+def _list_all(service, query, fields, order_by=None):
+    """List ALL matching files, following nextPageToken (the API returns at
+    most 100 per page; unpaginated calls silently truncated large folders and
+    caused duplicate folder creation)."""
+    files = []
+    page_token = None
+    while True:
+        kwargs = {
+            "q": query,
+            "fields": f"nextPageToken, {fields}",
+            "pageSize": 100,
+        }
+        if order_by:
+            kwargs["orderBy"] = order_by
+        if page_token:
+            kwargs["pageToken"] = page_token
+        resp = service.files().list(**kwargs).execute()
+        files.extend(resp.get("files", []))
+        page_token = resp.get("nextPageToken")
+        if not page_token:
+            return files
+
+
 # ── Folder Operations ──────────────────────────────────────────────
 
 def find_folder(service, parent_id, folder_name):
@@ -92,8 +118,7 @@ def find_folder(service, parent_id, folder_name):
         f"mimeType = 'application/vnd.google-apps.folder' and "
         f"trashed = false"
     )
-    results = service.files().list(q=query, fields="files(id, name)").execute()
-    for f in results.get("files", []):
+    for f in _list_all(service, query, "files(id, name)"):
         if f["name"] == folder_name:
             return f["id"]
     return None
@@ -200,15 +225,13 @@ def upload_file(service, folder_id, file_path):
 
 
 def list_files(service, folder_id):
-    """List files in a Drive folder."""
+    """List files in a Drive folder (paginated)."""
     query = f"'{folder_id}' in parents and trashed = false"
-    results = service.files().list(
-        q=query,
-        fields="files(id, name, mimeType, modifiedTime, size, webViewLink)",
-        orderBy="modifiedTime desc",
-    ).execute()
-
-    files = results.get("files", [])
+    files = _list_all(
+        service, query,
+        "files(id, name, mimeType, modifiedTime, size, webViewLink)",
+        order_by="modifiedTime desc",
+    )
     return {"folder_id": folder_id, "file_count": len(files), "files": files}
 
 
@@ -295,14 +318,13 @@ def verify_brand_structure(service, brand_folder_id, brand_name):
         "warnings": [],
     }
 
-    # List subfolders in brand folder
+    # List subfolders in brand folder (paginated)
     query = (
         f"'{brand_folder_id}' in parents and "
         f"mimeType = 'application/vnd.google-apps.folder' and "
         f"trashed = false"
     )
-    folders = service.files().list(q=query, fields="files(id, name)").execute()
-    folder_map = {f["name"]: f["id"] for f in folders.get("files", [])}
+    folder_map = {f["name"]: f["id"] for f in _list_all(service, query, "files(id, name)")}
 
     for subfolder_name in REQUIRED_SUBFOLDERS:
         sub_info = {"exists": False, "folder_id": None, "files": [], "key_file_found": False}
@@ -311,19 +333,15 @@ def verify_brand_structure(service, brand_folder_id, brand_name):
             sub_info["exists"] = True
             sub_info["folder_id"] = folder_map[subfolder_name]
 
-            # List files in this subfolder
+            # List files in this subfolder (paginated)
             file_query = (
                 f"'{folder_map[subfolder_name]}' in parents and "
                 f"mimeType != 'application/vnd.google-apps.folder' and "
                 f"trashed = false"
             )
-            files = service.files().list(
-                q=file_query,
-                fields="files(name, mimeType, size)",
-                orderBy="name",
-            ).execute()
+            file_list = _list_all(service, file_query,
+                                  "files(name, mimeType, size)", order_by="name")
 
-            file_list = files.get("files", [])
             sub_info["files"] = [f["name"] for f in file_list]
             sub_info["file_count"] = len(file_list)
 
@@ -367,8 +385,8 @@ def main():
                                  "verify-structure"])
     parser.add_argument("--folder-id", required=True,
                         help="Root Google Drive folder ID (the ContentForge output folder)")
-    parser.add_argument("--credentials", default=str(DEFAULT_CREDENTIALS),
-                        help=f"Path to service account JSON (default: {DEFAULT_CREDENTIALS})")
+    parser.add_argument("--credentials", default=None,
+                        help="Path to service account JSON (default: <marketing-home>/google-credentials.json)")
     parser.add_argument("--file", help="Path to file to upload")
     parser.add_argument("--brand", help="Brand name for folder organization")
     parser.add_argument("--content-type", help="Content type (article, blog, whitepaper, faq, research_paper)")
@@ -376,57 +394,59 @@ def main():
     args = parser.parse_args()
 
     # Authenticate
-    service, err = get_service(args.credentials)
+    service, err = get_service(args.credentials or default_credentials())
     if err:
-        print(json.dumps({"error": err, "help": (
+        _common.finish({"error": err, "help": (
             "To set up Google credentials:\n"
             "1. Go to Google Cloud Console > IAM & Admin > Service Accounts\n"
             "2. Create a service account and download the JSON key\n"
             "3. Save it to: ~/.claude-marketing/google-credentials.json\n"
             "4. Share your Google Drive folder with the service account email (Editor access)"
-        )}))
-        sys.exit(1)
+        )})
 
     # Dispatch
-    if args.action == "upload":
-        if not args.file:
-            result = {"error": "Provide --file for upload"}
-        elif not args.brand or not args.content_type:
-            result = {"error": "Provide --brand and --content-type for upload"}
+    try:
+        if args.action == "upload":
+            if not args.file:
+                result = {"error": "Provide --file for upload"}
+            elif not args.brand or not args.content_type:
+                result = {"error": "Provide --brand and --content-type for upload"}
+            else:
+                result = upload_content(service, args.folder_id, args.file, args.brand, args.content_type)
+
+        elif args.action == "ensure-folders":
+            if not args.brand or not args.content_type:
+                result = {"error": "Provide --brand and --content-type for ensure-folders"}
+            else:
+                path_parts = build_folder_path(args.brand, args.content_type)
+                folder_id, created = ensure_folder_path(service, args.folder_id, path_parts)
+                result = {
+                    "folder_id": folder_id,
+                    "folder_path": "/".join(path_parts),
+                    "folders_created": created,
+                }
+
+        elif args.action == "list":
+            result = list_files(service, args.folder_id)
+
+        elif args.action == "upload-assets":
+            if not args.brand or not args.assets_dir:
+                result = {"error": "Provide --brand and --assets-dir for upload-assets"}
+            else:
+                result = upload_assets(service, args.folder_id, args.brand, args.assets_dir)
+
+        elif args.action == "verify-structure":
+            if not args.brand:
+                result = {"error": "Provide --brand for verify-structure"}
+            else:
+                result = verify_brand_structure(service, args.folder_id, args.brand)
+
         else:
-            result = upload_content(service, args.folder_id, args.file, args.brand, args.content_type)
+            result = {"error": f"Unknown action: {args.action}"}
+    except Exception as exc:  # surface API errors as JSON, not tracebacks
+        result = {"error": f"{type(exc).__name__}: {exc}"}
 
-    elif args.action == "ensure-folders":
-        if not args.brand or not args.content_type:
-            result = {"error": "Provide --brand and --content-type for ensure-folders"}
-        else:
-            path_parts = build_folder_path(args.brand, args.content_type)
-            folder_id, created = ensure_folder_path(service, args.folder_id, path_parts)
-            result = {
-                "folder_id": folder_id,
-                "folder_path": "/".join(path_parts),
-                "folders_created": created,
-            }
-
-    elif args.action == "list":
-        result = list_files(service, args.folder_id)
-
-    elif args.action == "upload-assets":
-        if not args.brand or not args.assets_dir:
-            result = {"error": "Provide --brand and --assets-dir for upload-assets"}
-        else:
-            result = upload_assets(service, args.folder_id, args.brand, args.assets_dir)
-
-    elif args.action == "verify-structure":
-        if not args.brand:
-            result = {"error": "Provide --brand for verify-structure"}
-        else:
-            result = verify_brand_structure(service, args.folder_id, args.brand)
-
-    else:
-        result = {"error": f"Unknown action: {args.action}"}
-
-    print(json.dumps(result, indent=2))
+    _common.finish(result)
 
 
 if __name__ == "__main__":

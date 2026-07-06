@@ -1,5 +1,6 @@
 {
   "industry": "real_estate",
+  "_last_reviewed": "2026-07-03",
   "display_name": "Real Estate & Property",
 
   "expertise_profile": {
@@ -119,6 +120,34 @@
       "Confuse correlation with causation in market analysis",
       "Use listing data instead of closed transaction data",
       "Ignore the impact of interest rates on affordability"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
+    "ai_telltale_phrases": [
+      "nestled in the heart of",
+      "boasts stunning views",
+      "a rare gem",
+      "the perfect blend of comfort and convenience",
+      "real estate landscape",
+      "your dream home awaits",
+      "prime location",
+      "endless potential",
+      "in today's hot market",
+      "an investment opportunity like no other"
+    ],
+    "preferred_replacements": [
+      "Use specific market data: 'Median sale price $412K, up 4.1% YoY (metro MLS, Q2 2026)'",
+      "Replace adjectives with property facts: square footage, year built, lot size",
+      "Cite named indices: Case-Shiller, FHFA HPI, local board statistics",
+      "Include days-on-market and inventory figures for market-pace claims"
+    ],
+    "compliance_notes": [
+      "Fair Housing: never describe neighborhoods via protected-class characteristics or coded language",
+      "No property-appreciation guarantees",
+      "ROI estimates must state their assumptions",
+      "School-quality references must use objective published data, never demographic framing"
     ]
   }
 }

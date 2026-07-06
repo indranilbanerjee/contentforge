@@ -4,15 +4,15 @@ This file is auto-loaded by OpenAI Codex, Google Antigravity, GitHub Copilot CLI
 
 ## What this plugin is
 
-ContentForge is an open-source enterprise content production pipeline — turn a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document (`.docx` with C2PA content provenance signing for EU AI Act Article 50 compliance) in 30–60 minutes. **19 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer · fact-checker subagent · three-category internal linking.**
+ContentForge is an open-source enterprise content production pipeline — turn a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document (`.docx` with C2PA content provenance signing for EU AI Act Article 50 compliance) in 30–60 minutes. **19 skills · 13 specialist agents · 10 quality gates · 29-pattern AI-detection humanizer · fact-checker subagent · three-category internal linking.**
 
 **Supported surfaces (v3.13.0):** Claude Code (CLI + IDE extensions), Anthropic Cowork, OpenAI Codex (CLI + IDE + App), Google Antigravity 2.0 (CLI + IDE).
 
 ## How to use it as an agent
 
 1. **Discover skills by description.** All 19 skills auto-discover via SKILL.md frontmatter (`name:` + `description:`). Match user intent.
-2. **Pipeline order matters.** ContentForge skills assume canonical 11-phase ordering: title curation → research → brief → draft → humanizer (29-pattern AI-detection sweep) → fact-checker → SEO/AEO/GEO optimizer → reviewer scorecard → .docx export → social adaptation.
-3. **Skill bodies reference Python scripts at `scripts/<name>.py`** — invoke via Bash / `run_shell_command`. Critical scripts: `humanizer.py`, `fact-checker.py`, `generate-docx.py --c2pa-sign`.
+2. **Pipeline order matters.** ContentForge assumes the canonical 10-phase pipeline plus Step 0.5: Step 0.5 title curation → Phase 1 research → Phase 2 fact-check → Phase 3 drafting → Phase 4 scientific validation → Phase 5 structuring/proofreading → Phase 6 SEO/AEO/GEO optimization → Phase 6.5 humanizer (29-pattern AI-detection sweep) → Phase 7 reviewer scorecard → Phase 8 output (.docx export). Social adaptation and translation run post-pipeline. Reviewer is Phase 7; Output Manager is Phase 8.
+3. **Skill bodies reference Python scripts at `scripts/<name>.py`** — invoke via Bash / `run_shell_command`. Critical scripts: `generate-docx.py` (with C2PA signing flags), `checkpoint-manager.py`, `plugin-metadata.py`, `connector-status.py`. Humanization and fact-checking are agent behaviors defined in `agents/` and `config/humanization-patterns.json` — there are no `humanizer.py` or `fact-checker.py` scripts.
 4. **HTTP MCP connectors are opt-in.** Full catalog at `.mcp.json.connectors-reference` (Slack, Notion, Canva, Webflow, Gmail, Google Calendar, Figma + 9 more). Users opt in by configuring env vars or MCP servers.
 5. **C2PA content provenance signing for the .docx is required for EU distribution.** Article 50 enforcement starts 2 Aug 2026. `--c2pa-sign` flag on `scripts/generate-docx.py`.
 
@@ -21,7 +21,7 @@ ContentForge is an open-source enterprise content production pipeline — turn a
 | User intent | Run skill |
 |---|---|
 | "Help me get started" | `cf-help` |
-| "Create new content" | `cf-style-guide` then full pipeline |
+| "Create new content" | `cf-style-guide` (brand profile) then the `create-content` command (full pipeline) |
 | "Set up Cowork + Google Drive for the team" | `cf-cowork-setup` |
 | "Check my environment / what's connected" | `cf-environment` |
 | "Resume an interrupted pipeline run" | `resume` command + `checkpoint-manager.py` |
@@ -36,10 +36,10 @@ ContentForge is an open-source enterprise content production pipeline — turn a
 - `skills/<name>/SKILL.md` — 19 Agent Skills (the surface area).
 - `agents/<name>.md` — 13 specialist agent definitions (Claude Code subagent format; on Codex convert to TOML).
 - `commands/<name>.md` — Claude Code slash commands (`/contentforge:<name>`).
-- `scripts/*.py` — Python helpers. Key: `humanizer.py`, `fact-checker.py`, `generate-docx.py`, `checkpoint-manager.py`, `drive-sync-state.py`, `detect-drive-mcp.py`, `plugin-metadata.py`.
+- `scripts/*.py` — Python helpers. Key: `generate-docx.py`, `checkpoint-manager.py`, `drive-sync-state.py`, `detect-drive-mcp.py`, `plugin-metadata.py`, `connector-status.py`.
 - `hooks/hooks.json` — `{"hooks":{}}` (zero global hooks).
 - `.mcp.json` — `{"mcpServers":{}}` (zero auto-connecting MCPs).
-- `templates/` + `config/` + `references/` — pipeline configuration, voice patterns, brand profiles, humanization catalogue.
+- `templates/` + `config/` — pipeline configuration, content-type structures, voice patterns, brand profile template, humanization catalogue.
 
 ## Cowork-with-Drive routing (v3.12.9+)
 

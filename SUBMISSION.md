@@ -11,11 +11,11 @@ This file is the submission packet for the Anthropic Software Directory. It is *
 
 ## 1. One-line description
 
-> Enterprise content production via 11-phase autonomous pipeline — research, fact-check, draft, visualize, validate, structure, SEO/GEO, humanize, review, output (.docx). 29-pattern AI-detection humanizer. EU AI Act Article 50 C2PA provenance.
+> Enterprise content production via 10-phase autonomous pipeline — research, fact-check, draft, visualize, validate, structure, SEO/GEO, humanize, review, output (.docx). 29-pattern AI-detection humanizer. EU AI Act Article 50 C2PA provenance.
 
 ## 2. Long description
 
-ContentForge is an enterprise-grade content production system for marketing teams running on Claude Code & Cowork. It replaces 6–8 person content workflows with a coordinated 13-agent pipeline that turns a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document in 30–60 minutes through 11 quality gates with three-layer fact verification (Phase 2 fact-checker → Phase 4 scientific validator → Phase 7 reviewer).
+ContentForge is an enterprise-grade content production system for marketing teams running on Claude Code & Cowork. It replaces 6–8 person content workflows with a coordinated 13-agent pipeline that turns a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document in 30–60 minutes through 10 quality gates with three-layer fact verification (Phase 2 fact-checker → Phase 4 scientific validator → Phase 7 reviewer).
 
 **v3.10.0** adds end-to-end-tested C2PA content provenance for the .docx output (EU AI Act Article 50 compliance, applicable 2 August 2026) via `--c2pa-sign` on `scripts/generate-docx.py` — embeds inline when c2pa-python supports the format, falls back to a verifiable `.c2pa.json` sidecar otherwise. Plus May 2026 AEO reality updates in the Phase 6 SEO/GEO optimizer (Google AI Overviews 55% prevalence, LLMs.txt companion standard, Profound/Otterly/Conductor measurement references).
 
@@ -45,7 +45,7 @@ ContentForge is an enterprise-grade content production system for marketing team
 /contentforge:create-content
 ```
 
-The 11-phase pipeline runs ~45–75 min for a 3500–4500-word whitepaper: Title curation → Research (5+ verified sources) → Fact-check (URL verification + claim cross-reference) → Drafting (SME calibration via industry knowledge pack) → Visual asset annotation → Scientific validation (hallucination detection + regulatory rules) → Structuring + proofreading → SEO/GEO with three-category internal linking → Humanizer (29-pattern catalog + self-critique meta-pass) → Reviewer (5-dimension scoring) → Output Manager (.docx with embedded SEO/Quality/Production scorecards + Appendix D internal link map).
+The 10-phase pipeline runs ~45–75 min for a 3500–4500-word whitepaper: Title curation → Research (5+ verified sources) → Fact-check (URL verification + claim cross-reference) → Drafting (SME calibration via industry knowledge pack) → Visual asset annotation → Scientific validation (hallucination detection + regulatory rules) → Structuring + proofreading → SEO/GEO with three-category internal linking → Humanizer (29-pattern catalog + self-critique meta-pass) → Reviewer (5-dimension scoring) → Output Manager (.docx with embedded SEO/Quality/Production scorecards + Appendix D internal link map).
 
 Empirically tested on a pharma whitepaper ("Antibody-Drug Conjugates in HER2-Low Metastatic Breast Cancer"): 4,353 words, 18 citations including 5 NEJM papers with verified DOIs, all 3 required compliance disclaimers, 0 prohibited terms, 8.4/10 B+ APPROVED at the pharma 8.0 threshold, 0 hallucinations.
 
@@ -61,7 +61,7 @@ python3 scripts/generate-docx.py \
     --c2pa-sign
 ```
 
-Produces the .docx + a `.c2pa.json` sidecar with the manifest: claim_generator_info (ContentForge 11-phase pipeline), c2pa.actions.v2 (c2pa.created + c2pa.edited with "Human-reviewed via Phase 7 reviewer scorecard before delivery"), stds.schema-org.CreativeWork (Article type, Organization author, headline). The sidecar travels with the .docx. Verifiable by any C2PA tool.
+Produces the .docx + a `.c2pa.json` sidecar with the manifest: claim_generator_info (ContentForge 10-phase pipeline), c2pa.actions.v2 (c2pa.created + c2pa.edited with "Human-reviewed via Phase 7 reviewer scorecard before delivery"), stds.schema-org.CreativeWork (Article type, Organization author, headline). The sidecar travels with the .docx. Verifiable by any C2PA tool.
 
 ### Use case 3 — Three-category internal linking for commercial impact
 

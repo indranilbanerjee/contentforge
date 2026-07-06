@@ -9,13 +9,9 @@ effort: medium
 
 Import brand voice profiles from existing style guide documents, URLs, or manual input. Extracts tone, formality, personality traits, writing style, approved/banned terminology, and compliance guardrails into a structured brand profile JSON that the ContentForge pipeline uses for every piece of content it produces.
 
-## Context efficiency
-
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
-
 ## When to Use
 
-Use `/contentforge:style-guide` when:
+Use `/contentforge:cf-style-guide` when:
 - You're **onboarding a new brand** and have an existing style guide document (.docx, .pdf) or URL
 - You need to **update an existing brand profile** with revised guidelines
 - You want to **extract terminology and guardrails** from compliance documents
@@ -23,8 +19,8 @@ Use `/contentforge:style-guide` when:
 - You want to **validate** that an existing brand profile matches current guidelines
 - A client provided a **style guide URL** (Notion page, Google Doc, website page) and you need to import it
 
-**For creating a brand profile from scratch** (no existing style guide), use `/brand-setup` with interactive mode.
-**For using an existing brand profile**, just reference it by name in `/contentforge --brand=BrandName`.
+**For creating a brand profile from scratch** (no existing style guide), use `/contentforge:brand-setup` with interactive mode.
+**For using an existing brand profile**, just reference it by name in `/contentforge:create-content --brand=BrandName`.
 
 ## What This Command Does
 
@@ -56,32 +52,32 @@ Use `/contentforge:style-guide` when:
 
 ### Import from URL
 ```
-/contentforge:style-guide AcmeMed --source=https://acmemed.com/brand-guidelines
+/contentforge:cf-style-guide AcmeMed --source=https://acmemed.com/brand-guidelines
 ```
 
 ### Import from Document
 ```
-/contentforge:style-guide AcmeMed --source=./AcmeMed-Style-Guide.docx
+/contentforge:cf-style-guide AcmeMed --source=./AcmeMed-Style-Guide.docx
 ```
 
 ### Import from Notion Page
 ```
-/contentforge:style-guide AcmeMed --source=https://www.notion.so/acme/Brand-Guidelines-abc123
+/contentforge:cf-style-guide AcmeMed --source=https://www.notion.so/acme/Brand-Guidelines-abc123
 ```
 
 ### Import Only Terminology
 ```
-/contentforge:style-guide AcmeMed --source=https://acmemed.com/terminology --scope=terminology
+/contentforge:cf-style-guide AcmeMed --source=https://acmemed.com/terminology --scope=terminology
 ```
 
 ### Import Only Guardrails (Compliance)
 ```
-/contentforge:style-guide AcmeMed --source=./compliance-requirements.pdf --scope=guardrails
+/contentforge:cf-style-guide AcmeMed --source=./compliance-requirements.pdf --scope=guardrails
 ```
 
 ### Manual Input (No Document)
 ```
-/contentforge:style-guide AcmeMed --source=manual
+/contentforge:cf-style-guide AcmeMed --source=manual
 ```
 **Prompts you for:**
 1. Voice & Tone (select from presets or describe)
@@ -93,7 +89,7 @@ Use `/contentforge:style-guide` when:
 
 ### Update Existing Profile
 ```
-/contentforge:style-guide AcmeMed --source=https://acmemed.com/updated-guidelines --update
+/contentforge:cf-style-guide AcmeMed --source=https://acmemed.com/updated-guidelines --update
 ```
 Merges new information into the existing profile without overwriting unchanged fields.
 
@@ -104,7 +100,7 @@ Merges new information into the existing profile without overwriting unchanged f
 Before parsing any new source, check whether this brand already has a profile saved in Drive from a previous session. This is critical in Cowork because the sandbox FS is recycled — without this check, every Cowork session would re-create the same brand from scratch.
 
 ```bash
-python3 {scripts_dir}/drive-sync-state.py --action read-config
+python {scripts_dir}/drive-sync-state.py --action read-config
 ```
 
 If the config returns `configured: false` OR `environment != "cowork-sandbox"`, skip to Step 1 (this is the local-mode flow).
@@ -113,11 +109,11 @@ If the config returns `configured: true` AND a Drive MCP is available in your to
 
 1. Use the Drive MCP to search for `{drive_root_folder_name}/_brands/{brand-slug}/profile.json`
 2. If found:
-   - Download the profile.json via the MCP, write to `~/.claude-marketing/{brand-slug}/profile.json`
+   - Download the profile JSON via the MCP, write to `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json` (the canonical local profile path)
    - Compute the content hash of the downloaded file
    - Mark synced state:
      ```bash
-     python3 {scripts_dir}/drive-sync-state.py --action profile-mark-downloaded \
+     python {scripts_dir}/drive-sync-state.py --action profile-mark-downloaded \
          --brand "{brand}" --drive-file-id "<id>" --content-hash "sha256:<hash>"
      ```
    - Tell the user: "Loaded existing brand profile for `{brand}` from Drive (last updated {timestamp}). Skipping new setup. To update voice/terminology, run `/contentforge:cf-style-guide --update {brand}`."
@@ -129,16 +125,16 @@ If the config returns `configured: true` AND a Drive MCP is available in your to
 After Step 6 saves the profile locally, check if it needs uploading:
 
 ```bash
-python3 {scripts_dir}/drive-sync-state.py --action profile-needs-upload --brand "{brand}"
+python {scripts_dir}/drive-sync-state.py --action profile-needs-upload --brand "{brand}"
 ```
 
 If `needs_upload: true` AND Cowork+Drive is configured AND a Drive MCP is available:
 
-1. Use the Drive MCP to upload `~/.claude-marketing/{brand-slug}/profile.json` to `{drive_root}/_brands/{brand-slug}/profile.json` (create the folder structure if missing).
+1. Use the Drive MCP to upload `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json` to `{drive_root}/_brands/{brand-slug}/profile.json` (create the folder structure if missing).
 2. Capture the returned Drive file ID and URL.
 3. Mark synced:
    ```bash
-   python3 {scripts_dir}/drive-sync-state.py --action profile-mark-uploaded \
+   python {scripts_dir}/drive-sync-state.py --action profile-mark-uploaded \
        --brand "{brand}" --drive-file-id "<id>" --drive-url "<url>"
    ```
 4. Tell the user: "Brand profile saved to Drive: `{drive_url}` (persists across sessions and is team-shareable)."
@@ -382,14 +378,15 @@ Confidence: 96% (compliance section was highly structured)
 
 Create the structured JSON profile.
 
-**Profile Schema (brand-registry-template.json):**
+**Schema — follow `config/brand-registry-template.json` exactly.** Its top-level sections are:
+`brand_name`, `industry`, `company_info`, `voice`, `terminology`, `citation_rules`, `guardrails`, `content_patterns`, `seo_preferences`, `target_audience`, `quality_thresholds`, `tracking`, `google_integration`, `knowledge_vault_config`, `data_sources`, `output_preferences`, `visual_identity`, `content_pillars`, `competitor_analysis`, `notification_preferences`, `metadata`.
+Fill the sections your import scope covers; leave the rest as template defaults. The excerpt below shows only the sections this skill populates — it is not the full schema.
+
+**SYNTHETIC EXAMPLE (excerpt):**
 ```json
 {
   "brand_name": "AcmeMed",
-  "version": "1.0.0",
-  "last_updated": "2026-02-25T14:30:00Z",
-  "source": "https://acmemed.com/brand-guidelines",
-  "import_scope": "all",
+  "industry": "Healthcare",
 
   "voice": {
     "primary_tone": "authoritative",
@@ -405,7 +402,7 @@ Create the structured JSON profile.
     }
   },
 
-  "writing_style": {
+  "content_patterns": {
     "sentence_length": "medium",
     "paragraph_length": "3-5 sentences",
     "active_voice_target": 90,
@@ -481,9 +478,9 @@ Create the structured JSON profile.
 ### Step 6: Save and Validate (1 minute)
 
 **Save Profile:**
-- **Google Drive (MCP):** Save to `ContentForge/[BrandName]-profile-cache.json`
-- **Notion (MCP):** Save to brand database in Notion workspace
-- **Local Cache:** Save to `~/.claude-marketing/brands/[BrandName]-profile.json`
+- **Local (canonical path):** `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json` — this is the path every other ContentForge skill reads
+- **Google Drive (Cowork mode, via MCP):** `{drive_root}/_brands/{brand-slug}/profile.json` (see Step 6.5)
+- **Notion (MCP, optional):** additionally save to a brand database in the Notion workspace for team visibility
 
 **Validation Checks:**
 - Profile JSON is valid and parseable
@@ -511,11 +508,11 @@ Pipeline Compatibility Test:
   Phase 6.5 (Humanizer): Can apply personality — PASS
 
 Profile Saved:
-  Google Drive: ContentForge/AcmeMed-profile-cache.json
-  Local Cache: ~/.claude-marketing/brands/AcmeMed-profile.json
+  Local: ~/.claude-marketing/acmemed/Brand-Guidelines/AcmeMed-brand-profile.json
+  Drive (Cowork mode): <drive_root>/_brands/acmemed/profile.json
   Cache Hash: SHA256:a3f2c1... (for fast cache lookup)
 
-Status: READY — Profile can be used with /contentforge --brand=AcmeMed
+Status: READY — Profile can be used with /contentforge:create-content --brand=AcmeMed
 ================================================================
 ```
 
@@ -523,7 +520,22 @@ Status: READY — Profile can be used with /contentforge --brand=AcmeMed
 
 Choose where ContentForge tracks quality scores and delivers output files. This step configures the `tracking` section of the brand profile.
 
-**Present the user with three options:**
+#### Step G.0 — Probe environment + existing config FIRST
+
+Before offering the three-option menu, run two probes (same flow as `commands/brand-setup.md`, which is the canonical brand-setup document):
+
+```bash
+python scripts/plugin-metadata.py --section environment
+python scripts/detect-drive-mcp.py
+```
+
+- **If `environment == "cowork-sandbox"`:** the "Local" backend writes to the ephemeral Linux sandbox — files vanish at session end. A Drive route (Anthropic platform integration or a Pipedream/Composio/Zapier/Make Drive aggregator MCP) is effectively REQUIRED for persistent output. If a Drive MCP is visible in your tool list, confirm and use it (skip the menu). If not, warn the user and point them to Cowork → Settings → Integrations → Google Drive, or `/contentforge:cf-cowork-setup`.
+- **If `detect-drive-mcp.py` returns `recommended_path: "mcp"`:** confirm the detected connector and go straight to the MCP-based Drive route — skip the service-account flow.
+- **If it returns `recommended_path: "service_account"`:** confirm the found credentials (`client_email`) and use the service-account route.
+- **If both are present:** ask which to use; default to MCP (simpler auth, Cowork-compatible).
+- **If `recommended_path: "none"` in local Claude Code:** show the three-option menu below (Local is a fine default on a real host filesystem).
+
+**Present the user with three options (only when G.0 found nothing):**
 
 ```
 Step G: Tracking & Delivery Backend
@@ -574,7 +586,7 @@ Your choice: ___
      }
    }
    ```
-6. Run `python3 {scripts_dir}/sheets-tracker.py --action init --sheet-id {sheet_id}` to create the tracking schema
+6. Run `python {scripts_dir}/sheets-tracker.py --action init --sheet-id {sheet_id}` to create the tracking schema
 
 **If user picks Airtable:**
 
@@ -595,7 +607,7 @@ Your choice: ___
      }
    }
    ```
-5. Run `python3 {scripts_dir}/airtable-tracker.py --action init --base-id {base_id}` to create the tracking table with schema
+5. Run `python {scripts_dir}/airtable-tracker.py --action init --base-id {base_id}` to create the tracking table with schema
 
 **If user picks Local:**
 
@@ -609,13 +621,13 @@ Your choice: ___
      }
    }
    ```
-3. Run `python3 {scripts_dir}/local-tracker.py --action init --brand "{brand}"` to create the tracking directory and initial tracking.json
+3. Run `python {scripts_dir}/local-tracker.py --action init --brand "{brand}"` to create the tracking directory and initial tracking.json
 
 **If user skips Step G** (presses enter without choosing or says "skip"):
 - Default to `"local"` with a note:
   ```
   Defaulted to local tracking. You can switch to Google Sheets or
-  Airtable anytime by running /contentforge:switch-backend.
+  Airtable anytime by running /contentforge:cf-switch-backend.
   ```
 
 **Example Output:**
@@ -635,7 +647,7 @@ Tracking table initialized with columns:
   brand_compliance, seo_performance, readability, actual_word_count,
   output_file (Attachment), notes
 
-To switch backends later: /contentforge:switch-backend
+To switch backends later: /contentforge:cf-switch-backend
 ================================================================
 ```
 
@@ -758,10 +770,10 @@ Results:
 Validation: PASS (all pipeline phases compatible)
 
 Saved to:
-  Google Drive: ContentForge/AcmeMed-profile-cache.json
-  Local: ~/.claude-marketing/brands/AcmeMed-profile.json
+  Local: ~/.claude-marketing/acmemed/Brand-Guidelines/AcmeMed-brand-profile.json
+  Drive (Cowork mode): <drive_root>/_brands/acmemed/profile.json
 
-Use with: /contentforge --brand=AcmeMed
+Use with: /contentforge:create-content --brand=AcmeMed
 ================================================================
 ```
 
@@ -772,7 +784,7 @@ Use with: /contentforge --brand=AcmeMed
 - **Google Drive** — Save brand profile JSON to Drive for shared access and backup. Read existing profiles from Drive.
 
 ### Fallback (No MCP)
-Without MCP connections, profiles are saved to the local brand cache at `~/.claude-marketing/brands/`. Profiles can be manually shared by copying the JSON file. URL-based style guide import uses WebFetch (built-in), which works without any MCP connection.
+Without MCP connections, profiles are saved to the canonical local path `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json`. Profiles can be manually shared by copying the JSON file. URL-based style guide import uses WebFetch (built-in), which works without any MCP connection.
 
 ## Troubleshooting
 
@@ -799,7 +811,7 @@ Without MCP connections, profiles are saved to the local brand cache at `~/.clau
 ## Limitations
 
 - **PDF parsing** can miss complex layouts (multi-column, heavy formatting). For best results, convert to .docx first.
-- **Non-English style guides** are processed but terminology extraction is less accurate outside English (multilingual support improving in v2.2)
+- **Non-English style guides** are processed but terminology extraction is less accurate outside English
 - **Implicit voice** — If a style guide shows examples but doesn't explicitly state voice characteristics, extraction confidence will be lower
 - **Visual identity** sections (logos, colors, fonts) are skipped — this tool focuses on content voice only
 - **Maximum document size**: 50 pages / 25,000 words (larger documents should be split into sections)
@@ -810,9 +822,10 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** — Uses brand profiles for Phase 3 (Drafting), Phase 5 (Brand Compliance), Phase 6.5 (Humanizer)
-- **[/batch-process](../batch-process/SKILL.md)** — All pieces in a batch reference a brand profile
-- **[/content-refresh](../content-refresh/SKILL.md)** — Refresh maintains brand compliance using the profile
+- **[/contentforge:brand-setup](../../commands/brand-setup.md)** — The canonical brand-setup flow (this skill conforms to its save path and Step G.0 probes)
+- **[/contentforge:create-content](../../commands/create-content.md)** — Uses brand profiles for Phase 3 (Drafting), Phase 5 (Brand Compliance), Phase 6.5 (Humanizer)
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — All pieces in a batch reference a brand profile
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Refresh maintains brand compliance using the profile
 - **[/contentforge:cf-integrations](../cf-integrations/SKILL.md)** — Check Notion and Google Drive connector status
 - **[/contentforge:cf-switch-backend](../cf-switch-backend/SKILL.md)** — Switch tracking backend (local/airtable/google) after initial setup
 
@@ -823,5 +836,4 @@ None. This skill uses deterministic parsing (document structure analysis, patter
 
 **Agent:** None (deterministic parsing)
 **MCP:** Google Drive (optional via Anthropic platform integration / Pipedream / Composio / Zapier / Make aggregator), Notion (optional)
-**Processing Time:** 5-10 minutes
-**Output:** Brand profile JSON, voice summary, terminology count, guardrails list, validation status, tracking backend config
+**Output:** Brand profile JSON at `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json`, voice summary, terminology count, guardrails list, validation status, tracking backend config

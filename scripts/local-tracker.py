@@ -15,16 +15,22 @@ Usage:
     python local-tracker.py --action mark-complete --brand "Acme" --row-id REQ-001 --data '{"quality_score":9.0}' --output-file output.docx
     python local-tracker.py --action get-row --brand "Acme" --row-id REQ-001
 
-Storage: ~/.claude-marketing/{brand}/tracking/
+Storage: <brand-dir>/tracking/  (brand dir resolved via _common.brand_dir)
 """
 
 import argparse
 import json
+import os
 import re
 import shutil
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
 
 # ── Constants ───────────────────────────────────────────────────────
 
@@ -51,18 +57,14 @@ HEADERS = [
     "notes",
 ]
 
-MONTH_NAMES = {
-    1: "01-January", 2: "02-February", 3: "03-March", 4: "04-April",
-    5: "05-May", 6: "06-June", 7: "07-July", 8: "08-August",
-    9: "09-September", 10: "10-October", 11: "11-November", 12: "12-December",
-}
+MONTH_NAMES = _common.MONTH_NAMES
 
 
 # ── Helpers ─────────────────────────────────────────────────────────
 
 def get_tracking_dir(brand):
     """Get the tracking directory for a brand (internal — hidden dotfolder)."""
-    return Path.home() / ".claude-marketing" / brand / "tracking"
+    return _common.brand_dir(brand) / "tracking"
 
 
 def get_publish_dir(brand, content_type=None, override=None):
@@ -73,17 +75,11 @@ def get_publish_dir(brand, content_type=None, override=None):
       2. ``CONTENTFORGE_PUBLISH_DIR`` env var (workspace default)
       3. ``~/Documents/ContentForge/{brand}/[{content_type}/]``
 
-    The published copy is in addition to the tracking copy under
-    ``~/.claude-marketing/{brand}/tracking/outputs/...`` — internal tracking
-    stays where the rest of the plugin expects it; this is the copy the user
-    actually opens.
-
-    On Windows, ``~/Documents`` resolves via USERPROFILE and is visible by
-    default; ``~/.claude-marketing`` is treated as a hidden dotfolder and is
-    why earlier versions felt like "the file isn't saving" to end users.
+    The published copy is in addition to the tracking copy under the brand's
+    ``tracking/outputs/...`` directory — internal tracking stays where the
+    rest of the plugin expects it; this is the copy the user actually opens.
     """
-    import os as _os
-    base = override or _os.environ.get("CONTENTFORGE_PUBLISH_DIR")
+    base = override or os.environ.get("CONTENTFORGE_PUBLISH_DIR")
     if base:
         base = Path(base).expanduser()
     else:
@@ -94,22 +90,23 @@ def get_publish_dir(brand, content_type=None, override=None):
 
 
 def load_tracking(brand):
-    """Load tracking records from JSON file."""
+    """Load tracking records from JSON file. Returns (data, error)."""
     tracking_file = get_tracking_dir(brand) / "tracking.json"
     if not tracking_file.exists():
         return None, f"No tracking file for brand '{brand}'. Run --action init first."
-    data = json.loads(tracking_file.read_text(encoding="utf-8"))
+    data = _common.load_json_safe(tracking_file)
+    if isinstance(data, dict) and data.get("corrupt"):
+        return None, (f"{data['error']} — {data['recovery']}")
     return data, None
 
 
 def save_tracking(brand, records):
-    """Save tracking records to JSON file."""
-    tracking_file = get_tracking_dir(brand) / "tracking.json"
-    tracking_file.write_text(json.dumps(records, indent=2, ensure_ascii=False), encoding="utf-8")
+    """Atomically save tracking records to JSON file."""
+    _common.atomic_write_json(get_tracking_dir(brand) / "tracking.json", records)
 
 
 def slugify(text):
-    """Convert text to a filesystem-safe slug."""
+    """Convert text to a filesystem-safe slug (titles, not brands)."""
     slug = re.sub(r'[^\w\s-]', '', text.lower())
     slug = re.sub(r'[\s_]+', '-', slug)
     slug = re.sub(r'-+', '-', slug).strip('-')
@@ -133,10 +130,7 @@ def init_tracking(brand):
 
     tracking_dir.mkdir(parents=True, exist_ok=True)
     outputs_dir.mkdir(parents=True, exist_ok=True)
-    tracking_file.write_text(
-        json.dumps({"records": [], "schema_version": "1.0"}, indent=2),
-        encoding="utf-8",
-    )
+    _common.atomic_write_json(tracking_file, {"records": [], "schema_version": "1.0"})
 
     return {
         "status": "initialized",
@@ -151,27 +145,11 @@ def add_row(brand, data):
     if err:
         return {"error": err}
 
-    # Generate requirement_id — use max existing ID to avoid collisions
     records = store["records"]
-    max_num = 0
-    for rec in records:
-        rid = rec.get("requirement_id", "")
-        if rid.startswith("REQ-"):
-            try:
-                num = int(rid.split("-", 1)[1])
-                max_num = max(max_num, num)
-            except (IndexError, ValueError):
-                pass
-    next_num = max_num + 1
-    req_id = data.get("requirement_id", f"REQ-{next_num:03d}")
+    req_id = data.get("requirement_id") or _common.next_req_id(records)
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-
-    # Clamp priority 1-5
-    try:
-        priority = min(max(int(data.get("priority", 3)), 1), 5)
-    except (ValueError, TypeError):
-        priority = 3
+    priority = _common.clamp_priority(data.get("priority", 3))
 
     record = {
         "requirement_id": req_id,
@@ -265,7 +243,7 @@ def update_row(brand, row_id, data):
 def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=None, skip_publish=False):
     """Mark a record as completed and copy output to two locations:
 
-    1. Internal tracking copy under ``~/.claude-marketing/{brand}/tracking/outputs/...``
+    1. Internal tracking copy under ``<brand-dir>/tracking/outputs/...``
        (machine-readable, used by /contentforge:analytics, /contentforge:audit, etc.)
     2. **User-visible published copy** under ``~/Documents/ContentForge/{brand}/...``
        (the path end users actually open — fixes the "file isn't saving on local
@@ -313,12 +291,17 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
             ext = src.suffix
             content_type = target.get("content_type", "") or None
 
-            # --- 1. Internal tracking copy (under ~/.claude-marketing/...) ---
-            tracking_outputs_dir = get_tracking_dir(brand) / "outputs" / str(today.year) / month_dir
-            tracking_outputs_dir.mkdir(parents=True, exist_ok=True)
-            tracking_dest = tracking_outputs_dir / f"{title_slug}_v1.0{ext}"
-            shutil.copy2(str(src), str(tracking_dest))
-            tracking_path = str(tracking_dest)
+            # --- 1. Internal tracking copy ---
+            try:
+                tracking_outputs_dir = get_tracking_dir(brand) / "outputs" / str(today.year) / month_dir
+                tracking_outputs_dir.mkdir(parents=True, exist_ok=True)
+                tracking_dest = tracking_outputs_dir / f"{title_slug}_v1.0{ext}"
+                shutil.copy2(str(src), str(tracking_dest))
+                tracking_path = str(tracking_dest)
+            except (OSError, PermissionError) as exc:
+                save_tracking(brand, store)
+                return {"error": f"Could not write internal tracking copy: {exc}",
+                        "recovery": "Check disk space / permissions on the brand tracking directory."}
 
             src_assets = src.parent / "assets"
             if src_assets.is_dir():
@@ -364,7 +347,7 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
         "published_path": published_path,
         "published_path_note": (
             "This is the user-visible copy under ~/Documents/ContentForge/. "
-            "Open this folder, not the tracking copy under ~/.claude-marketing/."
+            "Open this folder, not the internal tracking copy."
         ) if published_path else None,
     }
 
@@ -392,8 +375,7 @@ def main():
         try:
             data = json.loads(args.data)
         except json.JSONDecodeError as e:
-            print(json.dumps({"error": f"Invalid JSON in --data: {e}"}))
-            sys.exit(1)
+            _common.finish({"error": f"Invalid JSON in --data: {e}"})
 
     # Dispatch
     if args.action == "init":
@@ -422,7 +404,7 @@ def main():
     else:
         result = {"error": f"Unknown action: {args.action}"}
 
-    print(json.dumps(result, indent=2))
+    _common.finish(result)
 
 
 if __name__ == "__main__":

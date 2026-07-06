@@ -5,18 +5,20 @@ effort: low
 argument-hint: "[--category <name>]"
 ---
 
-# Integration Status Dashboard
+# /contentforge:cf-integrations — Integration Status Dashboard
 
-Show the complete integration status for your ContentForge installation — connected vs available connectors, grouped by category, with workflow impact analysis and quick-win recommendations.
+Show the complete integration status for your ContentForge installation — configured vs available connectors, grouped by category, with workflow impact analysis and quick-win recommendations.
 
-## Context efficiency
+## The ground truth about connectors
 
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+ContentForge ships with an **empty `.mcp.json`** (`"mcpServers": {}`) by design (v3.9.0 Cowork-safety decision). On a fresh install, expect **0 connectors configured** (or 1-2 if the platform injects its own integrations). Nothing is pre-wired.
+
+**Every number in the dashboard must come from the live script output.** Never render counts, percentages, or connected/available labels that are not present in the JSON returned by `scripts/connector-status.py`. Do not copy numbers from the example in this file.
 
 ## When to Use
 
-Use `/contentforge:integrations` when:
-- You just installed ContentForge and want to see what's connected out of the box
+Use `/contentforge:cf-integrations` when:
+- You just installed ContentForge and want to see what's connected
 - You're troubleshooting why a skill can't reach an external service
 - You want to know which connectors to add next for maximum workflow coverage
 - You need a quick overview before onboarding a new team member
@@ -24,12 +26,12 @@ Use `/contentforge:integrations` when:
 
 ## What This Command Does
 
-1. **Scan All Connectors** — Check 22 connectors across 12 categories against your current configuration
-2. **Build Status Dashboard** — Group results by category with clear connected/available distinction
-3. **Calculate Coverage** — Show X of Y connectors active with percentage
-4. **Recommend Quick Wins** — Highlight the top 3 connectors to add based on workflow impact
-5. **Surface Category Gaps** — Identify entire categories with zero coverage
-6. **Provide Next Steps** — For each available connector, show what it takes to connect
+1. **Scan All Connectors** — Run the status script; it checks the connector registry against your `.mcp.json` and environment variables
+2. **Build Status Dashboard** — Group results by category with clear configured/available distinction
+3. **Calculate Coverage** — Report exactly the totals the script returns
+4. **Recommend Quick Wins** — Highlight the top 3 not-yet-configured connectors by workflow impact
+5. **Surface Category Gaps** — Identify categories with zero coverage
+6. **Provide Next Steps** — For each recommendation, point to `/contentforge:cf-connect <name>`
 
 ## Required Inputs
 
@@ -37,381 +39,97 @@ Use `/contentforge:integrations` when:
 - **Category filter** — Show only a specific category (e.g., `--category=seo`)
 - **Show filter** — `connected`, `available`, or `all` (default: `all`)
 
-## How to Use
-
-### Basic Usage (Full Dashboard)
-```
-/contentforge:integrations
-```
-Shows the complete status across all 12 categories.
-
-### Filter by Category
-```
-/contentforge:integrations --category=cms
-```
-Shows only CMS connectors (Webflow, WordPress, HubSpot CMS).
-
-### Show Only Connected
-```
-/contentforge:integrations --show=connected
-```
-Lists only the connectors that are currently active.
-
-### Show Only Available (Not Connected)
-```
-/contentforge:integrations --show=available
-```
-Lists connectors you could add, with setup effort and workflow impact for each.
-
 ## What Happens
 
-### Step 1: Connector Status Check (5-10 seconds)
-
-Run the connector status script to scan all known connectors:
+### Step 1: Connector Status Check
 
 ```
-python3 scripts/connector-status.py --action status
+python scripts/connector-status.py --action status
 ```
 
 This checks:
-- `.mcp.json` for HTTP connectors (7 pre-configured: Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar; plus Ahrefs, Similarweb when user-added)
-- Environment variables for npx connectors (Google Sheets, Google Drive, WordPress, Semrush, DeepL, etc.)
-- Returns JSON with connected/available status per connector, grouped by category
+- `.mcp.json` for HTTP connector entries the user has added
+- Environment variables for npx connectors (WordPress, Google Sheets, Semrush, DeepL, etc.)
+- Returns JSON with configured/available status per connector, grouped by category, plus summary totals
 
 ### Step 2: Format Dashboard by Category
 
-Organize results into a visual dashboard. Each category shows:
-- Category name and description
-- Connected connectors (with check mark)
-- Available connectors (with setup type indicator)
+Render the script JSON as a category-grouped dashboard. Each category shows the category name and description, connectors marked `[connected]` or `[available]`, transport type, and the skills each connector unlocks — all taken from the JSON.
 
-**Dashboard Format:**
+**SYNTHETIC EXAMPLE — fabricated for illustration. Always render your actual script output, never this block:**
+
 ```
 ===========================================================
   ContentForge Integration Dashboard
-  Connected: 7 of 22 (32%)
+  Connected: 1 of 22 (5%)
 ===========================================================
 
-  KNOWLEDGE BASE
-  Store requirements, brand docs, reference material
+  KNOWLEDGE BASE — requirements, brand docs, reference material
   -----------------------------------------------------------
-  [connected]  Notion (HTTP) — content requirements, brand docs, editorial calendars
-  [available]  Confluence (npx) — team wikis, brand guidelines, knowledge bases
+  [available]  Notion (HTTP) — content requirements, brand docs, editorial calendars
+  [available]  Confluence (npx) — team wikis, brand guidelines
 
-  DESIGN
-  Visual design and creative assets
+  CMS — content management and publishing
   -----------------------------------------------------------
-  [connected]  Canva (HTTP) — featured images, social graphics, infographics, brand kit
-  [connected]  Figma (HTTP) — design assets, illustrations, visual elements
+  [connected]  Webflow (HTTP) — added by user to .mcp.json
+  [available]  WordPress (npx) — needs WORDPRESS_SITE_URL, WORDPRESS_AUTH_TOKEN
 
-  CMS
-  Content management and publishing
-  -----------------------------------------------------------
-  [connected]  Webflow (HTTP) — publish articles, blog posts, landing pages to CMS
-  [available]  WordPress (npx) — publish posts, pages, manage categories and metadata
-  [available]  HubSpot CMS (npx) — blog posts, landing pages, email content
-
-  ...
+  ... (remaining categories from script output)
 ===========================================================
 ```
+
+A fresh install typically shows 0-2 connected. That is normal and expected — connectors are opt-in.
 
 ### Step 3: Highlight Quick Wins
 
-Identify the top 3 connectors to add next based on workflow impact. The priority ranking:
+From the connectors the script reports as *not configured*, recommend the top 3 by workflow impact:
 
-1. **Notion** — Powers 6 skills (contentforge, batch-process, content-refresh, cf-brief, cf-audit, cf-style-guide). If Notion is not connected, this is always the #1 recommendation.
-2. **Google Sheets** — Powers 3 skills (batch-process, cf-analytics, cf-audit). Critical for batch requirement intake and quality tracking.
-3. **CMS (Webflow or WordPress)** — Powers 3 skills (cf-publish, contentforge, batch-process). Required for end-to-end publish workflow.
-4. **Design (Canva or Figma)** — Powers 3 skills (contentforge, batch-process, cf-social-adapt). Featured images and social graphics.
-5. **SEO (Ahrefs or Similarweb)** — Powers 3 skills (cf-brief, cf-audit, content-refresh). Keyword data and competitive analysis.
+1. **Notion** — powers the most skills (content intake, brand docs, briefs, audits)
+2. **Google Sheets** — batch requirement intake, analytics tracking
+3. **CMS (Webflow or WordPress)** — end-to-end publish workflow
+4. **Design (Canva or Figma)** — featured images and social graphics
+5. **SEO (Ahrefs)** — real keyword data for briefs and audits
 
-Only connectors that are NOT already connected appear as quick wins.
-
-**Quick Wins Format:**
-```
------------------------------------------------------------
-  QUICK WINS — Top connectors to add next
------------------------------------------------------------
-
-  1. Google Sheets (npx)
-     Unlocks: /batch-process requirement intake, /contentforge:analytics tracking, /contentforge:audit data
-     Setup: Set GOOGLE_APPLICATION_CREDENTIALS env var
-     Impact: HIGH — enables batch content production at scale
-
-  2. WordPress (npx)
-     Unlocks: /contentforge:publish direct publishing, end-to-end content pipeline
-     Setup: Set WORDPRESS_SITE_URL and WORDPRESS_AUTH_TOKEN env vars
-     Impact: HIGH — publish directly from ContentForge without manual copy-paste
-
-  3. Ahrefs (HTTP)
-     Unlocks: /contentforge:brief keyword research, /contentforge:audit content gap analysis
-     Setup: Already in .mcp.json — just use a skill that needs it
-     Impact: MEDIUM — data-driven content briefs with real keyword volumes
-```
+For each quick win, show: what it unlocks (from script JSON), setup route (`/contentforge:cf-connect <name>`), and effort (HTTP = one `.mcp.json` entry + OAuth on first use; npx = env vars + entry, Claude Code only).
 
 ### Step 4: Show Coverage Summary
 
-Present the high-level numbers:
-
-```
------------------------------------------------------------
-  COVERAGE SUMMARY
------------------------------------------------------------
-
-  Total connectors:     22
-  Connected:            7 (32%)
-  Available:            15
-
-  HTTP connectors:      9 total, 7 connected (78%)
-  npx connectors:       13 total, 0 connected (0%)
-
-  Categories covered:   6 of 12 (50%)
-  Categories empty:     6 (spreadsheets, file-storage, social-media, analytics,
-                           translation, seo)
-```
+Render the script's summary block verbatim (total, connected, available, coverage percent) plus which categories have zero configured connectors.
 
 ### Step 5: Provide Next Steps
 
-Based on the dashboard results, present actionable next steps:
-
 ```
------------------------------------------------------------
-  NEXT STEPS
------------------------------------------------------------
-
-  1. Connect Google Sheets for batch requirement intake:
-     /contentforge:connect google-sheets
-
-  2. Connect WordPress for direct publishing:
-     /contentforge:connect wordpress
-
-  3. See setup guide for any connector:
-     /contentforge:connect <name>
-
-  4. Full connector reference:
-     See CONNECTORS.md
+  1. Connect your top quick win:      /contentforge:cf-connect <name>
+  2. Setup guide for any connector:   /contentforge:cf-connect <name>
+  3. Custom service not in registry:  /contentforge:cf-add-integration
+  4. Full connector reference:        CONNECTORS.md and .mcp.json.connectors-reference
 ```
-
-## Output
-
-The complete dashboard includes these sections:
-
-| Section | Description |
-|---------|------------|
-| **Coverage Summary** | X of Y connected, percentage, HTTP vs npx breakdown |
-| **Connected Integrations** | Grouped by category, showing transport type and skills enabled |
-| **Available Integrations** | Grouped by category, showing setup effort (HTTP = easy, npx = moderate) |
-| **Quick Wins** | Top 3 recommended connectors ranked by workflow impact |
-| **Category Gaps** | Categories with zero connectors configured |
-| **Next Steps** | Actionable commands to connect recommended integrations |
-
-## Output Example
-
-**Scenario:** Fresh install with only HTTP connectors from `.mcp.json`
-
-```
-===========================================================
-  ContentForge Integration Dashboard
-  Connected: 7 of 22 (32%)
-===========================================================
-
-  KNOWLEDGE BASE — Store requirements, brand docs, reference material
-  -----------------------------------------------------------
-  [connected]  Notion (HTTP)
-               content requirements, brand docs, editorial calendars
-               Skills: /contentforge, /batch-process, /content-refresh, /contentforge:brief, /contentforge:audit, /contentforge:style-guide
-  [available]  Confluence (npx)
-               team wikis, brand guidelines, knowledge bases
-               Needs: CONFLUENCE_URL, CONFLUENCE_TOKEN
-
-  DESIGN — Visual design and creative assets
-  -----------------------------------------------------------
-  [connected]  Canva (HTTP)
-               featured images, social graphics, infographics, brand kit
-               Skills: /contentforge, /batch-process, /contentforge:social-adapt
-  [connected]  Figma (HTTP)
-               design assets, illustrations, visual elements
-               Skills: /contentforge, /contentforge:social-adapt
-
-  CMS — Content management and publishing
-  -----------------------------------------------------------
-  [connected]  Webflow (HTTP)
-               publish articles, blog posts, landing pages to CMS
-               Skills: /contentforge:publish, /contentforge, /batch-process
-  [available]  WordPress (npx)
-               publish posts, pages, manage categories and metadata
-               Needs: WORDPRESS_SITE_URL, WORDPRESS_AUTH_TOKEN
-  [available]  HubSpot CMS (npx)
-               blog posts, landing pages, email content
-               Needs: HUBSPOT_ACCESS_TOKEN
-
-  CHAT — Team messaging and notifications
-  -----------------------------------------------------------
-  [connected]  Slack (HTTP)
-               batch status notifications, content approval alerts, team updates
-               Skills: /batch-process, /contentforge:publish, /contentforge:calendar
-
-  EMAIL — Email communication
-  -----------------------------------------------------------
-  [connected]  Gmail (HTTP)
-               share drafts, deliver finished content, review notifications
-               Skills: /batch-process, /contentforge:publish
-
-  CALENDAR — Calendar and scheduling
-  -----------------------------------------------------------
-  [connected]  Google Calendar (HTTP)
-               content calendar events, publishing deadlines, review reminders
-               Skills: /contentforge:calendar, /batch-process
-
-  SPREADSHEETS — Data intake and requirement management
-  -----------------------------------------------------------
-  [available]  Google Sheets (npx)
-               batch requirement intake, content tracking, quality score history
-               Needs: GOOGLE_APPLICATION_CREDENTIALS
-
-  FILE STORAGE — File storage and brand knowledge
-  -----------------------------------------------------------
-  [available]  Google Drive (npx)
-               brand knowledge vault, reference docs, output delivery
-               Needs: GOOGLE_APPLICATION_CREDENTIALS
-
-  SEO — Search engine optimization
-  -----------------------------------------------------------
-  [available]  Ahrefs (HTTP)
-               keyword research, backlink data, content gap analysis
-  [available]  Similarweb (HTTP)
-               traffic analysis, competitor content benchmarks
-  [available]  Semrush (npx)
-               keyword research, site audit, position tracking
-               Needs: SEMRUSH_API_KEY
-
-  TRANSLATION — Translation and localization
-  -----------------------------------------------------------
-  [available]  DeepL (npx)
-               professional translation, 30+ languages, brand voice preservation
-               Needs: DEEPL_API_KEY
-  [available]  Sarvam AI (npx)
-               22 Indian languages specialist
-               Needs: SARVAM_API_KEY
-
-  SOCIAL MEDIA — Social media publishing
-  -----------------------------------------------------------
-  [available]  Twitter/X (npx)
-               post tweets, threads, media uploads
-               Needs: TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, TWITTER_ACCESS_SECRET
-  [available]  LinkedIn (npx)
-               post articles, share updates, company pages
-               Needs: LINKEDIN_ACCESS_TOKEN
-  [available]  Instagram (npx)
-               publish images/carousels, insights
-               Needs: INSTAGRAM_ACCESS_TOKEN, INSTAGRAM_BUSINESS_ACCOUNT_ID
-
-  ANALYTICS — Website analytics
-  -----------------------------------------------------------
-  [available]  Google Analytics (npx)
-               content traffic, engagement, conversions
-               Needs: GA_PROPERTY_ID, GOOGLE_APPLICATION_CREDENTIALS
-  [available]  Google Search Console (npx)
-               rankings, impressions, CTR for content
-               Needs: GSC_SITE_URL, GOOGLE_APPLICATION_CREDENTIALS
-
------------------------------------------------------------
-  QUICK WINS — Top 3 connectors to add next
------------------------------------------------------------
-
-  1. Google Sheets (npx) — HIGH IMPACT
-     Unlocks: /batch-process requirement intake, /contentforge:analytics, /contentforge:audit
-     Setup: Set GOOGLE_APPLICATION_CREDENTIALS, then /contentforge:connect google-sheets
-     Why: Batch processing reads requirements from Google Sheets. Without it,
-     you're limited to interactive mode or CSV uploads.
-
-  2. Ahrefs (HTTP) — MEDIUM IMPACT
-     Unlocks: /contentforge:brief keyword data, /contentforge:audit content gaps, /content-refresh SEO
-     Setup: Already in .mcp.json — authorize on first use
-     Why: Data-driven content briefs with real search volumes instead of estimates.
-
-  3. Google Drive (npx) — MEDIUM IMPACT
-     Unlocks: Brand knowledge vault, output delivery for all skills
-     Setup: Set GOOGLE_APPLICATION_CREDENTIALS, then /contentforge:connect google-drive
-     Why: Centralized brand assets and automatic output file delivery.
-
------------------------------------------------------------
-  COVERAGE SUMMARY
------------------------------------------------------------
-
-  Total connectors:     22
-  Connected:            7 (32%)
-  Available:            15
-
-  HTTP connectors:      9 total, 7 connected (78%)
-  npx connectors:       13 total, 0 connected (0%)
-
-  Categories covered:   6 of 12 (50%)
-  Categories empty:     6
-
------------------------------------------------------------
-  NEXT STEPS
------------------------------------------------------------
-
-  Connect your top quick win:
-    /contentforge:connect google-sheets
-
-  See setup guide for any connector:
-    /contentforge:connect <name>
-
-  Full connector reference:
-    See CONNECTORS.md
-===========================================================
-```
-
-## Category Reference
-
-| Category | Connectors | Key Skills Enabled |
-|----------|-----------|-------------------|
-| Knowledge base | Notion, Confluence | contentforge, batch-process, content-refresh, cf-brief, cf-audit, cf-style-guide |
-| Design | Canva, Figma | contentforge, batch-process, cf-social-adapt |
-| CMS | Webflow, WordPress, HubSpot CMS | cf-publish, contentforge, batch-process |
-| Chat | Slack | batch-process, cf-publish, cf-calendar |
-| Email | Gmail | batch-process, cf-publish |
-| Calendar | Google Calendar | cf-calendar, batch-process |
-| Spreadsheets | Google Sheets | batch-process, cf-analytics, cf-audit |
-| File storage | Google Drive | contentforge, batch-process, content-refresh, cf-style-guide, cf-audit |
-| SEO | Ahrefs, Similarweb, Semrush | cf-brief, cf-audit, content-refresh |
-| Translation | DeepL, Sarvam AI | cf-translate |
-| Social media | Twitter/X, LinkedIn, Instagram | cf-social-adapt |
-| Analytics | Google Analytics, Google Search Console | cf-analytics, cf-audit, cf-brief |
 
 ## Transport Types
 
 | Transport | Setup Effort | Environment | Authentication |
 |-----------|-------------|-------------|---------------|
-| **HTTP** | Minimal — already in `.mcp.json` | Cowork + Claude Code | OAuth prompt on first use |
+| **HTTP** | Low — one `.mcp.json` entry (user-added) | Cowork + Claude Code | OAuth prompt on first use |
 | **npx** | Moderate — env vars + `.mcp.json` entry | Claude Code only | API keys via environment variables |
 
-HTTP connectors are pre-configured in ContentForge's `.mcp.json` and work immediately in both Cowork and Claude Code. When you first use a skill that needs an HTTP connector, the platform prompts you to authorize via OAuth. No manual credential management required.
-
-npx connectors require local Node.js, the appropriate npm package, and API keys set as environment variables. They work in Claude Code only. Use `/contentforge:connect <name>` for step-by-step setup.
+HTTP connectors work in both Cowork and Claude Code once the user adds them to `.mcp.json` (or connects them at the platform level in Cowork Settings → Integrations). npx connectors require local Node.js and work in Claude Code only. Use `/contentforge:cf-connect <name>` for step-by-step setup of either type.
 
 ## Troubleshooting
 
-### "0 connectors connected" but .mcp.json exists
-- Verify `.mcp.json` is in the plugin root directory (same level as `skills/`)
-- Confirm `.mcp.json` has valid JSON with a `mcpServers` object
-- Check that the file is not `.mcp.json.example` (the example file is for npx servers)
+### "0 connectors connected" on a fresh install
+- This is the expected shipped state — `.mcp.json` starts empty. Use `/contentforge:cf-connect <name>` to add your first connector.
 
-### Dashboard shows HTTP connector as "available" instead of "connected"
-- HTTP connectors appear as "connected" if their name exists as a key in `.mcp.json` under `mcpServers`
-- If you renamed a connector key in `.mcp.json`, the dashboard may not match it
-- Check that the key name matches exactly (e.g., `notion`, not `Notion` or `notion-mcp`)
+### Dashboard shows an HTTP connector as "available" after you added it
+- The key name in `.mcp.json` must match the registry name exactly (e.g., `notion`, not `Notion` or `notion-mcp`)
+- Confirm `.mcp.json` is in the plugin root and contains valid JSON with a `mcpServers` object
+- Restart the session after editing `.mcp.json`
 
 ### npx connector shows "not connected" even though env vars are set
-- Environment variables must be set in the current shell session
-- If using `.env` files, ensure they are loaded before running the skill
-- Verify with: `echo $VARIABLE_NAME` (should not be empty)
+- Variables must be set in the shell session that launched Claude Code
+- Verify with `echo $VARIABLE_NAME` (should not be empty); on Windows restart the terminal after setting
 
 ### Dashboard takes a long time
-- The script reads `.mcp.json` and checks environment variables only — no network calls
-- If slow, check for filesystem issues or very large `.mcp.json` files
+- The script reads `.mcp.json` and environment variables only — no network calls. If slow, check for filesystem issues.
 
 ## Agent Used
 
@@ -419,13 +137,12 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ## Related Skills
 
-- **[/contentforge:connect](../cf-connect/SKILL.md)** — Guided setup for a specific connector
-- **[/contentforge](../contentforge/SKILL.md)** — Main content production pipeline
-- **[/batch-process](../batch-process/SKILL.md)** — Parallel content processing
+- **[/contentforge:cf-connect](../cf-connect/SKILL.md)** — Guided setup for a specific connector
+- **[/contentforge:cf-add-integration](../cf-add-integration/SKILL.md)** — Connect services not in the registry
+- **[/contentforge:create-content](../../commands/create-content.md)** — Main content production pipeline
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Parallel content processing
 
 ---
 
-**Version:** 3.4.0
-**Script:** `scripts/connector-status.py --action status`
-**Processing Time:** <10 seconds
+**Script:** `python scripts/connector-status.py --action status`
 **Network Required:** No (reads local config only)

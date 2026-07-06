@@ -269,5 +269,104 @@ class TestReadmeAnchorIntegrity(unittest.TestCase):
                          f"Broken internal anchors: {missing}")
 
 
+# ─────────────────────────────────────────────────────────────────────────────
+# v3.16 integration checks — doc-layer / config-layer contracts.
+# These are written to the FINAL expected state of the July 2026 sweep; they
+# double as the integration gate for the sibling doc/config edits.
+# ─────────────────────────────────────────────────────────────────────────────
+
+DOC_LAYER_FILES = (
+    sorted(PLUGIN_ROOT.glob("skills/*/SKILL.md"))
+    + sorted(PLUGIN_ROOT.glob("commands/*.md"))
+    + sorted(PLUGIN_ROOT.glob("agents/*.md"))
+)
+
+
+class TestNoHardcodedVersionLiterals(unittest.TestCase):
+    """Doc bodies must not bake in '**Version:**' literals — they drift.
+    Live metadata comes from plugin-metadata.py instead."""
+
+    def test_no_version_literals_in_doc_bodies(self):
+        offenders = []
+        for f in DOC_LAYER_FILES:
+            if "**Version:**" in f.read_text(encoding="utf-8", errors="replace"):
+                offenders.append(str(f.relative_to(PLUGIN_ROOT)))
+        self.assertEqual(offenders, [],
+                         f"Hardcoded '**Version:**' literals found in: {offenders}")
+
+
+class TestSlashCommandReferencesResolve(unittest.TestCase):
+    """Every /contentforge:<name> mentioned in skills/commands/agents must
+    resolve to an existing skills/<name>/ dir or commands/<name>.md file."""
+
+    def test_all_slash_references_resolve(self):
+        valid = {d.name for d in (PLUGIN_ROOT / "skills").iterdir() if d.is_dir()}
+        valid |= {f.stem for f in (PLUGIN_ROOT / "commands").glob("*.md")}
+        missing = {}
+        for f in DOC_LAYER_FILES:
+            text = f.read_text(encoding="utf-8", errors="replace")
+            for name in set(re.findall(r"/contentforge:([a-z0-9][a-z0-9-]*)", text)):
+                if name not in valid:
+                    missing.setdefault(name, []).append(str(f.relative_to(PLUGIN_ROOT)))
+        self.assertEqual(missing, {},
+                         f"Unresolvable /contentforge: references: {missing}")
+
+
+class TestScoringThresholdAlignment(unittest.TestCase):
+    """config/scoring-thresholds.json phase_7_review minimums must equal
+    config/brand-registry-template.json quality_thresholds.dimension_minimums."""
+
+    def test_phase_7_minimums_match_template(self):
+        scoring = json.loads((PLUGIN_ROOT / "config" / "scoring-thresholds.json")
+                             .read_text(encoding="utf-8"))
+        template = json.loads((PLUGIN_ROOT / "config" / "brand-registry-template.json")
+                              .read_text(encoding="utf-8"))
+        phase7 = scoring["default"]["quality_gates"]["phase_7_review"]
+        dims = template["quality_thresholds"]["dimension_minimums"]
+        mismatches = []
+        for dim in ("content_quality", "citation_integrity", "brand_compliance",
+                    "seo_performance", "readability"):
+            gate_val = phase7.get(f"min_{dim}")
+            tmpl_val = dims.get(dim)
+            if gate_val != tmpl_val:
+                mismatches.append(f"{dim}: scoring-thresholds={gate_val} "
+                                  f"brand-registry-template={tmpl_val}")
+        self.assertEqual(mismatches, [],
+                         "phase_7_review minimums drifted from template "
+                         f"dimension_minimums: {mismatches}")
+
+
+class TestPhaseCountClaims(unittest.TestCase):
+    """The pipeline is 10 phases / 10 quality gates. No doc outside the
+    CHANGELOG may claim '11 quality gates'."""
+
+    def test_readme_claims_10_phases_and_gates(self):
+        text = README.read_text(encoding="utf-8")
+        self.assertIn("10 phases", text)
+        self.assertIn("10 quality gates", text)
+
+    def test_no_11_quality_gates_anywhere(self):
+        offenders = []
+        for f in PLUGIN_ROOT.rglob("*.md"):
+            if f.name == "CHANGELOG.md" or ".git" in f.parts or "node_modules" in f.parts:
+                continue
+            if "11 quality gates" in f.read_text(encoding="utf-8", errors="replace"):
+                offenders.append(str(f.relative_to(PLUGIN_ROOT)))
+        self.assertEqual(offenders, [],
+                         f"'11 quality gates' claim found in: {offenders}")
+
+
+class TestSocialPlatformSpecs(unittest.TestCase):
+    """config/social-platform-specs.json must parse and cover the 2026
+    platform set (tiktok / bluesky / youtube_shorts added in this sweep)."""
+
+    def test_parses_and_has_2026_platforms(self):
+        specs = json.loads((PLUGIN_ROOT / "config" / "social-platform-specs.json")
+                           .read_text(encoding="utf-8"))
+        for platform in ("tiktok", "bluesky", "youtube_shorts"):
+            self.assertIn(platform, specs,
+                          f"social-platform-specs.json missing '{platform}'")
+
+
 if __name__ == "__main__":
     unittest.main()

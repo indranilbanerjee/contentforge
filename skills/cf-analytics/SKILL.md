@@ -9,13 +9,9 @@ argument-hint: "[--export json|csv] [--period 30d|90d|all]"
 
 Track ContentForge production quality, pipeline timing, brand-specific patterns, and compliance trends over configurable time periods with automated insights and alert flags.
 
-## Context efficiency
-
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
-
 ## When to Use
 
-Use `/contentforge:analytics` when you need:
+Use `/contentforge:cf-analytics` when you need:
 - **Quality trend visibility** — Are scores improving or declining over time?
 - **Pipeline performance audit** — Which phases are slowest? Where are bottlenecks?
 - **Brand comparison** — Which brands consistently score highest/lowest?
@@ -23,16 +19,16 @@ Use `/contentforge:analytics` when you need:
 - **Compliance monitoring** — Citation rates, brand adherence, loop frequency
 - **Capacity planning** — Average throughput for estimating batch timelines
 
-**For real-time batch monitoring**, use the Progress Tracker (built into `/batch-process`).
-**For individual content production**, use [`/contentforge`](../contentforge/SKILL.md).
+**For real-time batch monitoring**, use the Progress Tracker (built into `/contentforge:batch-process`).
+**For individual content production**, use [`/contentforge:create-content`](../../commands/create-content.md).
 
 ## What This Command Does
 
-Loads historical production data from Google Sheets (if connected) or local CSV tracking files, calculates aggregate metrics across configurable dimensions, identifies statistical outliers and concerning trends, generates an ASCII dashboard with actionable recommendations, and flags alerts when performance degrades.
+Loads historical production data from the brand's configured tracking backend (Google Sheets, Airtable, or local — see `tracking.backend` in the brand profile), calculates aggregate metrics across configurable dimensions, identifies statistical outliers and concerning trends, generates an ASCII dashboard with actionable recommendations, and flags alerts when performance degrades.
 
 **Process Flow:**
 
-1. **Load Data** — Read tracking records from Google Sheets (primary) or local CSV fallback
+1. **Load Data** — Read tracking records from the brand's tracking backend (Google Sheets / Airtable / local JSON)
 2. **Filter & Parse** — Apply time period, brand, content type, and metric focus filters
 3. **Calculate Aggregates** — Average scores, trends, percentiles, phase timing breakdowns
 4. **Detect Outliers** — Flag data points beyond 2.0 standard deviations from mean
@@ -52,38 +48,45 @@ Loads historical production data from Google Sheets (if connected) or local CSV 
 
 ### Default Dashboard (Last 30 Days, All Brands)
 ```
-/contentforge:analytics
+/contentforge:cf-analytics
 ```
 
 ### Specific Time Period
 ```
-/contentforge:analytics --period=90
+/contentforge:cf-analytics --period=90
 ```
 
 ### Brand-Specific Analysis
 ```
-/contentforge:analytics --brand=AcmeMed --period=30
+/contentforge:cf-analytics --brand=AcmeMed --period=30
 ```
 
 ### Content Type Focus
 ```
-/contentforge:analytics --type=whitepaper --period=90
+/contentforge:cf-analytics --type=whitepaper --period=90
 ```
 
 ### Metric-Specific Deep Dive
 ```
-/contentforge:analytics --focus=timing --period=30
+/contentforge:cf-analytics --focus=timing --period=30
 ```
 
 ### Combined Filters
 ```
-/contentforge:analytics --brand=AcmeMed --type=article --focus=quality --period=90
+/contentforge:cf-analytics --brand=AcmeMed --type=article --focus=quality --period=90
 ```
 
 ## Data Sources
 
-### Primary: Google Sheets Tracking
-ContentForge's Output Manager (Phase 8) logs every completed piece to a tracking sheet with these columns:
+### Data source: the brand's tracking backend
+
+ContentForge's Output Manager (Phase 8) logs every completed piece to the backend configured in the brand profile (`tracking.backend`):
+
+- **`google_sheets`** — rows in the configured Google Sheet (read via `scripts/sheets-tracker.py`)
+- **`airtable`** — records in the configured Airtable base (read via `scripts/airtable-tracker.py`)
+- **`local`** — `tracking.json` under `~/.claude-marketing/{brand-slug}/tracking/` (read via `scripts/local-tracker.py`)
+
+All three backends share the same record schema:
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -115,12 +118,12 @@ ContentForge's Output Manager (Phase 8) logs every completed piece to a tracking
 | completed_at | datetime | Completion timestamp |
 | output_url | string | Google Drive link to .docx |
 
-### Fallback: Local CSV
-If Google Sheets is not connected, ContentForge writes tracking data to:
+### Default when no cloud backend is configured
+The `local` backend is the default: tracking data lives at
 ```
-~/.claude-marketing/contentforge-tracking.csv
+~/.claude-marketing/{brand-slug}/tracking/tracking.json
 ```
-Same column schema as the Sheets version.
+Switch backends anytime with `/contentforge:cf-switch-backend` (migration is additive and idempotent).
 
 ## What Happens
 
@@ -128,7 +131,7 @@ Same column schema as the Sheets version.
 
 ```
 Loading analytics data...
-Source: Google Sheets (ContentForge Tracking)
+Source: <brand's tracking backend, e.g. Airtable base appXXXX / Google Sheet / local tracking.json>
 Records found: 147 total
 After filters: 42 records (last 30 days, all brands)
 Date range: 2026-01-26 to 2026-02-25
@@ -182,6 +185,8 @@ Analyze patterns across the dataset:
 ## Output: Analytics Dashboard
 
 ### Full Dashboard (Default View)
+
+**SYNTHETIC EXAMPLE — fabricated for illustration.** All numbers below are invented; always compute from real tracking records.
 
 ```
 ================================================================
@@ -477,8 +482,7 @@ See [`config/analytics-config.json`](../../config/analytics-config.json) for ful
 
 - Analytics operates on **aggregate metrics only** — no content text is stored or displayed
 - Tracking data includes scores, timing, and metadata — never the content body
-- All data stays within your Google Sheets or local CSV — no external transmission
-- Brand names appear in dashboards but can be anonymized with `--anonymize` flag
+- All data stays within your configured tracking backend — no external transmission
 
 ## Limitations
 
@@ -486,34 +490,33 @@ See [`config/analytics-config.json`](../../config/analytics-config.json) for ful
 - Trend direction (improving/declining) is based on linear regression and can be misleading with high variance
 - Phase timing accuracy depends on ContentForge logging completeness
 - Cannot retroactively analyze content produced before tracking was enabled
-- Google Sheets connection required for cross-session data persistence (CSV is session-local fallback)
+- Cross-session persistence follows the tracking backend: local JSON persists on the host filesystem; Google Sheets and Airtable persist in the cloud (and support team access)
 
 ## Agents Used
 
-**None.** This skill operates entirely on tracked data — no content generation agents are invoked. It reads from the tracking sheet populated by the Output Manager (Phase 8) of the ContentForge pipeline.
+**None.** This skill operates entirely on tracked data — no content generation agents are invoked. It reads records written by the Output Manager (Phase 8) to the brand's tracking backend. The aggregation and trend logic is documented in `utilities/analytics-tracker.md` — a pseudocode reference doc (not a script); follow it for the calculations.
 
 ## Integration with Other Skills
 
 **Data Sources:**
-- `/contentforge` — Each completed piece adds a row to the tracking sheet
-- `/batch-process` — Batch completions add multiple rows
-- `/content-refresh` — Refresh completions add versioned rows
+- `/contentforge:create-content` — Each completed piece adds a tracking record
+- `/contentforge:batch-process` — Batch completions add multiple records
+- `/contentforge:content-refresh` — Refresh completions add versioned records
 
 **Acts On Insights:**
-- Quality decline detected: Review brand profile, run `/brand-setup` refresh
+- Quality decline detected: Review brand profile, run `/contentforge:brand-setup` refresh
 - Timing bottleneck found: Adjust phase configuration in `config/scoring-thresholds.json`
 - Citation drop flagged: Update Phase 3 citation density targets
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** — Full content production pipeline (generates tracking data)
-- **[/batch-process](../batch-process/SKILL.md)** — Parallel content processing (generates batch tracking data)
-- **[/content-refresh](../content-refresh/SKILL.md)** — Content updates (generates refresh tracking data)
-- **[/contentforge:variants](../cf-variants/SKILL.md)** — A/B test variation generation
+- **[/contentforge:create-content](../../commands/create-content.md)** — Full content production pipeline (generates tracking data)
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Parallel content processing (generates batch tracking data)
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Content updates (generates refresh tracking data)
+- **[/contentforge:cf-variants](../cf-variants/SKILL.md)** — A/B test variation generation
+- **[/contentforge:cf-switch-backend](../cf-switch-backend/SKILL.md)** — Change where tracking data lives
 
 ---
 
-**Version:** 3.4.0
-**Agents:** None (data analysis only)
-**Processing Time:** 5-15 seconds (data loading + aggregation)
+**Agents:** None (data analysis only; pseudocode reference: `utilities/analytics-tracker.md`)
 **Output:** ASCII analytics dashboard with trends, comparisons, alerts, and recommendations

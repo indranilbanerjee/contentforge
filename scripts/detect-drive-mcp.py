@@ -44,11 +44,10 @@ import json
 import sys
 from pathlib import Path
 
-if hasattr(sys.stdout, "reconfigure"):
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
 
 
 # Drive-capable MCP server names. Order = display priority.
@@ -71,7 +70,8 @@ KNOWN_DRIVE_MCPS = [
 ]
 
 # Service-account credentials file (legacy / non-MCP path)
-DEFAULT_CREDS_FILE = Path.home() / ".claude-marketing" / "google-credentials.json"
+def _default_creds_file() -> Path:
+    return _common.marketing_home() / "google-credentials.json"
 
 
 def probe_mcp_json(plugin_root: Path) -> dict:
@@ -120,11 +120,12 @@ def probe_mcp_json(plugin_root: Path) -> dict:
 
 def probe_service_account() -> dict:
     """Check if the legacy service-account credentials file exists."""
-    exists = DEFAULT_CREDS_FILE.exists()
-    result = {"path": str(DEFAULT_CREDS_FILE), "exists": exists}
+    creds_file = _default_creds_file()
+    exists = creds_file.exists()
+    result = {"path": str(creds_file), "exists": exists}
     if exists:
         try:
-            data = json.loads(DEFAULT_CREDS_FILE.read_text(encoding="utf-8"))
+            data = json.loads(creds_file.read_text(encoding="utf-8"))
             result["client_email"] = data.get("client_email", "unknown")
             result["project_id"] = data.get("project_id", "unknown")
         except (json.JSONDecodeError, OSError):

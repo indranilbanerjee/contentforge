@@ -71,7 +71,7 @@
     ]
   },
   "signs_of_ai_writing_catalog": {
-    "_description": "Comprehensive 29-pattern AI writing detection catalog organized into 5 buckets (Content, Language & Grammar, Style, Communication, Filler & Hedging). Used by Phase 6.5 humanizer Step 1. Expands the legacy ai_telltale_phrases lists above with patterns LLMs exhibit beyond mere word choice.",
+    "_description": "Comprehensive AI writing detection catalog — the core 29-pattern set organized into 5 buckets (Content, Language & Grammar, Style, Communication, Filler & Hedging) plus 6 additional 2026-era patterns (30-35) in the Structure & Framing bucket. Used by Phase 6.5 humanizer Step 1. Expands the legacy ai_telltale_phrases lists above with patterns LLMs exhibit beyond mere word choice. Aggregate scoring: see ai_signal_scoring below.",
     "_attribution": "Pattern catalog adapted from Wikipedia: Signs of AI writing (https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) maintained by WikiProject AI Cleanup (CC BY-SA), with structure influenced by blader/humanizer (MIT). Integrated into ContentForge v3.9.0.",
     "content_patterns": {
       "01_significance_inflation": {
@@ -222,8 +222,8 @@
       },
       "26_hyphenated_word_pair_overuse": {
         "phrases_to_watch": ["third-party", "cross-functional", "client-facing", "data-driven", "decision-making", "well-known", "high-quality", "real-time", "long-term", "end-to-end"],
-        "problem": "AI hyphenates common modifier pairs with perfect consistency. Humans hyphenate inconsistently.",
-        "fix_strategy": "Drop the hyphen on common pairs ('cross functional', 'data driven', 'high quality') unless the brand style guide requires it. Keep hyphens for less common compound modifiers where ambiguity matters."
+        "problem": "AI reaches for stock hyphenated modifier pairs ('data-driven', 'end-to-end', 'best-in-class') with mechanical density — several per paragraph is a strong signal.",
+        "fix_strategy": "Reduce the DENSITY of stock compound modifiers by rephrasing ('a data-driven approach' becomes 'an approach grounded in the data'), and vary compound-modifier usage per the brand style guide. Never drop grammatically correct hyphens from compound modifiers before nouns — introducing errors is not humanization."
       },
       "27_persuasive_authority_tropes": {
         "phrases_to_watch": ["The real question is", "at its core", "in reality", "what really matters", "fundamentally", "the deeper issue", "the heart of the matter"],
@@ -240,7 +240,79 @@
         "problem": "AI adds a generic one-liner after a heading that just restates the heading. Adds nothing.",
         "fix_strategy": "Delete the warm-up sentence. Start the section with substance."
       }
+    },
+    "structure_and_framing_patterns": {
+      "_description": "Patterns 30-35 — added July 2026. Structural and framing tells that survived earlier lexical humanization passes.",
+      "30_colon_subtitle_headlines": {
+        "detection_cue": "Title or H1 follows the 'X: Why Y Matters' / 'X: A Comprehensive Guide' / 'X: What You Need to Know in 2026' colon-subtitle formula. High-signal when H2s repeat the same colon pattern.",
+        "problem": "LLMs default to the colon-subtitle headline template. Human editors vary headline construction; a colon-subtitle title plus colon-subtitle H2s is a loud fingerprint.",
+        "fix_strategy": "Rewrite as a single direct claim, question, or benefit statement. Keep a colon title only when the subtitle carries real, distinct information.",
+        "example_transform": {
+          "before": "Email Deliverability: Why It Matters and How to Improve It",
+          "after": "Most marketing email never reaches the inbox. Here is how to fix yours."
+        }
+      },
+      "31_false_dichotomy_openers": {
+        "detection_cue": "Openers of the form 'Whether you're a X or a seasoned Y...' / 'From beginners to experts...' that address two invented reader archetypes.",
+        "problem": "LLMs open by flattering an imaginary audience spectrum instead of saying anything. The construction is now one of the most recognizable AI intro moves.",
+        "fix_strategy": "Delete the audience framing and open with the substance. If audience targeting matters, state the single audience the piece is actually for.",
+        "example_transform": {
+          "before": "Whether you're a solo founder or a seasoned marketing executive, understanding attribution is essential.",
+          "after": "Attribution tells you which channels actually produce revenue. Most teams measure it wrong."
+        }
+      },
+      "32_scene_setting_openers": {
+        "detection_cue": "'Picture this:' / 'Imagine this:' / 'It's 9 a.m. and your dashboard is red...' hypothetical scene-setting in the first paragraph.",
+        "problem": "LLMs manufacture a generic second-person vignette to simulate storytelling. Without a real, specific story it reads as filler and signals machine authorship.",
+        "fix_strategy": "Either tell a real, specific, attributable story or delete the vignette and lead with the strongest fact or claim.",
+        "example_transform": {
+          "before": "Picture this: it's Monday morning and your content calendar is empty.",
+          "after": "The average content team publishes 40% less than its own calendar plans. The gap has a cause."
+        }
+      },
+      "33_parallel_h2_grammar": {
+        "detection_cue": "Every H2 in the piece shares identical grammatical structure (all gerunds: 'Understanding X', 'Implementing Y', 'Measuring Z' — or all 'The [Noun] of [Noun]').",
+        "problem": "LLMs impose perfect grammatical parallelism across all section headings. Human-edited pieces mix heading forms (questions, claims, fragments, imperatives).",
+        "fix_strategy": "Vary heading grammar: turn one into a question, one into a direct claim, one into a short fragment. Keep parallelism only where sections are genuinely coordinate (e.g., numbered steps).",
+        "example_transform": {
+          "before": "H2s: Understanding Attribution / Implementing Tracking / Measuring Results / Optimizing Campaigns",
+          "after": "H2s: How attribution actually works / Set up tracking in one afternoon / Did it work? / Where the budget should move next"
+        }
+      },
+      "34_faq_shaped_conclusions": {
+        "detection_cue": "Article ends with a bolted-on 'Frequently Asked Questions' block of 3-5 generic Q&As that restate points already made in the body.",
+        "problem": "LLMs append an FAQ section as a completeness reflex (and cargo-cult SEO). When the Q&As only paraphrase the body, the section is padding and a structural tell.",
+        "fix_strategy": "Delete FAQ blocks that restate the body. Keep an FAQ only if it answers genuinely new questions with new information — or make the piece an actual FAQ content type.",
+        "example_transform": {
+          "before": "...Conclusion. ## FAQ ### What is attribution? Attribution is the process described above...",
+          "after": "...Conclusion ends with a specific next step. (FAQ block removed — its answers duplicated the body.)"
+        }
+      },
+      "35_bottom_line_headers": {
+        "detection_cue": "'The Bottom Line' / 'Key Takeaways' / 'Final Thoughts' / 'Wrapping Up' as the closing section header, followed by a bulleted restatement of the article.",
+        "problem": "LLMs close with a formulaic summary header plus recap bullets. Human writers end with a specific implication, recommendation, or open question, not a mechanical recap.",
+        "fix_strategy": "Replace the recap section with a short closing that adds something: a concrete next step, a dated prediction, a named trade-off, or a pointed question. Cut recap bullets entirely for pieces under 2,000 words.",
+        "example_transform": {
+          "before": "## The Bottom Line\\n- Attribution matters\\n- Tracking is essential\\n- Optimization is ongoing",
+          "after": "Start with last-touch this quarter; it is wrong, but it is measurably wrong — and that gives you a baseline to beat."
+        }
+      }
     }
+  },
+  "ai_signal_scoring": {
+    "_description": "Aggregate AI-signal score computed by the Phase 6.5 humanizer after the pattern sweep. This is the number the phase_6_5_humanizer gate in config/scoring-thresholds.json (max_ai_signal_score: 0.3) consumes.",
+    "formula": "ai_signal_score = sum(weight_i for each pattern i DETECTED in the draft) / sum(weight_i for ALL patterns checked), normalized to 0-1.",
+    "weights": {
+      "high_signal_x2": ["01_significance_inflation", "07_ai_vocabulary", "09_negative_parallelisms", "14_em_dash_overuse", "30_colon_subtitle_headlines"],
+      "standard_x1": "All other catalog patterns (02-06, 08, 10-13, 15-29, 31-35)"
+    },
+    "computation_notes": [
+      "Total weighted checks = 5 patterns x 2 + 30 patterns x 1 = 40.",
+      "A pattern counts as DETECTED when it appears at or above its detection threshold (where one is defined) or at least once (where no threshold is defined).",
+      "Example: a draft triggering patterns 07 (x2), 14 (x2), 10, 28, and 35 scores (2+2+1+1+1)/40 = 0.175 — passes the 0.3 gate.",
+      "Score > 0.3 fails the phase 6.5 gate: run another humanization pass targeting the detected patterns, highest weight first."
+    ],
+    "threshold_reference": "config/scoring-thresholds.json → default.quality_gates.phase_6_5_humanizer.max_ai_signal_score (0.3)"
   },
   "sentence_structure_patterns": {
     "too_uniform": {
@@ -349,15 +421,12 @@
       }
     }
   },
-  "ai_detection_evasion": {
+  "naturalness_metrics": {
+    "_description": "Quality targets for natural-sounding prose. These are writing-quality metrics, not detector-evasion tactics — the goal is prose a human editor would sign off on. (Renamed in July 2026 from the old detector-evasion section; the synonym-swap technique was removed because it reproduces the elegant-variation tell — see catalog pattern 11.)",
     "burstiness": {
-      "description": "Perplexity (word choice variety) and burstiness (sentence length variety) are key AI detection signals",
+      "description": "Burstiness (sentence length variety) is a core naturalness signal — uniform sentence lengths read as machine output",
       "target_burstiness_score": 0.7,
       "technique": "Intentionally vary sentence length dramatically"
-    },
-    "unexpected_word_choices": {
-      "description": "AI uses statistically probable words. Humans occasionally choose unexpected synonyms.",
-      "technique": "Replace 10-15% of common words with less common but accurate synonyms"
     },
     "personal_touches": {
       "first_person": {
@@ -486,7 +555,7 @@
       ],
       "example_transforms": {
         "before": "The innovative AI solution leverages cutting-edge technology to transform content creation.",
-        "after": "The multi-agent pipeline uses GPT-4o for research synthesis and Claude 3.5 for draft generation, with a separate validation model checking citation accuracy at 99.2% precision."
+        "after": "The multi-agent pipeline uses a frontier LLM for research synthesis and a second frontier LLM for draft generation, with a separate validation model checking citation accuracy at 99.2% precision."
       },
       "best_for": ["technical_documentation", "developer_guides", "product_specs", "research_papers"]
     },
@@ -520,136 +589,6 @@
     }
   },
   "industry_specific_patterns": {
-    "_description": "Industry-specific AI telltale phrases and writing patterns that the Humanizer agent (Phase 6.5 Step 7) should detect and replace. These are phrases that AI models commonly generate for specific industries that immediately signal machine authorship to domain experts.",
-    "healthcare_pharma": {
-      "ai_telltale_phrases": [
-        "healthcare landscape",
-        "paradigm shift in medicine",
-        "holistic approach to wellness",
-        "patient-centric care model",
-        "at the forefront of medical innovation",
-        "revolutionizing healthcare delivery",
-        "empowering patients to take control",
-        "bridging the gap in healthcare",
-        "the future of medicine is here",
-        "transforming patient outcomes"
-      ],
-      "preferred_replacements": [
-        "Use specific clinical outcomes: '32% reduction in readmission rates'",
-        "Reference specific studies: 'The NEJM 2025 trial showed...'",
-        "Use precise medical terminology appropriate to audience",
-        "Lead with patient impact metrics, not buzzwords"
-      ],
-      "compliance_notes": [
-        "Never use 'cure' or 'guarantee' for treatments",
-        "Always include 'consult your healthcare provider' for medical advice",
-        "FDA-regulated claims require specific substantiation",
-        "HIPAA considerations for patient stories (use composites or de-identified data)"
-      ]
-    },
-    "finance_bfsi": {
-      "ai_telltale_phrases": [
-        "financial landscape",
-        "navigate the complexities of",
-        "unlock financial potential",
-        "in today's volatile markets",
-        "empower your financial future",
-        "revolutionizing the financial industry",
-        "driving financial inclusion",
-        "the future of banking",
-        "transforming wealth management",
-        "leveraging fintech innovation"
-      ],
-      "preferred_replacements": [
-        "Use specific market data: 'S&P 500 returned 12.3% YTD'",
-        "Reference specific regulations: 'Under SEC Rule 10b-5...'",
-        "Cite named analysts or firms: 'Goldman Sachs projects...'",
-        "Lead with quantified outcomes, not aspirational language"
-      ],
-      "compliance_notes": [
-        "Always include 'Past performance does not guarantee future results'",
-        "FINRA fair balance requirements for investment content",
-        "No guaranteed returns or specific performance promises",
-        "Risk disclosures required for investment product mentions"
-      ]
-    },
-    "technology_saas": {
-      "ai_telltale_phrases": [
-        "digital transformation journey",
-        "seamless integration",
-        "robust and scalable solution",
-        "cutting-edge technology",
-        "next-generation platform",
-        "end-to-end solution",
-        "single pane of glass",
-        "leveraging the power of AI",
-        "future-proof your technology stack",
-        "driving digital innovation"
-      ],
-      "preferred_replacements": [
-        "Use specific technical details: 'Handles 10,000 concurrent connections with <50ms latency'",
-        "Reference architecture specifics: 'Built on Kubernetes with auto-scaling'",
-        "Cite benchmark results: 'Reduced deployment time from 4 hours to 12 minutes'",
-        "Use concrete integration examples: 'Connects to Salesforce, HubSpot, and Slack via REST API'"
-      ],
-      "compliance_notes": [
-        "Performance claims should be reproducible and documented",
-        "Security claims need certification backing (SOC 2, ISO 27001)",
-        "Uptime guarantees should match SLA terms exactly",
-        "Open source license attribution where applicable"
-      ]
-    },
-    "legal": {
-      "ai_telltale_phrases": [
-        "navigate the legal landscape",
-        "legal complexities",
-        "in the ever-evolving regulatory environment",
-        "protect your legal rights",
-        "comprehensive legal solutions",
-        "leveraging legal expertise",
-        "at the intersection of law and technology",
-        "driving legal innovation",
-        "empowering legal teams",
-        "transforming legal operations"
-      ],
-      "preferred_replacements": [
-        "Reference specific statutes: 'Under 17 U.S.C. § 107...'",
-        "Cite case law: 'As established in Smith v. Jones (2024)...'",
-        "Use precise legal terminology without marketing gloss",
-        "Lead with jurisdictional specifics where applicable"
-      ],
-      "compliance_notes": [
-        "Include 'This does not constitute legal advice' disclaimer",
-        "Jurisdiction-specific disclaimers where relevant",
-        "Attorney advertising rules vary by state bar",
-        "Avoid creating implied attorney-client relationships"
-      ]
-    },
-    "education": {
-      "ai_telltale_phrases": [
-        "educational landscape",
-        "empowering learners",
-        "fostering a love of learning",
-        "revolutionizing education",
-        "bridging the achievement gap",
-        "21st century skills",
-        "personalized learning journeys",
-        "unlocking student potential",
-        "transforming the classroom experience",
-        "the future of education"
-      ],
-      "preferred_replacements": [
-        "Use specific outcome data: '23% improvement in test scores over one semester'",
-        "Reference pedagogical frameworks by name: 'Using Bloom's Taxonomy...'",
-        "Cite specific studies: 'The RAND Corporation's 2025 study found...'",
-        "Lead with measurable student outcomes, not aspirational language"
-      ],
-      "compliance_notes": [
-        "FERPA compliance for student data references",
-        "COPPA considerations for K-12 content",
-        "Accessibility requirements (WCAG 2.1 AA) for educational content",
-        "Avoid making specific grade-improvement guarantees"
-      ]
-    }
+    "_moved": "Industry-specific AI telltale phrases, preferred replacements, and compliance notes moved to config/industries/*.json under the humanizer_notes key (July 2026). The Humanizer agent (Phase 6.5 Step 7) should load config/industries/{industry}.json matching the brand profile and apply its humanizer_notes section. All 10 industries are now covered (previously only 5 here)."
   }
 }

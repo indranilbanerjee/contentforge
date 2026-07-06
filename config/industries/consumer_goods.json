@@ -1,5 +1,6 @@
 {
   "industry": "consumer_goods",
+  "_last_reviewed": "2026-07-03",
   "display_name": "Consumer Goods & CPG",
 
   "expertise_profile": {
@@ -117,6 +118,34 @@
       "Apply global trends to specific local markets",
       "Ignore the difference between stated preferences and revealed behavior",
       "Present innovation without discussing commercialization feasibility"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
+    "ai_telltale_phrases": [
+      "consumer landscape",
+      "elevate everyday moments",
+      "crafted with care",
+      "redefining the category",
+      "meets the needs of today's conscious consumer",
+      "a brand consumers trust",
+      "revolutionizing the shelf",
+      "unlocking brand loyalty",
+      "in today's crowded market",
+      "purpose-driven innovation"
+    ],
+    "preferred_replacements": [
+      "Use panel data with market definition: 'Nielsen, US food channel, 52 weeks ending March 2026'",
+      "Specify the segment and channel instead of 'consumers'",
+      "State the price index precisely: '1.4x category average'",
+      "Ground claims in shopper behavior data, not brand aspiration"
+    ],
+    "compliance_notes": [
+      "Environmental claims must meet FTC Green Guides substantiation",
+      "Structure/function claims require the FDA disclaimer",
+      "'Made in USA' requires all-or-virtually-all US sourcing",
+      "Comparative superiority claims need reliable head-to-head testing"
     ]
   }
 }

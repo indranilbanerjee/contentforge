@@ -1,5 +1,6 @@
 {
   "industry": "education",
+  "_last_reviewed": "2026-07-03",
   "display_name": "Education & EdTech",
 
   "expertise_profile": {
@@ -118,6 +119,34 @@
       "Use outdated or debunked learning theories",
       "Treat test scores as the only measure of education quality",
       "Assume technology access is universal"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "ai_telltale_phrases": [
+      "educational landscape",
+      "empowering learners",
+      "fostering a love of learning",
+      "revolutionizing education",
+      "bridging the achievement gap",
+      "21st century skills",
+      "personalized learning journeys",
+      "unlocking student potential",
+      "transforming the classroom experience",
+      "the future of education"
+    ],
+    "preferred_replacements": [
+      "Use specific outcome data: '23% improvement in test scores over one semester'",
+      "Reference pedagogical frameworks by name: 'Using Bloom's Taxonomy...'",
+      "Cite specific studies: 'The RAND Corporation's 2025 study found...'",
+      "Lead with measurable student outcomes, not aspirational language"
+    ],
+    "compliance_notes": [
+      "FERPA compliance for student data references",
+      "COPPA considerations for K-12 content",
+      "Accessibility requirements (WCAG 2.1 AA) for educational content",
+      "Avoid making specific grade-improvement guarantees"
     ]
   }
 }

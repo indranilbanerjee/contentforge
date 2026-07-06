@@ -310,7 +310,9 @@ def main() -> int:
                 if replacement:
                     line += f" (use {replacement})"
                 print(line)
-            return 1 if status in {"deprecated", "unknown"} else 0
+            # retired models no longer respond at the API layer — exit 1 for
+            # them too so shell callers treat them as failures.
+            return 1 if status in {"deprecated", "retired", "unknown"} else 0
 
         if args.list:
             models = list_models(args.vendor, args.modality, args.status, args.tier)

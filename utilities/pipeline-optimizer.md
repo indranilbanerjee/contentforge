@@ -1,5 +1,7 @@
 # Utility: Pipeline Optimizer
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 **Purpose:** Analyze pipeline performance, score content freshness, detect coverage gaps, identify bottlenecks, and generate prioritized recommendations for the `/contentforge:audit` skill.
 
 ---

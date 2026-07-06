@@ -61,7 +61,7 @@
   3. **Example/Tip** (1-2 sentences) [optional] — Make it actionable
   4. **Citation** [if factual claim] — Link to source
 
-**Example:**
+**Example** (synthetic — the source cited below is invented for illustration):
 ```
 ### How long does it take to generate a blog post with AI?
 
@@ -161,6 +161,8 @@ Order by frequency/importance
 - Enhanced SERP display
 - Higher click-through rates
 
+> **Caveat (since 2023):** Google restricts FAQ *rich results* in the SERP to authoritative government and health sites — ordinary brand sites will rarely get the expanded FAQ display. Still implement the schema: the Q&A structure remains highly valuable for AEO/GEO (AI answer engines cite well-structured Q&A), People Also Ask targeting, and voice search.
+
 ### Keyword Strategy for FAQs
 
 **Primary Keyword:**
@@ -225,11 +227,11 @@ Best for simple, factual questions
 
 **Example:**
 ```
-### What is ContentForge?
+### What is Meridian CRM?
 
-ContentForge is an enterprise multi-agent AI platform for content generation. It produces research-backed, brand-compliant, SEO-optimized content through a 10-phase autonomous pipeline.
+Meridian CRM is a customer relationship management platform for mid-market B2B teams. It combines pipeline management, email sequencing, and revenue reporting in one workspace.
 
-The system handles articles, blogs, whitepapers, FAQs, and research papers for digital marketing agencies managing 50-200 brands.
+Plans scale from 5 to 500 seats, with native integrations for common email, calendar, and billing tools. (Synthetic example — Meridian CRM is a fictional product.)
 ```
 
 ### Format 2: Step-by-Step
@@ -237,16 +239,16 @@ Best for "how to" questions
 
 **Example:**
 ```
-### How do I set up ContentForge for my brand?
+### How do I set up Meridian CRM for my team?
 
-Setting up ContentForge involves four steps:
+Setting up Meridian CRM involves four steps:
 
-1. **Create brand profile** — Upload brand guidelines, voice samples, and guardrails to Google Drive
-2. **Configure quality thresholds** — Set minimum scores for your industry (e.g., Pharma requires higher citation integrity)
-3. **Add trusted sources** — Specify preferred data sources for research
-4. **Run pilot** — Generate 3-5 test pieces and refine based on results
+1. **Import your data** — Upload contacts and deals via CSV or a guided migration
+2. **Configure your pipeline** — Match stages to your actual sales process
+3. **Connect email and calendar** — Two-way sync logs activity automatically
+4. **Invite your team** — Assign roles and run the 30-minute onboarding
 
-Most brands complete setup in 1-2 hours.
+Most teams complete setup in under a week. (Synthetic example — Meridian CRM is a fictional product.)
 ```
 
 ### Format 3: Comparison
@@ -313,137 +315,84 @@ To ensure AI content ranks:
 
 ## Example FAQ Page
 
-**Title:** "AI Content Generation: Your Questions Answered"
+> SYNTHETIC EXAMPLE — fabricated for illustration. "Meridian CRM" is a fictional product; every statistic, price, and claim below is invented. Never reuse these as facts.
+
+**Title:** "Meridian CRM: Your Questions Answered"
 
 **Introduction:**
-"Whether you're exploring AI content tools for the first time or optimizing your existing workflow, these answers cover the most common questions about AI-powered content generation in 2026."
+"Whether you're evaluating Meridian CRM for the first time or getting your team onboarded, these answers cover the questions prospective and new customers ask most."
 
 ---
 
-### What is AI content generation?
+### What is Meridian CRM?
 
-AI content generation uses machine learning models to create written content—articles, blog posts, emails, and more—based on input like topic, keywords, and brand voice. Modern systems use multi-agent architectures where specialized AI agents handle research, writing, fact-checking, and SEO optimization.
+Meridian CRM is a customer relationship management platform built for mid-market B2B teams. It combines pipeline management, email sequencing, and revenue reporting in a single workspace, replacing the spreadsheet-plus-inbox workflow most teams outgrow.
 
-*See our [complete guide to multi-agent content systems](#) for technical details.*
-
----
-
-### How accurate is AI-generated content?
-
-Accuracy depends on the quality control system. ContentForge achieves 95%+ citation accuracy through three-layer verification: initial fact-checking (Phase 2), scientific validation (Phase 4), and final review (Phase 7).
-
-However, AI can hallucinate if not properly validated. Always implement quality gates and human oversight for high-stakes content like medical, legal, or financial topics.
-
-*Source: ContentForge internal quality audits, Q1 2026*
+*See the [product overview](#) for a full feature walkthrough.*
 
 ---
 
-### Can I use AI content for SEO?
+### How much does Meridian CRM cost?
 
-Yes. Google confirms that quality content ranks regardless of how it's produced. However, AI content must:
-- Provide unique value (not just regurgitated information)
-- Be accurate and well-researched
-- Be written for humans, not search engines
-- Follow E-E-A-T principles
+Meridian CRM has three tiers: Starter ($29/user/month), Growth ($59/user/month), and Enterprise (custom pricing).
 
-ContentForge's humanization agent (Phase 6.5) specifically addresses this by removing robotic patterns and adding natural language flow.
+All tiers include unlimited contacts and pipeline stages. Growth adds email sequencing and custom reporting; Enterprise adds SSO, audit logs, and a dedicated success manager. Annual billing saves 20%.
 
 ---
 
-### How long does it take to generate content with AI?
+### How long does implementation take?
 
-**ContentForge timing:**
-- Blog post (1200 words): 20-30 minutes
-- Article (1800 words): 25-35 minutes
-- Whitepaper (3000 words): 40-60 minutes
+Most teams import their data and go live within one week.
 
-This includes research, writing, fact-checking, SEO optimization, and humanization. Manual production averages 3-8 hours for the same content.
+A typical rollout: data import on day one, pipeline configuration on days two and three, then team training. Enterprise migrations from legacy systems average three weeks, including field mapping and historical-data cleanup.
 
 ---
 
-### What's the cost compared to manual writing?
+### Does Meridian CRM integrate with my email?
 
-AI content generation typically costs 60-80% less than manual production when factoring in time savings and reduced overhead.
+Yes. Meridian CRM connects to Gmail and Microsoft 365 with two-way sync — emails, opens, and replies are logged to the matching contact automatically.
 
-**Example:** A 1500-word article that takes a human writer 4 hours at $50/hr ($200 total) can be produced by AI in 30 minutes with minimal supervision ($20-40 in tool costs + review time).
-
-*Source: Content Marketing Institute, 2026 Cost Benchmark Report*
+Calendar sync books meetings against deals, and the sequencing engine sends from your own mailbox to protect deliverability.
 
 ---
 
-### Do I still need human writers?
+### Can I migrate from my current CRM?
 
-Yes, but their role shifts from production to oversight and strategy. Humans are essential for:
-- Defining brand voice and strategy
-- Reviewing quality gates
-- Handling edge cases and nuanced topics
-- Final approval for regulated content
-- Adding unique insights and expertise
+Yes. Meridian CRM imports from CSV and offers guided migrations from major CRM platforms, mapping your existing fields, pipelines, and activity history.
 
-Think of AI as augmentation, not replacement.
+Historical email threads and notes carry over. Automation rules need to be rebuilt — a migration checklist walks through the mapping.
 
 ---
 
-### How do I prevent AI content from sounding robotic?
+### Is my data secure?
 
-ContentForge's humanization agent (Phase 6.5) removes common AI patterns like:
-- Overused words ("delve", "leverage", "utilize")
-- Overly uniform sentence structure
-- Filler phrases ("it's important to note that...")
-- Predictable transitions
+Meridian CRM encrypts data in transit and at rest, holds SOC 2 Type II attestation, and offers EU data residency on Enterprise plans.
 
-We also vary sentence length, add conversational elements, and inject brand personality. Result: AI detection scores <30%.
+Access controls include role-based permissions, mandatory two-factor authentication for admins, and full audit logs on Enterprise.
 
 ---
 
-### Can AI write in my brand's voice?
+### Can I try it before buying?
 
-Yes, through brand profile training. ContentForge loads your brand guidelines, voice samples, and terminology preferences, then applies them during content generation (Phase 3) and editing (Phase 5).
-
-The more reference content you provide, the more accurate the voice matching. Most brands achieve "acceptable" voice consistency after 5-10 example pieces.
-
----
-
-### What happens if the AI makes a factual error?
-
-ContentForge has three quality gates to catch errors:
-1. **Phase 2 (Fact Checker):** Verifies claims against multiple sources
-2. **Phase 4 (Scientific Validator):** Catches hallucinations and unsourced claims
-3. **Phase 7 (Reviewer):** Final quality check with scoring
-
-If an error passes all gates (rare but possible), content flagged below 7.0/10 goes to human review before publication.
-
----
-
-### Is AI-generated content plagiarism?
-
-No. AI generates original text based on patterns learned from training data, not by copying existing content. However:
-- Always cite sources for facts and statistics
-- Use plagiarism checkers as part of quality control
-- Verify that citations are properly attributed
-
-ContentForge ensures all factual claims are cited (Phase 2 & 3) and validates citation accuracy (Phase 4).
+Yes. Every plan starts with a 14-day free trial — no credit card required. Trials include the full Growth feature set so you can test sequencing and reporting with your real pipeline.
 
 ---
 
 ### How do I get started?
 
 **Quick start:**
-1. Sign up for ContentForge
-2. Create your first brand profile (1-2 hours)
-3. Add 3-5 sample content pieces for voice training
-4. Generate a pilot blog post
-5. Review quality scores and refine
-
-Most users are generating production-quality content within their first week.
+1. Start a 14-day trial
+2. Import contacts via CSV or connected email
+3. Configure your pipeline stages
+4. Invite your team
+5. Book a free onboarding call
 
 [Start your free trial →](#)
 
 ---
 
 **References:**
-1. Content Marketing Institute (2026). *Cost Benchmark Report*. https://contentmarketinginstitute.com
-2. Google Search Central (2025). *Helpful Content Update Guidelines*. https://developers.google.com/search
+Product FAQs typically cite your own documentation, pricing, and security pages rather than external sources. Add external citations only for factual market claims (and verify them through the Phase 2 fact-check gate).
 
 ---
 

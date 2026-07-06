@@ -159,8 +159,9 @@
 - [ ] Headings are descriptive and enticing
 
 **Keyword Density:**
-- [ ] Primary keyword: 1.5-2.0% of total word count
-- [ ] Secondary keywords: 0.5-1% each
+- [ ] Primary keyword density: advisory ~1-2% (placement-first; see config/scoring-thresholds.json phase_6_seo)
+- [ ] Secondary keywords: advisory ~0.5-1% each
+- [ ] Placement gate met: title, first 100 words, 2+ H2s, conclusion, meta description
 - [ ] Natural language (blog voice preserved)
 
 **Meta Elements:**
@@ -227,6 +228,8 @@
 ---
 
 ## Example Blog Outline
+
+> SYNTHETIC EXAMPLE — fabricated for illustration. All statistics and results below are invented; never reuse them as facts in real content.
 
 **Title:** "5 SEO Mistakes That Are Killing Your Traffic (And How to Fix Them)"
 

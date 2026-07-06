@@ -1,5 +1,6 @@
 {
   "industry": "healthcare",
+  "_last_reviewed": "2026-07-03",
   "display_name": "Healthcare & Health Services",
 
   "expertise_profile": {
@@ -81,7 +82,7 @@
       "Promoting unproven or alternative treatments as equivalent to evidence-based care",
       "Sharing identifiable patient information without consent (HIPAA)"
     ],
-    "compliance_notes": "HIPAA requires protection of PHI. ADA requires accessible content. Health content should follow health literacy best practices (Plain Language Action and Information Network). Avoid ableist language."
+    "compliance_notes": "HIPAA requires protection of PHI. ADA requires accessible content. Health content should follow health literacy best practices (Plain Language Action and Information Network). Avoid ableist language. Marketing teams: HHS/OCR guidance on online tracking technologies treats analytics pixels and ad trackers (e.g., Meta Pixel, Google Analytics) on health-condition or patient-facing pages as potential impermissible disclosures of PHI — audit web trackers before running remarketing on health content."
   },
 
   "evidence_standards": {
@@ -119,6 +120,34 @@
       "Conflate correlation and causation in health outcomes",
       "Overstate the readiness of emerging health technologies",
       "Ignore disparities in access and outcomes"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "ai_telltale_phrases": [
+      "healthcare landscape",
+      "paradigm shift in medicine",
+      "holistic approach to wellness",
+      "patient-centric care model",
+      "at the forefront of medical innovation",
+      "revolutionizing healthcare delivery",
+      "empowering patients to take control",
+      "bridging the gap in healthcare",
+      "the future of medicine is here",
+      "transforming patient outcomes"
+    ],
+    "preferred_replacements": [
+      "Use specific clinical outcomes: '32% reduction in readmission rates'",
+      "Reference specific guidelines: 'The 2026 USPSTF recommendation...'",
+      "Use person-first, plain language calibrated to the audience",
+      "Lead with patient impact metrics, not buzzwords"
+    ],
+    "compliance_notes": [
+      "Never use 'cure' for managed chronic conditions",
+      "Always include 'consult your healthcare provider' for medical guidance",
+      "No identifiable patient information without consent (HIPAA)",
+      "Use person-first, non-stigmatizing language throughout"
     ]
   }
 }

@@ -10,13 +10,9 @@ effort: low
 
 Push publication-ready content from the ContentForge pipeline directly to your CMS (Webflow or WordPress) via MCP connectors. Preview before publishing, verify post-publish, and fall back to HTML export when no connector is available.
 
-## Context efficiency
-
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
-
 ## When to Use
 
-Use `/cf-publish` when:
+Use `/contentforge:cf-publish` when:
 - You have a **finished, reviewed content piece** (Phase 8 complete, score >=7.0)
 - You want to **publish directly** to Webflow or WordPress without copy-pasting
 - You need to **schedule content** for a future publish date
@@ -26,7 +22,7 @@ Use `/cf-publish` when:
 **Do NOT use for:**
 - Content still in pipeline (must be Phase 8 complete)
 - Content flagged for human review (score <5.0)
-- Platforms other than Webflow/WordPress (use `/cf-social-adapt` for social media)
+- Platforms other than Webflow/WordPress (use `/contentforge:cf-social-adapt` for social media)
 
 ## What This Command Does
 
@@ -34,9 +30,10 @@ Use `/cf-publish` when:
 2. **Load Content** -- Pull finished content from Google Drive or local output
 3. **Format for Platform** -- Convert markdown/docx to platform-specific HTML/blocks
 4. **Preview** -- Show rendered preview with meta tags, slug, featured image
-5. **Publish/Schedule** -- Push to CMS as draft, published, or scheduled
-6. **Post-Publish Verification** -- Confirm URL is live, meta tags are correct, content renders properly
-7. **Fallback** -- If no connector, generate standalone HTML file for manual upload
+5. **AI Disclosure & Provenance** -- EU AI Act Article 50 check (applicable from 2 Aug 2026)
+6. **Publish/Schedule** -- Push to CMS as draft, published, or scheduled
+7. **Post-Publish Verification** -- Confirm URL is live, meta tags are correct, content renders properly
+8. **Fallback** -- If no connector, generate standalone HTML file for manual upload
 
 ## Required Inputs
 
@@ -57,7 +54,7 @@ Use `/cf-publish` when:
 
 ### Interactive Mode
 ```
-/cf-publish
+/contentforge:cf-publish
 ```
 **Prompts you for:**
 1. Content source (Drive URL, file path, or requirement ID)
@@ -67,17 +64,17 @@ Use `/cf-publish` when:
 
 ### Quick Mode
 ```
-/cf-publish REQ-001 --platform=webflow --status=publish
+/contentforge:cf-publish REQ-001 --platform=webflow --status=publish
 ```
 
 ### Schedule for Later
 ```
-/cf-publish REQ-001 --platform=wordpress --status=schedule --date="2026-03-01T09:00:00"
+/contentforge:cf-publish REQ-001 --platform=wordpress --status=schedule --date="2026-03-01T09:00:00"
 ```
 
 ### Publish from Google Drive
 ```
-/cf-publish https://drive.google.com/file/d/ABC123 --platform=webflow --status=draft
+/contentforge:cf-publish https://drive.google.com/file/d/ABC123 --platform=webflow --status=draft
 ```
 
 ## What Happens
@@ -109,7 +106,7 @@ No Webflow connector detected in .mcp.json.
 Falling back to HTML export mode.
 
 To enable direct publishing, add the Webflow connector:
-  /digital-marketing-pro:connect webflow
+  /contentforge:cf-connect webflow
 
 Generating standalone HTML file for manual upload...
 ```
@@ -209,6 +206,22 @@ Proceed with publish? (yes / no / edit)
 - `yes` -- Push to CMS
 - `no` -- Cancel, return to command line
 - `edit` -- Open content for last-minute edits before publish
+
+### Step 4.5: AI Disclosure & Provenance (EU AI Act Article 50 — applicable from 2 Aug 2026)
+
+Before pushing, check whether AI-generation disclosure applies:
+
+**Does it apply?** Yes if the brand targets EU audiences (check the brand profile's markets/regions or ask the user once and record the answer), OR if the brand profile's guardrails require AI-content disclosure regardless of region.
+
+**If it applies:**
+
+1. **For .docx deliverables** — note that C2PA content provenance signing is available via the `--c2pa` flags on `scripts/generate-docx.py` (see `docs/c2pa-production-cert.md` for certificate setup). If the piece was produced without signing and the user needs it, offer to regenerate the .docx with signing enabled.
+2. **For CMS publishes (Webflow/WordPress)** — offer to append a disclosure line to the article, e.g.:
+   > "This article was produced with AI assistance and reviewed by [brand]'s editorial team."
+   Place it where the brand's guardrails specify (typically the footer or byline area). Record the user's choice in the tracking notes.
+3. **For downstream social promotion** — remind the user that major platforms (LinkedIn, Meta, TikTok, YouTube) have AI-content labeling options/requirements; `/contentforge:cf-social-adapt` surfaces these per platform.
+
+**If it does not apply** (no EU targeting, no guardrail requirement): skip with a one-line note in the output — "AI-disclosure check: not required (no EU targeting configured)" — so the decision is auditable.
 
 ### Step 5: Publish / Schedule / Draft (5-15 seconds)
 
@@ -366,14 +379,14 @@ Manual Upload Instructions:
 9. Preview and publish
 
 Alternatively, connect your CMS for direct publishing:
-  /digital-marketing-pro:connect webflow
-  /digital-marketing-pro:connect wordpress
+  /contentforge:cf-connect webflow
+  /contentforge:cf-connect wordpress
 ===================================================
 ```
 
 ## Output Example
 
-**Successful Publish:**
+**SYNTHETIC EXAMPLE — fabricated for illustration. Successful publish:**
 ```
 CONTENTFORGE PUBLISH COMPLETE
 ===================================================
@@ -470,25 +483,23 @@ Fallback: Publish without featured image, flag for manual fix
 ## Integration with Other Skills
 
 **Before Publishing:**
-- `/contentforge` -- Generate the content piece
-- `/batch-process` -- Generate multiple pieces for bulk publishing
-- `/content-refresh` -- Update old content before republishing
+- `/contentforge:create-content` -- Generate the content piece
+- `/contentforge:batch-process` -- Generate multiple pieces for bulk publishing
+- `/contentforge:content-refresh` -- Update old content before republishing
 
 **After Publishing:**
-- `/cf-social-adapt` -- Generate social media posts to promote the published article
-- `/content-refresh` -- Schedule future refresh for evergreen content
+- `/contentforge:cf-social-adapt` -- Generate social media posts to promote the published article
+- `/contentforge:content-refresh` -- Schedule future refresh for evergreen content
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** -- Full content production pipeline
-- **[/batch-process](../batch-process/SKILL.md)** -- Parallel content production
-- **[/content-refresh](../content-refresh/SKILL.md)** -- Update existing content
-- **[/cf-social-adapt](../cf-social-adapt/SKILL.md)** -- Social media adaptation
+- **[/contentforge:create-content](../../commands/create-content.md)** -- Full content production pipeline
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Parallel content production
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** -- Update existing content
+- **[/contentforge:cf-social-adapt](../cf-social-adapt/SKILL.md)** -- Social media adaptation
 
 ---
 
-**Version:** 3.4.0
-**Agent:** Output Manager (Phase 8) + CMS Publisher utility
-**Utilities:** cms-publisher.md
+**Agent:** Output Manager (Phase 8) + CMS Publisher reference (`utilities/cms-publisher.md`, prose reference doc)
 **Platforms:** Webflow, WordPress
 **Fallback:** HTML export for manual upload

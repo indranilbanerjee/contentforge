@@ -1,9 +1,18 @@
 {
-  "_description": "ContentForge Quality Scoring Thresholds — Configurable per brand/industry",
+  "_description": "ContentForge Quality Scoring Thresholds — Configurable per brand/industry. THIS FILE IS THE SINGLE SOURCE OF TRUTH for all quality numbers. Templates and brand profiles must not contradict it; brand values may override these defaults upward (stricter), never below.",
+  "_gates_note": "10 quality gates across phases 1, 2, 3, 3.5, 4, 5, 6, 6.5, 7, 8 (pipeline: 10 phases + Step 0.5). Decision bands: score >=7.0 approved | 5.0-6.9 loop | <5.0 human review.",
   "default": {
     "minimum_pass_score": 7.0,
     "human_review_threshold": 5.0,
     "excellent_threshold": 8.5,
+    "word_counts": {
+      "_description": "Target word-count ranges per content type [min, max]. Phase 3 gate checks actual count against the brief target within word_count_tolerance_percent.",
+      "blog": [800, 1500],
+      "article": [1500, 2000],
+      "whitepaper": [2500, 5000],
+      "research_paper": [4000, 8000],
+      "faq": [600, 1200]
+    },
     "dimension_weights": {
       "content_quality": 0.30,
       "citation_integrity": 0.25,
@@ -13,16 +22,21 @@
     },
     "quality_gates": {
       "phase_1_research": {
-        "min_sources": 5,
+        "sources_collected": [12, 15],
+        "min_verified_sources": 10,
+        "min_high_reliability": 5,
+        "_source_note": "Collect 12-15 candidate sources during research. Gate passes when >=10 verify live and >=5 carry a reliability score >=8 (see data-sources-template.json source_types).",
         "min_competitor_analysis": 5,
         "require_content_angle": true,
         "require_outline": true
       },
       "phase_2_fact_check": {
-        "max_flagged_items": 0,
+        "max_unresolved_flags": 0,
+        "max_unverified_tolerated": 3,
         "min_verified_percentage": 80,
         "require_live_urls": true,
-        "max_source_age_years": 2
+        "max_source_age_years": 2,
+        "_definitions": "unverified = claim could not be independently confirmed (tolerated up to max_unverified_tolerated, must be hedged or attributed in the draft); flagged = claim is contradicted by sources or appears fabricated (must be removed or re-sourced before the gate can pass — zero unresolved flags allowed)."
       },
       "phase_3_draft": {
         "word_count_tolerance_percent": 10,
@@ -52,21 +66,28 @@
         "max_grammar_errors": 0,
         "require_brand_compliance_pass": true,
         "min_readability_score": 60,
-        "max_readability_score": 80
+        "max_readability_score": 80,
+        "readability_grade_tolerance": 0.5,
+        "_readability_note": "Flesch-Kincaid grade may deviate from the brief's target grade by at most +/-0.5 before the gate fails."
       },
       "phase_6_seo": {
-        "require_keyword_in_title": true,
-        "require_keyword_in_h1": true,
-        "require_keyword_in_first_100_words": true,
-        "primary_keyword_density_min": 0.015,
-        "primary_keyword_density_max": 0.025,
+        "keyword_placement_required": {
+          "in_title": true,
+          "in_first_100_words": true,
+          "min_h2_with_keyword": 2,
+          "in_conclusion": true,
+          "in_meta_description": true
+        },
+        "density_advisory_pct": [1.0, 2.0],
+        "_density_note": "Keyword density is ADVISORY only (placement-first SEO). Density outside the advisory band triggers a stuffing/absence review, not an automatic gate failure. Placement checks above are the hard gate.",
         "meta_title_max_chars": 60,
         "meta_description_max_chars": 155,
         "max_seo_loops": 1
       },
       "phase_6_5_humanizer": {
         "min_sentence_variety_score": 0.7,
-        "max_ai_detection_score": 0.3,
+        "max_ai_signal_score": 0.3,
+        "_formula": "ai_signal_score = weighted patterns detected / total weighted checks, normalized 0-1. High-signal patterns (01, 07, 09, 14, 30) weight x2; all other catalog patterns weight x1. See config/humanization-patterns.json ai_signal_scoring for the full computation.",
         "require_brand_personality": true,
         "preserve_seo_keywords": true,
         "readability_must_not_degrade": true
@@ -77,6 +98,12 @@
         "min_brand_compliance": 7.0,
         "min_seo_performance": 6.0,
         "min_readability": 6.0
+      },
+      "phase_8_output": {
+        "docx_generated": true,
+        "appendices_present": 3,
+        "delivery_verified": true,
+        "_note": "Appendices required in the delivered .docx: SEO scorecard, quality report, citation list. delivery_verified = file exists at the output path (Drive or local) and tracking record updated."
       }
     },
     "feedback_loop_limits": {
@@ -99,7 +126,7 @@
       },
       "quality_gates": {
         "phase_2_fact_check": {
-          "min_sources": 8,
+          "min_verified_sources": 12,
           "min_verified_percentage": 95,
           "max_source_age_years": 1,
           "require_peer_reviewed": true
@@ -149,7 +176,7 @@
       "quality_gates": {
         "phase_6_seo": {
           "require_local_keywords": true,
-          "primary_keyword_density_max": 0.03
+          "density_advisory_pct": [1.0, 3.0]
         }
       }
     },

@@ -12,14 +12,14 @@ Translate publication-ready ContentForge content into 15+ languages while preser
 
 ## When to Use
 
-Use `/cf-translate` when you need:
+Use `/contentforge:cf-translate` when you need:
 - **Translated content** for international markets (15+ languages)
 - **Brand-consistent multilingual content** that matches your source voice in the target language
 - **SEO-localized content** with keywords adapted for target market search behavior
 - **Citation-safe translations** where URLs, source references, and inline citations remain intact
 - **Cultural adaptation** beyond word-for-word translation (adapted or transcreated levels)
 
-**Prerequisite:** Content must be produced (or imported) through the ContentForge pipeline first. Raw untreated content should go through `/contentforge` before translation.
+**Prerequisite:** Content must be produced (or imported) through the ContentForge pipeline first. Raw untreated content should go through `/contentforge:create-content` before translation.
 
 ## Supported Languages
 
@@ -75,7 +75,7 @@ Use `/cf-translate` when you need:
 
 ### Interactive Mode
 ```
-/cf-translate
+/contentforge:cf-translate
 ```
 **Prompts you for:**
 1. Source content (URL or file path)
@@ -86,12 +86,12 @@ Use `/cf-translate` when you need:
 
 ### Quick Mode
 ```
-/cf-translate "https://drive.google.com/file/d/ABC123" --lang=es --brand=AcmeMed --level=adapted
+/contentforge:cf-translate "https://drive.google.com/file/d/ABC123" --lang=es --brand=AcmeMed --level=adapted
 ```
 
 ### Multi-Language Batch
 ```
-/cf-translate "https://drive.google.com/file/d/ABC123" --lang=es,fr,de,pt --brand=AcmeMed --level=adapted
+/contentforge:cf-translate "https://drive.google.com/file/d/ABC123" --lang=es,fr,de,pt --brand=AcmeMed --level=adapted
 ```
 Queues translations for all specified languages and processes them sequentially.
 
@@ -157,13 +157,13 @@ Queues translations for all specified languages and processes them sequentially.
 
 ### Phase 9: Output (1 minute)
 - Generates translated .docx with proper formatting
-- Uploads to Google Drive (`ContentForge Output/[Brand]/[Language]/[Title]_[lang]_v1.0.docx`)
+- Delivers via the brand's tracking backend (`tracking.backend` in the brand profile): Google Drive folder, Airtable attachment, or local filesystem (`~/Documents/ContentForge/{brand}/{type}/{YYYY-MM}/{slug}_{lang}.docx`)
 - Creates translation report with quality metrics
-- Updates tracking sheet with translation entry
+- Adds a translation entry to the tracking backend
 
 ## Output
 
-**Translated Content Package:**
+**Translated Content Package — SYNTHETIC EXAMPLE, fabricated for illustration:**
 
 ```
 Translation Complete: "AI in Healthcare: 2026 Trends" --> Spanish (es)
@@ -223,21 +223,13 @@ These elements are **never** translated:
 
 ## MCP Integrations
 
-### Required
-- **Google Drive** -- Content storage, brand profiles, output files
+### Optional (none required)
+- **Google Drive** -- Only needed if the brand's tracking backend is Google Sheets + Drive, or when running in Cowork (sandbox persistence). Local and Airtable backends work without it.
+- **DeepL** -- Machine translation baseline. If a DeepL MCP server is configured in `.mcp.json`, the Translator Agent uses its output as a starting point and refines for brand voice, cultural adaptation, and SEO. Before recommending a DeepL MCP package, verify it exists and is maintained on npm (`npm view <package> version`). When unavailable, the Translator Agent handles all translation natively -- this is the default and works fine.
 
-### Optional
-- **DeepL** (npx: `@anthropic-ai/deepl-mcp-server`) -- Machine translation baseline. When available, Translator Agent uses DeepL output as a starting point and refines for brand voice, cultural adaptation, and SEO. When unavailable, Translator Agent handles all translation natively.
+## Relative Effort
 
-## Processing Times
-
-| Localization Level | Typical Time | Notes |
-|-------------------|-------------|-------|
-| Literal | 10-14 min | Fastest, minimal adaptation |
-| Adapted | 14-20 min | Recommended, balanced quality |
-| Transcreated | 20-30 min | Most thorough, may restructure content |
-
-**Multi-language batch:** Add ~80% of single-language time per additional language (caching effects).
+Literal is the fastest level; adapted adds cultural-adaptation passes; transcreated is the most thorough and may restructure content. Actual time varies with content length, model speed, and MCP availability — do not promise specific durations.
 
 ## Limitations
 
@@ -249,9 +241,17 @@ These elements are **never** translated:
 
 ## Troubleshooting
 
+### "Brand profile not found"
+```
+Error: Brand profile "{brand}" not found at
+  ~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json
+Action: Translation requires a brand profile for voice mapping.
+  Run /contentforge:brand-setup "{brand}" first, then retry.
+```
+
 ### "Source quality score below threshold"
 **Cause:** Source content scored < 7.0 in the original pipeline.
-**Solution:** Re-run `/contentforge` or `/content-refresh` on the source first.
+**Solution:** Re-run `/contentforge:create-content` or `/contentforge:content-refresh` on the source first.
 
 ### "Brand voice mapping not found for [language]"
 **Cause:** Target language not configured in `config/multilingual-patterns.json`.
@@ -267,14 +267,12 @@ These elements are **never** translated:
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** -- Produce source content (prerequisite)
-- **[/batch-process](../batch-process/SKILL.md)** -- Batch translate multiple pieces
-- **[/content-refresh](../content-refresh/SKILL.md)** -- Update source before translating
-- **[/cf-social-adapt](../cf-social-adapt/SKILL.md)** -- Adapt translated content for social platforms
+- **[/contentforge:create-content](../../commands/create-content.md)** -- Produce source content (prerequisite)
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Batch translate multiple pieces
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** -- Update source before translating
+- **[/contentforge:cf-social-adapt](../cf-social-adapt/SKILL.md)** -- Adapt translated content for social platforms
 
 ---
 
-**Version:** 3.4.0
-**Agents:** Translator (11-translator), Humanizer (06.5-humanizer)
-**Processing Time:** 10-30 minutes depending on localization level
+**Agents:** Translator (11-translator), Humanizer (06.5-humanizer); pseudocode reference: `utilities/translation-manager.md` (prose doc, not a script)
 **Quality Guarantee:** Brand voice >= 8/10, zero citation errors, SEO keywords adapted for target market

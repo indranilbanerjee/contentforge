@@ -26,17 +26,19 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
+
 # ── Auto-install dependencies ───────────────────────────────────────
 try:
     from pyairtable import Api
     from pyairtable.formulas import match
 except ImportError:
-    import subprocess
-    print("Installing required packages (first run only)...", file=sys.stderr)
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "-q", "pyairtable"],
-        stdout=subprocess.DEVNULL,
-    )
+    err = _common.pip_install(["pyairtable"], label="pyairtable")
+    if err:
+        _common.finish(err)
     from pyairtable import Api
     from pyairtable.formulas import match
 
@@ -153,16 +155,7 @@ def record_to_dict(record):
 def next_requirement_id(table):
     """Generate the next REQ-NNN id by finding the max existing number."""
     records = table.all(fields=["requirement_id"])
-    max_num = 0
-    for rec in records:
-        rid = rec.get("fields", {}).get("requirement_id", "")
-        if rid.startswith("REQ-"):
-            try:
-                num = int(rid.split("-", 1)[1])
-                max_num = max(max_num, num)
-            except (IndexError, ValueError):
-                pass
-    return f"REQ-{max_num + 1:03d}"
+    return _common.next_req_id([r.get("fields", {}) for r in records])
 
 
 def coerce_numeric(data):
@@ -229,12 +222,7 @@ def add_row(api, base_id, table_name, data):
     req_id = data.get("requirement_id") or next_requirement_id(table)
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-
-    # Clamp priority 1-5
-    try:
-        priority = min(max(int(data.get("priority", 3)), 1), 5)
-    except (ValueError, TypeError):
-        priority = 3
+    priority = _common.clamp_priority(data.get("priority", 3))
 
     fields = {
         "requirement_id": req_id,
@@ -275,11 +263,12 @@ def get_pending(api, base_id, table_name, brand_filter=None):
         return {"error": err}
 
     try:
-        # Build formula filter
+        # Build formula filter via pyairtable.formulas.match — escapes values
+        # safely (brand names with apostrophes previously broke the formula).
         if brand_filter:
-            formula = f"AND({{status}} = 'pending', {{brand}} = '{brand_filter}')"
+            formula = match({"status": "pending", "brand": brand_filter})
         else:
-            formula = "{status} = 'pending'"
+            formula = match({"status": "pending"})
 
         records = table.all(formula=formula, sort=["priority"])
         pending = [record_to_dict(r) for r in records]
@@ -430,8 +419,7 @@ def main():
     # Authenticate
     api, err = get_api()
     if err:
-        print(json.dumps({"error": err, "help": SETUP_HELP}))
-        sys.exit(1)
+        _common.finish({"error": err, "help": SETUP_HELP})
 
     # Parse data JSON
     data = {}
@@ -439,8 +427,7 @@ def main():
         try:
             data = json.loads(args.data)
         except json.JSONDecodeError as e:
-            print(json.dumps({"error": f"Invalid JSON in --data: {e}"}))
-            sys.exit(1)
+            _common.finish({"error": f"Invalid JSON in --data: {e}"})
 
     # Dispatch
     if args.action == "init":
@@ -467,7 +454,7 @@ def main():
     else:
         result = {"error": f"Unknown action: {args.action}"}
 
-    print(json.dumps(result, indent=2))
+    _common.finish(result)
 
 
 if __name__ == "__main__":

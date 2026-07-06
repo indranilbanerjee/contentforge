@@ -1,5 +1,6 @@
 {
   "industry": "bfsi",
+  "_last_reviewed": "2026-07-03",
   "display_name": "Banking, Financial Services & Insurance",
 
   "expertise_profile": {
@@ -85,7 +86,7 @@
       "Implying FDIC insurance covers investment products",
       "Comparing insurance products without disclosing material differences in coverage"
     ],
-    "compliance_notes": "FINRA Rule 2210 requires all communications to be fair and balanced, present risks alongside benefits, and not be misleading. SEC requires forward-looking statement safe harbors. Insurance content must comply with state-specific advertising regulations."
+    "compliance_notes": "FINRA Rule 2210 requires all communications to be fair and balanced, present risks alongside benefits, and not be misleading. SEC requires forward-looking statement safe harbors. Insurance content must comply with state-specific advertising regulations. The SEC Marketing Rule (Advisers Act Rule 206(4)-1) governs investment-adviser advertising: testimonials and endorsements require disclosure of compensation and conflicts, third-party ratings need specified disclosures, and performance advertising must present net-of-fees returns over prescribed time periods."
   },
 
   "evidence_standards": {
@@ -124,6 +125,34 @@
       "Ignore the impact of fees, taxes, and inflation",
       "Cite news headlines instead of primary data sources",
       "Present all investments as suitable for all investors"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "ai_telltale_phrases": [
+      "financial landscape",
+      "navigate the complexities of",
+      "unlock financial potential",
+      "in today's volatile markets",
+      "empower your financial future",
+      "revolutionizing the financial industry",
+      "driving financial inclusion",
+      "the future of banking",
+      "transforming wealth management",
+      "leveraging fintech innovation"
+    ],
+    "preferred_replacements": [
+      "Use specific market data: 'S&P 500 returned 12.3% YTD'",
+      "Reference specific regulations: 'Under SEC Rule 10b-5...'",
+      "Cite named analysts or firms: 'Goldman Sachs projects...'",
+      "Lead with quantified outcomes, not aspirational language"
+    ],
+    "compliance_notes": [
+      "Always include 'Past performance does not guarantee future results'",
+      "FINRA fair balance requirements for investment content",
+      "No guaranteed returns or specific performance promises",
+      "Risk disclosures required for investment product mentions"
     ]
   }
 }

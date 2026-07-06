@@ -1,5 +1,7 @@
 # Citation Formatter — ContentForge Utility
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 ## Purpose
 Standardize citation formatting across all content types based on brand preferences (APA, MLA, Chicago, IEEE).
 

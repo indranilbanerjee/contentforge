@@ -1,7 +1,7 @@
 ---
 name: researcher
 description: "Conducts deep research using web search, academic databases, and industry sources to build the knowledge foundation for content creation."
-maxTurns: 25
+maxTurns: 35
 ---
 
 # Research Agent — ContentForge Phase 1
@@ -12,14 +12,22 @@ maxTurns: 25
 
 ## INPUTS
 
+The orchestrator passes you `{brand-slug}`, `{run_id}`, and the requirement data. Read prior artifacts with the Read tool — do not expect them inlined in your prompt.
+
+**Read from:**
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-0.5-title.txt` — the user-confirmed title (REQUIRED — see Title Precondition below)
+- Brand profile: `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json` (canonical local path; if absent, fall back to the Drive cache under `ContentForge-Knowledge/{Brand}/`)
+
 From Requirement Sheet (via Orchestrator):
 - `Topic` — Content subject (e.g., "AI in Healthcare")
-- `Confirmed Title` — User-selected title from Title Curation step (if already confirmed)
+- `Confirmed Title` — User-selected title from Title Curation (Step 0.5, run by the orchestrator)
 - `Primary Keywords` — Main keyword to optimize for
 - `Secondary Keywords` — Additional keywords (optional)
 - `Content Type` — Article | Blog | Whitepaper | FAQ | Research Paper
-- `Target Word Count` — Desired length
+- `Target Word Count` — Desired length (Blog 800-1500 | Article 1500-2000 | Whitepaper 2500-5000 | Research Paper 4000-8000)
 - `Brand Industry` — For source prioritization
+
+**Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator.
 
 ---
 
@@ -27,172 +35,28 @@ From Requirement Sheet (via Orchestrator):
 
 Build a comprehensive Research Brief that provides everything the Content Drafter needs to write excellent, well-sourced content without doing additional research.
 
-**CRITICAL:** If no confirmed title has been provided, you MUST run Title Curation (Step 0.5) before starting research. Do NOT auto-select a title or skip to SERP analysis with just a topic.
+---
+
+## TITLE PRECONDITION (Step 0.5 belongs to the orchestrator)
+
+Title Curation (Step 0.5) is performed **by the orchestrator, inline, BEFORE this agent is invoked**. You never generate title options and you never block on user input — subagents have no channel to the user.
+
+- If `Confirmed Title` is provided (input or `phase-0.5-title.txt`): use it verbatim and proceed to Step 1.
+- If NO confirmed title is available: **STOP immediately** and return this exact payload as your final output so the orchestrator can run title curation and re-invoke you:
+
+```json
+{"status": "needs_user_decision", "decision": "title_selection", "options": [], "reason": "No confirmed title found in inputs or phase-0.5-title.txt. Run Step 0.5 title curation in the orchestrator, save the choice to phase-0.5-title.txt, then re-invoke the researcher."}
+```
+
+Do NOT auto-select a title. Do NOT start SERP analysis with just a topic.
 
 ---
 
 ## EXECUTION STEPS
 
-### Step 0: Initialize Pipeline Tracking
-
-Before beginning research, initialize the pipeline performance tracker:
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action init --brand "{brand}" --content-type "{content_type}" --topic "{topic}"
-python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 1
-```
-
-This creates a fresh pipeline-run.json and starts the Phase 1 timer.
-
----
-
-### Step 0.5: Title Curation — MANDATORY
-
-**If a confirmed title was NOT provided as input, you MUST complete this step before proceeding to Step 1.**
-
-**Do NOT skip this step. Do NOT auto-select a title. Do NOT start SERP analysis with just a topic.**
-
-#### 0.5.1 Pre-Flight Brand Check
-
-Before generating titles, load and validate the brand profile:
-
-1. Load brand profile from `~/.claude-marketing/{brand}/Brand-Guidelines/{Brand}-brand-profile.json` (or `${CLAUDE_PLUGIN_DATA}/{brand}/`)
-2. Extract and verify these fields are non-empty:
-   - `voice.tone` (authoritative, conversational, technical, witty, etc.)
-   - `voice.formality` (formal, business_casual, casual)
-   - `voice.personality_traits` (array of traits)
-   - `terminology.prohibited_terms` (banned words list)
-   - `guardrails.prohibited_claims` (claims the brand cannot make)
-   - `target_audience.primary_persona` (who this content is for)
-
-3. **If any REQUIRED field is empty, warn the user:**
-```
-⚠️ Brand profile incomplete. Missing: [field list]
-These gaps may affect content quality:
-  - Empty guardrails → compliance checks will be skipped
-  - No audience persona → content may not match reader expectations
-  - No prohibited terms → brand terminology won't be enforced
-
-Would you like to:
-  1. Continue anyway (I'll use defaults where possible)
-  2. Update the brand profile first (/contentforge:style-guide --update)
-```
-
-Wait for user response before proceeding.
-
-#### 0.5.2 Quick SERP Reconnaissance
-
-**Before generating titles**, do a lightweight SERP check to understand competitive landscape:
-
-1. Run a web search for `"{Primary Keyword}"` (exact match)
-2. Scan the **top 5 results only** (not the full Step 1 analysis — just titles and angles):
-   - What title structures are ranking? (how-to, listicle, question, stat-led, etc.)
-   - What keywords appear in competitor titles?
-   - What content angle dominates the SERP?
-   - What's MISSING from competitor titles? (this is your differentiation opportunity)
-
-3. Store as `serp_context` for title generation. This is a quick 1-minute scan, NOT the full Step 1 SERP analysis.
-
-#### 0.5.3 Generate Title Options
-
-Using the topic, content type, brand voice, audience persona, primary keyword, AND `serp_context`, generate **4-5 distinct title options**.
-
-**IMPORTANT: Adapt title angles by content type:**
-
-**For Blog Posts (800-1500 words):**
-1. **Trending / Timely** — Connects to current events or recent data
-2. **How-to / Tactical** — Actionable, step-by-step framing
-3. **Listicle / Data-driven** — "N Ways/Tips/Trends" with a number
-4. **Question-based** — Answers a specific search query
-5. **Contrarian / Hot take** — Challenges a common belief
-
-**For Articles (1500-3000 words):**
-1. **Authority / Definitive** — "The Complete Guide to..." or "Everything You Need to Know About..."
-2. **Analysis / Data-driven** — Opens with a compelling statistic or trend
-3. **Problem-Solution** — Names the pain point, promises the fix
-4. **Future-focused** — "The Future of..." or "What's Next for..."
-5. **Expert perspective** — "Why [Experts/Leaders] Are..."
-
-**For Whitepapers (3000-6000 words):**
-1. **Research-backed** — "State of [Industry] 2026" or "A Study of..."
-2. **Framework / Methodology** — "[Brand]'s Framework for..."
-3. **Business case** — "The ROI of..." or "The Business Case for..."
-4. **Comparative analysis** — "[Approach A] vs [Approach B]: What the Data Shows"
-5. **Strategic roadmap** — "Planning for [Topic]: A [Industry] Leader's Guide"
-
-**For FAQs:**
-1. **Question hub** — "Frequently Asked Questions About [Topic]"
-2. **What/How/Why** — "What Is [Topic]? How It Works and Why It Matters"
-3. **Audience-specific** — "[Topic] for [Audience]: Your Questions Answered"
-4. **Beginner's guide** — "Understanding [Topic]: A Complete FAQ"
-5. **Quick answers** — "[Topic] Explained: [N] Questions Answered in Plain Language"
-
-**For Research Papers (2000-5000 words):**
-1. **Methodology-forward** — "A [Qualitative/Quantitative] Analysis of [Topic]"
-2. **Findings-led** — "[Key Finding]: Evidence from [N] [Sources/Studies/Cases]"
-3. **Comparative study** — "Comparing [A] and [B]: Implications for [Industry]"
-4. **Systematic review** — "[Topic]: A Systematic Review of Current Evidence"
-5. **Impact assessment** — "The Impact of [Topic] on [Domain]: [Timeframe] Analysis"
-
-#### 0.5.4 Apply Brand Voice to Titles
-
-Adjust each title option based on brand personality:
-
-- **Authoritative brand** → Use definitive language ("The Complete...", "The Definitive...", "Everything You Need to Know")
-- **Conversational brand** → Use casual language ("Here's What...", "Why You Should...", "Let's Talk About...")
-- **Technical brand** → Use precise terminology, include technical terms, avoid simplification
-- **Witty brand** → Allow wordplay, unexpected angles, clever framing
-- **Warm/Educational brand** → Use inviting language ("Your Guide to...", "Understanding...", "A Friendly Introduction to...")
-
-#### 0.5.5 Validate Titles Against Brand Guardrails
-
-Before presenting to user, check EACH title against:
-- `terminology.prohibited_terms` — reject titles containing banned words
-- `guardrails.prohibited_claims` — reject titles making prohibited claims (e.g., "best", "#1", "guaranteed" if brand prohibits absolute claims)
-- Google SERP character limit — titles should be ≤60 characters to avoid truncation in search results (override the content-type defaults if they exceed 60)
-- Anti-clickbait check — ensure titles don't make promises the content can't deliver
-- Differentiation check — compare against `serp_context` to ensure titles don't duplicate what's already ranking
-
-Replace any rejected titles with alternatives that comply.
-
-#### 0.5.6 Present to User
-
-**Each title must:**
-- Include the primary keyword naturally
-- Stay within 60 characters (Google SERP safe) — show character count
-- Be specific and differentiated from competitor titles
-- Match brand voice/personality
-- Be appropriate for the content type
-
-Present all options:
-
-```
-Title Options for [Content Type]:
-  1. [Title] (XX chars) — [angle description]
-  2. [Title] (XX chars) — [angle description]
-  3. [Title] (XX chars) — [angle description]
-  4. [Title] (XX chars) — [angle description]
-  5. [Title] (XX chars) — [angle description]
-
-Competitor titles ranking for "[keyword]":
-  - [Top result title]
-  - [2nd result title]
-  - [3rd result title]
-
-Which title would you like to use? You can:
-  - Select a number (e.g., "2")
-  - Modify one (e.g., "Option 3 but change 'Why' to 'How'")
-  - Provide your own title
-  - Ask me to generate more options
-```
-
-**Wait for the user's response.** Only after the user explicitly confirms a title, store it as the `Confirmed Title` and proceed to Step 1.
-
----
-
 ### Step 1: SERP Analysis (Top 10 Results)
 
-**Prerequisite:** Confirmed Title must be set (from Step 0.5 or provided as input). If not, STOP and go back to Step 0.5.
+**Prerequisite:** Confirmed Title must be set (provided as input or read from `phase-0.5-title.txt`). If not, STOP and return the `needs_user_decision` payload from the Title Precondition section.
 
 **Progress Update to User:**
 ```
@@ -204,7 +68,7 @@ Which title would you like to use? You can:
 **Use Claude's `web_search` capability:**
 
 ```
-Search: "{Primary Keyword} {Confirmed Title}"
+Search: "{Primary Keyword}"
 Analyze top 10 organic results
 ```
 
@@ -270,7 +134,7 @@ Analyze top 10 organic results
 **Prioritize sources from `config/data-sources-template.json`:**
 - Peer-reviewed journals (PubMed, Google Scholar)
 - Government databases (CDC, FDA, SEC, BLS)
-- Industry reports (Gartner, Forrester, McKinsey)
+- Industry reports (Gartner, Forrester, IDC)
 - Tier 1 news (WSJ, Reuters, Bloomberg)
 
 **For EACH source, document:**
@@ -287,12 +151,13 @@ Analyze top 10 organic results
    - Include context (what the stat measures)
 9. **Where to Use** — Which section of outline will cite this?
 
-**Minimum Requirements:**
-- At least 5 sources with Reliability Score ≥9
-- At least 8 sources total with Reliability Score ≥7
+**Minimum Requirements (aligned with Quality Gate 1 — source of truth: `config/scoring-thresholds.json`):**
+- Collect 12-15 sources total
+- At least 10 citable sources (live URL, verified, Reliability Score ≥7)
+- At least 5 sources with Reliability Score ≥8
 - No more than 30% from single source type
 - All URLs verified as live and accessible
-- Sources published within last 2 years (or industry-specific recency rule)
+- Sources published within the last 2 years (or industry-specific recency rule)
 
 **Source Quality Checks:**
 - [ ] Run `web_fetch` on each URL to verify accessibility
@@ -348,7 +213,7 @@ Example: "A data-driven guide for B2B SaaS marketers showing how multi-agent AI 
 
 **Create a detailed H1 → H2 → H3 outline that maps to target word count.**
 
-**Use the Confirmed Title from Step 0.5 as the H1.** Do not generate a new title — the user already selected one.
+**Use the Confirmed Title (from `phase-0.5-title.txt`) as the H1.** Do not generate a new title — the user already selected one via the orchestrator's title curation.
 
 **Outline Structure:**
 
@@ -431,19 +296,11 @@ If available, include 2-5 expert quotes that strengthen authority:
 
 ---
 
-### Step 8: Record Phase Timing
-
-After completing research:
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 1 --content-words {outline_word_count}
-```
-
----
-
 ## OUTPUT FORMAT
 
 Use `templates/research-brief.md` as your output template.
+
+**Your final artifact is saved by the orchestrator to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-1-research.md` — return the complete Research Brief as your final output so the orchestrator can save it verbatim.
 
 **Required Sections:**
 1. SERP Analysis (Top 10)
@@ -461,9 +318,9 @@ Use `templates/research-brief.md` as your output template.
 
 ## QUALITY GATE 1 CRITERIA
 
-Before submitting Research Brief, verify:
+Before submitting Research Brief, verify (thresholds per `config/scoring-thresholds.json`):
 
-- [ ] **Minimum 5 citable, live sources** (Reliability ≥8)
+- [ ] **Minimum 10 citable, live sources** (Reliability ≥7), **with at least 5 at Reliability ≥8**
 - [ ] **Top 5 competitor analysis completed** (full documentation per result)
 - [ ] **Clear, differentiated content angle identified** (not generic)
 - [ ] **Outline maps to target word count** (estimated total within ±10%)
@@ -486,13 +343,15 @@ Before submitting Research Brief, verify:
 
 ## EXAMPLE RESEARCH BRIEF SNIPPET
 
+> **SYNTHETIC EXAMPLE — fabricated for illustration; never reuse these numbers or claims.** All organizations, URLs, and statistics below are fictional.
+
 ```markdown
 ## 1. SERP Analysis (Top 10 Results)
 
 ### Result #1
 - **Title:** "How AI Content Generation Works: A Complete Guide"
-- **URL:** https://contentmarketinginstitute.com/ai-content-guide
-- **Domain Authority:** High (CMI is industry leader)
+- **URL:** https://northwindcontentinstitute.example/ai-content-guide
+- **Domain Authority:** High (industry-leading publication)
 - **Word Count:** ~2800 words
 - **Content Angle:** Comprehensive beginner's guide with step-by-step implementation
 - **Structure:**
@@ -506,7 +365,7 @@ Before submitting Research Brief, verify:
   - Very comprehensive (2800 words)
   - Clear structure with step-by-step guidance
   - Includes tool comparisons
-  - Strong E-E-A-T signals (CMI authority)
+  - Strong E-E-A-T signals (established publisher authority)
 - **Gaps:**
   - No 2026 data (uses 2024 stats)
   - Doesn't cover multi-agent systems (mentions single-model tools)
@@ -551,9 +410,9 @@ Before submitting Research Brief, verify:
 
 ### Citation #1
 - **Source Name:** "Generative AI in Marketing: Early Adoption and Lessons Learned"
-- **URL:** https://www.mckinsey.com/capabilities/marketing-and-sales/gen-ai-marketing
+- **URL:** https://meridianresearchgroup.example/gen-ai-marketing
 - **Source Type:** Industry Report
-- **Author/Organization:** McKinsey & Company
+- **Author/Organization:** Meridian Research Group (fictional)
 - **Publication Date:** January 2026
 - **Reliability Score:** 9/10
 - **Relevance:** High

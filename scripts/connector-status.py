@@ -21,6 +21,11 @@ import os
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
+
 # Plugin root = parent of scripts/
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 MCP_JSON = PLUGIN_ROOT / ".mcp.json"
@@ -323,7 +328,13 @@ def _is_configured(name, connector_info, active_servers):
     if connector_info["transport"] == "script":
         creds_path = connector_info.get("credentials", "")
         if creds_path:
-            return Path(creds_path).expanduser().exists()
+            # The registry stores the legacy literal path; resolve it through
+            # _common.marketing_home() so env overrides are honored.
+            if creds_path.replace("\\", "/").startswith("~/.claude-marketing/"):
+                resolved = _common.marketing_home() / creds_path.replace("\\", "/").split("~/.claude-marketing/", 1)[1]
+            else:
+                resolved = Path(creds_path).expanduser()
+            return resolved.exists()
         return True  # No credentials needed
     # Check env vars for npx connectors
     if connector_info["transport"] == "npx" and connector_info.get("env_vars"):
@@ -482,7 +493,7 @@ def setup_guide(name):
                 if configured:
                     guide["status_message"] = (
                         f"{name} is configured. Use any of these skills to activate it: "
-                        + ", ".join(f"/cf:{s}" if not s.startswith("cf-") else f"/{s}" for s in conn["skills_unlocked"])
+                        + ", ".join(f"/contentforge:{s}" for s in conn["skills_unlocked"])
                     )
             elif conn["transport"] == "script":
                 guide["transport"] = "script"
@@ -564,7 +575,7 @@ def main():
     else:
         result = {"error": f"Unknown action: {args.action}"}
 
-    print(json.dumps(result, indent=2))
+    _common.finish(result)
 
 
 if __name__ == "__main__":

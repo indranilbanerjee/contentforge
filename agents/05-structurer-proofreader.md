@@ -12,16 +12,16 @@ maxTurns: 15
 
 ## INPUTS
 
-From Phase 4 (Scientific Validator):
-- **Validated Draft** — Verified for factual accuracy, zero hallucinations
-- **Scientific Validation Report** — Confirmation of accuracy and logical coherence
+The orchestrator passes you `{brand-slug}` and `{run_id}`. Read prior artifacts with the Read tool — do not expect them inlined in your prompt.
 
-From Phase 3 (Content Drafter):
-- **Draft Metadata** — Word count, citation analysis, primary keyword placement
+**Read from:**
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-3.5-visuals.md` — the validated Annotated Draft (Phase 4 approved it; the draft text itself lives here)
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-4-validation.md` — Scientific Validation Report (accuracy and logical coherence confirmation, any minor fixes applied)
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-3-draft.md` — Draft Metadata (word count, citation analysis, primary keyword placement)
+- Brand profile: `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json` (canonical local path; if absent, fall back to the Drive cache under `ContentForge-Knowledge/{Brand}/`)
+- Content Type Template: `templates/content-types/` (structure requirements, readability targets)
 
-From Orchestrator:
-- **Brand Profile** — Voice, tone, terminology, guardrails (loaded/cached)
-- **Content Type Template** — Structure requirements, readability targets
+**Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator.
 
 ---
 
@@ -41,14 +41,6 @@ Polish the validated draft to professional publication standards by:
 ---
 
 ## EXECUTION STEPS
-
-### Step 0: Start Phase Timer
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 5
-```
-
----
 
 ### Step 1: Grammar & Spelling Proofreading
 
@@ -99,6 +91,8 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}"
 - Short (5-12 words): 20% | Medium (13-25 words): 50% | Long (26+ words): 30%
 
 Analyze current distribution. If short sentences are underrepresented, break long multi-clause sentences into varied-length sequences.
+
+**Division of labor with Phase 6.5:** these rhythm targets are shared with the Humanizer. **Do structural rhythm work ONCE, here.** Phase 6.5 handles voice, personality, and AI-tell removal only — it does not redo sentence-length restructuring unless its burstiness gate fails. Don't leave rhythm problems for 6.5 to fix.
 
 #### 2.2 Simplify Complex Sentences
 
@@ -177,6 +171,21 @@ Load brand voice profile (tone, formality, personality traits). Scan for tone vi
 
 Check brand profile for target POV (first/second/third person). Scan for violations where POV switches mid-content. Fix all inconsistencies.
 
+#### 5.4 Guardrails Scan (the check that Quality Gate 5 certifies)
+
+This step produces the evidence behind the "guardrails zero violations" gate criterion — do not skip it.
+
+1. **Load rules from BOTH sources and use the union (stricter wins on overlap):**
+   - Brand profile: `guardrails.prohibited_claims` and `guardrails.required_disclaimers`
+   - Industry pack: `config/industries/{industry}.json` → `regulatory.prohibited_claims` and `regulatory.required_disclaimers` (industry matched from the brand profile's `industry` field)
+2. **Pre-check population:**
+   - If BOTH sources are empty: set `compliance_status` to `"skipped_empty_guardrails"` (NOT `"passed"`). Add to report: "Brand Compliance: NOT VERIFIED (empty guardrails)". Phase 7 applies a -1.0 penalty. Recommend manual review.
+   - If minimal (<3 rules total): proceed with the scan but note the limited scope in the report.
+3. **Scan the full draft** against every prohibited-claim rule. Flag not just literal matches but phrasings a regulator could reasonably read as the prohibited claim (e.g., "guaranteed results" ≈ "assured outcomes").
+4. **Verify required disclaimers** are present wherever the content triggers them (e.g., ROI discussion → investment disclaimer; treatment efficacy → medical disclaimer).
+5. **Log every finding** in a Guardrails Scan table: `# | Rule | Matched Text | Location | Severity | Fix Applied`. Fix all violations (rephrase or remove); insert missing disclaimers.
+6. Set `compliance_status`: `"passed"` (scan run, zero violations remaining) | `"passed_with_fixes"` (violations found and fixed) | `"skipped_empty_guardrails"`.
+
 ---
 
 ### Step 6: Readability Optimization
@@ -224,15 +233,9 @@ Record: total words, sentences, avg words/sentence, syllables/word, grade level,
 
 ---
 
-### Step 8: Record Phase Timing
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 5 --content-words {output_word_count}
-```
-
----
-
 ## OUTPUT FORMAT
+
+**Your final artifact is saved by the orchestrator to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-5-structured.md` — return the polished draft + report as your final output so the orchestrator can save it verbatim.
 
 Deliver:
 1. **Full polished draft** with all edits applied
@@ -240,7 +243,7 @@ Deliver:
    - Proofreading summary: error counts by type, error log table, all fixed
    - Structural optimization: sentence length distribution vs targets, paragraphs restructured, transitions added, redundancy removed
    - Template compliance: section structure with word counts vs targets, heading hierarchy, total word count vs range
-   - Brand compliance: tone violations found/fixed, terminology violations found/fixed, POV consistency, guardrails status
+   - Brand compliance: tone violations found/fixed, terminology violations found/fixed, POV consistency, **Guardrails Scan table + `compliance_status`** (from Step 5.4)
    - Readability assessment: grade level vs target, sentence variety, passive voice %, complex words simplified
    - Formatting consistency: heading style, numbers, dates, percentages, lists, citations
 
@@ -252,15 +255,8 @@ All must pass:
 
 - [ ] **Zero grammar/spelling errors** -- all found errors fixed, 0 remaining
 - [ ] **Readability score in target range** -- grade level within content type target
-- [ ] **Brand compliance all-pass** -- voice/tone 100%, terminology 100%, guardrails zero violations
+- [ ] **Brand compliance all-pass** -- voice/tone 100%, terminology 100%, **Guardrails Scan (Step 5.4) executed with zero unresolved violations** (or `compliance_status = "skipped_empty_guardrails"` explicitly reported)
 - [ ] **Formatting matches template** -- structure matches, word count within range, proper heading nesting
-
-**Guardrails Pre-Check:**
-
-Before scanning for prohibited claims, verify the brand's guardrails are populated:
-1. Check `guardrails.prohibited_claims` and `guardrails.required_disclaimers`
-2. **If BOTH empty:** Set `compliance_status` to `"skipped_empty_guardrails"` (not `"passed"`). Phase 7 should treat as -1.0 penalty on Brand Compliance. Add: "Brand Compliance: NOT VERIFIED (empty guardrails)". Recommend manual review.
-3. **If minimal (<3 rules):** Proceed with scan but note limited scope in output.
 
 **OVERALL DECISION:** PASS -> Proceed to Phase 6 (SEO/GEO Optimizer)
 

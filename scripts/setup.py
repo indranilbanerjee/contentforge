@@ -2,32 +2,41 @@
 """
 setup.py
 ========
-ContentForge session startup script.
+ContentForge environment validation script.
 
-Validates the plugin environment on session start:
+Validates the plugin environment:
 - Checks Python version (3.8+ required)
 - Reports plugin root and scripts directory paths
 - Validates .mcp.json exists and is valid JSON
 - Reports connector count
 - Checks Google integration status (credentials, pip packages)
 
-Called by hooks/hooks.json SessionStart hook.
+Invocation: run manually (`python scripts/setup.py`) or from setup docs /
+skills. NOTE: hooks/hooks.json ships empty as of v3.9.0, so this script is
+NOT wired to a SessionStart hook — earlier docstrings claiming that were
+stale.
 """
 
 import json
+import os
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 MCP_JSON = PLUGIN_ROOT / ".mcp.json"
 SCRIPTS_DIR = PLUGIN_ROOT / "scripts"
 
-# Persistent data: prefer ${CLAUDE_PLUGIN_DATA} (official, survives updates),
-# fall back to ~/.claude-marketing/ (legacy)
-import os
-PLUGIN_DATA = Path(os.environ.get("CLAUDE_PLUGIN_DATA", ""))
-if not PLUGIN_DATA or not PLUGIN_DATA.exists():
-    PLUGIN_DATA = Path.home() / ".claude-marketing"
+# Persistent data dir: $CLAUDE_MARKETING_HOME > $CLAUDE_PLUGIN_DATA (if the
+# directory exists) > ~/.claude-marketing. The old inline logic treated an
+# unset CLAUDE_PLUGIN_DATA as Path(".") — which always exists — so the
+# fallback never fired and Google credentials were misreported. _common
+# implements the resolution correctly.
+PLUGIN_DATA = _common.marketing_home()
 GOOGLE_CREDS_DEFAULT = PLUGIN_DATA / "google-credentials.json"
 
 
@@ -42,7 +51,7 @@ def check_google_integration():
             if "client_email" in data:
                 status["credentials"] = True
                 status["service_account_email"] = data["client_email"]
-        except (json.JSONDecodeError, KeyError):
+        except (json.JSONDecodeError, KeyError, OSError):
             pass
 
     # Check pip packages

@@ -1,6 +1,6 @@
 {
   "name": "contentforge",
-  "version": "3.15.3",
+  "version": "3.16.0",
   "description": "Open-source enterprise content pipeline — 21 skills, 13 agents, 29-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
   "author": {
     "name": "Indranil Banerjee",
@@ -27,7 +27,7 @@
   "interface": {
     "displayName": "ContentForge",
     "shortDescription": "Open-source enterprise content pipeline — 21 skills, 13 agents, 29-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
-    "longDescription": "21 skills + 13 specialist agents + 11 quality gates + 29-pattern AI-detection humanizer + fact-checker subagent + three-category internal linking. Produces real .docx with embedded SEO/Quality/Production/Internal-Link appendices. EU AI Act Article 50 ready via C2PA .docx signing. Zero global hooks. 16 opt-in HTTP MCP connectors. Per-phase checkpoint resume. Portable across Claude Code, Codex, Cursor, and Antigravity via the Agent Skills open standard.",
+    "longDescription": "21 skills + 13 specialist agents + 10 quality gates + 29-pattern AI-detection humanizer + fact-checker subagent + three-category internal linking. Produces real .docx with embedded SEO/Quality/Production/Internal-Link appendices. EU AI Act Article 50 ready via C2PA .docx signing. Zero global hooks. 16 opt-in HTTP MCP connectors. Per-phase checkpoint resume. Portable across Claude Code, Codex, Cursor, and Antigravity via the Agent Skills open standard.",
     "developerName": "Indranil Banerjee",
     "category": "Productivity",
     "capabilities": [
@@ -36,7 +36,7 @@
     ],
     "websiteURL": "https://indranil.in",
     "defaultPrompt": [
-      "Run the ContentForge 11-phase pipeline for an article on EU AI Act compliance.",
+      "Run the ContentForge 10-phase pipeline for an article on EU AI Act compliance.",
       "Humanize this draft against the 29-pattern AI-detection catalog.",
       "Fact-check the claims in this draft against authoritative sources.",
       "Generate a .docx of this article with C2PA provenance for EU distribution."

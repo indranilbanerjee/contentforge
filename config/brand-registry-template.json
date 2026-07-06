@@ -222,20 +222,21 @@
     ]
   },
   "quality_thresholds": {
+    "_comment": "config/scoring-thresholds.json is the single source of truth for defaults. Brand values may override scoring-thresholds defaults upward (stricter), never below.",
     "minimum_quality_score": 7.0,
     "dimension_minimums": {
-      "content_quality": 6.5,
-      "citation_integrity": 7.5,
+      "content_quality": 6.0,
+      "citation_integrity": 7.0,
       "brand_compliance": 7.0,
       "seo_performance": 6.0,
-      "readability": 6.5
+      "readability": 6.0
     },
     "readability_range": {
       "min_flesch_kincaid_grade": 8,
       "max_flesch_kincaid_grade": 12
     },
     "auto_approve_threshold": 8.5,
-    "human_review_required_below": 6.0
+    "human_review_required_below": 5.0
   },
   "tracking": {
     "_instructions": "Configured during brand setup (Step G). Switch backends anytime with /contentforge:switch-backend.",

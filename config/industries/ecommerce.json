@@ -1,5 +1,6 @@
 {
   "industry": "ecommerce",
+  "_last_reviewed": "2026-07-03",
   "display_name": "E-Commerce & Retail",
 
   "expertise_profile": {
@@ -79,7 +80,7 @@
       "Hidden fees that materially change the total price",
       "Making claims about product capabilities without evidence"
     ],
-    "compliance_notes": "FTC is actively enforcing against dark patterns, fake reviews, and misleading pricing. GDPR requires explicit consent for marketing cookies. PCI DSS compliance is required for handling payment card data. ADA/WCAG accessibility applies to e-commerce sites."
+    "compliance_notes": "FTC is actively enforcing against dark patterns, fake reviews, and misleading pricing. GDPR requires explicit consent for marketing cookies. PCI DSS compliance is required for handling payment card data. ADA/WCAG accessibility applies to e-commerce sites. The INFORM Consumers Act requires online marketplaces to verify and disclose high-volume third-party sellers. Selling into the EU: the Digital Services Act (DSA) imposes trader-traceability and ad-transparency duties on platforms, and the General Product Safety Regulation (GPSR, applicable since December 2024) requires an EU responsible person and product-safety information on listings."
   },
 
   "evidence_standards": {
@@ -116,6 +117,34 @@
       "Focus solely on traffic without conversion context",
       "Ignore post-purchase metrics (returns, CSAT, repeat rate)",
       "Cite outdated platform features or pricing"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
+    "ai_telltale_phrases": [
+      "elevate your shopping experience",
+      "seamless checkout experience",
+      "retail landscape",
+      "revolutionizing online shopping",
+      "unlock higher conversions",
+      "supercharge your sales",
+      "in today's competitive e-commerce market",
+      "frictionless customer journey",
+      "game-changing shopping experience",
+      "the future of retail"
+    ],
+    "preferred_replacements": [
+      "Use specific conversion data: 'Checkout completion rose from 61% to 74%'",
+      "Name the platform and feature: 'Shopify Checkout Extensibility', not 'a modern platform'",
+      "Cite benchmark sources: 'Baymard Institute's 2026 cart-abandonment study'",
+      "Lead with revenue, AOV, or conversion impact, not superlatives"
+    ],
+    "compliance_notes": [
+      "No fake urgency or scarcity claims (FTC dark-pattern enforcement)",
+      "Disclose material connections for reviews and endorsements",
+      "Price comparisons must reference genuinely offered prior prices",
+      "All fees must be disclosed before checkout total"
     ]
   }
 }

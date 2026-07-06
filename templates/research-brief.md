@@ -144,8 +144,8 @@
 ### Citation #2
 [Same structure for all sources]
 
-### Citation #3-12
-[Minimum 12 sources for most content types]
+### Citation #3-15
+[Collect 12-15 candidate sources; the Phase 1 gate requires >=10 verified live, with >=5 at reliability >=8 — see config/scoring-thresholds.json phase_1_research]
 
 **Citation Summary:**
 - Total sources: [Number]
@@ -203,24 +203,25 @@
 
 **Primary Keyword:** [Keyword]
 - Placement: Title (H1), First 100 words, H2 (#1), H2 (#3), Conclusion
-- Target density: 1.5-2.5%
+- Target density: advisory ~1-2% (placement-first; see config/scoring-thresholds.json phase_6_seo)
 
 **Secondary Keyword #1:** [Keyword]
 - Placement: H2 (#2), Body content
-- Target density: 0.5-1%
+- Target density: advisory ~0.5-1%
 
 **Secondary Keyword #2:** [Keyword]
 - Placement: H2 (#4), Body content
-- Target density: 0.5-1%
+- Target density: advisory ~0.5-1%
 
-**Semantic/LSI Keywords:** [List 5-10 related terms to include naturally]
+**Semantically related terms:** [List 5-10 related terms to include naturally]
 
 ---
 
 ## 10. Quality Gate 1 Checklist
 
 **Minimum Requirements:**
-- [✓/✗] Minimum 5 citable, live sources
+- [✓/✗] 12-15 sources collected; >=10 verified live
+- [✓/✗] >=5 sources at reliability score >=8
 - [✓/✗] Top 5 competitor analysis completed
 - [✓/✗] Clear, differentiated content angle identified
 - [✓/✗] Outline maps to target word count

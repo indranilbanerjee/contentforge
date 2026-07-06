@@ -5,17 +5,17 @@ argument-hint: "[--pipeline | --skills | --commands | --examples | --connectors 
 effort: low
 ---
 
-# /contentforge:help
+# /contentforge:cf-help
 
 Show the ContentForge user guide with live plugin state (version, asset counts, connector counts, runtime environment) pulled from disk — not hardcoded — plus pipeline overview, available skills, usage examples, and troubleshooting.
 
 ## CRITICAL: never hardcode version, asset counts, or connector counts
 
 Versions and counts in this plugin used to be baked into this skill body as
-strings like "Version: 3.8.0" / "Agents: 13 · Skills: 19 · Connectors: 9 HTTP
-+ 19 npx". Those drifted out of sync with the actual install every release
-(reported by users in v3.12.7 testing: "I'm on 3.12.7, but `/contentforge:help`
-shows 3.8.0").
+literal version strings and count strings ("Agents: 13 · Skills: 19 ·
+Connectors: 9 HTTP + 19 npx"). Those drifted out of sync with the actual
+install every release (reported by users in v3.12.7 testing: "I'm on 3.12.7,
+but the help output shows an old version").
 
 **Always read live values from `scripts/plugin-metadata.py`. Never quote a
 version number, skill count, agent count, or connector count from memory or

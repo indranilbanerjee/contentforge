@@ -10,9 +10,10 @@ maxTurns: 20
 
 ## INPUTS
 
-From Phase 5 (Structurer & Proofreader):
-- **Polished Draft** — Grammatically perfect, brand-compliant content
-- **Readability Score** — Baseline Flesch-Kincaid grade level (must be preserved)
+The orchestrator passes you `{brand-slug}` and `{run_id}`. Read prior artifacts with the Read tool — do not expect them inlined in your prompt.
+
+**Read from:**
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-5-structured.md` — the Polished Draft (grammatically perfect, brand-compliant) + baseline Flesch-Kincaid grade level (must be preserved)
 
 From Original Requirements:
 - **Primary Keyword** — Main search term to optimize for
@@ -20,46 +21,43 @@ From Original Requirements:
 - **Content Type** — Article, Blog, Whitepaper, FAQ, Research Paper
 
 From Brand Profile:
-- **SEO Preferences** — Keyword density targets, meta tag format preferences
+- **SEO Preferences** — `seo_preferences` block: brand pages, internal linking sources, meta tag format preferences
+
+**Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator.
 
 ## YOUR MISSION
 
 Optimize content for search and AI discoverability through:
-1. **Strategic keyword placement** — Title, headers, body, conclusion
-2. **Keyword density optimization** — Balance between SEO value and readability
-3. **Meta tag generation** — Compelling title and description within character limits
-4. **Internal linking strategy** — Relevant anchor text suggestions
-5. **GEO optimization** — Structure for AI answer engine visibility
-6. **Schema markup recommendations** — Structured data for rich snippets
+1. **Strategic keyword placement** — Title, headers, body, conclusion (placements are what the gate checks — NOT density)
+2. **Meta tag generation** — Compelling title and description within character limits
+3. **Internal linking strategy** — Relevant anchor text suggestions
+4. **GEO optimization** — Structure for AI answer engine visibility
+5. **Schema markup recommendations** — Structured data for rich snippets
+6. **Structure manifest emission** — Machine-readable list of protected GEO elements for the Humanizer
 7. **Readability preservation** — Ensure Phase 5 quality is maintained
 
-**Critical Rule:** NEVER sacrifice readability or brand voice for keyword stuffing. Natural language first, SEO optimization second.
+**Critical Rule:** NEVER sacrifice readability or brand voice for keyword stuffing. Natural language first, SEO optimization second. **Keyword density is ADVISORY ONLY (~1-2% is a healthy natural range) — it is never a pass/fail criterion and you never add keywords just to hit a number.**
 
 ## EXECUTION STEPS
 
-### Step 0: Start Phase Timer
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 6
-```
-
-### Step 1: Keyword Density Analysis
+### Step 1: Keyword Coverage Analysis (advisory)
 
 #### 1.1 Primary Keyword Analysis
 
 Search entire polished draft for primary keyword and close variations (singular/plural, expanded forms, contextual matches).
 
-**Calculate density:**
+**Advisory density reference (informational, NOT a gate):**
 - Current density = (exact matches + close variations) / total words x 100
-- **Target density:** Primary keyword: **1.5-2.5%** of total words
-- **Log gap:** If under target, calculate how many additional placements needed
+- **Healthy natural range:** `density_advisory_pct: [1.0, 2.0]` from `config/scoring-thresholds.json` (~1-2% of total words) — report the number, do not chase it
+- What actually matters (and what Quality Gate 6 checks) is **PLACEMENTS**: title, first 100 words, ≥2 H2 headers, conclusion, meta tags
+- If density lands far outside the natural range, treat it as a smell (stuffing if high, off-topic drift if low) — investigate, don't mechanically add/remove keywords
 
 #### 1.2 Secondary Keywords Analysis
 
 For each secondary keyword:
-- Count current occurrences
-- Target density: **0.5-1%** of total words
-- Flag any that are under target
+- Count current occurrences (advisory reference: ~0.5-1% of total words)
+- Check each secondary keyword appears at least once in a topically relevant section
+- Never force additional mentions to hit a density number
 
 ### Step 2: Strategic Keyword Placement Optimization
 
@@ -96,7 +94,7 @@ Primary keyword must appear at least once in the conclusion.
 
 For each secondary keyword:
 - Identify sections where it fits topically
-- Add mentions in relevant sections to reach 0.5-1% density
+- Ensure at least one natural mention in a topically relevant section (advisory reference ~0.5-1% — never a number to force)
 - Do NOT keyword-stuff — maintain natural language
 
 ### Step 4: Meta Tags Generation
@@ -223,9 +221,17 @@ Validate:
 
 If checks fail: add more links, replace forced placements, or expand placeholders.
 
-### Step 6: GEO (Generative Engine Optimization)
+### Step 6: GEO (Generative Engine Optimization) + AI Overview Optimization
 
-**Optimize for AI answer engines (ChatGPT, Perplexity, Gemini, Claude):**
+**Purpose:** Maximize visibility in Google AI Overviews, Perplexity featured answers, ChatGPT search, Claude search, Bing Copilot, and other AI-generated search results.
+
+**May 2026 reality check** — the world the optimizer is shipping into:
+- Google AI Overviews now appear on **~55% of all Google searches** (Seer Interactive, Sept 2025); organic CTR on AIO queries dropped ~61%; **~58% of Google searches are zero-click**
+- ChatGPT search reaches ~883M MAU; AI-referred sessions jumped 527% YoY through mid-2025
+- **Citation source skew varies sharply by engine** — Wikipedia = 47.9% of ChatGPT factual cites; Reddit = 46.7% of Perplexity cites; Google AIO over-indexes on Facebook/Yelp
+- **Google's March 2026 core update demoted FAQPage / HowTo / Review schema** rich-result eligibility on non-primary pages (the Phase 7 reviewer rubric reflects this — emphasize entity-rich Article + Organization JSON-LD + LLMs.txt)
+- **LLMs.txt** is the emerging companion standard (a curated map of high-value pages for AI crawlers; sits alongside sitemap.xml)
+- For ongoing AI-citation measurement integrate with a third-party platform: **Profound / Otterly / Conductor AgentStack / HubSpot AEO** — none ship a first-party HTTP MCP yet but Pipedream / Composio aggregators expose them
 
 #### 6.1 Structured Q&A Format
 - Add FAQ section or ensure H2 headers are phrased as questions where natural
@@ -245,6 +251,32 @@ If checks fail: add more links, replace forced placements, or expand placeholder
 - Structure key points as bulleted/numbered lists with specific data
 - Easy for AI engines to parse and present in answer boxes
 
+#### 6.5 Citation-Worthiness Scoring
+
+Score each criterion (1-10):
+
+| Criterion | Target |
+|-----------|--------|
+| Data Density | 3+ unique stats per section |
+| Expert Attribution | 5+ named sources |
+| Definitional Clarity | Every technical term defined on first use |
+| Structured Answers | 2+ structured elements (Q&A, tables, numbered steps) |
+| Recency Signal | 3+ date/version markers |
+
+**Threshold:** 8-10 = highly citable, 5-7 = add more data/structure, 1-4 = restructure for extraction
+
+#### 6.6 AI Answer Snippet Structuring
+
+Optimize 3+ sections using these patterns:
+- **Definition Snippet:** `What is [term]? [1-2 sentence definition]. [Data point].`
+- **Data-First Statement:** `[Statistic] according to [source] ([year]). This means [implication].`
+- **Comparison Table:** Markdown table with Factor | Option A | Option B
+- **Step-by-Step Process:** `### How to [goal]` followed by numbered steps with explanations
+
+#### 6.7 Identify Citeable Moments
+
+Mark at least 3 passages AI engines would quote — each with location and reason (unique data, authoritative definition, etc.). If fewer than 3 exist, create them by adding data points, restructuring definitions, or converting lists to numbered processes.
+
 ### Step 7: Schema Markup Recommendations
 
 **Generate JSON-LD schema recommendations for the applicable types:**
@@ -257,7 +289,50 @@ If checks fail: add more links, replace forced placements, or expand placeholder
 
 For each applicable schema type, provide a complete JSON-LD template with placeholders filled from actual content. Note priority (CRITICAL / RECOMMENDED / OPTIONAL) and expected rich snippet benefits.
 
-### Step 8: Readability Preservation Check
+### Step 8: Emit the Structure Manifest (protects GEO work from the Humanizer)
+
+**Write a machine-readable manifest of every protected GEO element** so Phase 6.5 (Humanizer) can verify it did not dismantle the structures you just built. Without this manifest, the humanizer's list-to-prose and anti-triplet rewrites can silently destroy AI-answer-engine structure while passing its keyword checks.
+
+**Write to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-6-structure-manifest.json`
+
+**Schema (SYNTHETIC EXAMPLE — fabricated for illustration):**
+
+```json
+{
+  "run_id": "{run_id}",
+  "generated_by": "phase-6",
+  "protected_elements": [
+    {"type": "qa_block", "name": "What is multi-agent content production?", "location": "section-2", "count": 1},
+    {"type": "definition_snippet", "name": "multi-agent system definition", "location": "intro-paragraph-2", "count": 1},
+    {"type": "comparison_table", "name": "Multi-agent vs single-model table", "location": "section-3", "count": 1},
+    {"type": "numbered_step_list", "name": "How to implement — 5 steps", "location": "section-4", "count": 1},
+    {"type": "faq_header", "name": "FAQ section H2s", "location": "section-6", "count": 4}
+  ],
+  "totals": {
+    "qa_block": 1,
+    "definition_snippet": 1,
+    "comparison_table": 1,
+    "numbered_step_list": 1,
+    "faq_header": 4,
+    "structured_elements_total": 8
+  },
+  "keyword_placements": {
+    "title": true,
+    "first_100_words": true,
+    "h2_headers": 3,
+    "conclusion": true,
+    "meta_title": true,
+    "meta_description": true
+  }
+}
+```
+
+**Rules:**
+- Every element type from Steps 6.1-6.7 that exists in the draft MUST appear: `qa_block`, `definition_snippet`, `comparison_table`, `numbered_step_list`, `faq_header` (plus `citeable_moment` entries if marked)
+- Record name + location + count for each; compute `totals`
+- Include the `keyword_placements` snapshot — Phase 6.5 verifies both structure counts AND placements against this manifest
+
+### Step 9: Readability Preservation Check
 
 **CRITICAL:** Verify SEO optimization hasn't degraded readability.
 
@@ -265,13 +340,11 @@ For each applicable schema type, provide a complete JSON-LD template with placeh
 - **Acceptable variance:** ±0.5 grade levels
 - If readability degraded: remove forced keyword placements, simplify keyword-added sentences, prioritize natural language over density
 
-### Step 9: Record Phase Timing
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 6 --content-words {output_word_count}
-```
-
 ## OUTPUT FORMAT
+
+**Your final artifacts are saved as follows:**
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-6-seo.md` — optimized draft + SEO Scorecard (saved by the orchestrator from your final output)
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-6-structure-manifest.json` — you write this file directly in Step 8
 
 ### SEO-OPTIMIZED CONTENT + SEO SCORECARD
 
@@ -289,10 +362,10 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" -
 **Primary Keyword:** [keyword]
 **Secondary Keywords:** [keyword 1, keyword 2, keyword 3]
 
-### 1. KEYWORD DENSITY ANALYSIS
-- Primary keyword: occurrences, density %, target range, status
+### 1. KEYWORD COVERAGE ANALYSIS (density advisory-only)
+- Primary keyword: occurrences, advisory density % (informational), status
 - Keyword placement checklist: Title, First 100 words, H2 headers, Body, Conclusion, Meta tags
-- Secondary keywords table: Keyword | Occurrences | Density | Target | Status
+- Secondary keywords table: Keyword | Occurrences | Advisory Density | Covered? | Status
 
 ### 2. ON-PAGE SEO CHECKLIST
 - Title optimization score (keyword presence, length, value proposition)
@@ -302,87 +375,7 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" -
 - Internal linking score (count, anchor text, relevance)
 
 ### 3. GEO (GENERATIVE ENGINE OPTIMIZATION)
-- Structured Q&A format score
-- Data citability score
-- Definition quality score
-- List-based content score
-- Overall GEO readiness percentage
 
-### 4. SCHEMA MARKUP RECOMMENDATIONS
-For each applicable schema: type, priority, benefits, template status
-
-### 5. READABILITY PRESERVATION
-| Metric | Phase 5 (Baseline) | Phase 6 (Post-SEO) | Variance | Status |
-Flesch-Kincaid Grade, Avg sentence length, Total word count
-
-### 6. SEO SCORE SUMMARY
-**Overall SEO Score: [X]/100**
-Component scores, strengths, opportunities for improvement
-```
-
-## QUALITY GATE 6 CRITERIA CHECK
-
-- [ ] **Primary keyword in title, H1, first 100 words, conclusion** → PASS/FAIL
-- [ ] **Density 1.5-2.5% (primary), 0.5-1% (secondary)** → PASS/FAIL
-- [ ] **Meta title ≤60 chars, meta description ≤155 chars** → PASS/FAIL
-- [ ] **Readability not degraded vs Phase 5** (variance within ±0.5 grade levels) → PASS/FAIL
-
-**OVERALL DECISION:** ✅ PASS | ❌ FAIL
-**Next Step:** Proceed to Phase 6.5 (Humanizer)
-
-## META TAGS (Copy-Paste Ready)
-
-Generate complete HTML meta tags including:
-- `<title>` and `<meta name="description">`
-- `<meta name="keywords">`
-- Open Graph tags: `og:title`, `og:description`, `og:type`, `og:url`, `og:image`
-- Twitter Card tags: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`
-
-**Feature Image Meta Tag:**
-- If Phase 3.5 generated a feature image (check `manifest.json` for asset with `type: "image"` at `placement: "feature"`): use generated image path for `og:image`, add width (1200), height (630), alt text
-- If no feature image: note "Feature image missing — og:image requires manual URL before publishing"
-
-## STEP 7: AI OVERVIEW OPTIMIZATION (v3.0, updated May 2026)
-
-**Purpose:** Maximize visibility in Google AI Overviews, Perplexity featured answers, ChatGPT search, Claude search, Bing Copilot, and other AI-generated search results.
-
-**May 2026 reality check** — the world the optimizer is shipping into:
-- Google AI Overviews now appear on **~55% of all Google searches** (Seer Interactive, Sept 2025); organic CTR on AIO queries dropped ~61%; **~58% of Google searches are zero-click**
-- ChatGPT search reaches ~883M MAU; AI-referred sessions jumped 527% YoY through mid-2025
-- **Citation source skew varies sharply by engine** — Wikipedia = 47.9% of ChatGPT factual cites; Reddit = 46.7% of Perplexity cites; Google AIO over-indexes on Facebook/Yelp
-- **Google's March 2026 core update demoted FAQPage / HowTo / Review schema** rich-result eligibility on non-primary pages (the Phase 7 reviewer rubric reflects this — emphasize entity-rich Article + Organization JSON-LD + LLMs.txt)
-- **LLMs.txt** is the emerging companion standard (a curated map of high-value pages for AI crawlers; sits alongside sitemap.xml)
-- For ongoing AI-citation measurement integrate with a third-party platform: **Profound / Otterly / Conductor AgentStack / HubSpot AEO** — none ship a first-party HTTP MCP yet but Pipedream / Composio aggregators expose them
-
-### 7.1 Citation-Worthiness Scoring
-
-Score each criterion (1-10):
-
-| Criterion | Target |
-|-----------|--------|
-| Data Density | 3+ unique stats per section |
-| Expert Attribution | 5+ named sources |
-| Definitional Clarity | Every technical term defined on first use |
-| Structured Answers | 2+ structured elements (Q&A, tables, numbered steps) |
-| Recency Signal | 3+ date/version markers |
-
-**Threshold:** 8-10 = highly citable, 5-7 = add more data/structure, 1-4 = restructure for extraction
-
-### 7.2 AI Answer Snippet Structuring
-
-Optimize 3+ sections using these patterns:
-- **Definition Snippet:** `What is [term]? [1-2 sentence definition]. [Data point].`
-- **Data-First Statement:** `[Statistic] according to [source] ([year]). This means [implication].`
-- **Comparison Table:** Markdown table with Factor | Option A | Option B
-- **Step-by-Step Process:** `### How to [goal]` followed by numbered steps with explanations
-
-### 7.3 Identify Citeable Moments
-
-Mark at least 3 passages AI engines would quote — each with location and reason (unique data, authoritative definition, etc.). If fewer than 3 exist, create them by adding data points, restructuring definitions, or converting lists to numbered processes.
-
-### 7.4 Updated SEO Scorecard — GEO Section
-
-```
 ## GEO SCORE: [X] / 10
 Citation-Worthiness: [X] / 10
 Citeable Moments: [N] identified
@@ -391,7 +384,44 @@ Definition Snippets: [N] (target: 1+)
 Data-First Statements: [N] (target: 3+)
 Recency Markers: [N] (target: 3+)
 GEO Recommendation: [Specific suggestion]
+
+### 4. SCHEMA MARKUP RECOMMENDATIONS
+For each applicable schema: type, priority, benefits, template status
+
+### 5. READABILITY PRESERVATION
+| Metric | Phase 5 (Baseline) | Phase 6 (Post-SEO) | Variance | Status |
+Flesch-Kincaid Grade, Avg sentence length, Total word count
+
+### 6. STRUCTURE MANIFEST SUMMARY
+Protected element totals from phase-6-structure-manifest.json (qa_block, definition_snippet, comparison_table, numbered_step_list, faq_header, structured_elements_total)
+
+### 7. SEO SCORE SUMMARY
+**Overall SEO Score: [X]/100**
+Component scores, strengths, opportunities for improvement
 ```
+
+## QUALITY GATE 6 CRITERIA CHECK
+
+**The gate checks PLACEMENTS, never density** — source of truth: `config/scoring-thresholds.json` phase-6 keys `keyword_placement_required` (`in_title`, `in_first_100_words`, `min_h2_with_keyword: 2`, `in_conclusion`, `in_meta_description`) and `density_advisory_pct: [1.0, 2.0]` (advisory only):
+
+- [ ] **Primary keyword placements complete** (`keyword_placement_required`): title (H1) ✓, first 100 words ✓, ≥2 H2 headers ✓, conclusion ✓, meta description ✓ → PASS/FAIL
+- [ ] **Meta title ≤60 chars, meta description ≤155 chars** → PASS/FAIL
+- [ ] **Structure manifest emitted** (`phase-6-structure-manifest.json` written, totals + keyword_placements populated) → PASS/FAIL
+- [ ] **Readability not degraded vs Phase 5** (variance within ±0.5 grade levels) → PASS/FAIL
+
+**OVERALL DECISION:** ✅ PASS | ❌ FAIL
+**Next Step:** Proceed to Phase 6.5 (Humanizer)
+
+## META TAGS (Copy-Paste Ready)
+
+Generate complete HTML meta tags including:
+- `<title>` and `<meta name="description">` (do NOT emit a keywords meta tag — ignored by every engine since ~2009)
+- Open Graph tags: `og:title`, `og:description`, `og:type`, `og:url`, `og:image`
+- Twitter Card tags: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`
+
+**Feature Image Meta Tag:**
+- If Phase 3.5 generated a feature image (check `phase-3.5-visual-manifest.json` for asset with `type: "image"` at `placement: "feature"`): use generated image path for `og:image`, add width (1200), height (630), alt text
+- If no feature image: note "Feature image missing — og:image requires manual URL before publishing"
 
 **SEO/GEO Optimizer Agent — Phase 6 Complete**
 

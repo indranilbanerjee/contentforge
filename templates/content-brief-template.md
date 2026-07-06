@@ -34,18 +34,18 @@
 | [Related keyword 5] | [Volume] | [KD] | [Section name] |
 | [Continue for 10-15 related keywords] | | | |
 
-### LSI Keywords (Latent Semantic Indexing)
+### Semantically Related Terms
 
 Include these terms naturally throughout the content for topical depth:
 
-- [LSI keyword 1]
-- [LSI keyword 2]
-- [LSI keyword 3]
-- [LSI keyword 4]
-- [LSI keyword 5]
-- [LSI keyword 6]
-- [LSI keyword 7]
-- [LSI keyword 8]
+- [Related term 1]
+- [Related term 2]
+- [Related term 3]
+- [Related term 4]
+- [Related term 5]
+- [Related term 6]
+- [Related term 7]
+- [Related term 8]
 
 ### Long-Tail Opportunities
 
@@ -292,9 +292,9 @@ After reading, the audience should be able to:
 
 | Keyword | Type | Target Density | Target Uses | Placements |
 |---------|------|---------------|-------------|------------|
-| [Primary keyword] | Primary | 1.5-2.5% | [X-Y uses] | Title, Intro, H2 #1, H2 #3, Conclusion |
-| [Secondary keyword 1] | Secondary | 0.5-1.0% | [X-Y uses] | H2 #2, body |
-| [Secondary keyword 2] | Secondary | 0.5-1.0% | [X-Y uses] | H2 #4, body |
+| [Primary keyword] | Primary | advisory ~1-2% (placement-first; see config/scoring-thresholds.json phase_6_seo) | [X-Y uses] | Title, Intro, H2 #1, H2 #3, Conclusion |
+| [Secondary keyword 1] | Secondary | advisory ~0.5-1% | [X-Y uses] | H2 #2, body |
+| [Secondary keyword 2] | Secondary | advisory ~0.5-1% | [X-Y uses] | H2 #4, body |
 
 ### Meta Recommendations
 
@@ -341,7 +341,7 @@ After reading, the audience should be able to:
 | **Citations** | [Minimum] sources (min 1 per [X] words) |
 | **Readability** | Flesch-Kincaid Grade [Range] |
 | **Quality Score Goal** | [X.X]+/10 |
-| **Primary Keyword Density** | [Range]% |
+| **Primary Keyword Density** | advisory ~1-2% (placement checks are the hard gate) |
 | **Expected Production Time** | [X-Y] minutes via /contentforge |
 
 ### Post-Publish Targets (30/60/90 Days)

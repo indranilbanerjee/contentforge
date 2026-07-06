@@ -1,5 +1,7 @@
 # Utility: Progress Tracker
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 **Purpose:** Real-time dashboard for monitoring batch content processing with live updates every 30 seconds.
 
 ---

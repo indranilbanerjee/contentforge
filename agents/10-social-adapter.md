@@ -12,22 +12,28 @@ maxTurns: 15
 
 ## INPUTS
 
-From Phase 8 (Output Manager) or Google Drive:
-- **Approved Content** -- Final publication-ready content (quality score >= 7.0)
-- **Quality Scorecard** -- Overall score
-- **SEO Metadata** -- Title, meta description, primary/secondary keywords
+**Pipeline mode (invoked after a `/contentforge:create-content` run):** the orchestrator passes `{brand-slug}` and `{run_id}`. Read with the Read tool:
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-6.5-humanized.md` — the Approved Content (quality score >= 7.0)
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-7-review.json` — Quality review (overall score)
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-6-seo.md` — SEO metadata: title, meta description, primary/secondary keywords
+
+**Standalone mode (invoked via `/contentforge:cf-social-adapt` on arbitrary content):** if no run dir is provided and no content file path was given, do NOT guess. Return as your final output:
+
+```json
+{"status": "needs_user_decision", "decision": "content_source", "options": [], "reason": "No content file path provided. Supply the path (or URL) of the article to adapt."}
+```
 
 From Brand Profile:
 - **Brand Name, Voice Characteristics, Social Media Guidelines, Campaign Hashtags**
 
 From User Input:
-- **Target Platforms** -- linkedin, twitter, instagram, facebook, threads, or all
+- **Target Platforms** -- any platform key present in `config/social-platform-specs.json` (8 platforms including tiktok, bluesky, youtube_shorts), or all
 - **Posts Per Platform** -- Default 3, max 10
 - **Published URL** -- Live article URL (optional)
 - **Image Assets** -- Available images/graphics (optional)
 
 From Configuration:
-- **Platform Specifications** -- `config/social-platform-specs.json`
+- **Platform Specifications** -- `config/social-platform-specs.json` — **THE single source of truth** for character limits, ideal lengths, hashtag counts, image dimensions, voice notes, and the per-platform `ai_disclosure` field. **Read it at runtime; never rely on remembered numbers.**
 - **Post Templates** -- `templates/social-post-templates.md`
 
 ---
@@ -39,14 +45,14 @@ From Configuration:
 3. **Apply platform-specific formatting** -- Character limits, hashtags, visuals, voice adjustments
 4. **Generate platform-native posts** -- Each reads as if written for that platform
 5. **Add engagement elements** -- Hooks, CTAs, questions, conversation starters
-6. **Provide publishing metadata** -- Character counts, hashtags, image specs, posting times
+6. **Provide publishing metadata** -- Character counts, hashtags, image specs, sequence guidance
 
 **Critical Rules:**
 - Every post MUST be self-contained (delivers value without clicking a link)
 - Every post MUST be under the platform's character limit
 - Every post MUST have a CTA or engagement hook
 - Never use "Read more in our latest article" as sole value proposition
-- Adapt voice to platform norms: LinkedIn=professional, Twitter=punchy, Instagram=visual-first, Facebook=community, Threads=casual
+- Adapt voice to platform norms (per-platform voice notes in config): LinkedIn=professional, Twitter=punchy, Instagram=visual-first, Facebook=community, Threads=casual, TikTok/YouTube Shorts=hook-first video-native, Bluesky=conversational
 
 ---
 
@@ -109,40 +115,34 @@ Select top 10-15 moments. Minimum: (posts_per_platform * platforms / 2), rounded
 
 #### Platform Specs
 
-| Platform | Char Limit | Ideal Length | Hashtags | Voice | Image Size |
-|----------|-----------|-------------|----------|-------|------------|
-| LinkedIn | 3,000 | 800-1,500 | 3-5 professional | Professional, insightful, data-backed | 1200x627 |
-| Twitter/X | 280 | 200-270 | 1-2 max | Concise, punchy, direct | 1200x675 |
-| Instagram | 2,200 | 300-800 | 8-12 mixed | Visual-first, conversational | 1080x1080 (feed), 1080x1920 (story) |
-| Facebook | 63,206 | 400-800 | 1-3 | Community, accessible | 1200x630 |
-| Threads | 500 | 150-350 | 2-3 | Casual, opinion-driven | 1080x1080 |
+**Read `config/social-platform-specs.json` at runtime for every numeric spec** — character limits, ideal lengths, hashtag counts, image dimensions, voice notes, and the `ai_disclosure` field for all 8 platforms (linkedin, twitter, instagram, facebook, threads, tiktok, bluesky, youtube_shorts). Do not hardcode or recall these numbers; the config file is the single source of truth and is refreshed independently of this agent.
 
 #### LinkedIn Rules
-1. Hook in first two lines (truncates at ~210 chars)
+1. Hook in first two lines (truncation point per config)
 2. One idea per post, line breaks between paragraphs
 3. End with question or CTA
 4. No link in body if possible (put in first comment -- LinkedIn deprioritizes external links)
 5. Professional but not corporate
 
-**Template:** [HOOK 1-2 lines] -> [CONTEXT 3-5 lines] -> [VALUE 3-8 lines] -> [CTA] -> [HASHTAGS 3-5]
+**Template:** [HOOK 1-2 lines] -> [CONTEXT 3-5 lines] -> [VALUE 3-8 lines] -> [CTA] -> [HASHTAGS per config]
 
 #### Twitter/X Rules
 1. Every character counts -- edit ruthlessly
 2. One stat or one idea only
 3. Thread starters for depth (hook tweet + numbered replies)
 4. Questions drive replies; hashtags at end only
-5. URLs consume ~23 characters regardless of length
+5. URLs consume a fixed character count regardless of length (see config)
 
-**Template:** [HOOK sentence] -> [CONTEXT 1-2 sentences] -> [CTA/QUESTION] -> [LINK] -> [1-2 HASHTAGS]
+**Template:** [HOOK sentence] -> [CONTEXT 1-2 sentences] -> [CTA/QUESTION] -> [LINK] -> [HASHTAGS per config]
 
 #### Instagram Rules
 1. Visual-first -- image/carousel does the heavy lifting
 2. Carousels outperform single images (always suggest for data-heavy content)
-3. First line is hook (truncates at ~125 chars)
+3. First line is hook (truncation point per config)
 4. "Save this for later" CTAs drive algorithm favorability
 5. Always suggest alt text
 
-**Carousel template:** Slide 1 (cover bold statement) -> Slides 2-6 (one point per slide) -> Slide 7 (CTA). Caption: [HOOK] -> [VALUE] -> [CTA] -> [HASHTAGS 8-12]
+**Carousel template:** Slide 1 (cover bold statement) -> Slides 2-6 (one point per slide) -> Slide 7 (CTA). Caption: [HOOK] -> [VALUE] -> [CTA] -> [HASHTAGS per config]
 
 **Reel template:** Hook (0-3s) -> Body (3-20s, 3-5 points) -> CTA (20-30s)
 
@@ -152,16 +152,16 @@ Select top 10-15 moments. Minimum: (posts_per_platform * platforms / 2), rounded
 3. Polls and A/B/C questions drive engagement
 4. Native images outperform external links
 
-**Template:** [HOOK story/fact] -> [BODY 3-5 sentences] -> [CTA question/poll/link] -> [1-3 HASHTAGS]
+**Template:** [HOOK story/fact] -> [BODY 3-5 sentences] -> [CTA question/poll/link] -> [HASHTAGS per config]
 
 #### Threads Rules
 1. Conversational tone -- colleague, not boardroom
 2. Hot takes backed by data perform well
-3. Shorter performs better even within 500 limit
+3. Shorter performs better even within the platform limit
 4. Reply-chain threads for depth
 5. Minimal hashtags
 
-**Template:** [HOT TAKE 1-3 sentences] -> [DATA/EXAMPLE 1-2 sentences] -> [QUESTION] -> [2-3 HASHTAGS]
+**Template:** [HOT TAKE 1-3 sentences] -> [DATA/EXAMPLE 1-2 sentences] -> [QUESTION] -> [HASHTAGS per config]
 
 ---
 
@@ -173,15 +173,7 @@ Select top 10-15 moments. Minimum: (posts_per_platform * platforms / 2), rounded
 - Tier 3 (Niche/Long-tail): #AIdiagnostics #RadiologyAI
 - Tier 4 (Branded): #AcmeMedInsights
 
-**Platform rules:**
-
-| Platform | Count | Tier Mix | Placement |
-|----------|-------|----------|-----------|
-| LinkedIn | 3-5 | 1 Broad + 2 Specific + 1-2 Niche | End of post |
-| Twitter/X | 1-2 | 1 Specific + 1 Niche | End of post |
-| Instagram | 8-12 | 2 Broad + 4 Specific + 4 Niche + 2 Branded | End or first comment |
-| Facebook | 1-3 | 1 Broad + 1 Specific + 1 Branded | End of post |
-| Threads | 2-3 | 1 Specific + 1-2 Niche | End of post |
+**Platform rules:** hashtag COUNT per platform comes from `config/social-platform-specs.json` (read at runtime). Tier-mix guidance: lead with 1 Specific, add Niche for depth, use Broad sparingly, include the Branded/campaign hashtag where the platform norm allows. Placement: end of post (or first comment where the platform convention prefers it).
 
 **Generate from:** SEO keywords, industry standards (from config), brand campaign hashtags.
 **Avoid:** Banned/shadowbanned hashtags, overly generic (#love), double meanings, exceeding platform norms.
@@ -204,34 +196,33 @@ Select top 10-15 moments. Minimum: (posts_per_platform * platforms / 2), rounded
 
 If Canva MCP is available AND user opted into image generation (Phase 3.5 `image_gen_mode`):
 1. Use `generate-design` or `generate-design-structured` with brand kit
-2. Create platform-specific graphics (LinkedIn 1200x627, Twitter 1600x900, Instagram 1080x1080, Facebook 1200x630)
+2. Create platform-specific graphics using the image dimensions from `config/social-platform-specs.json` for each target platform
 3. Show each design to user for approval
 4. Export approved designs as PNG via `export-design`
 
-If Canva not connected: provide specs as above and suggest `/contentforge:connect canva`.
+If Canva not connected: provide specs as above and suggest `/contentforge:cf-connect canva`.
+
+#### AI-Content Disclosure
+
+Check the per-platform `ai_disclosure` field in `config/social-platform-specs.json`. Where a platform requires or recommends labeling AI-generated media (e.g., AI-generated images or video), include the required disclosure/label in the post metadata and flag it in the output so the publisher applies the platform's AI-content toggle. Never publish AI-generated visuals on a platform that mandates disclosure without the label.
 
 ---
 
-### Step 7: Posting Time Recommendations
+### Step 7: Posting Sequence Recommendations
 
-| Platform | Best Days | Best Times (Local) |
-|----------|-----------|-------------------|
-| LinkedIn | Tue, Wed, Thu | 8-10 AM, 12 PM |
-| Twitter/X | Mon-Fri | 8-11 AM, 12-1 PM |
-| Instagram | Mon, Wed, Thu | 11 AM, 2 PM, 6 PM |
-| Facebook | Tue, Thu, Sat | 9-11 AM, 1-3 PM |
-| Threads | Mon-Fri | 7-9 AM, 5-7 PM |
+**Do NOT prescribe "best posting times"** — generic best-time tables are folklore and were deliberately removed from the config. Audience-specific timing belongs to the brand's own analytics.
 
-**Spacing for 3 posts:** Early week (strongest) -> Midweek (practical) -> Late week (engagement/question)
-**Spacing for 5 posts:** Mon (announcement) -> Tue (how-to) -> Wed (case study) -> Thu (provocative) -> Fri (question)
-
-**Cross-platform:** Stagger across the week. LinkedIn+Twitter can share a day; Instagram+Facebook should be different days.
+Recommend SEQUENCE and SPACING only:
+- **3 posts:** strongest moment first -> practical/how-to second -> engagement/question third, spaced across the week
+- **5 posts:** announcement -> how-to -> case study -> provocative -> question, one per day
+- **Cross-platform:** stagger platforms across the week; avoid publishing the same moment on two platforms the same day
+- If the brand has its own analytics-backed posting windows in its profile, surface those; otherwise note "schedule per your audience analytics".
 
 ---
 
 ### Step 8: Compile Post Metadata
 
-For each post, record: Platform, post number, framework type, source moment, character count vs limit, hashtags, CTA type, image recommendation with dimensions, recommended day/time, and quality checks (under limit, self-contained, has CTA, brand voice aligned, hashtags within norm).
+For each post, record: Platform, post number, framework type, source moment, character count vs limit, hashtags, CTA type, image recommendation with dimensions, recommended sequence position, and quality checks (under limit, self-contained, has CTA, brand voice aligned, hashtags within norm).
 
 ---
 
@@ -239,8 +230,8 @@ For each post, record: Platform, post number, framework type, source moment, cha
 
 Deliver a **Social Adaptation Report** containing:
 1. **Extraction Summary** -- Moments extracted, ranked table with type and platform usage
-2. **Posts by Platform** -- Each post with full text, framework, hook description, character count, image recommendation, recommended time
-3. **Publishing Schedule** -- Week/day/platform/post grid for staggered publishing
+2. **Posts by Platform** -- Each post with full text, framework, hook description, character count, image recommendation, recommended sequence position
+3. **Publishing Sequence** -- Ordered platform/post grid for staggered publishing (sequence + spacing, no time-of-day claims)
 4. **Quality Summary** -- Total posts, character limit compliance %, self-contained %, CTA %, brand voice alignment %, unique moments used
 5. **Image Asset Requirements** -- Table of all images needed with platform, type, dimensions, description, reuse potential
 

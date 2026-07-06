@@ -3,16 +3,16 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "/contentforge:brief AI-powered customer service chatbots for e-commerce",
-      "expected_output": "A structured content brief with keyword analysis, competitor content gaps, audience targeting, and outline recommendations",
+      "prompt": "/contentforge:cf-brief AI-powered customer service chatbots for e-commerce",
+      "expected_output": "A structured content brief with keyword analysis, competitor content gaps, audience targeting, outline recommendations, and an AEO/GEO strategy section",
       "files": [],
       "assertions": [
         {
-          "text": "Brief includes primary and secondary keyword recommendations with search volume estimates",
+          "text": "Brief includes primary and secondary keyword recommendations with search volume estimates, clearly labeled as estimates when no SEO connector is configured",
           "type": "quantitative"
         },
         {
-          "text": "Competitor content analysis identifies gaps and differentiation opportunities",
+          "text": "Competitor content analysis identifies gaps, differentiation opportunities, and E-E-A-T signals (author credentials, original data, first-hand experience)",
           "type": "qualitative"
         },
         {
@@ -21,6 +21,18 @@
         },
         {
           "text": "Suggested outline includes H2/H3 hierarchy with word count targets per section",
+          "type": "quantitative"
+        },
+        {
+          "text": "Brief includes an AEO/GEO section: AI Overview presence per target query, citation-worthiness checklist, and PAA questions mapped to answer blocks (question-style H2s answered in the first 40-60 words)",
+          "type": "quantitative"
+        },
+        {
+          "text": "SEO strategy specifies keyword placements (title, H1, first 100 words, H2s) rather than density percentages; no density target is presented as a quality gate",
+          "type": "qualitative"
+        },
+        {
+          "text": "The brief document is saved and its location is reported to the user (via the brand's tracking backend or a local path)",
           "type": "quantitative"
         }
       ]
@@ -42,6 +54,10 @@
         {
           "text": "Content angle differentiates from top-ranking competitor content",
           "type": "qualitative"
+        },
+        {
+          "text": "Quality score goal of 8.5+ appears in the success metrics",
+          "type": "quantitative"
         }
       ]
     }

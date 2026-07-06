@@ -5,125 +5,42 @@ argument-hint: "<content source> --platform=<webflow|wordpress> [--status=draft|
 
 # Publish
 
-> If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../CONNECTORS.md).
-
-Push publication-ready content from the ContentForge pipeline directly to your CMS (Webflow or WordPress) via MCP connectors. Preview before publishing, verify post-publish, and fall back to HTML export when no connector is available.
+This command is a thin wrapper. The complete publishing procedure lives in
+[`skills/cf-publish/SKILL.md`](../skills/cf-publish/SKILL.md) — read that file and execute it
+end to end. Do not improvise a different flow from this wrapper.
 
 ## Trigger
 
-User runs `/publish` or asks to publish, push, or deploy content to a CMS platform.
+User runs `/contentforge:publish` or asks to publish, push, or deploy content to a CMS platform.
 
-## Inputs
+## Gather inputs
 
-Gather the following from the user. If not provided, ask before proceeding:
+If not provided in the arguments, ask before proceeding:
 
-1. **Content source** — the finished piece to publish, provided as:
-   - Google Drive URL
-   - Local file path
-   - Requirement ID (e.g., `REQ-001`)
-
+1. **Content source** — Google Drive URL, local file path, or requirement ID (e.g., `REQ-001`)
 2. **Platform** — `webflow` or `wordpress`
+3. **Publish status** — `draft`, `publish`, or `schedule` (schedule requires an ISO date, e.g. `2026-08-15T09:00:00`)
+4. **Optional** — collection/category, featured image, author override, tags, custom URL slug
 
-3. **Publish status** — one of:
-   - `draft` — save as draft for review
-   - `publish` — publish immediately
-   - `schedule` — schedule for a specific date/time (requires ISO date)
+## Prerequisites (gate check)
 
-4. **Additional options** (optional):
-   - Schedule date (ISO format, e.g., `2026-03-15T09:00:00`)
-   - Collection or category (Webflow collection slug, WordPress category)
-   - Featured image (URL or local path)
-   - Author override
-   - Tags (comma-separated)
-   - Custom URL slug (defaults to SEO-optimized slug from Phase 6)
+- Content must have Phase 7 (Reviewer) approval — composite score >= 7.0 — AND Phase 8 (Output Manager) complete
+- Content scoring below 5.0 is flagged for human review and cannot be auto-published
 
-## Prerequisites
+## Execute
 
-- Content must have completed Phase 8 (Reviewer) with a score of 7.0 or above
-- Content flagged for human review (score below 5.0) cannot be auto-published
+Follow `skills/cf-publish/SKILL.md` in full:
+connector verification → load & validate → platform formatting → preview →
+AI disclosure & provenance check (EU AI Act Article 50, applicable from 2 Aug 2026) →
+publish/schedule/draft → post-publish verification → tracking update.
+If no CMS connector is available, use the skill's HTML export fallback.
 
-## Process
+To set up a missing connector: `/contentforge:cf-connect webflow` or `/contentforge:cf-connect wordpress`.
 
-### 1. Verify Connector
-
-**If ~~CMS connector is active (Webflow or WordPress):**
-- Confirm connection is live
-- Retrieve available collections/categories
-- Proceed to publishing flow
-
-**If no connector is available:**
-- Notify the user and offer alternatives:
-  - Set up the connector: `/connect webflow` or `/connect wordpress`
-  - Generate HTML export for manual upload (proceed to fallback)
-
-### 2. Load Content
-- Pull finished content from the specified source
-- Extract metadata: title, meta description, keywords, featured image, author
-- Verify quality score meets publishing threshold
-
-### 3. Format for Platform
-
-**Webflow:**
-- Convert to Webflow-compatible rich text
-- Map headings, images, links, and embeds
-- Handle custom fields and CMS collections
-
-**WordPress:**
-- Convert to WordPress blocks (Gutenberg) or classic HTML
-- Map categories and tags
-- Handle featured image and excerpt
-
-### 4. Preview
-
-Show the user a formatted preview:
-- Title and slug
-- Meta title and description
-- Featured image
-- First 500 characters of body
-- Categories/tags
-- Scheduled date (if applicable)
-
-Ask: "Does this look correct? Publish now, save as draft, or make changes?"
-
-### 5. Publish or Schedule
-- Push content to the CMS with selected status
-- Return the live URL (or draft preview URL)
-
-### 6. Post-Publish Verification
-- Confirm the URL is accessible
-- Verify meta tags rendered correctly
-- Check that images loaded
-- Validate structured data (if applicable)
-- Report any issues
-
-### Fallback: HTML Export
-
-When no CMS connector is available:
-- Generate a standalone HTML file with:
-  - Full content with proper formatting
-  - Inline styles for consistent rendering
-  - Meta tags in the `<head>`
-  - Open Graph and Twitter Card tags
-  - Schema markup (Article schema)
-- Save to local output directory
-- Provide copy-paste-ready content for manual upload
-
-## Output
-
-| Field | Value |
-|-------|-------|
-| Platform | Webflow / WordPress / HTML Export |
-| Status | Published / Draft / Scheduled |
-| URL | Live URL or preview link |
-| Quality Score | Composite score from Phase 7 |
-| Meta Title | SEO-optimized title |
-| Meta Description | Click-optimized description |
-
-## After Publishing
+## After publishing
 
 Ask: "Would you like me to:
-- Create social media posts to promote this? (`/social-adapt`)
-- Submit the URL to Google Search Console for indexing?
-- Set up rank monitoring for the target keywords? (use Digital Marketing Pro)
+- Create social media posts to promote this? (`/contentforge:social-adapt`)
 - Publish to another platform?
-- Schedule the next content piece?"
+- Set up rank monitoring for the target keywords? (`/digital-marketing-pro:rank-monitor` — requires the Digital Marketing Pro plugin)
+- Schedule the next content piece? (`/contentforge:cf-calendar`)"

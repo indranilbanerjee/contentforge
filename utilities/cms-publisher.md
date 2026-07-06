@@ -1,5 +1,7 @@
 # Utility: CMS Publisher
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 **Purpose:** Handle the end-to-end logic for publishing ContentForge content to external CMS platforms (Webflow, WordPress) via MCP connectors, with fallback to HTML export when no connector is available.
 
 ---

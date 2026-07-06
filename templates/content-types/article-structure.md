@@ -150,8 +150,9 @@
 - [ ] Heading hierarchy correct (H1 → H2 → H3, no skipping)
 
 **Keyword Density:**
-- [ ] Primary keyword: 1.5-2.5% of total word count
-- [ ] Secondary keywords: 0.5-1% each
+- [ ] Primary keyword density: advisory ~1-2% (placement-first; see config/scoring-thresholds.json phase_6_seo)
+- [ ] Secondary keywords: advisory ~0.5-1% each
+- [ ] Placement gate met: title, first 100 words, 2+ H2s, conclusion, meta description
 - [ ] Keywords used naturally (no stuffing)
 
 **Meta Elements:**
@@ -220,6 +221,8 @@
 
 ## Example Article Outline
 
+> SYNTHETIC EXAMPLE — fabricated for illustration. All statistics, organizations, and citations below are invented; never reuse them as facts in real content.
+
 **Title:** "How AI Content Generation Transforms Marketing Workflows in 2026"
 
 **Introduction (200 words)**
@@ -231,7 +234,7 @@
 **H2: The Content Production Bottleneck (250 words)**
 - Traditional 6-8 person workflow is unsustainable
 - Data on production time, costs, quality variance
-- Citation: McKinsey research on content operations
+- Citation: [industry research on content operations — source a real, verified study in Phase 1]
 
 **H2: How AI Multi-Agent Pipelines Work (300 words)**
 - Overview of specialized agents (research, writing, fact-checking, SEO)

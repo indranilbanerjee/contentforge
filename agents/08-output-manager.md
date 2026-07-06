@@ -12,24 +12,24 @@ maxTurns: 20
 
 ## INPUTS
 
-From Phase 7 (Reviewer):
-- **Approved Content** — Final humanized, SEO-optimized, publication-ready draft
-- **Quality Scorecard** — Overall score, dimension scores, grade, decision
+The orchestrator passes you `{brand-slug}` and `{run_id}`. Read prior artifacts with the Read tool — do not expect them inlined in your prompt.
 
-From All Prior Phases:
+**Read from `~/.claude-marketing/{brand-slug}/runs/{run_id}/`:**
+- `phase-6.5-humanized.md` — the Approved Content (final humanized, SEO-optimized draft) + Humanization Report (final word count, readability metrics)
+- `phase-7-review.json` — Quality review: overall score, dimension scores, grade, decision, `loop_counts_at_review`
+- `phase-3.5-visual-manifest.json` — JSON manifest of all visual assets (generated charts + human-action items, `approved_by_user` flags)
+- `phase-6-seo.md` — SEO Scorecard: meta title, meta description, keywords, **Internal Link Map**
+- `run.json` — run metadata, `loop_counts`, phase timings (populated by the orchestrator; this replaces any tracker calls by you)
+
+From Orchestrator:
 - **Original Requirements** — Topic, brand, content type, word count target
-- **Visual Asset Manifest** (Phase 3.5) — JSON manifest of all visual assets (generated charts + human-action items)
-- **SEO Scorecard** (Phase 6) — Meta title, meta description, keywords, **Internal Link Map**
-- **Humanization Report** (Phase 6.5) — Final word count, readability metrics
-- **Loop History** — If any feedback loops occurred
+- **Tracking backend details** — Sheet ID / base ID / row number, per `tracking.backend`
 
 From Brand Profile:
 - **Brand Name** — For folder organization and header
 - **Output Preferences** — File naming conventions, appendix inclusions
 
-From Orchestrator:
-- **Google Sheets URL** — Requirement tracking sheet
-- **Row Number** — Which row to update
+**Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator — read timings from `run.json`.
 
 ---
 
@@ -37,30 +37,24 @@ From Orchestrator:
 
 Deliver the finished content to the client by:
 1. **Generating a professionally formatted .docx file** — Headers, footers, body, optional appendices
-2. **Organizing file in Google Drive** — Auto-create folder structure per brand/content type/date
-3. **Uploading .docx to Drive** — Using Google Drive MCP
-4. **Updating tracking sheet** — Mark status "Completed", add quality scores, link to file, timestamp
-5. **Handling human review cases** — If flagged, mark "Pending Human Review" instead
+2. **Delivering per backend** — Local dual-copy, Google Drive, or Airtable per `tracking.backend`
+3. **Updating tracking** — Mark status "Completed", add quality scores, link to file, timestamp
+4. **Handling human review cases** — If flagged, mark "Pending Human Review" instead
 
-**Critical Rule:** Only mark "Completed" if Quality Scorecard shows APPROVED (>=7.0). If flagged for human review, mark "Pending Human Review" and include escalation notes.
+**Critical Rule:** Only mark "Completed" if the Phase 7 review shows APPROVED (>=7.0). If flagged for human review OR loops were exhausted below the approval threshold, mark "Pending Human Review" and include escalation notes. **Never publish content that did not reach APPROVED.**
 
 ---
 
 ## EXECUTION STEPS
-
-### Step 0: Start Phase Timer
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 8
-```
 
 ### Step 1: Determine Final Status
 
 | Case | Condition | Status | Action |
 |------|-----------|--------|--------|
 | APPROVED | Score >= 7.0 | "Completed" | Full .docx generation and upload |
-| HUMAN REVIEW | Score < 5.0 or loops exceeded | "Pending Human Review" | Draft .docx for review only, prefix filename with "DRAFT-" |
-| LOOP ERROR | Phase 8 reached during loop | ERROR | Alert Orchestrator, return to Phase 7 |
+| LOOPS EXHAUSTED BELOW THRESHOLD | Score 5.0-6.9 AND loop limits reached (per `phase-7-review.json` / `run.json` loop_counts) | "Pending Human Review" (`review_required`) | Draft .docx for review only, prefix filename with "DRAFT-" — **never publish** |
+| HUMAN REVIEW | Score < 5.0 | "Pending Human Review" | Draft .docx for review only, prefix filename with "DRAFT-" |
+| LOOP ERROR | Phase 8 reached during an active loop (score 5.0-6.9 with loop budget remaining) | ERROR | Alert Orchestrator, return to Phase 7 |
 
 ---
 
@@ -73,8 +67,8 @@ The `.docx` MUST be produced by calling the bundled script. Do NOT hand-craft th
 **Step 2.0.a — assemble the reports JSON:**
 
 ```bash
-mkdir -p ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}
-cat > ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json << 'JSON'
+mkdir -p ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}
+cat > ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json << 'JSON'
 {
   "seo": {
     "primary_keyword": "{primary_keyword}",
@@ -121,7 +115,7 @@ JSON
 **Step 2.0.b — write the article markdown to a temp file:**
 
 ```bash
-cat > ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.md << 'MD'
+cat > ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.md << 'MD'
 {full_article_markdown_with_h1_title_h2_h3_paragraphs_lists_tables_citations}
 MD
 ```
@@ -129,10 +123,10 @@ MD
 **Step 2.0.c — run the docx generator:**
 
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
-    --content ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.md \
-    --output ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.docx \
-    --reports ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json \
+python ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
+    --content ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.md \
+    --output ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.docx \
+    --reports ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json \
     --brand "{Brand Name}" \
     --content-type {type}
 ```
@@ -142,8 +136,8 @@ The script returns a JSON status line on stdout — capture it and report the pa
 **Step 2.0.d — verify:**
 
 ```bash
-ls -la ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.docx
-file ~/.claude-marketing/{brand}/output/{type}/{YYYY-MM-DD}/{slug}.docx  # should report "Microsoft Word 2007+"
+ls -la ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.docx
+file ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.docx  # should report "Microsoft Word 2007+"
 ```
 
 If the file does not exist or is < 5 KB, the script failed — investigate stderr and retry once before escalating.
@@ -181,7 +175,7 @@ If the file does not exist or is < 5 KB, the script failed — investigate stder
 #### 2.4 Visual Asset Integration
 
 **For `chart` assets (status: `generated`):**
-1. Read PNG from `~/.claude-marketing/{brand}/assets/{file_path}`
+1. Read PNG from `~/.claude-marketing/{brand-slug}/assets/{file_path}`
 2. Insert at position specified by `placement` field
 3. Caption: italic, centered, "Figure N:" prefix
 4. Set alt text in image metadata
@@ -238,7 +232,7 @@ Month format: `01-January`, `02-February`, etc.
 
 ---
 
-### Output Delivery — Backend-Dispatched Approach
+### Step 4: Output Delivery — Backend-Dispatched Approach
 
 ContentForge supports three tracking/delivery backends. Check `tracking.backend` from brand profile (default: `"local"`).
 
@@ -247,8 +241,8 @@ ContentForge supports three tracking/delivery backends. Check `tracking.backend`
 Before dispatching to the configured backend, probe the runtime environment AND read the Cowork+Drive config (set by `/contentforge:cf-cowork-setup`):
 
 ```bash
-python3 {scripts_dir}/plugin-metadata.py --section environment
-python3 {scripts_dir}/drive-sync-state.py --action read-config
+python {scripts_dir}/plugin-metadata.py --section environment
+python {scripts_dir}/drive-sync-state.py --action read-config
 ```
 
 **Decision tree:**
@@ -275,19 +269,19 @@ Scan your available tools list for any Drive-capable MCP. Common names:
 
 #### Step D0b: Sync pending checkpoint files (v3.12.10+)
 
-Every phase save in this run has been writing files to `~/.claude-marketing/{brand}/runs/{run_id}/` AND marking them in `_sync-pending.json` (via the v3.12.10 checkpoint-manager auto-hook). Before the final .docx upload, sync any unsynced phase files to Drive so `/contentforge:resume` works across sessions.
+The ORCHESTRATOR saves every phase artifact to `~/.claude-marketing/{brand-slug}/runs/{run_id}/` (phase-1-research.md ... phase-7-review.json, run.json) and marks them in `_sync-pending.json` via `scripts/checkpoint-manager.py`. Before the final .docx upload, sync any unsynced run-dir files to Drive so `/contentforge:resume` works across sessions.
 
 List what's pending for this run:
 ```bash
-python3 {scripts_dir}/drive-sync-state.py --action list-pending-uploads --brand "{brand}" --run-id "{run_id}"
+python {scripts_dir}/drive-sync-state.py --action list-pending-uploads --brand "{brand}" --run-id "{run_id}"
 ```
 
 For each file in the `pending` array:
-1. Read the file content from `~/.claude-marketing/{brand}/runs/{run_id}/<file>`
+1. Read the file content from `~/.claude-marketing/{brand-slug}/runs/{run_id}/<file>`
 2. Use the Drive MCP to upload it to `<root>/_runs/{run_id}/<file>` (creates the `_runs/{run_id}/` folder structure if missing)
 3. After successful upload, mark it synced:
    ```bash
-   python3 {scripts_dir}/drive-sync-state.py --action mark-uploaded \
+   python {scripts_dir}/drive-sync-state.py --action mark-uploaded \
        --brand "{brand}" --run-id "{run_id}" \
        --file "<file>" --drive-file-id "<id from MCP response>"
    ```
@@ -336,7 +330,7 @@ Still call `local-tracker.py --action mark-complete` so the tracking record exis
 
 **Step D1: Upload .docx to Google Drive**
 ```
-python3 {scripts_dir}/drive-uploader.py \
+python {scripts_dir}/drive-uploader.py \
   --action upload \
   --folder-id {drive_folder_id} \
   --file {path to generated .docx} \
@@ -348,17 +342,17 @@ Capture the returned `url` value.
 
 **Step D2: Upload Visual Assets** (if generated charts exist)
 ```
-python3 {scripts_dir}/drive-uploader.py \
+python {scripts_dir}/drive-uploader.py \
   --action upload-assets \
   --folder-id {drive_folder_id} \
   --brand "{brand_name}" \
-  --assets-dir "~/.claude-marketing/{brand}/assets/" \
+  --assets-dir "~/.claude-marketing/{brand-slug}/assets/" \
   --credentials {credentials_path}
 ```
 
 **Step D3: Update Tracking Sheet**
 ```
-python3 {scripts_dir}/sheets-tracker.py \
+python {scripts_dir}/sheets-tracker.py \
   --action mark-complete \
   --sheet-id {sheet_id} \
   --row-id {requirement_id} \
@@ -370,7 +364,7 @@ python3 {scripts_dir}/sheets-tracker.py \
 
 **Step D1: Mark Complete + Attach Output File**
 ```
-python3 {scripts_dir}/airtable-tracker.py \
+python {scripts_dir}/airtable-tracker.py \
   --action mark-complete \
   --base-id {base_id} \
   --row-id {requirement_id} \
@@ -382,7 +376,7 @@ python3 {scripts_dir}/airtable-tracker.py \
 
 **Step D1: Mark Complete + Dual-Copy Output File (v3.12.3+)**
 ```
-python3 {scripts_dir}/local-tracker.py \
+python {scripts_dir}/local-tracker.py \
   --action mark-complete \
   --brand "{brand_name}" \
   --row-id {requirement_id} \
@@ -392,7 +386,7 @@ python3 {scripts_dir}/local-tracker.py \
 
 The `.docx` is now written to **two** locations:
 
-1. **Internal tracking copy:** `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/` — system-of-record for `/contentforge:analytics`, `/contentforge:audit`, etc. Lives in a Windows-hidden dotfolder.
+1. **Internal tracking copy:** `~/.claude-marketing/{brand-slug}/tracking/outputs/{year}/{month}/` — system-of-record for `/contentforge:cf-analytics`, `/contentforge:cf-audit`, etc. Lives in a Windows-hidden dotfolder.
 2. **User-visible published copy:** `~/Documents/ContentForge/{brand}/{content_type}/{YYYY-MM}/` — the path the user actually opens. **You MUST quote this path explicitly in the completion card.** (Override via `--publish-dir <path>` or the `CONTENTFORGE_PUBLISH_DIR` env var.)
 
 Parse the JSON returned by `local-tracker.py` and use the `published_path` field, not `output_path`, when telling the user where the file is. Example output:
@@ -419,27 +413,19 @@ After EACH script call, parse JSON output and check for `"error"` key:
 - If error: save .docx locally as fallback, note failure in completion summary
 - Continue with completion summary -- do not block the pipeline
 - If backend not configured at all, save locally and print:
-  "Tracking backend not configured. Content saved locally. Run /contentforge:switch-backend to configure."
+  "Tracking backend not configured. Content saved locally. Run /contentforge:cf-switch-backend to configure."
 
 ---
 
-### Step 5: Record Phase Timing & Get Pipeline Report
+### Step 5: Load the Pipeline Performance Data
 
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 8
-```
-
-Then retrieve the full pipeline performance report:
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action get-report --brand "{brand}"
-```
-
-Parse the JSON output to populate PIPELINE PERFORMANCE and PIPELINE COMPLEXITY sections in the completion card.
+**Do NOT call pipeline-tracker** — the orchestrator owns it. Read `~/.claude-marketing/{brand-slug}/runs/{run_id}/run.json` (phase timings, loop_counts, word counts) and use it to populate the PIPELINE PERFORMANCE sections of the completion card. If a timing value is missing, show "N/A".
 
 ---
 
 ### Step 6: Generate Completion Summary
+
+**Your final artifact is saved by the orchestrator to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-8-output.json` — alongside the completion card below, return a JSON summary (status, docx path, published_path/drive URL, delivery backend results, quality score, timings used) so the orchestrator can save it as the run's final artifact.
 
 **THIS IS MANDATORY. You MUST show this completion card to the user after every pipeline run. Do not skip any section. Fill in all values from pipeline data.**
 
@@ -473,7 +459,7 @@ The completion card is the user's primary record of what was produced, how it sc
 |--------|-------|--------|--------|
 | Word Count | {actual} | {target_range} | {✅/⚠️} |
 | Citations | {source_count} sources | ≥{min_citations} | {✅/⚠️} |
-| Keyword Density | {density}% | 1.5-2.5% | {✅/⚠️} |
+| Keyword Placements | {placements_met}/5 | 5/5 (density {density}% advisory) | {✅/⚠️} |
 | Readability | Grade {grade_level} | Grade {target_range} | {✅/⚠️} |
 | Burstiness | {burstiness} | ≥0.7 | {✅/⚠️} |
 | AI Patterns | {patterns_removed} removed | 0 remaining | {✅/⚠️} |
@@ -536,7 +522,7 @@ Tip: `/contentforge:output-folder` reveals this folder in the OS file manager.
 - `/contentforge:publish` — Push to CMS
 - `/contentforge:social-adapt` — Create social media posts
 - `/contentforge:translate` — Translate for other markets
-- `/contentforge:variants` — A/B test headlines and CTAs
+- `/contentforge:cf-variants` — A/B test headlines and CTAs
 ```
 
 **Rules for this completion card:**
@@ -588,7 +574,7 @@ Tip: `/contentforge:output-folder` reveals this folder in the OS file manager.
 | S | Drive URL | Link or "LOCAL" |
 | T | Notes | Summary |
 
-**Phase Timing Columns (from pipeline-tracker.py):**
+**Phase Timing Columns (values read from `run.json`, which the orchestrator populates via its pipeline tracker — do not call the tracker yourself):**
 
 | Column | Header |
 |--------|--------|
@@ -597,7 +583,7 @@ Tip: `/contentforge:output-folder` reveals this folder in the OS file manager.
 | AF | Content Words |
 | AG | Guardrails Status |
 
-Load timing from `pipeline-run.json`. If unavailable, leave blank.
+Load timing from `run.json`. If unavailable, leave blank.
 
 ---
 

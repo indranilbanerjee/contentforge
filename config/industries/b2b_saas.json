@@ -1,5 +1,6 @@
 {
   "industry": "b2b_saas",
+  "_last_reviewed": "2026-07-03",
   "display_name": "B2B SaaS & Enterprise Software",
 
   "expertise_profile": {
@@ -62,10 +63,10 @@
 
   "regulatory": {
     "governing_bodies": [
-      {"name": "SOC 2", "jurisdiction": "Service organization controls"},
+      {"name": "FTC", "jurisdiction": "US consumer protection for pricing/claims"},
       {"name": "GDPR", "jurisdiction": "EU data protection"},
-      {"name": "ASC 606", "jurisdiction": "Revenue recognition standards"},
-      {"name": "FTC", "jurisdiction": "Consumer protection for pricing/claims"}
+      {"name": "AICPA (SOC 2)", "jurisdiction": "Service-organization controls — an attestation framework, not a regulator; cite as a certification, not a legal requirement"},
+      {"name": "FASB (ASC 606)", "jurisdiction": "US revenue-recognition accounting standard — a reporting standard, not a regulator"}
     ],
     "required_disclaimers": {
       "benchmark_data": "SaaS benchmarks vary significantly by segment, ACV, and stage. Use as directional guidance, not absolute targets.",
@@ -116,6 +117,34 @@
       "Use buzzwords ('AI-powered', 'next-gen') without technical substance",
       "Compare competitors using different metric definitions",
       "Treat all SaaS businesses as having similar economics"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "ai_telltale_phrases": [
+      "digital transformation journey",
+      "seamless integration",
+      "robust and scalable solution",
+      "cutting-edge technology",
+      "next-generation platform",
+      "end-to-end solution",
+      "single pane of glass",
+      "leveraging the power of AI",
+      "future-proof your technology stack",
+      "supercharge your workflow"
+    ],
+    "preferred_replacements": [
+      "Use specific metrics: 'Cut onboarding from 14 days to 3'",
+      "Name the motion and segment: 'PLG for sub-$5K ACV; sales-assisted above'",
+      "Cite benchmark datasets with methodology (OpenView, KeyBanc)",
+      "Use concrete integration examples: 'Native Salesforce and HubSpot sync via REST API'"
+    ],
+    "compliance_notes": [
+      "ROI claims need named or clearly anonymized case-study backing",
+      "Security claims need certification backing (SOC 2 Type II, ISO 27001)",
+      "Uptime claims must match the published SLA",
+      "Benchmark comparisons must use consistent metric definitions"
     ]
   }
 }

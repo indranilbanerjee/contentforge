@@ -11,7 +11,7 @@ Plan and manage content production calendars with intelligent scheduling, deadli
 
 ## When to Use
 
-Use `/contentforge:calendar` when:
+Use `/contentforge:cf-calendar` when:
 - You need a **30/60/90-day content plan** with specific dates and deadlines
 - You want to **schedule production timelines** that account for ContentForge processing time + review buffers
 - You need to **assign content to team members** and track who's responsible for what
@@ -19,8 +19,8 @@ Use `/contentforge:calendar` when:
 - You're onboarding a new client and need a **structured editorial calendar**
 - You want to **identify scheduling conflicts** before they become missed deadlines
 
-**For producing content**, use `/contentforge` or `/batch-process`.
-**For auditing what needs refreshing**, use `/contentforge:audit` first to identify candidates.
+**For producing content**, use `/contentforge:create-content` or `/contentforge:batch-process`.
+**For auditing what needs refreshing**, use `/contentforge:cf-audit` first to identify candidates.
 
 ## What This Command Does
 
@@ -66,7 +66,7 @@ Sheet with columns: `title`, `content_type`, `publish_date`, `priority`, `brand`
 
 ### Interactive Mode
 ```
-/contentforge:calendar
+/contentforge:cf-calendar
 ```
 **Prompts you for:**
 1. Time period (30/60/90 days)
@@ -77,19 +77,19 @@ Sheet with columns: `title`, `content_type`, `publish_date`, `priority`, `brand`
 
 ### Quick Mode with Google Sheet
 ```
-/contentforge:calendar --period=60 --sheet=https://docs.google.com/spreadsheets/d/ABC123 --cadence=weekly --team="Alice,Bob"
+/contentforge:cf-calendar --period=60 --sheet=https://docs.google.com/spreadsheets/d/ABC123 --cadence=weekly --team="Alice,Bob"
 ```
 
 ### Quick Mode with Topics Array
 ```
-/contentforge:calendar --period=30 --topics="AI Healthcare:article:2026-03-15:1, CRM Guide:blog:2026-03-20:2" --cadence=weekly
+/contentforge:cf-calendar --period=30 --topics="AI Healthcare:article:2026-03-15:1, CRM Guide:blog:2026-03-20:2" --cadence=weekly
 ```
 
 ### Import from Audit Recommendations
 ```
-/contentforge:calendar --period=90 --from-audit=latest --cadence=biweekly
+/contentforge:cf-calendar --period=90 --from-audit=latest --cadence=biweekly
 ```
-Pulls the top refresh and new content recommendations from the most recent `/contentforge:audit` output and schedules them.
+Pulls the top refresh and new content recommendations from the most recent `/contentforge:cf-audit` output and schedules them.
 
 ## What Happens
 
@@ -135,7 +135,7 @@ Pieces by Priority:
 
 Work backward from each publish date to determine production windows.
 
-**Production Time Estimates:**
+**Production Lead-Time Planning Defaults** (rough planning values — adjust to your own observed times; actual pipeline duration varies by topic complexity and model speed):
 ```
 Content Type    Production Time    Review Buffer    Total Lead Time
 ─────────────────────────────────────────────────────────────────
@@ -356,7 +356,7 @@ Without MCP connections, the calendar provides a complete text-based timeline wi
 
 ### "Calendar events not created"
 **Cause:** Google Calendar MCP not connected or authorization not granted.
-**Solution:** Run `/contentforge:integrations` to check Google Calendar status. Run `/contentforge:connect google-calendar` for setup instructions.
+**Solution:** Run `/contentforge:cf-integrations` to check Google Calendar status. Run `/contentforge:cf-connect google-calendar` for setup instructions.
 
 ### "Production timeline too tight"
 **Cause:** Publish dates are too close together for the number of pieces.
@@ -364,10 +364,10 @@ Without MCP connections, the calendar provides a complete text-based timeline wi
 
 ## Limitations
 
-- **Time zones** — Calendar events use the system's default time zone. Multi-timezone team support planned for v2.2.
+- **Time zones** — Calendar events use the system's default time zone; multi-timezone teams should normalize manually.
 - **Auto-rescheduling** — Calendar does not automatically reschedule when a piece is delayed. Manual update required.
-- **Google Calendar only** — No Outlook, Apple Calendar, or iCal export yet (planned for v2.2).
-- **Cadence patterns** — Supports daily, weekly, and biweekly. Custom cadence patterns (e.g., "Mon/Wed/Fri") planned for v2.2.
+- **Google Calendar only** — No Outlook, Apple Calendar, or iCal export.
+- **Cadence patterns** — Supports daily, weekly, and biweekly (no custom patterns like "Mon/Wed/Fri").
 - **Maximum pieces** — Tested with up to 50 pieces per calendar. Larger calendars may have slower conflict detection.
 
 ## Agent Used
@@ -376,16 +376,14 @@ None. This skill uses deterministic scheduling logic (backward timeline calculat
 
 ## Related Skills
 
-- **[/contentforge:audit](../cf-audit/SKILL.md)** — Audit content library to identify what needs refreshing (feeds into calendar)
-- **[/contentforge:brief](../cf-brief/SKILL.md)** — Generate briefs for calendar topics before production
-- **[/contentforge](../contentforge/SKILL.md)** — Produce content for scheduled pieces
-- **[/batch-process](../batch-process/SKILL.md)** — Process multiple calendar pieces in parallel
-- **[/content-refresh](../content-refresh/SKILL.md)** — Refresh content identified in the calendar
+- **[/contentforge:cf-audit](../cf-audit/SKILL.md)** — Audit content library to identify what needs refreshing (feeds into calendar)
+- **[/contentforge:cf-brief](../cf-brief/SKILL.md)** — Generate briefs for calendar topics before production
+- **[/contentforge:create-content](../../commands/create-content.md)** — Produce content for scheduled pieces
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple calendar pieces in parallel
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Refresh content identified in the calendar
 
 ---
 
-**Version:** 3.4.0
 **Agent:** None (deterministic scheduling)
 **MCP:** Google Calendar (optional, HTTP), Google Sheets (optional, npx)
-**Processing Time:** 3-8 minutes (varies by plan size)
 **Output:** Content calendar with timeline, assignments, conflict report, and optional calendar events

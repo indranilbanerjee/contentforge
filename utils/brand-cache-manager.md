@@ -1,5 +1,7 @@
 # Brand Cache Manager — ContentForge Utility
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 ## Purpose
 Manage brand profile caching to avoid re-processing brand guidelines on every run.Implement hash-based cache invalidation to detect when source documents change.
 

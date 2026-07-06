@@ -3,12 +3,12 @@
   "evals": [
     {
       "id": 0,
-      "prompt": "/contentforge:style-guide Acme Corp — a B2B SaaS cybersecurity company targeting enterprise CISOs",
-      "expected_output": "A complete brand profile with voice guidelines, audience personas, content preferences, and guardrails configured at ~/.claude-marketing/brands/acme-corp/",
+      "prompt": "/contentforge:cf-style-guide Acme Corp — a B2B SaaS cybersecurity company targeting enterprise CISOs",
+      "expected_output": "A complete brand profile following config/brand-registry-template.json, saved to ~/.claude-marketing/acme-corp/Brand-Guidelines/Acme Corp-brand-profile.json (canonical path)",
       "files": [],
       "assertions": [
         {
-          "text": "Brand profile JSON is generated with all required sections (identity, voice, audience, content_preferences, seo_preferences)",
+          "text": "Brand profile JSON follows the config/brand-registry-template.json schema, including at minimum the sections: brand_name, industry, voice, terminology, guardrails, target_audience, tracking",
           "type": "quantitative"
         },
         {
@@ -20,7 +20,11 @@
           "type": "quantitative"
         },
         {
-          "text": "Brand slug is generated correctly in kebab-case and directory structure is created",
+          "text": "Profile is saved at the canonical path ~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json with the brand slug in kebab-case, and the path is reported to the user",
+          "type": "quantitative"
+        },
+        {
+          "text": "A tracking backend (google_sheets, airtable, or local) is configured in the profile's tracking section, with Step G.0 environment/Drive probes run before the backend menu is offered",
           "type": "quantitative"
         }
       ]
@@ -28,7 +32,7 @@
     {
       "id": 1,
       "prompt": "Import our brand guidelines from https://example.com/brand-guide and set up the ContentForge profile",
-      "expected_output": "Skill fetches the URL, extracts brand voice, colors, restrictions, and creates a profile with imported guidelines",
+      "expected_output": "Skill fetches the URL, extracts brand voice, terminology, and guardrails, and creates a profile with imported guidelines at the canonical Brand-Guidelines path",
       "files": [],
       "assertions": [
         {
@@ -36,7 +40,7 @@
           "type": "qualitative"
         },
         {
-          "text": "Extracted guidelines are saved to the brand profile's guidelines directory",
+          "text": "Extracted guidelines are saved into the brand profile JSON at ~/.claude-marketing/{brand-slug}/Brand-Guidelines/",
           "type": "quantitative"
         },
         {

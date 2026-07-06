@@ -1,5 +1,6 @@
 {
-  "_description": "ContentForge Social Platform Specifications — Character limits, hashtag norms, voice guidelines, image specs, best posting times, and supported post types per platform. Used by the Social Adapter Agent (10-social-adapter) and cf-social-adapt skill.",
+  "_description": "ContentForge Social Platform Specifications — Character limits, hashtag norms, voice guidelines, image/video specs, AI-disclosure requirements, and supported post types per platform. Used by the Social Adapter Agent (10-social-adapter) and cf-social-adapt skill. Platform limits verified July 2026.",
+  "_posting_times_note": "Posting-time folklore removed (July 2026); the old best_times/worst_times tables were unsourced and timezone-free. Use the brand's own platform analytics to determine posting windows.",
   "linkedin": {
     "character_limit": 3000,
     "ideal_length": {
@@ -28,7 +29,7 @@
       "emojis": "minimal_or_none",
       "link_placement": "end_of_post_or_first_comment",
       "truncation_point": 210,
-      "truncation_note": "LinkedIn shows ~210 characters before 'see more'. Hook must be in first 2 lines."
+      "truncation_note": "LinkedIn shows roughly 140 (mobile) to 210 (desktop) characters before 'see more'. Hook must be in first 2 lines."
     },
     "image_specs": {
       "feed": {
@@ -46,12 +47,6 @@
         "formats": ["PDF", "PNG", "JPG"]
       }
     },
-    "best_times": [
-      {"day": "Tuesday", "times": ["08:00", "10:00"]},
-      {"day": "Wednesday", "times": ["09:00", "12:00"]},
-      {"day": "Thursday", "times": ["08:00", "10:00"]}
-    ],
-    "worst_times": ["weekends", "after 17:00"],
     "post_types": [
       "thought_leadership",
       "data_analysis",
@@ -61,20 +56,27 @@
       "carousel_document",
       "poll"
     ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "none native — disclose manually in post copy (e.g., 'Image: AI-generated')"
+    },
     "algorithm_notes": "External links may reduce reach. Consider putting link in first comment. Native documents (carousels) get higher distribution."
   },
   "twitter": {
     "character_limit": 280,
+    "premium_character_limit": 25000,
+    "_limit_note": "280 characters for standard accounts; X Premium accounts can post up to 25,000 characters. Default adaptations should target the 280 limit unless the brand profile confirms a Premium account — and even then, short posts get better feed treatment.",
     "ideal_length": {
       "min": 200,
       "max": 270,
       "sweet_spot": 240
     },
     "hashtags": {
-      "count_min": 1,
+      "count_min": 0,
       "count_max": 2,
       "style": "concise",
       "placement": "end_of_post",
+      "_note": "X has algorithmically deprioritized hashtags through 2025-26; zero hashtags is now a legitimate default. Use at most 1-2 only when a specific tag has an active audience.",
       "notes": "Hashtags consume character budget. Use only high-value, specific hashtags. Never in mid-sentence."
     },
     "voice": {
@@ -102,14 +104,6 @@
         "max_size_mb": 5
       }
     },
-    "best_times": [
-      {"day": "Monday", "times": ["08:00", "11:00"]},
-      {"day": "Tuesday", "times": ["09:00", "10:00"]},
-      {"day": "Wednesday", "times": ["09:00", "11:00"]},
-      {"day": "Thursday", "times": ["09:00", "12:00"]},
-      {"day": "Friday", "times": ["08:00", "10:00"]}
-    ],
-    "worst_times": ["late_night", "early_morning_before_7"],
     "post_types": [
       "stat_lead",
       "hot_take",
@@ -118,6 +112,10 @@
       "quote",
       "link_share"
     ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "none native — disclose manually in post copy"
+    },
     "algorithm_notes": "Replies and quote tweets boost distribution. Images increase engagement by ~35%. Threads get more sustained visibility than single tweets."
   },
   "instagram": {
@@ -178,13 +176,22 @@
         "formats": ["PNG", "JPG"],
         "max_size_mb": 30
       },
-      "story_reel": {
+      "story": {
         "width": 1080,
         "height": 1920,
         "ratio": "9:16",
         "formats": ["PNG", "JPG", "MP4"],
         "max_size_mb": 250,
-        "max_duration_seconds": 90
+        "max_duration_seconds": 60
+      },
+      "reel": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "9:16",
+        "formats": ["MP4"],
+        "max_size_mb": 250,
+        "max_duration_seconds": 180,
+        "_note": "Reels support up to 3 minutes (raised from 90s in early 2025). Stories remain 60s per card."
       },
       "carousel": {
         "width": 1080,
@@ -194,12 +201,6 @@
         "formats": ["PNG", "JPG"]
       }
     },
-    "best_times": [
-      {"day": "Monday", "times": ["11:00", "14:00"]},
-      {"day": "Wednesday", "times": ["11:00", "18:00"]},
-      {"day": "Thursday", "times": ["12:00", "18:00"]}
-    ],
-    "worst_times": ["01:00-04:00"],
     "post_types": [
       "carousel",
       "single_image",
@@ -208,6 +209,10 @@
       "infographic",
       "quote_card"
     ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "Meta 'AI info' label — auto-applied to detected synthetic media; disclose proactively via the AI label toggle when posting photorealistic AI content"
+    },
     "algorithm_notes": "Carousels get highest engagement. Saves and shares weight more than likes. Reels get broader distribution than feed posts. Alt text improves accessibility and may boost SEO."
   },
   "facebook": {
@@ -255,12 +260,6 @@
         "max_size_mb": 250
       }
     },
-    "best_times": [
-      {"day": "Tuesday", "times": ["09:00", "11:00"]},
-      {"day": "Thursday", "times": ["10:00", "14:00"]},
-      {"day": "Saturday", "times": ["09:00", "11:00"]}
-    ],
-    "worst_times": ["late_night", "early_morning_before_7"],
     "post_types": [
       "link_share",
       "question_poll",
@@ -269,6 +268,10 @@
       "native_video",
       "photo_post"
     ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "Meta 'AI info' label — auto-applied to detected synthetic media; disclose proactively when posting photorealistic AI content"
+    },
     "algorithm_notes": "Comments weight heavily in algorithm. Questions and polls drive comments. Native images and video outperform external links. Engagement bait ('tag a friend') is penalized."
   },
   "threads": {
@@ -283,7 +286,7 @@
       "count_max": 3,
       "style": "casual",
       "placement": "end_of_post",
-      "notes": "Threads culture is less hashtag-driven. Keep it natural. 1-3 relevant hashtags max."
+      "notes": "Threads culture is less hashtag-driven. Keep it natural. 1-3 relevant tags max (Threads 'topic tags' render without the # symbol)."
     },
     "voice": {
       "tone": "casual",
@@ -309,14 +312,6 @@
         "max_size_mb": 10
       }
     },
-    "best_times": [
-      {"day": "Monday", "times": ["07:00", "17:00"]},
-      {"day": "Tuesday", "times": ["08:00", "18:00"]},
-      {"day": "Wednesday", "times": ["07:00", "17:00"]},
-      {"day": "Thursday", "times": ["08:00", "18:00"]},
-      {"day": "Friday", "times": ["07:00", "17:00"]}
-    ],
-    "worst_times": ["midday_12_to_14"],
     "post_types": [
       "hot_take",
       "quick_tip",
@@ -325,7 +320,183 @@
       "reply_chain_thread",
       "opinion"
     ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "Meta 'AI info' label (same system as Instagram/Facebook)"
+    },
     "algorithm_notes": "Replies and conversation threads get amplified. Text-only posts perform well. Images optional but not required. Authenticity and opinion drive engagement."
+  },
+  "tiktok": {
+    "character_limit": 2200,
+    "_limit_note": "Caption limit for video posts and photo posts. Keep the first ~100 characters hook-worthy; captions truncate in feed.",
+    "ideal_length": {
+      "min": 80,
+      "max": 300,
+      "sweet_spot": 150
+    },
+    "hashtags": {
+      "count_min": 3,
+      "count_max": 5,
+      "style": "discovery",
+      "placement": "end_of_caption",
+      "notes": "Mix one broad tag, 2-3 niche/topic tags, and optionally one branded tag. TikTok search behaves like a search engine — keyword-rich captions matter as much as hashtags."
+    },
+    "voice": {
+      "tone": "native_casual",
+      "formality": "low",
+      "personality": ["authentic", "fast", "specific", "unpolished-on-purpose"],
+      "avoid": ["ad-speak", "corporate polish", "long wind-ups", "repurposed TV-style copy"],
+      "notes": "Lead with the payoff in the first second. Text overlays carry the message for sound-off viewers. Polished brand voice underperforms creator-style delivery."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "single_newline",
+      "list_style": "none — keep captions short",
+      "emojis": "moderate",
+      "link_placement": "link_in_bio_only",
+      "truncation_note": "Feed shows roughly the first 1-2 lines of caption before 'more'."
+    },
+    "video_specs": {
+      "feed_video": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "9:16",
+        "formats": ["MP4", "MOV"],
+        "max_duration_minutes": 10,
+        "_note": "Uploads up to 10 minutes supported; short (under 60s) videos still get the widest distribution."
+      }
+    },
+    "image_specs": {
+      "photo_post": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "9:16 (1:1 accepted)",
+        "formats": ["PNG", "JPG"],
+        "max_images": 35,
+        "_note": "TikTok photo posts (carousel photo mode) support up to 35 images with music. Strong format for step-by-step and listicle repurposing."
+      }
+    },
+    "post_types": [
+      "short_video",
+      "photo_post_carousel",
+      "tutorial",
+      "trend_response",
+      "story_time",
+      "data_visualization"
+    ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "TikTok 'AI-generated content' toggle at upload — required by TikTok policy for realistic synthetic media; unlabeled AI content risks removal"
+    },
+    "algorithm_notes": "Completion rate and rewatches dominate distribution. Photo posts get carousel-style swipe engagement. Native text overlays and trending audio boost reach. Watermarked reposts from other platforms are penalized."
+  },
+  "bluesky": {
+    "character_limit": 300,
+    "ideal_length": {
+      "min": 100,
+      "max": 280,
+      "sweet_spot": 200
+    },
+    "hashtags": {
+      "count_min": 0,
+      "count_max": 2,
+      "style": "minimal",
+      "placement": "end_of_post",
+      "notes": "Hashtags are clickable but carry no native algorithmic boost — discovery runs on custom feeds and keyword search. Write for search terms, not tags."
+    },
+    "voice": {
+      "tone": "conversational",
+      "formality": "low",
+      "personality": ["genuine", "community-aware", "wry", "low-promo"],
+      "avoid": ["engagement-bait", "corporate broadcast tone", "cross-posted X threads with X conventions", "heavy self-promotion"],
+      "notes": "Bluesky culture is anti-broadcast and skeptical of brands. Conversational, useful, and self-aware posts earn replies; hard selling gets muted."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "single_newline",
+      "list_style": "none",
+      "emojis": "sparingly",
+      "link_placement": "link_card",
+      "truncation_note": "No mid-post truncation at 300 chars. Links render as social cards (title + image pulled from OG tags) and do not consume extra characters beyond the URL text."
+    },
+    "image_specs": {
+      "feed": {
+        "width": 1200,
+        "height": 675,
+        "ratio": "16:9 (up to 4 images per post)",
+        "formats": ["PNG", "JPG"],
+        "max_size_mb": 1
+      }
+    },
+    "post_types": [
+      "hot_take",
+      "quick_insight",
+      "question",
+      "link_card_share",
+      "reply_thread",
+      "community_conversation"
+    ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "none native — disclose manually in post copy or alt text"
+    },
+    "algorithm_notes": "No single master algorithm — users subscribe to custom feeds. Getting picked up by topical feeds (via keywords) matters more than posting time. Alt text is strongly normed; posts without it get called out."
+  },
+  "youtube_shorts": {
+    "title_max_chars": 100,
+    "description_max_chars": 5000,
+    "description_visible_chars": 100,
+    "_limit_note": "Title caps at 100 characters. Description allows 5,000 but only the first ~100 characters show without expansion — front-load the hook and keywords.",
+    "ideal_length": {
+      "min": 50,
+      "max": 200,
+      "sweet_spot": 100,
+      "_note": "Applies to the description. Titles should be 40-70 characters for full display on all surfaces."
+    },
+    "hashtags": {
+      "count_min": 1,
+      "count_max": 3,
+      "style": "topical",
+      "placement": "title_or_description",
+      "notes": "#Shorts is no longer required for classification. Use 1-3 topical tags; YouTube search keywords in the title and description matter far more."
+    },
+    "voice": {
+      "tone": "energetic_direct",
+      "formality": "low_to_medium",
+      "personality": ["hook-first", "clear", "curiosity-driving"],
+      "avoid": ["slow intros", "clickbait that the video doesn't pay off", "burying the topic keyword"],
+      "notes": "The title is the hook. Front-load the topic keyword for search. Shorts viewers decide in under 2 seconds."
+    },
+    "format": {
+      "line_breaks": true,
+      "line_break_style": "single_newline",
+      "list_style": "none in visible description",
+      "emojis": "sparingly",
+      "link_placement": "description_below_fold",
+      "truncation_note": "Description truncates at ~100 visible characters; links below the fold still count for click-through from the expanded view."
+    },
+    "video_specs": {
+      "short": {
+        "width": 1080,
+        "height": 1920,
+        "ratio": "9:16",
+        "formats": ["MP4", "MOV"],
+        "max_duration_minutes": 3,
+        "_note": "Shorts support up to 3 minutes (raised from 60s in October 2024). Under-60s Shorts still see the strongest swipe-feed distribution."
+      }
+    },
+    "post_types": [
+      "short_video",
+      "tutorial_snippet",
+      "stat_visualization",
+      "talking_head_insight",
+      "article_teaser"
+    ],
+    "ai_disclosure": {
+      "required_for": "synthetic/photorealistic AI media",
+      "mechanism": "YouTube 'altered or synthetic content' disclosure at upload — required for realistic AI-generated or altered media; YouTube may add the label itself if undisclosed"
+    },
+    "algorithm_notes": "Swipe-through rate and viewed-vs-swiped ratio drive distribution. Shorts feed traffic dwarfs search for this format, but titles still index in YouTube search. Loopable endings increase rewatch rate."
   },
   "hashtag_tiers": {
     "_description": "Hashtag categorization framework used across all platforms",

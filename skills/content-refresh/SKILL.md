@@ -11,7 +11,7 @@ Re-optimize existing content with updated research, current statistics, new sour
 
 ## When to Use
 
-Use `/content-refresh` when:
+Use `/contentforge:content-refresh` when:
 - Content is 6+ months old and needs updated stats/examples
 - Search rankings are declining (lost top 10 position)
 - Competitor content has surpassed yours
@@ -49,18 +49,19 @@ Use `/content-refresh` when:
 
 ### Basic Usage
 ```
-/content-refresh https://docs.google.com/document/d/XYZ123
+/contentforge:content-refresh https://docs.google.com/document/d/XYZ123
 ```
 **Prompt:** "What refresh scope? (light / medium / heavy)"
 
 ### With Scope Specified
 ```
-/content-refresh https://docs.google.com/document/d/XYZ123 --scope=medium
+/contentforge:content-refresh https://docs.google.com/document/d/XYZ123 --scope=medium
 ```
 
 ### Batch Refresh (multiple pieces)
+Run the refresh sheet through `/contentforge:batch-process` — point it at a sheet whose rows reference existing documents:
 ```
-/content-refresh-batch https://docs.google.com/spreadsheets/d/ABC123
+/contentforge:batch-process https://docs.google.com/spreadsheets/d/ABC123
 ```
 Sheet columns: `doc_url`, `refresh_scope`, `priority`
 
@@ -230,7 +231,7 @@ Document Properties:
   Sections Updated: 6/12
   New Sources Added: 4
   Quality Score: 9.1/10 (was 8.9/10)
-  Refreshed By: ContentForge v2.0.0
+  Refreshed By: ContentForge
 ```
 
 ### Filename Convention
@@ -326,26 +327,27 @@ https://docs.google.com/.../article-3,heavy,3,Topic outdated, needs rewrite
 
 **Step 2: Run Batch Refresh**
 ```
-/content-refresh-batch https://docs.google.com/spreadsheets/d/ABC123
+/contentforge:batch-process https://docs.google.com/spreadsheets/d/ABC123
 ```
 
-**Step 3: Process (same as /batch-process)**
+**Step 3: Process (standard batch orchestration)**
 - Up to 5 concurrent refresh pipelines
 - Prioritized by `priority` column
 - Progress dashboard shows refresh status
 - Completion report with before/after scores
 
-**Time:** 20 pieces × 18 min avg = 6 hours sequential → 1.5 hours parallel = **4x faster**
+Parallel batch runs finish substantially faster than sequential refreshes; actual time varies by scope mix and model speed.
 
 ## Integration with Other Skills
 
 **Before Refresh:**
-- `/seo-audit` — Identify which content needs refreshing (declining rankings)
-- `/competitor-analysis` — See what competitors added that you're missing
+- `/contentforge:cf-audit` — Identify which content needs refreshing (freshness scores, declining candidates)
+- `/digital-marketing-pro:seo-audit` — Deeper ranking diagnosis (requires the Digital Marketing Pro plugin)
+- `/digital-marketing-pro:competitor-analysis` — See what competitors added that you're missing (requires the Digital Marketing Pro plugin)
 
 **After Refresh:**
-- `/publish-blog` — Push updated content to WordPress/Webflow
-- `/performance-tracking` — Monitor SEO impact over 2-4 weeks
+- `/contentforge:publish` — Push updated content to WordPress/Webflow
+- `/contentforge:cf-analytics` — Track refresh quality scores over time
 
 ## Limitations
 
@@ -368,19 +370,20 @@ https://docs.google.com/.../article-3,heavy,3,Topic outdated, needs rewrite
 - Internal links broken
 - Brand voice inconsistency
 
-## Agent Used
+## Agents Used
 
-- **All 9 Agents** (for Heavy Refresh)
-- **Agents 2, 4, 5, 6, 6.5, 7** (for Medium Refresh)
-- **Agents 6.5, 7** (for Light Refresh)
+The refresh reuses the canonical 10-phase pipeline agents (Reviewer is Phase 7, Output Manager is Phase 8):
+
+- **Heavy Refresh** — full pipeline, same as new content (Step 0.5 + Phases 1-8)
+- **Medium Refresh** — Phases 2 (Fact-Checker), 4 (Scientific Validator), 5 (Structurer), 6 (SEO/AEO/GEO), 6.5 (Humanizer), 7 (Reviewer), 8 (Output Manager)
+- **Light Refresh** — Phases 6.5 (Humanizer), 7 (Reviewer), 8 (Output Manager)
 
 ## Related Skills
 
-- `/batch-process` — Create new content in parallel
-- `/generate-variants` — A/B test refreshed vs. original
+- `/contentforge:batch-process` — Create or refresh content in parallel
+- `/contentforge:cf-variants` — A/B test refreshed vs. original elements
+- `/contentforge:cf-audit` — Find refresh candidates across the whole library
 
 ---
 
-**Version:** 3.4.0
-**Phase:** C (Advanced Features)
-**Time Savings:** 4x faster for batch, preserves SEO equity, extends content lifespan
+**Value:** Preserves SEO equity (URL, internal links, keyword placements) while extending content lifespan

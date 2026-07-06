@@ -11,15 +11,15 @@ Generate multiple scored variations of any content element — headlines, hooks,
 
 ## When to Use
 
-Use `/contentforge:variants` when you need:
+Use `/contentforge:cf-variants` when you need:
 - **A/B test candidates** for headlines, subject lines, or CTAs
 - **Higher-performing alternatives** to existing content elements
 - **Data-informed decisions** about which hook or intro to deploy
 - **Systematic variation** rather than guessing what works better
 - **Brand-consistent alternatives** that maintain voice while testing angles
 
-**For full content production**, use [`/contentforge`](../contentforge/SKILL.md) instead.
-**For refreshing entire pieces**, use [`/content-refresh`](../content-refresh/SKILL.md) instead.
+**For full content production**, use [`/contentforge:create-content`](../../commands/create-content.md) instead.
+**For refreshing entire pieces**, use [`/contentforge:content-refresh`](../content-refresh/SKILL.md) instead.
 
 ## What This Command Does
 
@@ -42,7 +42,7 @@ Takes a single content element and generates N variations (3-10), scores each ac
 **Optional:**
 - **Variation Count** — Number of variations to generate (3-10, default: 5)
 - **Optimization Goal** — `clicks` | `engagement` | `conversions` | `readability` (default: `engagement`)
-- **Brand** — Brand profile to enforce voice/tone (if registered via `/brand-setup`)
+- **Brand** — Brand profile to enforce voice/tone (if registered via `/contentforge:brand-setup`)
 - **Target Audience** — Who the content is for (influences language and appeal)
 - **Tone Override** — Override brand default (authoritative, conversational, technical, witty)
 
@@ -50,7 +50,7 @@ Takes a single content element and generates N variations (3-10), scores each ac
 
 ### Interactive Mode
 ```
-/contentforge:variants
+/contentforge:cf-variants
 ```
 **Prompts you for:**
 1. Source content or element text
@@ -60,12 +60,12 @@ Takes a single content element and generates N variations (3-10), scores each ac
 
 ### Quick Mode (All Parameters)
 ```
-/contentforge:variants "AI Will Transform Your Business in 2026" --type=headline --count=5 --goal=clicks --brand=AcmeMed
+/contentforge:cf-variants "AI Will Transform Your Business in 2026" --type=headline --count=5 --goal=clicks --brand=AcmeMed
 ```
 
 ### From Existing ContentForge Output
 ```
-/contentforge:variants --source-doc=https://docs.google.com/document/d/XYZ123 --element=headline --count=7 --goal=conversions
+/contentforge:cf-variants --source-doc=https://docs.google.com/document/d/XYZ123 --element=headline --count=7 --goal=conversions
 ```
 Extracts the headline from the document and generates 7 conversion-optimized alternatives.
 
@@ -171,6 +171,8 @@ Provide actionable test parameters:
 ## Output: Variation Scorecard
 
 ### Example Output (5 headline variants, goal: clicks)
+
+**SYNTHETIC EXAMPLE — fabricated for illustration.** All headlines, statistics, and scores below are invented; never reuse the invented statistics in real output.
 
 ```
 ================================================================
@@ -381,12 +383,12 @@ Alignment with the registered brand personality. If no brand is specified, score
 ## Integration with Other Skills
 
 **Before Variants:**
-- `/contentforge` — Generate the base content first
-- `/content-refresh` — Update content before variant testing
+- `/contentforge:create-content` — Generate the base content first
+- `/contentforge:content-refresh` — Update content before variant testing
 
 **After Variants:**
 - Deploy winning variant via CMS or publishing platform
-- Track performance with `/contentforge:analytics`
+- Track performance with `/contentforge:cf-analytics`
 
 ## Agents Used
 
@@ -404,14 +406,12 @@ This skill uses existing **Humanizer** and **Reviewer** agent patterns — no ad
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** — Full content production pipeline
-- **[/content-refresh](../content-refresh/SKILL.md)** — Update existing content with fresh data
-- **[/batch-process](../batch-process/SKILL.md)** — Process multiple content pieces in parallel
-- **[/contentforge:analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance over time
+- **[/contentforge:create-content](../../commands/create-content.md)** — Full content production pipeline
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Update existing content with fresh data
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple content pieces in parallel
+- **[/contentforge:cf-analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance over time
 
 ---
 
-**Version:** 3.4.0
 **Agents:** Humanizer (patterns), Reviewer (scoring logic)
-**Processing Time:** 2-4 minutes per element
 **Output:** Scored variation cards with top 3 recommendations + A/B test setup guidance

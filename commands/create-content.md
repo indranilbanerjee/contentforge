@@ -7,233 +7,52 @@ argument-hint: "<topic> [content type]"
 
 > If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../CONNECTORS.md).
 
-Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece through a 10-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
+This command is a **thin wrapper** around the ContentForge pipeline skill. It parses the user's inputs, then invokes the `contentforge` skill ([skills/contentforge/SKILL.md](../skills/contentforge/SKILL.md)), which owns the full Execution Protocol: run initialization, Step 0.5 title curation, the Pipeline Contract (phases 1–8, 10 quality gates), per-phase checkpointing, loop management, and the final .docx delivery. **Do not re-implement any pipeline logic here.**
 
 ## Trigger
 
-User runs `/create-content` or asks to write, draft, create, or produce content (articles, blog posts, whitepapers, FAQs, or research papers).
+User runs `/contentforge:create-content` or asks to write, draft, create, or produce content (articles, blog posts, whitepapers, FAQs, or research papers).
 
-## Inputs
+## Step 1 — Parse and gather inputs
 
-Gather the following from the user. If not provided, ask before proceeding:
+Collect the following. If a required input is missing, ask before proceeding:
 
-1. **Topic** — the subject the content is about (e.g., "AI in Healthcare", "remote work productivity tips")
+**Required:**
+1. **Topic** — the subject the content is about (e.g., "AI in Healthcare"). This is NOT the final title.
+2. **Content type** — one of: `article`, `blog`, `whitepaper`, `faq`, `research_paper`. Word-count and readability standards per type are defined in the skill's Content Types & Specifications table.
+3. **Brand** — which brand profile to use. If none exists, offer `/contentforge:brand-setup` or the skill's No-Brand Mode (non-regulated topics only).
 
-2. **Content type** — one of:
-   - Article (1500-3000 words)
-   - Blog post (800-1500 words)
-   - Whitepaper (3000-6000 words)
-   - FAQ (structured Q&A format)
-   - Research paper (2000-5000 words with methodology)
+**Optional flags (pass through to the skill unchanged):**
+- `--audience="..."` — target audience (e.g., "Healthcare CIOs")
+- `--keyword="..."` — primary SEO keyword
+- `--word-count=<n>` — overrides the content-type default
+- `--tone=<authoritative|conversational|technical|witty>` — overrides brand default
+- `--sources=<urls or file>` — user-supplied references (required in No-Web Mode)
+- `--title="Exact Title"` — non-interactive title bypass (skips Step 0.5 option generation)
+- Competitor URLs to differentiate from
 
-3. **Brand** — which brand profile to use for voice and compliance. If not specified, ask: "Which brand should I use? Or create a new one with `/brand-setup`."
+## Step 2 — Invoke the pipeline skill
 
-4. **Target audience** (optional) — who this content is for (e.g., "Healthcare CIOs", "Small business owners")
+Invoke the **contentforge skill** (`skills/contentforge/SKILL.md`) with the gathered inputs. The skill performs, in order:
 
-5. **Additional context** (optional):
-   - Primary keyword for SEO optimization
-   - Word count target (overrides content type default)
-   - Tone override (authoritative, conversational, technical, witty)
-   - Specific sources or references to include
-   - Competitor URLs to differentiate from
+1. Pre-flight brand-profile validation (guardrails required for regulated industries)
+2. Step 0 run initialization (checkpoint-manager `init` with run metadata + pipeline-tracker `init`)
+3. Step 0.5 title curation (inline, user-confirmed, unless `--title` was passed)
+4. Phases 1–8 per the Pipeline Contract table, with orchestrator-verified gates and a checkpoint save after every gate PASS
+5. Finalization: dual-copy .docx save (run directory + `~/Documents/ContentForge/{Brand}/`), optional Drive upload, Completion Card
 
-## Pre-Flight Validation (Before Title Curation)
-
-**This check runs automatically before any content production begins.**
-
-After gathering inputs (topic, type, brand, audience, keyword), validate the brand profile:
-
-1. **Load brand profile** from `~/.claude-marketing/{brand}/` or `${CLAUDE_PLUGIN_DATA}/{brand}/`
-2. **Check required fields:**
-   - `voice.tone` — must be set (not empty)
-   - `voice.formality` — must be set
-   - `terminology.prohibited_terms` — should be non-empty for regulated industries
-   - `guardrails.prohibited_claims` — **REQUIRED** for pharma, BFSI, healthcare, legal industries; recommended for all
-   - `target_audience.primary_persona` — should include role, reading level
-   - `industry` — must match an available industry knowledge pack
-
-3. **If any required field is missing, warn the user:**
-```
-⚠️ Brand profile check:
-  ✓ Voice/tone: [value]
-  ✓ Formality: [value]
-  ✗ Guardrails: EMPTY — compliance checks will be skipped
-  ✗ Audience persona: MISSING — content may not match reader expectations
-
-For regulated industries (pharma, BFSI, healthcare, legal), guardrails are REQUIRED.
-
-Options:
-  1. Continue anyway (defaults applied where possible)
-  2. Fix brand profile first (/contentforge:style-guide --update [brand])
-```
-
-4. **Wait for user response.** Do not auto-proceed with incomplete profiles for regulated industries.
-
-## Title Curation (Before Pipeline Starts)
-
-**This step is mandatory.** After gathering the inputs above, generate **4-5 title options** before starting Phase 1. Do NOT auto-select a title or skip straight to research.
-
-**How it works:**
-
-1. Use the topic, content type, brand context, audience, and primary keyword to generate **4-5 distinct title options**, each taking a different angle:
-   - **Benefit-driven** — Leads with the value the reader gets
-   - **How-to / Tactical** — Actionable, instructional framing
-   - **Data-driven / Stat-led** — Opens with a compelling number or trend
-   - **Question-based / Curiosity** — Provokes the reader to click
-   - **Contrarian / Unexpected** — Challenges conventional thinking
-
-2. Each title option must:
-   - Include the primary keyword naturally
-   - Stay within character limits for the content type (blog: 40-60, article: 50-70, whitepaper: 60-100)
-   - Be specific (not generic)
-
-3. Present all options to the user and ask them to **select one, modify one, or request more options**. The user may also provide their own title.
-
-4. **Only after the user confirms a title**, proceed to Phase 1 Research with the confirmed title.
-
-**Example:**
-
-```
-Topic: AI in Healthcare
-Type: Article
-Keyword: AI healthcare 2026
-
-Title Options:
-  1. How AI Is Reshaping Healthcare Delivery in 2026 — And What Leaders Must Do Now
-  2. AI in Healthcare 2026: 7 Breakthroughs That Are Actually Reaching Patients
-  3. Why 73% of Hospitals Are Betting on AI Healthcare Tools in 2026
-  4. The Healthcare AI Playbook: From Pilot Programs to Patient Outcomes
-  5. AI Healthcare in 2026: What the Hype Cycle Gets Wrong
-
-Which title would you like to use? You can select a number, modify one, or provide your own.
-```
-
-## Checkpointing (v3.12.3+) — required for resumable runs
-
-Before Phase 1 starts, initialise a checkpoint run so any interruption can be resumed instead of restarted from scratch:
-
-```bash
-RUN_RESULT=$(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py init \
-    --brand "{brand}" --topic "{topic}" --content-type {content_type})
-RUN_ID=$(echo "$RUN_RESULT" | python -c "import sys,json; print(json.load(sys.stdin)['run_id'])")
-```
-
-After each phase finishes and passes its quality gate, save its output:
-
-```bash
-# Phase 0.5 — after title is confirmed:
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
-    --brand "{brand}" --run-id "$RUN_ID" --phase 0.5 --content "{confirmed_title}" --extension txt
-
-# Phase 1 — after research outline + sources are produced:
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
-    --brand "{brand}" --run-id "$RUN_ID" --phase 1 --content-file {tmp_outline_path} --extension md
-
-# Phase 2 — fact-check ledger:
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
-    --brand "{brand}" --run-id "$RUN_ID" --phase 2 --content-file {tmp_factcheck_json} --extension json
-
-# Phase 3 — first draft:
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
-    --brand "{brand}" --run-id "$RUN_ID" --phase 3 --content-file {tmp_draft_md} --extension md
-
-# ...continue for 3.5, 4, 5, 6, 6.5, 7, 8.
-```
-
-After Phase 8 produces the final `.docx` and tracking row is marked complete:
-
-```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize \
-    --brand "{brand}" --run-id "$RUN_ID" --status completed
-```
-
-If a phase fails its quality gate and loops back, **do not overwrite the saved checkpoint** for the upstream phase that already passed — just re-save the looped phase when it eventually passes.
-
-If the run is interrupted (context exhaustion, user cancel, network), the user can resume with `/contentforge:resume` — that command reloads every saved phase and continues from the next un-checkpointed phase.
-
-## The 10-Phase Pipeline
-
-Each phase has a quality gate. If any phase fails, the pipeline loops back with feedback (max 5 loops before human escalation).
-
-### Phase 1: Research Agent
-- Uses the **confirmed title** as the anchor for all research
-- SERP analysis of top-ranking content for the topic
-- Source mining — identify 10+ authoritative sources
-- Competitive content analysis — what exists, what's missing
-- Structured outline with section descriptions and citation targets
-
-### Phase 2: Fact Checker (Layer 1)
-- URL verification — confirm all sources are accessible and current
-- Claim validation — cross-reference key claims against multiple sources
-- Confidence scoring — rate each fact claim (verified, likely, unverified)
-
-### Phase 3: Content Drafter
-- First draft with brand voice applied throughout
-- SME calibration via industry knowledge packs (terminology, regulatory, evidence standards)
-- Inline citations for every factual claim
-- Word count targeting within 10% of specification
-- Natural flow with transitions between sections
-
-### Phase 3.5: Visual Asset Annotator
-- Chart generation from verified research statistics (matplotlib)
-- Visual opportunity identification and annotation markers
-- Asset manifest with placement, alt text, and data sources
-- TODO markers for visuals requiring human action (screenshots, photos)
-
-### Phase 4: Scientific Validator (Layer 2)
-- Hallucination detection — flag any claim not backed by cited sources
-- Unsourced claim flagging — identify statements presented as fact without evidence
-- Logic validation — check argument flow and reasoning consistency
-
-### Phase 5: Structurer & Proofreader
-- Grammar and spelling correction
-- Readability optimization (target: grade 8-10 for general, grade 12+ for technical)
-- Brand compliance check (terminology, restricted words, mandatory disclaimers)
-- Formatting standardization
-
-### Phase 6: SEO/GEO Optimizer
-- Primary keyword optimization (title, H1, first 100 words, subheadings)
-- Meta title and description generation
-- Internal linking suggestions
-- AI answer engine readiness (structured for Google AI Overviews, Perplexity)
-- GEO score (1-10) for citation-worthiness
-
-### Phase 6.5: Humanizer
-- AI pattern removal — eliminate predictable sentence structures, filler phrases, hedge words
-- Sentence variety (burstiness) — mix short punchy sentences with longer complex ones
-- Brand personality injection — apply configured personality profile
-- Industry-specific AI telltale removal
-
-### Phase 7: Reviewer (Layer 3)
-- 5-dimension quality scoring:
-  - Content Quality (30%) — depth, accuracy, originality
-  - Citation Integrity (25%) — source quality, link health, attribution
-  - Brand Compliance (20%) — voice match, terminology, restrictions
-  - SEO Performance (15%) — keyword usage, meta tags, structure
-  - Readability (10%) — flow, clarity, engagement
-- Composite score with pass/fail gate (7.0 minimum)
-- Specific revision recommendations if below threshold
-
-### Phase 8: Output Manager
-- Generate .docx output with professional formatting
-- Upload to ~~knowledge base (Google Drive) if connected
-- Update tracking sheet with production metadata
-- Generate social-ready excerpt for promotion
+Every gate-passed phase is checkpointed, so an interrupted run is resumable with `/contentforge:resume`.
 
 ## Output
 
-The final output includes:
-- Publication-ready content piece with inline citations
-- Quality scorecard (5 dimensions + composite)
-- SEO meta package (title, description, keywords)
-- Production metadata (word count, reading time, sources used, pipeline duration)
+Defined by the skill's Final Output Requirements: a publication-ready `.docx` (title page, article body, citations, Appendices A/B/C), the Quality Scorecard, the SEO meta package, and the Completion Card.
 
 ## After Content Creation
 
 Ask: "Would you like me to:
-- Promote this on social media? (`/social-adapt`)
-- Publish to your CMS? (`/publish`)
-- Translate for other markets? (`/translate`)
-- Create A/B headline variants? (`/variants`)
-- Generate a content brief for a related topic? (`/brief`)
-- Run batch production for multiple topics? (`/batch-process`)"
+- Promote this on social media? (`/contentforge:social-adapt`)
+- Publish to your CMS? (`/contentforge:publish`)
+- Translate for other markets? (`/contentforge:translate`)
+- Create A/B headline variants? (`/contentforge:cf-variants`)
+- Generate a content brief for a related topic? (`/contentforge:content-brief`)
+- Run batch production for multiple topics? (`/contentforge:batch-process`)"

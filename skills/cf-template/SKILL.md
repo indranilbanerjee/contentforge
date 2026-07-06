@@ -7,30 +7,31 @@ effort: high
 
 # Custom Content Template Manager
 
-Create and manage custom content type templates beyond the 5 built-in types (article, blog, whitepaper, faq, research-paper). Define section structure, word count ranges, readability targets, citation requirements, and quality standards — then use the template with `/contentforge` for consistent, repeatable content production.
+Create and manage custom content type templates beyond the 5 built-in types (article, blog, whitepaper, faq, research-paper). Define section structure, word count ranges, readability targets, citation requirements, and quality standards — then use the template with `/contentforge:create-content` for consistent, repeatable content production.
 
-## Context efficiency
+## Where templates live
 
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+- **Built-in templates (read-only):** `templates/content-types/` inside the installed plugin — article, blog, whitepaper, faq, research-paper.
+- **Custom templates (user-created):** `~/.claude-marketing/_templates/` — **never** write into the installed plugin directory. Plugin updates and reinstalls wipe the plugin folder; anything saved there is lost. `~/.claude-marketing/_templates/` survives updates.
 
 ## When to Use
 
-Use `/contentforge:template` when:
+Use `/contentforge:cf-template` when:
 - You need a **content type not covered** by the 5 built-in templates (case study, product comparison, landing page copy, email newsletter, press release, etc.)
 - You want to **standardize a content format** your team produces regularly
 - You need to **modify an existing template** (e.g., add a section to the article template)
 - You're onboarding a client who has **specific content format requirements**
 - You want to **import a content structure** from an example file
 
-**For producing content using a template**, use `/contentforge --type=custom:template-name`.
-**For the 5 built-in templates**, see `templates/content-types/` (these are pre-configured and cannot be deleted).
+**For producing content using a template**, use `/contentforge:create-content --type=custom:template-name`.
+**For the 5 built-in templates**, see `templates/content-types/` (these ship with the plugin and cannot be deleted).
 
 ## What This Command Does
 
 1. **Define Template** — Specify content type name, base type (or custom), word count range, readability target, and citation requirements
 2. **Create Section Structure** — Define sections with names, descriptions, word count allocations, and ordering
 3. **Set Quality Standards** — Readability target (grade level), citation density, keyword placement rules, and custom quality criteria
-4. **Generate Template File** — Create the template .md file in `templates/content-types/`
+4. **Generate Template File** — Create the template .md file in `~/.claude-marketing/_templates/`
 5. **Validate Pipeline Compatibility** — Test that the template works with all ContentForge pipeline phases
 
 ## Required Inputs
@@ -49,7 +50,7 @@ Use `/contentforge:template` when:
 
 ### Interactive Mode (Recommended)
 ```
-/contentforge:template
+/contentforge:cf-template
 ```
 **Prompts you for:**
 1. Template name
@@ -61,23 +62,23 @@ Use `/contentforge:template` when:
 
 ### Quick Mode
 ```
-/contentforge:template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
+/contentforge:cf-template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
 ```
 
 ### Import from Example File
 ```
-/contentforge:template product-comparison --from-example=./example-product-comparison.docx
+/contentforge:cf-template product-comparison --from-example=./example-product-comparison.docx
 ```
 Analyzes the example file's structure (headings, sections, word count) and creates a template matching that format.
 
 ### Modify Existing Template
 ```
-/contentforge:template article --modify --add-section="Expert Quotes:Include 3-5 expert quotes with attribution:200-300"
+/contentforge:cf-template article --modify --add-section="Expert Quotes:Include 3-5 expert quotes with attribution:200-300"
 ```
 
 ### List All Templates
 ```
-/contentforge:template --list
+/contentforge:cf-template --list
 ```
 Shows built-in and custom templates with key specifications.
 
@@ -269,14 +270,14 @@ Humanization:
 
 ### Step 4: Generate Template File (1 minute)
 
-Create the template .md file in `templates/content-types/`.
+Create the template .md file in `~/.claude-marketing/_templates/` (create the directory if it doesn't exist).
 
-**Generated File: `templates/content-types/case-study-structure.md`**
+**Generated File: `~/.claude-marketing/_templates/case-study-structure.md`**
 ```markdown
 # Case Study Content Template
 
 **Template Name:** case-study
-**Version:** 1.0.0
+**Template Revision:** 1.0.0
 **Created:** 2026-02-25
 **Base Type:** article (modified)
 
@@ -303,11 +304,11 @@ Create the template .md file in `templates/content-types/`.
 ## Usage
 
 Use with ContentForge:
-  /contentforge "Title" --type=custom:case-study --brand=BrandName
+  /contentforge:create-content "Title" --type=custom:case-study --brand=BrandName
 
 ## Examples
 
-See example case studies in templates/examples/case-study/
+See the built-in structures in templates/content-types/ for format reference
 ```
 
 ### Step 5: Pipeline Compatibility Validation (1 minute)
@@ -347,25 +348,25 @@ For reference, here are templates others commonly create:
 
 ### Case Study
 ```
-/contentforge:template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
+/contentforge:cf-template case-study --base=article --words=1500-2500 --readability=10-12 --citations=8
 ```
 Sections: Executive Summary, Client Profile, Challenge, Solution, Results, Testimonial, Takeaways, CTA
 
 ### Product Comparison
 ```
-/contentforge:template product-comparison --base=article --words=2000-3500 --readability=9-11 --citations=12
+/contentforge:cf-template product-comparison --base=article --words=2000-3500 --readability=9-11 --citations=12
 ```
 Sections: Overview, Comparison Criteria, Product-by-Product Analysis (3-5 products), Feature Matrix, Pricing Comparison, Use Case Recommendations, Verdict, CTA
 
 ### Landing Page Copy
 ```
-/contentforge:template landing-page --base=custom --words=500-1000 --readability=7-9 --citations=3
+/contentforge:cf-template landing-page --base=custom --words=500-1000 --readability=7-9 --citations=3
 ```
 Sections: Hero Headline + Subhead, Problem Statement, Solution Overview, Key Benefits (3-5), Social Proof, Feature Highlights, FAQ (3-5 questions), CTA
 
 ### Email Newsletter
 ```
-/contentforge:template email-newsletter --base=blog --words=400-800 --readability=7-9 --citations=2
+/contentforge:cf-template email-newsletter --base=blog --words=400-800 --readability=7-9 --citations=2
 ```
 Sections: Subject Line (A/B options), Preview Text, Opening Hook, Main Content (1-2 topics), Key Takeaway, CTA, PS Line
 
@@ -375,8 +376,8 @@ The template creation produces:
 
 | Output | Description |
 |--------|------------|
-| **Template File** | .md file in `templates/content-types/[name]-structure.md` |
-| **Usage Instructions** | Command to use the template with `/contentforge` |
+| **Template File** | .md file at `~/.claude-marketing/_templates/[name]-structure.md` |
+| **Usage Instructions** | Command to use the template with `/contentforge:create-content` |
 | **Pipeline Validation** | Compatibility test results for all 10 phases |
 | **Specifications Summary** | Word count, readability, citations, sections count |
 
@@ -386,7 +387,7 @@ The template creation produces:
 Template Created: case-study
 ================================================================
 
-File: templates/content-types/case-study-structure.md
+File: ~/.claude-marketing/_templates/case-study-structure.md
 Specifications:
   Word Count: 1,500 - 2,500
   Readability: Grade 10-12
@@ -397,7 +398,7 @@ Specifications:
 Pipeline Validation: PASS (all 10 phases compatible)
 
 Usage:
-  /contentforge "Client X: How AI Reduced Diagnostic Time by 40%"
+  /contentforge:create-content "Client X: How AI Reduced Diagnostic Time by 40%"
     --type=custom:case-study --brand=AcmeMed
 
 Templates Available (Built-In + Custom):
@@ -410,7 +411,7 @@ Templates Available (Built-In + Custom):
 
 ### List All Templates
 ```
-/contentforge:template --list
+/contentforge:cf-template --list
 ```
 ```
 Available Content Templates
@@ -430,19 +431,19 @@ CUSTOM (1):
 
 ### View Template Details
 ```
-/contentforge:template case-study --view
+/contentforge:cf-template case-study --view
 ```
 Displays the full template specification with all sections and quality standards.
 
 ### Delete Custom Template
 ```
-/contentforge:template case-study --delete
+/contentforge:cf-template case-study --delete
 ```
 Removes the custom template file. Built-in templates cannot be deleted.
 
 ### Export Template
 ```
-/contentforge:template case-study --export=./case-study-template.json
+/contentforge:cf-template case-study --export=./case-study-template.json
 ```
 Exports the template as JSON for sharing with other ContentForge installations.
 
@@ -457,16 +458,16 @@ Exports the template as JSON for sharing with other ContentForge installations.
 **Solution:** Relax either the readability target or the citation minimum. The validation will suggest which constraint to adjust.
 
 ### "Template not found when using --type=custom:name"
-**Cause:** Template file doesn't exist in `templates/content-types/` or the name doesn't match.
-**Solution:** Run `/contentforge:template --list` to see available templates. Names are kebab-case (e.g., `case-study`, not `Case Study`).
+**Cause:** Template file doesn't exist in `~/.claude-marketing/_templates/` (custom) or `templates/content-types/` (built-in), or the name doesn't match.
+**Solution:** Run `/contentforge:cf-template --list` to see available templates. Names are kebab-case (e.g., `case-study`, not `Case Study`). Custom templates created before mid-2026 may still sit inside the old plugin-directory location — if so, move them to `~/.claude-marketing/_templates/` so plugin updates don't delete them.
 
 ### "Can't modify built-in template"
 **Cause:** Built-in templates (article, blog, whitepaper, faq, research-paper) are read-only.
-**Solution:** Create a custom template based on the built-in one: `/contentforge:template my-article --base=article`. This creates a copy you can modify freely.
+**Solution:** Create a custom template based on the built-in one: `/contentforge:cf-template my-article --base=article`. This creates a copy you can modify freely.
 
 ## Limitations
 
-- **Custom templates** are local to the ContentForge installation (not synced to cloud unless exported)
+- **Custom templates** live at `~/.claude-marketing/_templates/` on this machine (not synced to cloud unless exported)
 - **Base type modification** copies the base — changes to the base later won't propagate to the custom template
 - **Maximum sections**: 15 per template (more than 15 makes the pipeline unwieldy)
 - **Minimum word count**: 300 words (below this, the quality scoring system is unreliable)
@@ -478,13 +479,11 @@ None. This skill uses deterministic template creation (section definition, word 
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** — Use templates with `--type=custom:template-name`
-- **[/batch-process](../batch-process/SKILL.md)** — Batch can reference custom templates
-- **[/contentforge:brief](../cf-brief/SKILL.md)** — Briefs can target custom template section structures
+- **[/contentforge:create-content](../../commands/create-content.md)** — Use templates with `--type=custom:template-name`
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Batch can reference custom templates
+- **[/contentforge:cf-brief](../cf-brief/SKILL.md)** — Briefs can target custom template section structures
 
 ---
 
-**Version:** 3.4.0
 **Agent:** None (deterministic template creation)
-**Processing Time:** 3-6 minutes
-**Output:** Template .md file in templates/content-types/, pipeline validation, usage instructions
+**Output:** Template .md file at `~/.claude-marketing/_templates/`, pipeline validation, usage instructions

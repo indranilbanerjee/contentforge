@@ -11,21 +11,22 @@ Transform a topic or existing article into a production-ready video script with 
 
 ## When to Use
 
-Use `/cf-video-script` when you need:
+Use `/contentforge:cf-video-script` when you need:
 - **YouTube scripts** (3-10 min) with SEO-optimized titles, descriptions, and chapter timestamps
 - **TikTok scripts** (30-60s) with fast-cut pacing and trending audio hooks
 - **Instagram Reels scripts** (30-60s) with vertical format and caption-driven storytelling
 - **Explainer videos** (3-5 min) with clear visual directions and professional pacing
 - **Video adaptations** of existing ContentForge articles, blogs, or whitepapers
 
-**Not for:** Raw creative brainstorming (use `/contentforge` first for research), live stream outlines, podcast scripts.
+**Not for:** Raw creative brainstorming (use `/contentforge:create-content` first for research), live stream outlines, podcast scripts.
 
 ## Supported Platforms & Lengths
 
 | Platform | Supported Lengths | Aspect Ratio | Key Characteristics |
 |----------|------------------|--------------|-------------------|
 | **YouTube** | 3min, 5min, 10min | 16:9 landscape | SEO titles, end screens, mid-roll breaks |
-| **TikTok** | 30s, 60s | 9:16 vertical | Hook in 1s, fast cuts, trending audio |
+| **YouTube Shorts** | 15s, 30s, 60s, up to 3min | 9:16 vertical | Hook in 1-2s, loopable ending, feed-native captions |
+| **TikTok** | 30s, 60s, long-form 3min-10min | 9:16 vertical | Hook in 1s, fast cuts, trending audio; long-form uses chaptered storytelling |
 | **Instagram Reels** | 30s, 60s | 9:16 vertical | Captions required, visual-first storytelling |
 | **Explainer** | 3min, 5min | 16:9 landscape | Slower pace, professional graphics, clear narration |
 
@@ -33,8 +34,8 @@ Use `/cf-video-script` when you need:
 
 **Minimum Required:**
 - **Topic or Source** -- Either a topic string ("AI in Healthcare 2026") or a ContentForge article URL/path
-- **Platform** -- `youtube`, `tiktok`, `instagram`, or `explainer`
-- **Video Length** -- `30s`, `60s`, `3min`, `5min`, or `10min`
+- **Platform** -- `youtube`, `youtube-shorts`, `tiktok`, `instagram`, or `explainer`
+- **Video Length** -- `15s`, `30s`, `60s`, `3min`, `5min`, or `10min` (platform-dependent; see table above)
 
 **Optional:**
 - **Tone** -- `educational`, `entertaining`, `promotional`, or `storytelling` (defaults to platform standard)
@@ -48,7 +49,7 @@ Use `/cf-video-script` when you need:
 
 ### Interactive Mode
 ```
-/cf-video-script
+/contentforge:cf-video-script
 ```
 **Prompts you for:**
 1. Topic or source article URL
@@ -59,12 +60,12 @@ Use `/cf-video-script` when you need:
 
 ### Quick Mode
 ```
-/cf-video-script "AI in Healthcare: 2026 Trends" --platform=youtube --length=5min --tone=educational --brand=AcmeMed
+/contentforge:cf-video-script "AI in Healthcare: 2026 Trends" --platform=youtube --length=5min --tone=educational --brand=AcmeMed
 ```
 
 ### From Existing Article
 ```
-/cf-video-script --source="https://drive.google.com/file/d/ABC123" --platform=tiktok --length=60s --tone=entertaining
+/contentforge:cf-video-script --source="https://drive.google.com/file/d/ABC123" --platform=tiktok --length=60s --tone=entertaining
 ```
 Extracts key points from the article and restructures for video format.
 
@@ -123,7 +124,7 @@ Extracts key points from the article and restructures for video format.
 
 ## Output Example
 
-**YouTube 5-Minute Script: "AI in Healthcare: 2026 Trends"**
+**SYNTHETIC EXAMPLE — fabricated for illustration. YouTube 5-Minute Script: "AI in Healthcare: 2026 Trends"**
 
 ```
 Video Script Complete: "AI in Healthcare: 2026 Trends"
@@ -149,8 +150,8 @@ Supplementary Materials:
 - Music Recommendations: 3 tracks (upbeat electronic, 120 BPM)
 - YouTube SEO: Title, description (with timestamps), 15 tags
 
-Output Location:
-Google Drive: ContentForge Output/AcmeMed/video/AI-Healthcare-2026_youtube-5min_v1.0.docx
+Output Location (follows the brand's tracking backend):
+<Drive folder / Airtable attachment / ~/Documents/ContentForge/AcmeMed/video/AI-Healthcare-2026_youtube-5min_v1.0.docx>
 ```
 
 ## Platform-Specific Guidelines
@@ -175,13 +176,26 @@ Google Drive: ContentForge Output/AcmeMed/video/AI-Healthcare-2026_youtube-5min_
 - Questions to maintain engagement ("But here's what most people miss...")
 - Data points with context, not just numbers
 
-### TikTok (30s / 60s)
+### YouTube Shorts (15s / 30s / 60s / up to 3min)
+
+**Pacing:**
+- Hook in first 1-2 seconds (text overlay + visual jolt)
+- Loopable ending (last beat flows back into the hook — Shorts feed rewards rewatches)
+- One idea per Short; for 2-3min Shorts, use a 3-beat structure (hook → payoff steps → loop/CTA)
+
+**Style:**
+- 9:16 vertical, burned-in captions (assume sound-off starts)
+- Title-safe zone: keep text clear of the bottom UI overlay
+- CTA: "subscribe" works better than external links (Shorts don't support link cards)
+
+### TikTok (30s / 60s / long-form 3-10min)
 
 **Pacing:**
 - Hook in first 1 second (text overlay + audio hook)
 - New visual or text every 2-3 seconds
 - Fast cuts between points (no lingering shots)
 - End with loop potential (last frame connects to first)
+- **Long-form (3-10min):** open with a payoff promise, break content into on-screen chapters, re-hook every 45-60 seconds; TikTok promotes watch-time on longer videos
 
 **Style:**
 - Text-heavy: Every key point has on-screen text
@@ -226,30 +240,19 @@ Google Drive: ContentForge Output/AcmeMed/video/AI-Healthcare-2026_youtube-5min_
 
 | Length | Target Words | Words/Min | Notes |
 |--------|-------------|-----------|-------|
+| 15s | 30-38 | 120-150 | Shorts-only; single point + loop |
 | 30s | 60-75 | 120-150 | Tight, every word counts |
 | 60s | 120-150 | 120-150 | Room for one key point + CTA |
-| 3min | 360-450 | 120-150 | 3-4 main scenes |
+| 3min | 360-450 | 120-150 | 3-4 main scenes (also max Shorts length) |
 | 5min | 600-750 | 120-150 | 4-5 main scenes |
-| 10min | 1,200-1,500 | 120-150 | 6-8 main scenes + mid-roll break |
+| 10min | 1,200-1,500 | 120-150 | 6-8 main scenes + mid-roll break (YouTube) or chapters (TikTok long-form) |
 
 ## MCP Integrations
 
-### Required
-- **Google Drive** -- Output storage, source article retrieval
-
-### Optional
-- **Google Sheets** -- Tracking sheet updates with video script metadata
+### Optional (none required)
+- **Google Drive** -- Only needed if the brand's tracking backend is Google Sheets + Drive, or when running in Cowork. Local and Airtable backends deliver the script without it.
+- **Google Sheets** -- Tracking updates with video script metadata
 - **Notion** -- Alternative output destination for video production teams
-
-## Processing Times
-
-| Video Length | Processing Time | Notes |
-|-------------|----------------|-------|
-| 30s | 6-10 min | Short format, tight optimization |
-| 60s | 8-12 min | Slightly more scene work |
-| 3min | 12-18 min | Multiple scenes, B-roll planning |
-| 5min | 15-22 min | Full production script |
-| 10min | 22-30 min | Extended script with chapter markers |
 
 ## Limitations
 
@@ -275,14 +278,12 @@ Google Drive: ContentForge Output/AcmeMed/video/AI-Healthcare-2026_youtube-5min_
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** -- Research and produce source content first
-- **[/cf-social-adapt](../cf-social-adapt/SKILL.md)** -- Adapt video descriptions for social platforms
-- **[/batch-process](../batch-process/SKILL.md)** -- Batch produce scripts for a content series
-- **[/cf-translate](../cf-translate/SKILL.md)** -- Translate scripts for international markets
+- **[/contentforge:create-content](../../commands/create-content.md)** -- Research and produce source content first
+- **[/contentforge:cf-social-adapt](../cf-social-adapt/SKILL.md)** -- Adapt video descriptions for social platforms
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Batch produce scripts for a content series
+- **[/contentforge:cf-translate](../cf-translate/SKILL.md)** -- Translate scripts for international markets
 
 ---
 
-**Version:** 3.4.0
 **Agents:** Researcher (01-researcher), Content Drafter (03-content-drafter), Structurer (05-structurer-proofreader)
-**Processing Time:** 6-30 minutes depending on video length
-**Quality Guarantee:** Hook in first 3s, dialogue paced at 120-150 wpm, B-roll for every major point, platform-specific optimization
+**Quality Guarantee:** Hook in first 3s (1-2s for Shorts/TikTok), dialogue paced at 120-150 wpm, B-roll for every major point, platform-specific optimization

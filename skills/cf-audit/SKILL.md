@@ -9,22 +9,20 @@ effort: medium
 
 Audit your existing content library for freshness decay, coverage gaps, and optimization opportunities. The audit scores every piece for freshness, identifies content that needs refreshing, maps coverage gaps against keyword opportunities, and produces a prioritized action list with projected impact.
 
-## Context efficiency
-
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
-
 ## When to Use
 
-Use `/contentforge:audit` when:
+Use `/contentforge:cf-audit` when:
 - You need a **quarterly or annual content health check** across your library
 - Search rankings are declining and you need to **identify which content to refresh first**
 - You want to find **coverage gaps** — topics your competitors rank for but you don't
-- You need to **prioritize refresh candidates** for `/content-refresh` based on data
+- You need to **prioritize refresh candidates** for `/contentforge:content-refresh` based on data
 - A new client wants an **audit before production** to avoid duplicating existing content
 - You're planning next quarter's content calendar and need to **balance new vs refresh**
 
-**For refreshing specific pieces**, use `/content-refresh` after the audit identifies candidates.
-**For producing new content** for identified gaps, use `/contentforge:brief` then `/contentforge`.
+**For refreshing specific pieces**, use `/contentforge:content-refresh` after the audit identifies candidates.
+**For producing new content** for identified gaps, use `/contentforge:cf-brief` then `/contentforge:create-content`.
+
+All example blocks below are **SYNTHETIC EXAMPLES — fabricated for illustration**. Never reuse their numbers, titles, or URLs in real output.
 
 ## What This Command Does
 
@@ -56,28 +54,28 @@ Use `/contentforge:audit` when:
 
 ### Basic Usage (Google Drive)
 ```
-/contentforge:audit https://drive.google.com/drive/folders/ABC123
+/contentforge:cf-audit https://drive.google.com/drive/folders/ABC123
 ```
 **Prompt:** "Audit scope? (freshness / gaps / both)"
 
 ### WordPress Site Audit
 ```
-/contentforge:audit https://blog.acme.com --scope=both --threshold=12
+/contentforge:cf-audit https://blog.acme.com --scope=both --threshold=12
 ```
 
 ### CSV Inventory Audit
 ```
-/contentforge:audit content-inventory.csv --scope=freshness --threshold=6
+/contentforge:cf-audit content-inventory.csv --scope=freshness --threshold=6
 ```
 
 ### Freshness-Only Audit
 ```
-/contentforge:audit https://drive.google.com/drive/folders/ABC123 --scope=freshness --threshold=18
+/contentforge:cf-audit https://drive.google.com/drive/folders/ABC123 --scope=freshness --threshold=18
 ```
 
 ### Gap Analysis Only
 ```
-/contentforge:audit https://drive.google.com/drive/folders/ABC123 --scope=gaps --keywords=target-keywords.csv
+/contentforge:cf-audit https://drive.google.com/drive/folders/ABC123 --scope=gaps --keywords=target-keywords.csv
 ```
 
 ## What Happens
@@ -314,8 +312,8 @@ Underperformers (high quality, low traffic):
 Produce a prioritized action list combining freshness scores, coverage gaps, and performance data.
 
 **Recommendation Types:**
-1. **Refresh Candidates** — Existing content to update with `/content-refresh`
-2. **New Content Opportunities** — Coverage gaps to fill with `/contentforge:brief` + `/contentforge`
+1. **Refresh Candidates** — Existing content to update with `/contentforge:content-refresh`
+2. **New Content Opportunities** — Coverage gaps to fill with `/contentforge:cf-brief` + `/contentforge:create-content`
 3. **Quality Improvements** — Content with low quality scores to re-run through pipeline
 4. **Retire Candidates** — Content so outdated it should be removed or redirected
 
@@ -328,17 +326,17 @@ IMMEDIATE ACTIONS (This Week):
   1. REFRESH: "AI in Healthcare: 2024 Trends" — Freshness 18, declining traffic
      Scope: Heavy refresh (80%), update year references, new 2026 data
      Projected Impact: +40% traffic recovery ($3,200/mo value)
-     Command: /content-refresh [Drive URL] --scope=heavy
+     Command: /contentforge:content-refresh [Drive URL] --scope=heavy
 
   2. REFRESH: "Best EHR Systems Comparison" — Freshness 22, declining rankings
      Scope: Medium refresh (50%), update vendor list, new pricing data
      Projected Impact: +25% traffic recovery ($2,100/mo value)
-     Command: /content-refresh [Drive URL] --scope=medium
+     Command: /contentforge:content-refresh [Drive URL] --scope=medium
 
 THIS QUARTER:
   3. NEW: Create "AI Diagnostics in Precision Medicine" article
      Coverage gap: 2,400/mo volume, KD 62, no existing content
-     Command: /contentforge:brief "AI diagnostics precision medicine"
+     Command: /contentforge:cf-brief "AI diagnostics precision medicine"
 
   4. REFRESH: "HIPAA Compliance Guide 2024" — Freshness 31, high value
      Scope: Medium refresh, update for 2026 regulations
@@ -346,7 +344,7 @@ THIS QUARTER:
 
   5. NEW: Create "Healthcare API Integration Guide" whitepaper
      Coverage gap: 1,800/mo volume, KD 45
-     Command: /contentforge:brief "healthcare API integration"
+     Command: /contentforge:cf-brief "healthcare API integration"
 
 NEXT QUARTER:
   6-10. [Additional refresh and new content recommendations]
@@ -400,7 +398,7 @@ Without analytics MCP, the audit provides freshness scoring and coverage gap ana
 
 ### "Performance data unavailable"
 **Cause:** Google Analytics or Google Search Console MCP not connected.
-**Solution:** Run `/contentforge:integrations` to check connector status. Performance analysis is optional; freshness scoring and gap analysis work without it.
+**Solution:** Run `/contentforge:cf-integrations` to check connector status. Performance analysis is optional; freshness scoring and gap analysis work without it.
 
 ## Limitations
 
@@ -412,21 +410,18 @@ Without analytics MCP, the audit provides freshness scoring and coverage gap ana
 
 ## Agent Used
 
-None. This skill uses deterministic analysis (freshness scoring algorithm, keyword matching, link checking) without agent-based reasoning. The pipeline-optimizer utility handles the scoring and recommendation logic.
+None. The freshness scoring, keyword matching, and recommendation ranking are **computed by the model following the rubric in this file** — there are no deterministic scripts for this skill yet. `utilities/pipeline-optimizer.md` is a prose reference doc (not a script) that documents the scoring and recommendation logic; consult it when in doubt.
 
 ## Related Skills
 
-- **[/content-refresh](../content-refresh/SKILL.md)** — Refresh content identified by the audit
-- **[/contentforge:brief](../cf-brief/SKILL.md)** — Generate briefs for coverage gap topics
-- **[/contentforge](../contentforge/SKILL.md)** — Produce new content for gap topics
-- **[/contentforge:calendar](../cf-calendar/SKILL.md)** — Schedule refresh and new content production
-- **[/contentforge:integrations](../cf-integrations/SKILL.md)** — Check which analytics connectors are available
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Refresh content identified by the audit
+- **[/contentforge:cf-brief](../cf-brief/SKILL.md)** — Generate briefs for coverage gap topics
+- **[/contentforge:create-content](../../commands/create-content.md)** — Produce new content for gap topics
+- **[/contentforge:cf-calendar](../cf-calendar/SKILL.md)** — Schedule refresh and new content production
+- **[/contentforge:cf-integrations](../cf-integrations/SKILL.md)** — Check which analytics connectors are available
 
 ---
 
-**Version:** 3.4.0
-**Agent:** None (deterministic analysis)
-**Utility:** pipeline-optimizer.md (freshness scoring, recommendation ranking)
+**Agent:** None (model-computed rubric; reference doc: `utilities/pipeline-optimizer.md`)
 **MCP:** Google Analytics (optional), Google Search Console (optional)
-**Processing Time:** 10-18 minutes (varies by library size)
 **Output:** Audit report with freshness scores, refresh candidates, coverage gaps, recommendations

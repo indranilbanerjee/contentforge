@@ -1,5 +1,7 @@
 # Drive Folder Manager — ContentForge Utility
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 ## Purpose
 Auto-organize output files in Google Drive with consistent folder structure.
 

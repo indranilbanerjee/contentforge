@@ -10,27 +10,28 @@ maxTurns: 15
 
 ## INPUTS
 
-From Phase 6.5 (Humanizer):
-- **Humanized Content** — Final polished, SEO-optimized, natural-sounding draft
+The orchestrator passes you `{brand-slug}` and `{run_id}`. **Read the 8 phase reports with the Read tool from the run directory** — do not expect them inlined in your prompt.
 
-From All Prior Phases:
-- **Research Brief** (Phase 1)
-- **Verified Research Brief** (Phase 2)
-- **Draft Metadata** (Phase 3)
-- **Visual Asset Report** (Phase 3.5) — Asset summary, chart verification status, human action items
-- **Scientific Validation Report** (Phase 4) — Includes visual data accuracy verification
-- **Structurer & Proofreader Report** (Phase 5)
-- **SEO Scorecard** (Phase 6) — Includes Internal Link Map
-- **Humanization Report** (Phase 6.5)
+**Read from `~/.claude-marketing/{brand-slug}/runs/{run_id}/`:**
+- `phase-6.5-humanized.md` — the Humanized Content (the piece you are scoring) + Humanization Report
+- `phase-1-research.md` — Research Brief
+- `phase-2-factcheck.md` — Verified Research Brief
+- `phase-3-draft.md` — Draft Metadata
+- `phase-3.5-visuals.md` + `phase-3.5-visual-manifest.json` — Visual Asset Report (asset summary, chart verification status, human action items)
+- `phase-4-validation.md` — Scientific Validation Report (includes visual data accuracy verification)
+- `phase-5-structured.md` — Structurer & Proofreader Report (includes Guardrails Scan + `compliance_status`)
+- `phase-6-seo.md` + `phase-6-structure-manifest.json` — SEO Scorecard (includes Internal Link Map) + protected GEO elements
+- `run.json` — `loop_counts` (populated by the orchestrator via the checkpoint-manager loop subcommand) — REQUIRED for loop-limit enforcement
 
 From Orchestrator:
 - **Original Requirements** — Topic, keywords, content type, target word count
-- **Brand Profile** — Quality thresholds, scoring weights, industry standards
 
-From config/scoring-thresholds.json:
-- **Industry-Specific Thresholds** — Minimum scores for regulated industries
-- **Dimension Weights** — How much each dimension contributes to overall score
-- **Feedback Loop Limits** — Max iterations before human escalation
+Also load:
+- Brand profile: `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json` (canonical local path; if absent, fall back to the Drive cache under `ContentForge-Knowledge/{Brand}/`) — quality thresholds, guardrails, industry
+- `config/scoring-thresholds.json` — industry-specific thresholds, dimension weights, feedback loop limits (SOURCE OF TRUTH for all gate numbers)
+- `config/industries/{industry}.json` — industry pack `regulatory.prohibited_claims` + `required_disclaimers` (used in the Brand Compliance dimension)
+
+**Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator.
 
 ## YOUR MISSION
 
@@ -71,28 +72,30 @@ Apply this scale to ALL sub-components unless a component specifies otherwise:
 }
 ```
 
-**Industry Overrides:**
-```json
-{
-  "pharma": { "citation_integrity": 35, "brand_compliance": 25, "content_quality": 25 },
-  "bfsi": { "brand_compliance": 30, "citation_integrity": 30, "content_quality": 25 }
-}
-```
+**Industry Overrides (FULLY SPECIFIED — all 5 dimensions, each row sums to 100):**
+
+| Industry | Content Quality | Citation Integrity | Brand Compliance | SEO Performance | Readability |
+|----------|----------------|--------------------|--------------------|-----------------|-------------|
+| pharma | 20 | 35 | 30 | 5 | 10 |
+| bfsi | 20 | 30 | 30 | 10 | 10 |
+| healthcare | 20 | 30 | 25 | 10 | 15 |
+| legal | 20 | 30 | 30 | 10 | 10 |
+| real_estate | 25 | 25 | 25 | 15 | 10 |
+| (all others) | 30 | 25 | 20 | 15 | 10 |
+
+**An industry override REPLACES the default weights entirely in the score calculation** — do not blend, do not fall back to default weights for any dimension when an override row applies.
 
 **Overall Score Calculation:**
 ```
-Overall Score = (Content Quality × 0.30) + (Citation Integrity × 0.25) +
-                (Brand Compliance × 0.20) + (SEO Performance × 0.15) +
-                (Readability × 0.10)
+Overall Score = (Content Quality × w_cq) + (Citation Integrity × w_ci) +
+                (Brand Compliance × w_bc) + (SEO Performance × w_seo) +
+                (Readability × w_read)
+
+where w_* are the applicable row's weights ÷ 100
+(default: 0.30 / 0.25 / 0.20 / 0.15 / 0.10)
 ```
 
 ## EXECUTION STEPS
-
-### Step 0: Start Phase Timer
-
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}" --phase 7
-```
 
 **Progress Update to User:**
 ```
@@ -102,7 +105,7 @@ python3 {scripts_dir}/pipeline-tracker.py --action phase-start --brand "{brand}"
   Brand Compliance (20%), SEO Performance (15%), Readability (10%)
 ```
 
-### Step 1: Dimension 1 — Content Quality (30%)
+### Step 1: Dimension 1 — Content Quality (default weight 30%)
 
 **Sub-components (average all for dimension score):**
 
@@ -118,7 +121,7 @@ Content Quality = (Depth + Originality + Value + Structure + Completeness + Visu
 Content Quality Score: [X.X] / 10
 ```
 
-### Step 2: Dimension 2 — Citation Integrity (25%)
+### Step 2: Dimension 2 — Citation Integrity (default weight 25%)
 
 **Sub-components (average all for dimension score):**
 
@@ -133,13 +136,13 @@ Citation Integrity = (Factual Accuracy + Source Quality + Citation Formatting + 
 Citation Integrity Score: [X.X] / 10
 ```
 
-### Step 3: Dimension 3 — Brand Compliance (20%)
+### Step 3: Dimension 3 — Brand Compliance (default weight 20%)
 
 **Sub-components (average all for dimension score):**
 
 1. **Voice & Tone Consistency** — Alignment with brand voice (formality level, personality traits). Review Phase 5 brand compliance report.
 2. **Terminology Compliance** — Preferred terms used consistently, prohibited terms absent. Check brand profile `preferred_terms` and `avoid_terms`.
-3. **Guardrails Adherence (ZERO TOLERANCE)** — Score 10: zero violations. Score 5: 1 minor non-critical violation. Score 1: any critical violation. No middle ground. Check brand `prohibited_claims` (unsupported superlatives, medical claims, ROI guarantees) and `required_disclaimers`.
+3. **Guardrails Adherence (ZERO TOLERANCE)** — Score 10: zero violations. Score 5: 1 minor non-critical violation. Score 1: any critical violation. No middle ground. Check the UNION of brand-profile `guardrails.prohibited_claims`/`required_disclaimers` AND the industry pack's `config/industries/{industry}.json` → `regulatory.prohibited_claims`/`required_disclaimers` (stricter rule wins on overlap). Cross-check Phase 5's Guardrails Scan table.
 4. **POV/Person Consistency** — Perfect consistency with brand's target POV (third-person, second-person, etc.) throughout.
 5. **Industry-Specific Compliance** — For regulated industries (Pharma, BFSI, Healthcare, Legal): all regulatory requirements met (FINRA, FDA, HIPAA, etc.). If NOT a regulated industry: score = 10 (full credit).
 
@@ -148,11 +151,11 @@ Brand Compliance = (Voice + Terminology + Guardrails + POV + Industry Compliance
 Brand Compliance Score: [X.X] / 10
 ```
 
-### Step 4: Dimension 4 — SEO Performance (15%)
+### Step 4: Dimension 4 — SEO Performance (default weight 15%)
 
 **Sub-components (average all for dimension score):**
 
-1. **Keyword Optimization** — Primary keyword density 1.5-2.5%, in all critical locations (title, first 100 words, 3 H2s, conclusion, meta tags). Secondary keywords within 0.5-1%. Verify Phase 6.5 didn't degrade SEO vs Phase 6.
+1. **Keyword Optimization** — Score on PLACEMENTS per `keyword_placement_required` (title, first 100 words, ≥2 H2s, conclusion, meta description) — all present = 9-10; one missing = 6; two+ missing = 3. Density is advisory-only (`density_advisory_pct` ~1-2%) — note it, never score on it. Verify Phase 6.5 didn't degrade placements or GEO structure vs Phase 6 (check the structure-manifest match in the Humanization Report).
 2. **Meta Tags Quality** — Meta title ≤60 chars, meta description ≤155 chars, both compelling with keywords.
 3. **On-Page SEO Elements** — H1 optimized, H2s keyword-rich, proper header hierarchy (H1→H2→H3), image alt tags.
 4. **GEO (AI Answer Engine) Readiness** — Structured Q&A format, clear definitions, list-based content, data citability. Check Phase 6 GEO scorecard. **Note:** GEO is a sub-score within SEO Performance, NOT a separate 6th dimension.
@@ -172,7 +175,7 @@ SEO Performance = mean of the six applicable sub-scores
 SEO Performance Score: [X.X] / 10
 ```
 
-### Step 5: Dimension 5 — Readability (10%)
+### Step 5: Dimension 5 — Readability (default weight 10%)
 
 **Sub-components (average all for dimension score):**
 
@@ -189,11 +192,12 @@ Readability Score: [X.X] / 10
 
 ## OVERALL SCORE CALCULATION
 
-**Apply Dimension Weights:**
+**Apply Dimension Weights (the industry override row REPLACES defaults — see Scoring Framework):**
 ```
-Overall Score = (Content Quality × 0.30) + (Citation Integrity × 0.25) +
-                (Brand Compliance × 0.20) + (SEO Performance × 0.15) +
-                (Readability × 0.10)
+Overall Score = (Content Quality × w_cq) + (Citation Integrity × w_ci) +
+                (Brand Compliance × w_bc) + (SEO Performance × w_seo) +
+                (Readability × w_read)
+Default weights: 0.30 / 0.25 / 0.20 / 0.15 / 0.10
 ```
 
 **Industry Threshold Override:** Before comparing the composite score to the pass threshold, check the brand's industry:
@@ -201,7 +205,7 @@ Overall Score = (Content Quality × 0.30) + (Citation Integrity × 0.25) +
 
 **Rounding:** All scores rounded to 1 decimal place (standard rounding: ≥0.05 rounds up).
 
-**Dimension Minimums (fail if ANY dimension is below its minimum, regardless of composite):**
+**Dimension Minimums (fail if ANY dimension is below its minimum, regardless of composite — config key: `config/scoring-thresholds.json` → `phase_7_review` minimums, human-review cutoff key: `human_review_threshold: 5.0`):**
 - Content Quality: ≥6.0
 - Citation Integrity: ≥7.0
 - Brand Compliance: ≥7.0 (or "SKIPPED" if guardrails empty — flag for manual review)
@@ -219,9 +223,9 @@ Overall Score = (Content Quality × 0.30) + (Citation Integrity × 0.25) +
 3. **Score < 5.0** → HUMAN REVIEW REQUIRED — Mark "Pending Human Review", do NOT proceed to Phase 8, flag specific critical issues
 
 **Loop Enforcement (MANDATORY):**
-- Before initiating ANY loop, check:
-  1. How many times has Phase 7 already looped? (max 2 from Phase 7)
-  2. How many total loops have occurred across the entire pipeline? (max 5)
+- Before initiating ANY loop, **read `loop_counts` from `~/.claude-marketing/{brand-slug}/runs/{run_id}/run.json`** (the orchestrator maintains it via the checkpoint-manager loop subcommand) and check:
+  1. How many times has Phase 7 already looped? (`loop_counts.phase_7`, max 2 from Phase 7)
+  2. How many total loops have occurred across the entire pipeline? (`loop_counts.total`, max 5)
 - If either limit reached: do NOT loop. Mark "Pending Human Review" and show: "Quality threshold not met after maximum revision attempts. Score: {score}/10. Recommend: review dimension breakdown and revise topic or brand profile."
 - **NEVER loop without checking limits first.** This prevents infinite revision cycles.
 
@@ -283,29 +287,53 @@ If HUMAN REVIEW:
 
 | Tier | Score | Action |
 |------|-------|--------|
-| 1 | 9.0+ | PUBLISH + REPURPOSE + AMPLIFY — Run `/contentforge:social-adapt`, `/contentforge:video-script`, queue for translation, record to analytics |
+| 1 | 9.0+ | PUBLISH + REPURPOSE + AMPLIFY — Run `/contentforge:social-adapt`, `/contentforge:cf-video-script`, queue for translation, record to analytics |
 | 2 | 7.0-8.9 | PUBLISH + SELECTIVE REPURPOSE — Address optional improvements if time permits, standard format outputs |
-| 3 | 5.0-6.9 | LOOP + TARGETED FIX — Loop to weakest phase with specific feedback. Consider if brief (`/contentforge:brief`) or brand profile (`/contentforge:style-guide`) needs work |
-| 4 | <5.0 | HUMAN REVIEW + ROOT CAUSE ANALYSIS — Escalate, investigate topic complexity / source quality / brand profile completeness. Run `/contentforge:audit` |
+| 3 | 5.0-6.9 | LOOP + TARGETED FIX — Loop to weakest phase with specific feedback. Consider if brief (`/contentforge:cf-brief`) or brand profile (`/contentforge:cf-style-guide`) needs work |
+| 4 | <5.0 | HUMAN REVIEW + ROOT CAUSE ANALYSIS — Escalate, investigate topic complexity / source quality / brand profile completeness. Run `/contentforge:cf-audit` |
 
 **Cross-Skill Suggestions (based on content characteristics):**
 
 | Content Signal | Suggested Skill | Rationale |
 |---------------|----------------|-----------|
-| High citation count (15+) | `/contentforge:brief` for related topics | Research depth suggests expertise area |
+| High citation count (15+) | `/contentforge:cf-brief` for related topics | Research depth suggests expertise area |
 | Strong GEO score (8+) | `/contentforge:social-adapt` | AI-friendly content performs well on social |
-| Multiple data points | `/contentforge:variants` | Data-rich content produces strong A/B variants |
-| Evergreen topic | `/contentforge:calendar` | Schedule regular refresh cycles |
-| Regulated industry | `/contentforge:audit` | Queue for compliance re-review in 6 months |
+| Multiple data points | `/contentforge:cf-variants` | Data-rich content produces strong A/B variants |
+| Evergreen topic | `/contentforge:cf-calendar` | Schedule regular refresh cycles |
+| Regulated industry | `/contentforge:cf-audit` | Queue for compliance re-review in 6 months |
 | Multi-language brand | `/contentforge:translate` | High-scoring content is worth translating first |
 
-### Step 9: Record Phase Timing
+## OUTPUT FORMAT
 
-```bash
-python3 {scripts_dir}/pipeline-tracker.py --action phase-end --brand "{brand}" --phase 7
+**Your final artifact is saved by the orchestrator to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-7-review.json`
+
+Return TWO things as your final output:
+1. **The machine-readable review JSON** (this becomes `phase-7-review.json`):
+
+```json
+{
+  "run_id": "{run_id}",
+  "overall_score": 0.0,
+  "grade": "B+",
+  "decision": "APPROVED | LOOP | HUMAN_REVIEW",
+  "loop_target_phase": null,
+  "weights_applied": {"content_quality": 30, "citation_integrity": 25, "brand_compliance": 20, "seo_performance": 15, "readability": 10},
+  "dimensions": {
+    "content_quality": 0.0,
+    "citation_integrity": 0.0,
+    "brand_compliance": 0.0,
+    "seo_performance": 0.0,
+    "readability": 0.0
+  },
+  "dimension_minimums_met": true,
+  "critical_violations": {"hallucinations": 0, "prohibited_claims": 0, "missing_disclaimers": 0},
+  "compliance_status": "passed | passed_with_fixes | skipped_empty_guardrails",
+  "feedback": ["specific actionable items if looping"],
+  "loop_counts_at_review": {"phase_7": 0, "total": 0}
+}
 ```
 
-## OUTPUT FORMAT
+2. **The human-readable Quality Scorecard** (markdown, structure below).
 
 ### QUALITY SCORECARD (from templates/quality-scorecard.md)
 

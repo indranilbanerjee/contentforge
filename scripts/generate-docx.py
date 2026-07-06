@@ -17,11 +17,14 @@ If python-docx is not installed, it is auto-installed via pip.
 
 Output structure:
     1. Title page (brand, date, type, score)
-    2. Body — full article with H1/H2/H3 hierarchy
-    3. Sources/Citations
-    4. Appendix A — SEO Scorecard
-    5. Appendix B — Quality Scorecard
-    6. Appendix C — Production Details (phase timing, loops, metrics)
+    2. Table of Contents field (right-click > Update Field in Word)
+    3. Body — full article with H1/H2/H3 hierarchy, images, nested lists
+    4. Sources/Citations
+    5. Appendix A — SEO Scorecard
+    6. Appendix B — Quality Scorecard
+    7. Appendix C — Production Details (phase timing, loops, metrics)
+    8. Appendix D — Internal Link Map
+    Footer: "Page X of Y" on every page. Body line spacing 1.15.
 
 Reports JSON schema (all sections optional, missing = skipped):
     {
@@ -69,10 +72,24 @@ Reports JSON schema (all sections optional, missing = skipped):
 import argparse
 import json
 import re
-import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
+
+
+def _plugin_version() -> str:
+    """Read the canonical plugin version from .claude-plugin/plugin.json."""
+    pj = Path(__file__).resolve().parent.parent / ".claude-plugin" / "plugin.json"
+    data = _common.load_json_safe(pj)
+    if isinstance(data, dict) and data.get("version"):
+        return str(data["version"])
+    return "unknown"
+
 
 # Captures Phase 6 SEO agent INTERNAL-LINK markers so the renderer can replace
 # them with real Word hyperlinks (or visibly-distinct placeholders when url=TBD).
@@ -83,6 +100,16 @@ INTERNAL_LINK_PATTERN = re.compile(
     r"<!--\s*INTERNAL-LINK:\s*(?P<body>[^>]+?)-->",
     re.IGNORECASE,
 )
+
+# Block-level image: ![alt](path "optional title") alone on a line
+IMAGE_BLOCK_PATTERN = re.compile(r'^!\[([^\]]*)\]\(\s*([^)\s]+)(?:\s+"[^"]*")?\s*\)\s*$')
+
+# List items with indentation captured for nesting
+BULLET_ITEM_PATTERN = re.compile(r"^(\s*)([-*+])\s+(.*)$")
+ORDERED_ITEM_PATTERN = re.compile(r"^(\s*)\d+[.)]\s+(.*)$")
+
+# Horizontal rules: ---, ***, ___ (3+ of the same char)
+HR_PATTERN = re.compile(r"^\s*([-*_])\s*(?:\1\s*){2,}$")
 
 
 def parse_internal_link_marker(marker_body):
@@ -192,16 +219,44 @@ def ensure_docx():
         return
     except ImportError:
         pass
-    print("Installing python-docx...", file=sys.stderr)
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "--quiet", "python-docx>=1.1.0"]
-    )
+    err = _common.pip_install(["python-docx>=1.1.0"], label="python-docx")
+    if err:
+        _common.finish(err)
+
+
+def _is_block_start(line):
+    """True when a line begins a non-paragraph block (used to terminate
+    paragraph continuation)."""
+    if line.startswith(("#", ">", "|", "```")):
+        return True
+    if HR_PATTERN.match(line):
+        return True
+    if BULLET_ITEM_PATTERN.match(line) or ORDERED_ITEM_PATTERN.match(line):
+        return True
+    if IMAGE_BLOCK_PATTERN.match(line.strip()):
+        return True
+    return False
+
+
+def _indent_level(indent_str):
+    """Map leading whitespace to a nesting level 0-2 (2-space or 4-space
+    indents both count as one level per step; deeper than 2 is clamped)."""
+    spaces = len(indent_str.expandtabs(4))
+    if spaces == 0:
+        return 0
+    if spaces < 4:
+        return 1
+    return 2
 
 
 def parse_markdown_to_blocks(md_text):
     """
     Parse markdown into ordered blocks: (kind, content) tuples.
-    kind in {'h1','h2','h3','para','bullet','ordered','table','hr','quote','code'}
+    kind in {'h1','h2','h3','para','bullet','ordered','table','hr','quote',
+             'code','image'}
+    'bullet' and 'ordered' content is a list of (level, text) tuples where
+    level is 0-2 (nested lists).
+    'image' content is (alt_text, path).
     Strips YAML frontmatter if present.
     Strips ContentForge "completion card" / appendix sections that the agent may
     have inlined — those go in the proper appendix sections instead.
@@ -234,7 +289,11 @@ def parse_markdown_to_blocks(md_text):
             i += 1
             continue
 
-        if line.startswith("# "):
+        img = IMAGE_BLOCK_PATTERN.match(line.strip())
+        if img:
+            blocks.append(("image", (img.group(1), img.group(2))))
+            i += 1
+        elif line.startswith("# "):
             blocks.append(("h1", line[2:].strip()))
             i += 1
         elif line.startswith("## "):
@@ -243,7 +302,7 @@ def parse_markdown_to_blocks(md_text):
         elif line.startswith("### "):
             blocks.append(("h3", line[4:].strip()))
             i += 1
-        elif line.startswith("---") and len(line.strip()) >= 3 and set(line.strip()) <= {"-"}:
+        elif HR_PATTERN.match(line):
             blocks.append(("hr", ""))
             i += 1
         elif line.startswith("> "):
@@ -258,18 +317,24 @@ def parse_markdown_to_blocks(md_text):
                 table_lines.append(lines[i].rstrip())
                 i += 1
             blocks.append(("table", table_lines))
-        elif line.startswith(("- ", "* ")):
-            bullet_lines = []
-            while i < len(lines) and lines[i].startswith(("- ", "* ")):
-                bullet_lines.append(lines[i][2:].rstrip())
+        elif BULLET_ITEM_PATTERN.match(line):
+            items = []
+            while i < len(lines):
+                m = BULLET_ITEM_PATTERN.match(lines[i])
+                if not m:
+                    break
+                items.append((_indent_level(m.group(1)), m.group(3).rstrip()))
                 i += 1
-            blocks.append(("bullet", bullet_lines))
-        elif re.match(r"^\d+\. ", line):
-            ordered_lines = []
-            while i < len(lines) and re.match(r"^\d+\. ", lines[i]):
-                ordered_lines.append(re.sub(r"^\d+\. ", "", lines[i]).rstrip())
+            blocks.append(("bullet", items))
+        elif ORDERED_ITEM_PATTERN.match(line):
+            items = []
+            while i < len(lines):
+                m = ORDERED_ITEM_PATTERN.match(lines[i])
+                if not m:
+                    break
+                items.append((_indent_level(m.group(1)), m.group(2).rstrip()))
                 i += 1
-            blocks.append(("ordered", ordered_lines))
+            blocks.append(("ordered", items))
         elif line.startswith("```"):
             code_lines = []
             i += 1
@@ -281,9 +346,8 @@ def parse_markdown_to_blocks(md_text):
         else:
             para_lines = [line]
             i += 1
-            while i < len(lines) and lines[i].strip() and not lines[i].startswith(
-                ("#", ">", "|", "- ", "* ", "```", "---")
-            ) and not re.match(r"^\d+\. ", lines[i]):
+            while (i < len(lines) and lines[i].strip()
+                   and not _is_block_start(lines[i])):
                 para_lines.append(lines[i].rstrip())
                 i += 1
             blocks.append(("para", " ".join(para_lines)))
@@ -291,23 +355,43 @@ def parse_markdown_to_blocks(md_text):
     return blocks
 
 
-def _render_markdown_segment(paragraph, text):
-    """Render **bold**, *italic*, [md text](url), `code` inside a text segment."""
-    from docx.shared import Pt, RGBColor
+# Inline markdown, matched in priority order:
+#   inline image, ***bold italic*** / ___..___, **bold** / __..__,
+#   *italic*, _italic_ (word-boundary guarded so snake_case survives),
+#   `code`, [text](url)
+INLINE_PATTERN = re.compile(
+    r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)"        # 1,2  image
+    r"|\*\*\*([^*]+)\*\*\*|___([^_]+)___"                   # 3,4  bold italic
+    r"|\*\*([^*]+)\*\*|__([^_]+)__"                         # 5,6  bold
+    r"|\*([^*\s][^*]*?)\*"                                  # 7    italic *
+    r"|(?<![\w\\])_([^_\s][^_]*?)_(?![\w])"                 # 8    italic _
+    r"|`([^`]+)`"                                            # 9    code
+    r"|\[([^\]]+)\]\(([^)]+)\)"                             # 10,11 link
+)
 
-    pattern = re.compile(
-        r"\*\*([^*]+)\*\*|\*([^*]+)\*|`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)"
-    )
+
+def _render_markdown_segment(paragraph, text):
+    """Render inline markdown (bold/italic/bold-italic in * and _ forms,
+    `code`, [text](url) links, and inline images) inside a text segment."""
+    from docx.shared import Pt, RGBColor, Inches
+
     pos = 0
-    for m in pattern.finditer(text):
+    for m in INLINE_PATTERN.finditer(text):
         if m.start() > pos:
             paragraph.add_run(text[pos:m.start()])
-        bold_t, ital_t, code_t, link_t, link_url = m.groups()
-        if bold_t is not None:
-            run = paragraph.add_run(bold_t)
+        (img_alt, img_path, bi_star, bi_und, b_star, b_und,
+         i_star, i_und, code_t, link_t, link_url) = m.groups()
+        if img_path is not None:
+            _add_image_run(paragraph, img_alt or "", img_path, inline=True)
+        elif bi_star is not None or bi_und is not None:
+            run = paragraph.add_run(bi_star if bi_star is not None else bi_und)
             run.bold = True
-        elif ital_t is not None:
-            run = paragraph.add_run(ital_t)
+            run.italic = True
+        elif b_star is not None or b_und is not None:
+            run = paragraph.add_run(b_star if b_star is not None else b_und)
+            run.bold = True
+        elif i_star is not None or i_und is not None:
+            run = paragraph.add_run(i_star if i_star is not None else i_und)
             run.italic = True
         elif code_t is not None:
             run = paragraph.add_run(code_t)
@@ -326,12 +410,35 @@ def _render_markdown_segment(paragraph, text):
         paragraph.add_run(text[pos:])
 
 
+def _add_image_run(paragraph, alt_text, path, inline=False):
+    """Add an image to a paragraph. Missing/broken files degrade to a
+    visible placeholder so the reviewer knows an asset needs attention."""
+    from docx.shared import Inches, RGBColor
+
+    img_path = Path(path).expanduser()
+    if img_path.exists() and img_path.is_file():
+        try:
+            run = paragraph.add_run()
+            if inline:
+                run.add_picture(str(img_path), width=Inches(3.0))
+            else:
+                run.add_picture(str(img_path), width=Inches(6.0))
+            return True
+        except Exception as exc:
+            print(f"Image embed error for {img_path}: {exc}", file=sys.stderr)
+    run = paragraph.add_run(f"[Image not found: {path}"
+                            + (f" — {alt_text}" if alt_text else "") + "]")
+    run.bold = True
+    run.font.color.rgb = RGBColor(0xC0, 0x39, 0x2B)
+    return False
+
+
 def add_inline_runs(paragraph, text):
     """
     Render inline content with two passes:
       1. Split on `<!-- INTERNAL-LINK: ... -->` markers from Phase 6 SEO agent
          → render each as a real Word hyperlink (or visible placeholder if URL is TBD)
-      2. Within plain-text segments, render markdown bold/italic/code/[text](url)
+      2. Within plain-text segments, render markdown emphasis/code/links/images
     """
     segments = split_text_with_links(text)
     for kind, payload in segments:
@@ -356,6 +463,17 @@ def collect_internal_link_markers(md_text):
         if fields.get("anchor"):
             found.append(fields)
     return found
+
+
+def _list_style(base, level, doc):
+    """Return a list style name for a nesting level, falling back to the
+    base style when the numbered variant isn't in the template."""
+    name = base if level == 0 else f"{base} {level + 1}"
+    try:
+        doc.styles[name]  # noqa: B018 — existence probe
+        return name
+    except KeyError:
+        return base
 
 
 def render_blocks(doc, blocks):
@@ -387,13 +505,25 @@ def render_blocks(doc, blocks):
             p = doc.add_paragraph()
             add_inline_runs(p, content)
             p.paragraph_format.space_after = Pt(6)
+        elif kind == "image":
+            alt, path = content
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            _add_image_run(p, alt, path, inline=False)
+            if alt:
+                cap = doc.add_paragraph()
+                cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                run = cap.add_run(alt)
+                run.italic = True
+                run.font.size = Pt(9)
+                run.font.color.rgb = RGBColor(0x66, 0x66, 0x66)
         elif kind == "bullet":
-            for item in content:
-                p = doc.add_paragraph(style="List Bullet")
+            for level, item in content:
+                p = doc.add_paragraph(style=_list_style("List Bullet", level, doc))
                 add_inline_runs(p, item)
         elif kind == "ordered":
-            for item in content:
-                p = doc.add_paragraph(style="List Number")
+            for level, item in content:
+                p = doc.add_paragraph(style=_list_style("List Number", level, doc))
                 add_inline_runs(p, item)
         elif kind == "quote":
             p = doc.add_paragraph()
@@ -437,6 +567,74 @@ def render_blocks(doc, blocks):
                 doc.add_paragraph()
             except Exception as e:
                 print(f"Table render error: {e}", file=sys.stderr)
+
+
+def _add_field(paragraph, instruction, placeholder_text=""):
+    """Insert a Word field (e.g. TOC, PAGE, NUMPAGES) via raw OOXML."""
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
+
+    r_begin = OxmlElement("w:r")
+    fld_begin = OxmlElement("w:fldChar")
+    fld_begin.set(qn("w:fldCharType"), "begin")
+    r_begin.append(fld_begin)
+
+    r_instr = OxmlElement("w:r")
+    instr = OxmlElement("w:instrText")
+    instr.set(qn("xml:space"), "preserve")
+    instr.text = instruction
+    r_instr.append(instr)
+
+    r_sep = OxmlElement("w:r")
+    fld_sep = OxmlElement("w:fldChar")
+    fld_sep.set(qn("w:fldCharType"), "separate")
+    r_sep.append(fld_sep)
+
+    r_text = OxmlElement("w:r")
+    if placeholder_text:
+        t = OxmlElement("w:t")
+        t.set(qn("xml:space"), "preserve")
+        t.text = placeholder_text
+        r_text.append(t)
+
+    r_end = OxmlElement("w:r")
+    fld_end = OxmlElement("w:fldChar")
+    fld_end.set(qn("w:fldCharType"), "end")
+    r_end.append(fld_end)
+
+    for r in (r_begin, r_instr, r_sep, r_text, r_end):
+        paragraph._p.append(r)
+
+
+def add_toc(doc):
+    """Insert a Table of Contents field covering heading levels 1-3.
+    Word populates it on 'Update Field' / print preview."""
+    from docx.shared import Pt
+
+    p = doc.add_paragraph()
+    run = p.add_run("Table of Contents")
+    run.bold = True
+    run.font.size = Pt(16)
+
+    field_para = doc.add_paragraph()
+    _add_field(field_para, r'TOC \o "1-3" \h \z \u',
+               "Right-click and choose 'Update Field' to build the table of contents.")
+    doc.add_page_break()
+
+
+def add_page_footer(doc):
+    """'Page X of Y' centered footer on every section."""
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+
+    for section in doc.sections:
+        footer = section.footer
+        p = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
+        p.text = ""
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        p.add_run("Page ")
+        _add_field(p, "PAGE", "1")
+        p.add_run(" of ")
+        _add_field(p, "NUMPAGES", "1")
 
 
 def add_title_page(doc, brand, content_type, title, score, grade):
@@ -712,8 +910,9 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
 
         from datetime import datetime as _dt, timezone as _tz
         created = _dt.now(_tz.utc).isoformat()
+        cf_version = _plugin_version()
         manifest = {
-            "claim_generator_info": [{"name": "ContentForge", "version": "3.10.0"}],
+            "claim_generator_info": [{"name": "ContentForge", "version": cf_version}],
             "title": f"{args.brand} — AI-assisted {args.content_type}",
             "format": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "assertions": [
@@ -723,7 +922,7 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
                         {
                             "action": "c2pa.created",
                             "when": created,
-                            "softwareAgent": {"name": "ContentForge 11-phase pipeline", "version": "3.10.0"},
+                            "softwareAgent": {"name": "ContentForge 10-phase pipeline", "version": cf_version},
                         },
                         {
                             "action": "c2pa.edited",
@@ -751,11 +950,11 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
         # Try embedding via c2pa.Builder if .docx MIME is supported (versions vary)
         embed_status = "sidecar-only"
         embed_manifest_id = None
+        using_dev_cert = False
         try:
             # Generate self-signed dev cert if user didn't supply one
             import tempfile
             cert_pem, key_pem = args.c2pa_signing_cert, args.c2pa_signing_key
-            using_dev_cert = False
             if not (cert_pem and key_pem):
                 from cryptography import x509
                 from cryptography.x509.oid import NameOID, ExtendedKeyUsageOID
@@ -811,8 +1010,9 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
                     pass
                 tmp_signed = output_path.with_suffix(".c2pa-tmp.docx")
                 builder.sign_file(str(output_path), str(tmp_signed), signer=signer)
-                output_path.unlink()
-                tmp_signed.rename(output_path)
+                # Atomic replace — the old unlink()+rename() pair had a crash
+                # window where the deliverable was deleted.
+                tmp_signed.replace(output_path)
                 # Round-trip
                 try:
                     with open(output_path, "rb") as fh:
@@ -826,7 +1026,6 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
                 embed_status = "sidecar-only (.docx MIME not in c2pa-python supported list)"
         except Exception as exc:
             embed_status = f"sidecar-only (embed failed: {type(exc).__name__}: {exc})"
-            using_dev_cert = False
 
         return {
             "c2pa_signed": True,
@@ -847,6 +1046,8 @@ def main():
     parser.add_argument("--brand", default="Brand", help="Brand name for header")
     parser.add_argument("--content-type", default="article", help="article/blog/whitepaper/faq/research_paper")
     parser.add_argument("--title", help="Override title (else extracts from first H1)")
+    parser.add_argument("--no-toc", action="store_true",
+                        help="Skip the Table of Contents field after the title page")
     # v3.10 — EU AI Act Article 50: optional C2PA provenance signing of the .docx
     parser.add_argument("--c2pa-sign", action="store_true",
                         help="Embed C2PA manifest in the .docx (or write a sidecar .c2pa.json if .docx embedding unsupported). EU AI Act Article 50 compliance for AI-assisted content distributed in EU markets.")
@@ -861,6 +1062,8 @@ def main():
     from docx.shared import Pt, Inches
 
     content_path = Path(args.content)
+    if not content_path.exists():
+        _common.finish({"error": f"content file not found: {content_path}"})
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -891,6 +1094,7 @@ def main():
     style = doc.styles["Normal"]
     style.font.name = "Calibri"
     style.font.size = Pt(11)
+    style.paragraph_format.line_spacing = 1.15  # per 08-output-manager spec
     for section in doc.sections:
         section.left_margin = Inches(1)
         section.right_margin = Inches(1)
@@ -898,9 +1102,22 @@ def main():
         section.bottom_margin = Inches(1)
 
     add_title_page(doc, args.brand, args.content_type, title, score, grade)
-    blocks_no_title = [b for b in blocks if not (b[0] == "h1" and b[1] == title)]
+    if not args.no_toc:
+        add_toc(doc)
+
+    # Strip only the FIRST body H1 that duplicates the title-page title;
+    # legitimately repeated H1s later in the body are preserved.
+    blocks_no_title = []
+    removed_title_h1 = False
+    for b in blocks:
+        if not removed_title_h1 and b[0] == "h1" and b[1] == title:
+            removed_title_h1 = True
+            continue
+        blocks_no_title.append(b)
+
     render_blocks(doc, blocks_no_title)
     add_appendices(doc, reports, link_markers=link_markers)
+    add_page_footer(doc)
 
     doc.save(output_path)
     link_summary = {}
@@ -923,10 +1140,11 @@ def main():
         "reports_included": list(reports.keys()),
         "internal_links_total": len(link_markers),
         "internal_links_by_type": link_summary,
+        "toc_included": not args.no_toc,
     }
     if c2pa_result is not None:
         result_obj["c2pa"] = c2pa_result
-    print(json.dumps(result_obj))
+    _common.finish(result_obj)
 
 
 if __name__ == "__main__":

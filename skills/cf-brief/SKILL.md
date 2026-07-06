@@ -9,32 +9,29 @@ effort: high
 
 Generate a comprehensive, research-backed content brief from a keyword or topic. The brief includes keyword data, competitor content analysis, search intent classification, audience pain points, a recommended outline, and an actionable SEO strategy — everything a writer needs to produce high-ranking content on the first draft.
 
-## Context efficiency
-
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
-
 ## When to Use
 
-Use `/contentforge:brief` when:
-- You need a **structured content brief** before starting production with `/contentforge`
+Use `/contentforge:cf-brief` when:
+- You need a **structured content brief** before starting production with `/contentforge:create-content`
 - You want **data-driven keyword research** to inform topic selection
 - You need to **analyze competitor content** to find gaps and differentiation angles
 - You're planning a content calendar and need briefs for multiple upcoming pieces
 - A client or stakeholder requires a **brief for approval** before production begins
 - You want to understand **search intent** before committing to a content type
 
-**For direct content production** (brief + draft in one step), use `/contentforge` instead.
-**For multiple briefs in parallel**, run `/contentforge:brief` for each topic individually (batch brief support planned for v2.2).
+**For direct content production** (brief + draft in one step), use `/contentforge:create-content` instead.
+**For multiple briefs**, run `/contentforge:cf-brief` once per topic.
 
 ## What This Command Does
 
-1. **Keyword Research** — Primary keyword analysis with search volume, keyword difficulty, related keywords, LSI terms, and long-tail opportunities
-2. **Competitor Content Analysis** — Analyze top 5 ranking pages for word count, structure, key points covered, content gaps, and unique angles
+1. **Keyword Research** — Primary keyword analysis with search volume, keyword difficulty, related and semantically adjacent terms, and long-tail opportunities
+2. **Competitor Content & E-E-A-T Analysis** — Analyze top 5 ranking pages for word count, structure, key points covered, content gaps, unique angles, and E-E-A-T signals (author credentials, original research, first-hand experience)
 3. **Search Intent Classification** — Determine whether the query is informational, commercial, transactional, or navigational, and recommend content type accordingly
 4. **Audience Pain Points & Questions** — Map target audience needs, common questions, forum discussions, and "People Also Ask" patterns
 5. **Recommended Outline** — Generate a structured outline with title options, section descriptions, word count allocations, and citation targets per section
-6. **SEO Strategy** — Keyword density targets, meta title/description recommendations, internal linking opportunities, featured snippet potential, and schema markup suggestions
-7. **Success Metrics** — Define measurable goals: target word count, minimum citations, readability target, quality score goal, and expected production time
+6. **SEO Strategy** — Keyword placement plan, meta title/description recommendations, internal linking opportunities, featured snippet potential, and schema markup suggestions
+7. **AEO/GEO Strategy** — AI Overview presence check, citation-worthiness checklist, entity consistency, answer-block recommendations, llms.txt awareness
+8. **Success Metrics** — Define measurable goals: target word count, minimum citations, readability target, quality score goal (8.5+)
 
 ## Required Inputs
 
@@ -52,7 +49,7 @@ Use `/contentforge:brief` when:
 
 ### Interactive Mode (Recommended)
 ```
-/contentforge:brief
+/contentforge:cf-brief
 ```
 **Prompts you for:**
 1. Keyword or topic
@@ -63,17 +60,17 @@ Use `/contentforge:brief` when:
 
 ### Quick Mode (All Parameters)
 ```
-/contentforge:brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
+/contentforge:cf-brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
 ```
 
 ### With Competitor URLs
 ```
-/contentforge:brief "best CRM for startups" --audience="Startup founders" --competitors="https://example1.com/crm-guide,https://example2.com/best-crm" --goal=conversions
+/contentforge:cf-brief "best CRM for startups" --audience="Startup founders" --competitors="https://example1.com/crm-guide,https://example2.com/best-crm" --goal=conversions
 ```
 
 ### With Brand Context
 ```
-/contentforge:brief "cloud security best practices" --audience="IT Directors" --brand=AcmeTech --type=whitepaper
+/contentforge:cf-brief "cloud security best practices" --audience="IT Directors" --brand=AcmeTech --type=whitepaper
 ```
 
 ## What Happens
@@ -84,10 +81,9 @@ Gather keyword data for the primary keyword and discover related opportunities.
 
 **Data Collected:**
 - **Primary Keyword:** Search volume (monthly), keyword difficulty (0-100), CPC indicator, trend direction
-- **Related Keywords:** 10-15 semantically related terms with volume and difficulty
-- **LSI Keywords:** 8-12 latent semantic indexing terms for natural content enrichment
+- **Related Keywords:** 10-15 semantically related terms with volume and difficulty (cover the topic's entities and subtopics naturally — do not treat these as terms to sprinkle for density)
 - **Long-Tail Opportunities:** 5-8 long-tail variants with lower difficulty and clear intent
-- **Question Keywords:** 5-10 question-format queries from "People Also Ask" and forums
+- **Question Keywords:** 5-10 question-format queries from "People Also Ask" and forums (these double as AEO answer-block targets in Phase 6.5)
 
 **MCP Integration:**
 - **Ahrefs (optional, HTTP):** If connected, pulls real search volume, keyword difficulty, SERP features, and related keywords from the Ahrefs API. Data is more accurate and comprehensive than estimates.
@@ -142,6 +138,7 @@ Analyze top 5 ranking pages (or provided competitor URLs) to identify patterns, 
 - **Key Points Covered:** Main arguments, data points, examples used
 - **Content Gaps:** What's missing, outdated, or insufficiently covered
 - **Unique Angle:** What differentiates this piece from others
+- **E-E-A-T Signals:** Named author with credentials? Original data or first-hand experience? Cited primary sources? Review/update dates? These determine what your piece must match or beat to be citable by both Google and AI answer engines
 
 **Aggregate Analysis:**
 - **Average Word Count:** Across top 5 results
@@ -150,18 +147,18 @@ Analyze top 5 ranking pages (or provided competitor URLs) to identify patterns, 
 - **Content Freshness:** Publication dates, last-updated dates
 - **Format Patterns:** Listicles vs. guides vs. research-style content
 
-**Example Output:**
+**SYNTHETIC EXAMPLE — fabricated for illustration (fictional domains and numbers):**
 ```
 Competitor Content Analysis
 ================================================================
 
-Competitor #1: healthtechmagazine.com/ai-diagnostics-guide
+Competitor #1: examplehealthjournal.com/ai-diagnostics-guide
   Word Count: 2,850
   Structure: 8 H2 sections (intro, definition, use cases x4, challenges, future)
   Strengths: Comprehensive use cases, good data visualizations
   Gaps: No 2026 data, no cost analysis, no implementation guide
 
-Competitor #2: mckinsey.com/healthcare/ai-diagnostics
+Competitor #2: exampleconsulting.com/healthcare/ai-diagnostics
   Word Count: 3,200
   Structure: 6 H2 sections (executive summary, market size, applications, barriers, recommendations, appendix)
   Strengths: Strong data and market projections, authoritative tone
@@ -412,22 +409,24 @@ Target Citations: 20-25 sources
 Define the SEO approach for the content piece based on keyword data and competitor analysis.
 
 **Strategy Components:**
-- Keyword density targets (primary and secondary)
+- Keyword **placement plan** (title, H1, first 100 words, 2-3 H2s, conclusion). Density is advisory only (~1-2% typically emerges from natural coverage) — quality gates check placements, not percentages. Never pad copy to hit a density number.
 - Meta title and meta description recommendations (2 options each)
 - Internal linking opportunities (suggest related content to link to)
 - Featured snippet optimization (format content for snippet capture)
 - Schema markup recommendations (Article, FAQ, HowTo)
 - Header tag optimization (keyword placement in H2s/H3s)
 
-**Example Output:**
+**SYNTHETIC EXAMPLE — fabricated for illustration:**
 ```
 SEO Strategy
 ================================================================
 
-Keyword Density Targets:
-  Primary: "AI diagnostics precision medicine" — 1.8-2.2% (5-6 uses)
-  Secondary: "AI diagnostic tools" — 0.8-1.0% (2-3 uses)
-  Secondary: "precision medicine AI" — 0.5-0.8% (2 uses)
+Keyword Placement Plan:
+  Primary: "AI diagnostics precision medicine" — title, H1, first 100
+    words, Section 1 H2, Section 4 body, conclusion
+  Secondary: "AI diagnostic tools" — Section 2 H2 + body
+  Secondary: "precision medicine AI" — Section 3 body
+  (Advisory: natural coverage lands around 1-2% density; do not force it)
 
 Meta Title Options:
   1. "AI Diagnostics in Precision Medicine: 2026 Executive Guide" (55 chars)
@@ -460,6 +459,29 @@ Internal Linking Opportunities:
 ================================================================
 ```
 
+### Phase 6.5: AEO/GEO Strategy (2-3 minutes)
+
+Optimize for AI answer engines (Google AI Overviews, ChatGPT, Perplexity, Gemini, Claude) — where a growing share of discovery happens in 2026. This is not a bolt-on: the brief should tell the writer exactly how to make the piece **citable by machines**, not just rankable.
+
+**Strategy Components:**
+
+1. **AI Overview presence check** — For the primary keyword and the top 3 question keywords, check (via web search) whether Google currently shows an AI Overview and which sources it cites. Record: AI Overview present yes/no, cited domains, and whether any competitor from Phase 2 is cited. If an AI Overview dominates the SERP, plan for citation capture rather than pure blue-link CTR.
+
+2. **Citation-worthiness checklist** — AI engines cite content that is easy to quote. The brief must direct the draft to include:
+   - Quotable statistics with clear attribution ("According to [source]'s 2026 survey, X% ...")
+   - A crisp definitional sentence for the core concept within the first 150 words (one sentence an engine can lift verbatim)
+   - Expert attribution — named author with credentials, or quoted subject-matter experts
+   - Original data, benchmarks, or first-hand experience competitors lack (the strongest citation magnet)
+   - Publication and last-updated dates visible on the page
+
+3. **Answer-block recommendations** — Map each "People Also Ask" question from Phase 1 to a section: use the question verbatim as an H2/H3, answer it directly in the first 40-60 words below the heading, then elaborate. Recommend definition boxes, comparison tables, and step lists — formats engines extract reliably.
+
+4. **Entity consistency** — List the entities (brand, product, people, concepts) the piece must reference consistently. Names, spellings, and descriptions should match the brand's site, schema markup, and third-party profiles so knowledge graphs and LLMs resolve them to the same entity.
+
+5. **llms.txt awareness** — Note whether the publishing domain has an `llms.txt` file. If yes, recommend adding this piece to it after publication. If no, flag it as a site-level recommendation (the emerging convention for signaling canonical, LLM-friendly content paths).
+
+**Output for this phase:** an "AEO/GEO" section in the brief listing AI Overview status per target query, the citation-worthiness items the draft must include, the question-to-answer-block map, the entity list, and the llms.txt recommendation.
+
 ### Phase 7: Success Metrics Definition (1 minute)
 
 Define measurable targets for the content piece.
@@ -489,12 +511,13 @@ The complete content brief document follows the `content-brief-template.md` form
 
 | Section | Description |
 |---------|------------|
-| **Keyword Research** | Primary keyword data, related keywords, LSI terms, long-tail opportunities, question keywords |
-| **Competitor Analysis** | Top 5 competitor breakdown with word count, structure, gaps, aggregate findings |
+| **Keyword Research** | Primary keyword data, related keywords, long-tail opportunities, question keywords |
+| **Competitor Analysis** | Top 5 competitor breakdown with word count, structure, gaps, E-E-A-T signals, aggregate findings |
 | **Search Intent** | Intent classification with confidence, evidence, content type recommendation |
 | **Audience Insights** | Pain points, questions, knowledge gaps, desired outcomes, language patterns |
 | **Recommended Outline** | Title options, 5-7 sections with descriptions, word count allocations, citation targets |
-| **SEO Strategy** | Keyword density, meta recommendations, featured snippet optimization, schema, internal links |
+| **SEO Strategy** | Keyword placement plan, meta recommendations, featured snippet optimization, schema, internal links |
+| **AEO/GEO Strategy** | AI Overview status per query, citation-worthiness items, answer-block map, entity list, llms.txt recommendation |
 | **Success Metrics** | Word count target, citation minimum, readability target, quality score goal, production time |
 | **Content Brief Checklist** | Pre-production verification items |
 
@@ -515,8 +538,10 @@ Brief Summary:
     implementation timelines
 
   Outline Sections: 7 + intro + conclusion
-  SEO Strategy: 1.8-2.2% primary density, featured snippet target,
+  SEO Strategy: 6 keyword placements mapped, featured snippet target,
     Article schema markup
+  AEO/GEO: AI Overview present for 2/4 target queries; 5 answer
+    blocks mapped from PAA; citation-worthiness checklist attached
   Quality Score Goal: 8.5+/10
   Expected Production Time: 25-30 min via /contentforge
 
@@ -528,7 +553,7 @@ Brief saved to:
 
 ### Step 1: Generate Brief
 ```
-/contentforge:brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
+/contentforge:cf-brief "AI diagnostics precision medicine" --audience="Healthcare Executives" --type=article --goal=traffic
 ```
 
 ### Step 2: Review and Approve Brief
@@ -538,12 +563,12 @@ Brief saved to:
 
 ### Step 3: Produce Content from Brief
 ```
-/contentforge "AI Diagnostics in Precision Medicine: 2026 Executive Guide" --type=article --brand=AcmeMed --audience="Healthcare Executives" --keyword="AI diagnostics precision medicine" --brief=ContentForge-Briefs/AI-Diagnostics-Brief.md
+/contentforge:create-content "AI Diagnostics in Precision Medicine: 2026 Executive Guide" --type=article --brand=AcmeMed --audience="Healthcare Executives" --keyword="AI diagnostics precision medicine" --brief=ContentForge-Briefs/AI-Diagnostics-Brief.md
 ```
 When a `--brief` parameter is provided, ContentForge uses the brief's outline, keyword map, citation targets, and SEO strategy instead of running its own Phase 1 research from scratch. This produces more targeted content and saves 3-5 minutes of processing time.
 
 ### Step 4: Batch Production from Multiple Briefs
-Generate briefs for 10 topics, review them, then feed approved briefs into `/batch-process` for parallel production.
+Generate briefs for 10 topics, review them, then feed approved briefs into `/contentforge:batch-process` for parallel production.
 
 ## MCP Integrations
 
@@ -580,11 +605,11 @@ Results are directionally accurate but less precise. The brief clearly labels es
 
 ## Limitations
 
-- **English keywords only** in v2.1 (multilingual keyword research planned for v2.2)
-- **One brief at a time** (no batch brief generation yet)
+- **English keyword research is strongest** — non-English keyword data is less reliable; brand voice for other languages is handled by `/contentforge:cf-translate`
+- **One brief at a time** (no batch brief generation)
 - **Keyword data accuracy** depends on MCP connections (Ahrefs > Similarweb > heuristic estimation)
 - **Competitor analysis** limited to publicly accessible pages (paywalled content cannot be analyzed)
-- **Brief is a plan, not content** — still requires `/contentforge` to produce the actual piece
+- **Brief is a plan, not content** — still requires `/contentforge:create-content` to produce the actual piece
 
 ## Agent Used
 
@@ -592,16 +617,14 @@ Results are directionally accurate but less precise. The brief clearly labels es
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** — Produce content from a brief (accepts `--brief` parameter)
-- **[/batch-process](../batch-process/SKILL.md)** — Process multiple briefs into content in parallel
-- **[/contentforge:audit](../cf-audit/SKILL.md)** — Audit existing content to identify topics needing new briefs
-- **[/contentforge:calendar](../cf-calendar/SKILL.md)** — Schedule brief-to-production timelines
-- **[/content-refresh](../content-refresh/SKILL.md)** — Update existing content (generates refresh brief automatically)
+- **[/contentforge:create-content](../../commands/create-content.md)** — Produce content from a brief (accepts `--brief` parameter)
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple briefs into content in parallel
+- **[/contentforge:cf-audit](../cf-audit/SKILL.md)** — Audit existing content to identify topics needing new briefs
+- **[/contentforge:cf-calendar](../cf-calendar/SKILL.md)** — Schedule brief-to-production timelines
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Update existing content (generates refresh brief automatically)
 
 ---
 
-**Version:** 3.4.0
 **Agent:** Researcher (Agent 01)
 **MCP:** Ahrefs (optional, HTTP), Similarweb (optional, HTTP)
-**Processing Time:** 10-15 minutes
-**Output:** Content brief document following content-brief-template.md
+**Output:** Content brief document following templates/content-brief-template.md

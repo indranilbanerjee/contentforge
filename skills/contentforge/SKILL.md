@@ -7,56 +7,117 @@ effort: max
 
 # ContentForge — Enterprise Content Production
 
-Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece in 20-30 minutes through a 10-phase autonomous agent pipeline with three-layer fact verification and zero hallucinations.
+Transform a content requirement into a publication-ready, fact-checked, brand-compliant, SEO-optimized piece through a 10-phase autonomous agent pipeline (plus Step 0.5 title curation) with three-layer fact verification and 10 quality gates.
 
 ## Context efficiency
 
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Hand subagents artifact **file paths** plus a ≤10-line summary — never reload or inline full drafts (see Context & Handoff Rules). On `/contentforge:resume`, load `run.json` plus only the artifacts the next phase contractually needs.
 
 ## Execution Protocol (CRITICAL — read first)
 
-This skill orchestrates 11 distinct phases. **Each phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 29-pattern catalog, and reviewer scoring that define ContentForge.
+This skill orchestrates 10 phases plus Step 0.5 (Title Curation). **Each numbered phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 29-pattern catalog, and reviewer scoring that define ContentForge.
 
-### Required Per-Phase Workflow
+The one exception is Step 0.5: title curation is performed **inline by the orchestrator** (no subagent), because it requires user interaction and subagents must never wait on the user. Any subagent that needs a user decision returns a `{"status": "needs_user_decision", ...}` payload to the orchestrator, which owns all user interaction (including image-generation opt-in/approval).
 
-For every one of the 11 phases below:
+### Step 0 — Initialize the run (orchestrator only, before Step 0.5)
 
-1. **Call `Bash` to mark phase start:**
+```bash
+# 1. Create the checkpoint run (returns run_id). Capture run metadata so a
+#    cross-session resume can recover keyword, audience, word count, and tone.
+RUN_RESULT=$(python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py init \
+    --brand <brand-slug> --topic "<topic>" --content-type <type> \
+    --meta '{"keyword": "<primary keyword>", "audience": "<audience>", "word_count_target": <n>, "tone": "<tone>"}')
+# Parse RUN_ID from the JSON result's "run_id" field.
+
+# 2. Initialize the performance tracker for this run.
+python ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action init \
+    --brand <brand-slug> --run-id "$RUN_ID" --content-type <type> --topic "<topic>"
+```
+
+Rules:
+- `pipeline-tracker.py` is called by the **orchestrator only** — subagents never call it.
+- Step 0.5 is **exempt** from tracker calls (no `phase-start`/`phase-end` for 0.5). After the title is confirmed, checkpoint it directly (see contract table).
+
+### Required Per-Phase Workflow (Phases 1–8)
+
+For every numbered phase:
+
+1. **Mark phase start** (orchestrator):
    ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-start --brand <slug> --phase <N>
+   python ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-start --brand <slug> --run-id "$RUN_ID" --phase <N>
    ```
-2. **Call `Task` with the phase's `subagent_type`** and pass the previous phase's output as context.
-3. **Call `Bash` to mark phase end** with the output word count:
+2. **Call `Task` with the phase's qualified `subagent_type`** (e.g. `contentforge:researcher`). The Task prompt contains ONLY:
+   - the artifact **file paths** the phase reads (per the Pipeline Contract table),
+   - a **≤10-line orchestrator summary** of pipeline state,
+   - the **brand-profile path** (required for phases 0.5, 3, 5, 6, 6.5, 7),
+   - the **original-requirements block** (topic, confirmed title, content type, audience, primary keyword, word-count target, tone).
+
+   Subagents `Read` what they need from those paths. **Never inline a full draft into a Task prompt.**
+3. **Verify the quality gate yourself.** Gate ownership belongs to the **orchestrator**: check the returned artifact against the gate criteria in the Pipeline Contract table — count sources, check word count and citation density, and run `python ${CLAUDE_PLUGIN_ROOT}/scripts/text-metrics.py` for burstiness, Flesch-Kincaid grade, and keyword-placement checks. A subagent's self-reported "PASS" alone is **not** a gate pass.
+4. **On gate PASS, checkpoint the artifact** so the run is resumable:
    ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-end --brand <slug> --phase <N> --content-words <count>
+   python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
+       --brand <slug> --run-id "$RUN_ID" --phase <N> --content-file <artifact-path> --extension <md|json|txt>
    ```
-4. **Emit the audit line** (so users can see real-time progress):
+   Phases 3.5 and 6 also produce a companion manifest (`phase-3.5-visual-manifest.json`, `phase-6-structure-manifest.json`) — place it at its canonical path inside the same run directory.
+5. **Mark phase end** with the output word count:
+   ```bash
+   python ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-end --brand <slug> --run-id "$RUN_ID" --phase <N> --content-words <count>
+   ```
+6. **Emit the audit line** (so users can see real-time progress):
    ```
    [PHASE-AUDIT] phase=<N> name=<name> status=<PASS|FAIL> output_summary="<one line>" gate=<PASS|FAIL>
    ```
-5. **Check the quality gate.** If `gate=FAIL`, loop back to the phase the reviewer flagged (max 5 total loops; on 5th loop, escalate to human review and halt).
+7. **On gate FAIL, loop per the contract table's loop-target column.** Before looping, record the loop and check limits:
+   ```bash
+   python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py loop --brand <slug> --run-id "$RUN_ID" --edge phase_<N>_to_<target>
+   ```
+   **Limits: max 2 loops per edge, max 5 loops total per run.** If a limit is reached: do NOT loop — mark the run for human review, `finalize --status failed`, and halt. When Phase 7 orders rework, the `pending_rework` field in `run.json` records the target phase and the reviewer's feedback so `/contentforge:resume` continues the rework instead of skipping it. Do not overwrite the saved checkpoint of an upstream phase that already passed — re-save only the looped phase when it passes.
 
-### Phase → Subagent Mapping
+### Image approval (orchestrator-owned, after Phase 3.5)
 
-| Phase | subagent_type | Purpose |
-|-------|---------------|---------|
-| 0.5 | `researcher` (mini call) OR inline title curation | SERP-informed title generation; user picks 1 of 4-5 |
-| 1 | `researcher` | Web research, source mining, structured outline |
-| 2 | `fact-checker` | URL verification, claim validation |
-| 3 | `content-drafter` | First draft with brand voice |
-| 3.5 | `visual-asset-annotator` | Chart generation + visual markers |
-| 4 | `scientific-validator` | Industry-specific accuracy + hallucination detection |
-| 5 | `structurer-proofreader` | Grammar, flow, readability |
-| 6 | `seo-geo-optimizer` | Keywords, meta, schema, internal-link markers |
-| 6.5 | `humanizer` | 29-pattern catalog + self-critique meta-pass + voice calibration |
-| 7 | `reviewer` | 5-dimension quality scoring + final gate |
-| 8 | `output-manager` | .docx generation (local or Google Drive) + reports |
+The visual-asset-annotator never waits on the user. It generates candidates (when image generation is opted in) and records each in `phase-3.5-visual-manifest.json` with `approved_by_user: false`. After Gate 3.5 passes, the **orchestrator** presents the generated visuals to the user for approval:
+
+1. Show each generated asset (path + description + placement) and ask approve / regenerate / drop.
+2. Update `approved_by_user` in the manifest for approved assets.
+3. For rejects, re-invoke `contentforge:visual-asset-annotator` with the rejection feedback (counts as a Phase 3.5 re-run, not a loop edge).
+4. Phase 8 embeds **only** assets with `approved_by_user: true` — unapproved assets stay out of the .docx.
+
+If the annotator returns `{"status": "needs_user_decision", ...}` (e.g., image-generation opt-in was never given), ask the user, then re-invoke with the answer.
+
+### Pipeline Contract (inputs → outputs → gate → loop target)
+
+All artifacts live in the canonical run directory `~/.claude-marketing/{brand-slug}/runs/{run_id}/` alongside `run.json` (the manifest).
+
+| Phase | subagent_type | Reads (paths) | Writes (artifact) | Quality gate (orchestrator-verified) | Gate-FAIL loop target |
+|-------|---------------|---------------|-------------------|--------------------------------------|-----------------------|
+| 0.5 | — inline (orchestrator) | brand profile, requirements | `phase-0.5-title.txt` | User-confirmed title (or `--title` bypass) — user checkpoint, not a numbered quality gate | Regenerate title options |
+| 1 | `contentforge:researcher` | `phase-0.5-title.txt`, requirements, brand profile | `phase-1-research.md` | **Gate 1:** 12–15 sources collected; ≥10 citable; ≥5 with reliability ≥8; differentiated angle documented | Re-run Phase 1 with broader search |
+| 2 | `contentforge:fact-checker` | `phase-1-research.md` | `phase-2-factcheck.md` | **Gate 2:** ≥80% of claims verified; zero UNRESOLVED flags (flagged claims must be removed or re-sourced); ≤3 unverified tolerated; all cited URLs live | Phase 1 (find alternative sources) |
+| 3 | `contentforge:content-drafter` | `phase-1-research.md`, `phase-2-factcheck.md`, brand profile, requirements | `phase-3-draft.md` | **Gate 3:** word count ±10% of target; all outline sections covered; ≥1 citation per 300 words | Re-run Phase 3 |
+| 3.5 | `contentforge:visual-asset-annotator` | `phase-3-draft.md`, `phase-2-factcheck.md` | `phase-3.5-visuals.md` + `phase-3.5-visual-manifest.json` | **Gate 3.5:** every chart traceable to a verified statistic; manifest complete (placement, alt text, data source); human-action TODOs marked | Re-run Phase 3.5 |
+| 4 | `contentforge:scientific-validator` | `phase-3-draft.md`, `phase-3.5-visual-manifest.json`, `phase-2-factcheck.md` | `phase-4-validation.md` | **Gate 4:** zero hallucinations; every claim traceable to a cited source; logic consistent | Phase 3 (with the specific claims to fix) |
+| 5 | `contentforge:structurer-proofreader` | `phase-3-draft.md`, `phase-4-validation.md`, brand profile | `phase-5-structured.md` | **Gate 5:** zero grammar/spelling errors on re-scan; readability within ±0.5 grade of the content-type target (`text-metrics.py`); brand terminology compliance | Re-run Phase 5 |
+| 6 | `contentforge:seo-geo-optimizer` | `phase-5-structured.md`, brand profile, requirements (keyword) | `phase-6-seo.md` + `phase-6-structure-manifest.json` | **Gate 6:** keyword PLACEMENTS present — title, first 100 words, ≥2 H2s, conclusion, meta description (density is advisory, ~1–2%); meta title + description generated | Re-run Phase 6 |
+| 6.5 | `contentforge:humanizer` | `phase-6-seo.md`, `phase-6-structure-manifest.json`, brand profile | `phase-6.5-humanized.md` | **Gate 6.5:** AI patterns removed; burstiness ≥0.7 (`text-metrics.py`); keyword placements preserved per structure manifest | Re-run Phase 6.5 with the violated constraint stated (incl. structure-manifest mismatch) |
+| 7 | `contentforge:reviewer` | ALL prior artifact paths, brand profile, requirements, `config/scoring-thresholds.json` | `phase-7-review.json` | **Gate 7:** reviewer decision tree per `config/scoring-thresholds.json` — approve ≥7.0 (industry-adjusted); all dimension minimums met | 5.0–6.9 → loop to responsible phase (recorded as `pending_rework`); <5.0 → human review, halt |
+| 8 | `contentforge:output-manager` | `phase-6.5-humanized.md`, `phase-7-review.json`, `phase-3.5-visual-manifest.json`, `run.json` | `phase-8-output.json` + `.docx` | **Gate 8:** .docx generated; Appendices A/B/C present; delivery location verified | Re-run Phase 8; if generation still fails, save markdown + reports locally and report the failure |
+
+That is **10 quality gates** — one for each of phases 1, 2, 3, 3.5, 4, 5, 6, 6.5, 7, and 8.
+
+**Single source of truth for numbers:** approval thresholds, loop bands, dimension weights, dimension minimums, and industry overrides live in `config/scoring-thresholds.json`. Prose in this document references those values; if they ever disagree, the config wins.
+
+### Context & Handoff Rules
+
+- Subagents receive artifact **paths**, a **≤10-line orchestrator summary**, the **brand-profile path** (phases 0.5, 3, 5, 6, 6.5, 7), and the **original-requirements block**. They `Read` what they need.
+- Never inline a full draft into a Task prompt, and never reload a full draft into the orchestrator's context when a path reference will do.
+- The reviewer (Phase 7) must receive the paths of **all** prior artifacts, not just the Phase 6.5 output.
 
 ### Final Output Requirements
 
 After Phase 8 completes, the output-manager subagent **must produce a Microsoft Word `.docx` file** by calling:
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
+python ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
     --content <article.md> \
     --output <local-path>.docx \
     --reports <reports.json> \
@@ -66,11 +127,16 @@ python3 ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
 
 The `.docx` must contain: title page, full article body, sources/citations, **Appendix A (SEO Scorecard)**, **Appendix B (Quality Scorecard)**, **Appendix C (Production Details)**.
 
-If the brand has Google Drive configured (`tracking.backend == "google"`), upload the .docx via `drive-uploader.py`. Otherwise save locally to `~/.claude-marketing/<brand>/output/<type>/<YYYY-MM-DD>/<slug>.docx` and tell the user the local path.
+**Dual-copy save:** the `.docx` is written into the run directory (`~/.claude-marketing/{brand-slug}/runs/{run_id}/`) AND copied to the user-visible folder `~/Documents/ContentForge/{Brand}/`. Always tell the user the `~/Documents/ContentForge/` path. If the brand has Google Drive configured (`tracking.backend == "google"`), additionally upload the .docx via `drive-uploader.py`.
+
+Then finalize the run:
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize --brand <slug> --run-id "$RUN_ID" --status completed
+```
 
 ### Why This Matters
 
-Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (29-pattern AI removal won't fire), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`pipeline-run.json`, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
+Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (29-pattern AI removal won't fire), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`run.json`, the per-phase checkpoint artifacts, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
 
 ## When to Use
 
@@ -81,11 +147,11 @@ Use `/contentforge` when you need:
 - **SEO-optimized content** with keyword targeting and meta tags
 - **Natural-sounding content** with AI patterns removed (Phase 6.5 Humanizer)
 
-**For multiple pieces in parallel**, use [`/batch-process`](../batch-process/SKILL.md) instead (4-5x faster).
+**For multiple pieces**, use [`/contentforge:batch-process`](../batch-process/SKILL.md) — a prioritized, checkpointed queue that runs the same pipeline per piece.
 
 ## What This Command Does
 
-Runs your content through **10 specialized agents** with quality gates at each phase:
+Runs your content through **10 specialized agents**, each behind a quality gate:
 
 1. **Research Agent** — SERP analysis, source mining, competitive analysis, structured outline
 2. **Fact Checker** — URL verification, claim validation, confidence scoring
@@ -93,27 +159,46 @@ Runs your content through **10 specialized agents** with quality gates at each p
 4. **Visual Asset Annotator** — Chart generation from verified stats, visual markers, asset manifest
 5. **Scientific Validator** — Hallucination detection, domain-specific validation, logic validation
 6. **Structurer & Proofreader** — Grammar/spelling correction, readability optimization, brand compliance
-7. **SEO/GEO Optimizer** — Keyword optimization, meta tag generation, internal linking markers
+7. **SEO/GEO Optimizer** — Keyword placements, meta tag generation, internal linking markers
 8. **Humanizer** — AI pattern removal, sentence variety (burstiness), brand personality
-9. **Reviewer** — 5-dimension quality scoring (Content Quality 30%, Citation Integrity 25%, Brand Compliance 20%, SEO Performance 15%, Readability 10%)
-10. **Output Manager** — .docx with embedded charts, internal links, Google Drive upload
+9. **Reviewer** — 5-dimension quality scoring (weights per `config/scoring-thresholds.json`)
+10. **Output Manager** — .docx with embedded charts and internal links, dual-copy save, optional Drive upload
 
-**Quality Gates:** If any phase fails, the pipeline loops back with feedback (max 5 total loops before human escalation).
+**Quality Gates:** 10 gates (phases 1–8 including 3.5 and 6.5). On failure the pipeline loops per the contract table — max 2 loops per edge, max 5 total, then human escalation.
 
 ## Required Inputs
 
 **Minimum Required:**
 - **Topic** — What the content is about (e.g., "AI in Healthcare", "remote work productivity")
 - **Content Type** — article, blog, whitepaper, faq, research_paper
-- **Brand** — Which brand profile to use (create with `/contentforge:style-guide` if new brand)
+- **Brand** — Which brand profile to use (create with `/contentforge:cf-style-guide` if new brand). See No-Brand Mode below if none exists.
 
-**Pre-Flight Validation:** After gathering inputs, the system validates your brand profile for completeness (voice, guardrails, audience, industry pack). For regulated industries (pharma, BFSI, healthcare, legal), guardrails are required — the system will warn if they're empty and ask whether to proceed or update the profile first.
+**Pre-Flight Validation:** After gathering inputs, validate the brand profile for completeness (voice, guardrails, audience, industry pack). For regulated industries (pharma, BFSI, healthcare, legal), guardrails are required — warn if they're empty and ask whether to proceed or update the profile first.
 
 **Optional:**
 - **Target Audience** — Who this content is for (e.g., "Healthcare CIOs")
 - **Word Count** — Target length (defaults to content type standard)
 - **Primary Keyword** — Main SEO keyword to optimize for
 - **Tone** — Overrides brand default (authoritative, conversational, technical, witty)
+- **`--sources=<urls or file>`** — User-supplied reference URLs (required in No-Web Mode; otherwise merged into Phase 1 research)
+- **`--title="Exact Title"`** — Non-interactive title bypass (see Title Curation)
+
+### No-Brand Mode
+
+If the user has no brand profile and declines to create one:
+- Proceed with generic defaults (neutral professional voice, no terminology enforcement).
+- Phase 5 skips the brand-compliance sub-check.
+- Phase 7 scores the **Brand Compliance dimension as `SKIPPED`** and flags the run for manual review; the Quality Scorecard notes "no brand profile configured."
+- **Regulated-industry topics (pharma, BFSI, healthcare, legal) must NOT run in no-brand mode** — require a profile with guardrails first.
+
+### No-Web Mode
+
+If web research is unavailable (offline, no search tool, MCP down):
+- Require user-supplied sources via `--sources=`.
+- Skip SERP analysis; build the outline from the provided sources.
+- Mark every citation **"user-provided, unverified"** in the fact-check ledger.
+- Phase 7 **caps Citation Integrity at 6.0** and notes the cap in the scorecard.
+- If neither web access nor user sources are available, stop and tell the user research is impossible — do not fabricate sources.
 
 ## How to Use
 
@@ -133,9 +218,15 @@ Runs your content through **10 specialized agents** with quality gates at each p
 
 ### Quick Mode (Topic Provided)
 ```
-/contentforge "AI in Healthcare" --type=article --brand=AcmeMed --audience="Healthcare CIOs" --keyword="AI healthcare 2026"
+/contentforge "AI in Healthcare" --type=article --brand=acmemed --audience="Healthcare CIOs" --keyword="AI healthcare trends"
 ```
-Even in quick mode, the system generates title options and asks you to select before starting Phase 1. The topic you provide is the subject — the final title is always a user decision.
+Even in quick mode, the system generates title options and asks you to select before starting Phase 1 — unless you pass `--title`.
+
+### Non-Interactive Mode (evals, batch, CI)
+```
+/contentforge "AI in Healthcare" --type=article --brand=acmemed --title="How AI Is Reshaping Hospital Diagnostics"
+```
+`--title` skips option generation and uses the given title verbatim. The bypassed title is still checkpointed as `phase-0.5-title.txt`.
 
 ### Use Existing Google Sheet Requirement
 ```
@@ -145,9 +236,9 @@ Reads requirement from Row 5 of the sheet.
 
 ## What Happens
 
-### Title Curation (1-2 minutes) — MANDATORY
+### Step 0.5: Title Curation — MANDATORY, inline
 
-**Before the pipeline starts**, the system generates **4-5 SEO-optimized title options** using the topic, content type, brand voice, audience, and primary keyword. Each title takes a different angle:
+**Before the pipeline starts**, the orchestrator (inline — no subagent, no tracker calls) generates **4-5 SEO-optimized title options** using the topic, content type, brand voice, audience, and primary keyword. Each title takes a different angle:
 - **Benefit-driven** — leads with reader value
 - **How-to / Tactical** — actionable, instructional
 - **Data-driven / Stat-led** — opens with a number or trend
@@ -156,137 +247,86 @@ Reads requirement from Row 5 of the sheet.
 
 **You select, modify, or provide your own title.** The confirmed title becomes the anchor for the entire pipeline — research, outline, SEO, and final output all flow from it.
 
-**Do NOT skip this step or auto-select a title.** The title shapes the entire content piece.
+**Do NOT auto-select a title.** The only exception is an explicit `--title="..."` bypass, which uses the supplied title verbatim (for non-interactive runs and evals). Either way, checkpoint the confirmed title as `phase-0.5-title.txt` before Phase 1.
 
-### Phase 1: Research (3-5 minutes)
-- Uses the **confirmed title** as the anchor for all research
-- Performs SERP analysis for the topic and title angle
-- Mines 10-15 authoritative sources
-- Analyzes competitor content
-- Generates structured outline aligned with the confirmed title
-- **Quality Gate:** Must have 5+ live sources, differentiated angle
+### Phases 1–8 at a glance
 
-### Phase 2: Fact Checking (2-3 minutes)
-- Verifies all URLs are accessible (no 404s)
-- Validates claims against sources
-- Assigns confidence scores (strongly verified, partially verified, weakly verified)
-- Flags any unverifiable claims
-- **Quality Gate:** 80%+ verified claims, zero flagged items, all URLs live
+Gate criteria and loop targets for every phase are defined once, in the **Pipeline Contract table** above.
 
-### Phase 3: Content Drafting (5-7 minutes)
-- Generates first draft with brand voice
-- Includes inline citations (APA format)
-- Targets word count ±10%
-- Maintains min 1 citation per 300 words
-- **Quality Gate:** Word count ±10%, all outline sections covered, citation density met
+- **Phase 1: Research** — SERP analysis anchored on the confirmed title; mines 12–15 authoritative sources; competitor analysis; structured outline. *Gate 1.*
+- **Phase 2: Fact Checking** — verifies all URLs are live, validates claims against sources, assigns confidence tiers, flags unverifiable claims for removal or re-sourcing. *Gate 2.*
+- **Phase 3: Content Drafting** — first draft in brand voice with inline citations (APA format), targeting word count ±10%. *Gate 3.*
+- **Phase 3.5: Visual Assets** — charts from verified stats, visual markers, asset manifest with placement, alt text, and data source. *Gate 3.5.*
+- **Phase 4: Scientific Validation** — hallucination scan, claim traceability, logic validation. *Gate 4; failures loop to Phase 3.*
+- **Phase 5: Structure & Proofread** — grammar/spelling, readability to the content-type target (±0.5 grade), brand terminology and style. *Gate 5.*
+- **Phase 6: SEO/GEO** — keyword placements (title, first 100 words, ≥2 H2s, conclusion, meta description), meta tags, URL slug, AI-answer-engine readiness, structure manifest. Density is advisory (~1–2%), not a gate. *Gate 6.*
+- **Phase 6.5: Humanizer** — 29-pattern AI-telltale removal, burstiness ≥0.7, brand personality, SEO-placement preservation validated against the structure manifest. *Gate 6.5.*
+- **Phase 7: Reviewer** — 5-dimension weighted scoring per `config/scoring-thresholds.json`; approve ≥7.0 (industry-adjusted), loop 5.0–6.9, human review <5.0. *Gate 7.*
+- **Phase 8: Output** — .docx generation with appendices, dual-copy save, optional Drive upload, tracking update. *Gate 8.*
 
-### Phase 4: Scientific Validation (2-3 minutes)
-- Scans for hallucinations (fabricated statistics, made-up studies)
-- Ensures all claims are traceable to sources
-- Validates logical consistency
-- **Quality Gate:** Zero hallucinations, all claims traceable
-- **If fails:** Loops back to Phase 3 with specific claims to fix (max 2 loops)
-
-### Phase 5: Structuring & Proofreading (2-3 minutes)
-- Corrects grammar and spelling (100% accuracy)
-- Optimizes readability for content type (Grade 8-16 depending on type)
-- Enforces brand terminology and style guide
-- **Quality Gate:** Zero grammar errors, readability on target, 100% brand compliant
-
-### Phase 6: SEO/GEO Optimization (2-3 minutes)
-- Optimizes keyword density (target: 1.5-2.5%)
-- Places keywords in critical positions (title, H2s, first paragraph, conclusion)
-- Generates meta title, meta description, URL slug
-- Prepares content for AI answer engines (ChatGPT, Perplexity, Gemini)
-- **Quality Gate:** Keyword density 1.5-2.5%, all critical placements hit, meta tags optimized
-
-### Phase 6.5: Humanizer ⭐ (1-2 minutes)
-- Removes AI telltale phrases (20+ patterns: "delve", "leverage", "it's important to note")
-- Increases sentence variety (burstiness ≥0.7 for natural human rhythm)
-- Injects brand personality (authoritative, witty, warm, data-driven)
-- **Validates SEO preservation** (keyword density unchanged ±2 occurrences)
-- **Quality Gate:** AI patterns removed, burstiness ≥0.7, SEO preserved
-
-### Phase 7: Reviewer (2-3 minutes)
-- Scores content across 5 dimensions:
-  - **Content Quality (30%):** Depth, originality, value, clarity
-  - **Citation Integrity (25%):** Accuracy, relevance, authority, freshness
-  - **Brand Compliance (20%):** Voice, terminology, guardrails, style
-  - **SEO Performance (15%):** Keyword optimization, meta tags, structure
-  - **Readability (10%):** Grade level, sentence variety, flow
-- Calculates composite score (1-10, needs ≥7.0 to pass)
-- **Quality Gate:** Score ≥7.0, all dimensions pass, zero critical violations
-- **If <7.0:** Loops back to failing phase with specific feedback (max 2 loops)
-
-### Phase 8: Output Manager (1-2 minutes)
-- Generates .docx file with proper formatting
-- Uploads to Google Drive (`ContentForge Output/[Brand]/[Title]_v1.0.docx`)
-- Updates tracking sheet with:
-  - Requirement ID, Title, Brand, Type, Word Count
-  - Quality Score (breakdown by dimension)
-  - Processing Time, Completion Timestamp
-  - Output URL (Drive link)
+**If a phase loops back:** the system shows which phase failed, why, and what it's fixing. Loops are automatic — you don't need to do anything unless it escalates to human review.
 
 ## Output Example
 
-Every pipeline run ends with a **Completion Card** showing scores, stats, timing, and delivery status. This card is mandatory — it's shown in the conversation AND added as an appendix in the .docx file.
+Every pipeline run ends with a **Completion Card** showing scores, stats, and delivery status. This card is mandatory — it's shown in the conversation AND added as an appendix in the .docx file.
 
-**Example Completion Card:**
+**Example Completion Card** (SYNTHETIC EXAMPLE — fabricated for illustration; never reuse these numbers):
 ```
 CONTENTFORGE — COMPLETION CARD
 
-Content:  "AI in Healthcare: 2026 Trends" | AcmeMed | Article | ✅ APPROVED
+Content:  "AI in Healthcare: Emerging Trends" | AcmeMed | Article | ✅ APPROVED
 
 Quality Score: 9.2/10 (Grade A+)
-  Content Quality:    9.5/10 (30%) ✅
-  Citation Integrity: 9.0/10 (25%) ✅
-  Brand Compliance:   9.5/10 (20%) ✅
-  SEO Performance:    8.8/10 (15%) ✅
-  Readability:        9.0/10 (10%) ✅
+  Content Quality:    9.5/10 ✅
+  Citation Integrity: 9.0/10 ✅
+  Brand Compliance:   9.5/10 ✅
+  SEO Performance:    8.8/10 ✅
+  Readability:        9.0/10 ✅
 
 Content Stats:
   Words: 1,947 (target 1,500-2,000) ✅ | Citations: 14 sources ✅
-  Keyword: "AI healthcare 2026" at 2.1% ✅ | Readability: Grade 11.2 ✅
+  Keyword placements: all critical positions ✅ | Readability: Grade 11.2 ✅
   Burstiness: 0.78 ✅ | AI Patterns: 0 remaining ✅ | Hallucinations: 0 ✅
 
 SEO Package:
-  Meta Title: "AI in Healthcare: 2026 Trends..." (58 chars) ✅
-  Meta Description: "Discover how AI is transforming..." (152 chars) ✅
+  Meta Title: 58 chars ✅ | Meta Description: 152 chars ✅
   Internal Links: 4 applied | Feature Image: generated (user-approved)
 
-Pipeline: 24 min total | 0 loops | Guardrails: verified
-  Research 4m | Fact-Check 3m | Draft 6m | Visuals 2m | Validate 2m
-  Structure 2m | SEO 2m | Humanize 1m | Review 2m | Output 1m
+Pipeline: 0 loops | Guardrails: verified | Run: {run_id}
 
 Delivery:
   .docx: ✅ Generated
-  Google Drive: ✅ ContentForge Output/AcmeMed/AI-in-Healthcare-2026-Trends_v1.0.docx
-  Tracking: ✅ Row 5 updated
+  Local: ✅ ~/Documents/ContentForge/AcmeMed/AI-in-Healthcare-Emerging-Trends_v1.0.docx
+  Drive: ✅ uploaded (if configured) | Tracking: ✅ updated
 
-Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:translate | /contentforge:variants
+Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:translate | /contentforge:cf-variants
 ```
 
 ## Content Types & Specifications
 
-| Type | Word Count | Readability | Citations | Time |
-|------|-----------|-------------|-----------|------|
-| **Article** | 1,500-2,000 | Grade 10-12 | 8-12 | 22-28 min |
-| **Blog** | 800-1,500 | Grade 8-10 | 5-8 | 15-22 min |
-| **Whitepaper** | 2,500-5,000 | Grade 12-14 | 15-25 | 30-45 min |
-| **FAQ** | 600-1,200 | Grade 8-10 | 3-5 | 12-18 min |
-| **Research Paper** | 4,000-8,000 | Grade 14-16 | 25-50 | 45-75 min |
+| Type | Word Count | Readability | Citations |
+|------|-----------|-------------|-----------|
+| **Article** | 1,500-2,000 | Grade 10-12 | 8-12 |
+| **Blog** | 800-1,500 | Grade 8-10 | 5-8 |
+| **Whitepaper** | 2,500-5,000 | Grade 12-14 | 15-25 |
+| **FAQ** | 600-1,200 | Grade 8-10 | 3-5 |
+| **Research Paper** | 4,000-8,000 | Grade 14-16 | 25-50 |
+
+Readability is gated at ±0.5 grade of the content-type target (verified via `text-metrics.py`).
 
 ## Brand Profile Setup
 
 **Before using ContentForge**, create a brand profile:
 
 ```
-/contentforge:style-guide
+/contentforge:cf-style-guide
 ```
 
 Provide your brand name, industry, voice guidelines (or share existing documents/URLs), and ContentForge generates the profile JSON automatically.
 
 **Alternatively**, copy `config/brand-registry-template.json` and fill in manually.
+
+**Canonical profile location:** `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json`, where the brand slug is lowercase alphanumerics + hyphens. Resolution order: local file first, then Drive cache (Cowork).
 
 **Brand Profile Includes:**
 - Voice & Tone (authoritative, conversational, technical, witty)
@@ -294,9 +334,9 @@ Provide your brand name, industry, voice guidelines (or share existing documents
 - Style Guide (formatting preferences, citation style)
 - Guardrails (topics to avoid, compliance requirements)
 - Industry Context (Pharma, BFSI, Healthcare, Legal)
-- Personality Profile (new in v3.0: authoritative, conversational, technical, witty)
+- Personality Profile (authoritative, conversational, technical, witty)
 
-**Brand profiles are cached** (SHA256 hash) for 95% time savings on repeat runs.
+**Brand profiles are cached** (SHA256 hash) so repeat runs skip re-parsing.
 
 See the [User Guide](../../docs/USER-GUIDE.md#4-setting-up-your-brand-profile) for detailed setup instructions.
 
@@ -307,60 +347,38 @@ See the [User Guide](../../docs/USER-GUIDE.md#4-setting-up-your-brand-profile) f
 2. **Phase 4 (Scientific Validator):** Hallucination detection
 3. **Phase 7 (Reviewer):** Final citation integrity scoring
 
-**Result:** Zero hallucinations in production testing
-
 ### Feedback Loop Management
-- **Phase 4 → Phase 3:** Max 2 loops (hallucination fixes)
-- **Phase 7 → Any Phase:** Max 2 loops (quality improvements)
-- **Total Loop Limit:** 5 iterations before human escalation
+- **Max 2 loops per edge** (e.g., Phase 4 → Phase 3, or Phase 7 → Phase X)
+- **Max 5 loops total per run** before human escalation
+- Loop counts are recorded in `run.json` via `checkpoint-manager.py loop` and survive resume.
 
 ### Human Review Escalation
 Content is flagged for human review if:
-- Quality score <5.0/10 after max loops
+- Quality score <5.0/10 (per `config/scoring-thresholds.json`)
 - Critical brand violations detected
-- Excessive loops without improvement
+- Loop limits reached without passing
 - User explicitly requests review
+- Run executed in No-Brand Mode (Brand Compliance = SKIPPED)
 
 **Flagged content is NEVER auto-published.**
-
-## Performance Metrics
-
-**Typical Processing Times:**
-- Blog (1,200 words): 15-20 minutes
-- Article (1,800 words): 22-28 minutes
-- Whitepaper (3,500 words): 30-40 minutes
-
-**Quality Scores (Avg across 200+ pieces in beta):**
-- Overall: 8.7/10
-- Content Quality: 8.9/10
-- Citation Integrity: 8.5/10
-- Brand Compliance: 9.2/10
-- SEO Performance: 8.6/10
-- Readability: 8.8/10
-
-**Accuracy:**
-- Factual Accuracy: 100%
-- Citation Accuracy: 95%+
-- Brand Compliance: 100%
-- Hallucinations: 0
 
 ## Integration with Other Skills
 
 **Before ContentForge:**
-- `/contentforge:style-guide` — Create brand profile if new brand
-- `/contentforge:brief` — Generate research-backed content brief with keyword analysis
+- `/contentforge:cf-style-guide` — Create brand profile if new brand
+- `/contentforge:content-brief` — Generate research-backed content brief with keyword analysis
 
 **Instead of ContentForge (for scale):**
-- `/batch-process` — Process 10-50+ pieces in parallel (4-5x faster)
+- `/contentforge:batch-process` — Queue 10-50+ pieces through the same pipeline
 
 **After ContentForge:**
-- `/content-refresh` — Update content 6-12 months later with fresh data
-- `/contentforge:variants` — Create A/B test headline/hook/CTA variations
+- `/contentforge:content-refresh` — Update content 6-12 months later with fresh data
+- `/contentforge:cf-variants` — Create A/B test headline/hook/CTA variations
 - `/contentforge:publish` — Publish to Webflow or WordPress via MCP
 - `/contentforge:social-adapt` — Transform article into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
 - `/contentforge:translate` — Translate preserving brand voice (15+ languages)
-- `/contentforge:video-script` — Generate timestamped video scripts from the article
-- `/contentforge:analytics` — Record quality scores for trend tracking
+- `/contentforge:cf-video-script` — Generate timestamped video scripts from the article
+- `/contentforge:cf-analytics` — Record quality scores for trend tracking
 
 ## Requirements
 
@@ -369,11 +387,11 @@ Content is flagged for human review if:
 - **Google Drive** — Brand knowledge vault, output .docx storage
 - **Webflow/WordPress** — Direct CMS publishing via `/contentforge:publish`
 
-Run `/contentforge:integrations` to check your connector status. Run `/contentforge:connect <name>` for setup guides.
+Run `/contentforge:cf-integrations` to check your connector status. Run `/contentforge:cf-connect <name>` for setup guides.
 
 ### Environment
 - Claude Code or Cowork (latest version)
-- Internet connection (for Phase 1 web research)
+- Internet connection for Phase 1 web research — or `--sources=` in No-Web Mode
 
 ## Troubleshooting
 
@@ -382,61 +400,55 @@ Run `/contentforge:integrations` to check your connector status. Run `/contentfo
 **When:** You run `/contentforge` with a brand that doesn't have a profile yet.
 
 **Fix:**
-1. **Create a brand profile (recommended, 5 min):**
+1. **Create a brand profile (recommended):**
    ```
-   /contentforge:style-guide
+   /contentforge:cf-style-guide
    ```
    Answer 3 questions (name, tone, industry) and you're ready.
-
 2. **Or specify a different brand:**
    ```
-   /contentforge "your topic" --brand=ExistingBrand
+   /contentforge "your topic" --brand=existing-brand
    ```
+3. **Or proceed in No-Brand Mode** (non-regulated topics only — see Required Inputs).
 
 ### "Quality score <5.0, flagged for review"
 
 **When:** Content didn't meet the minimum quality threshold after all feedback loops.
 
 **Common causes and fixes:**
-- **Topic too vague** → Be more specific: "AI in healthcare" → "AI diagnostic tools for rural hospitals in 2026"
+- **Topic too vague** → Be more specific: "AI in healthcare" → "AI diagnostic tools for rural hospitals"
 - **Sources behind paywalls** → Provide accessible reference URLs with `--sources=`
-- **Brand profile incomplete** → Run `/contentforge:style-guide --update [brand]` to add guardrails and terminology
+- **Brand profile incomplete** → Run `/contentforge:cf-style-guide --update [brand]` to add guardrails and terminology
 - **Niche topic with few sources** → Consider a broader angle or provide your own source URLs
 
-### "Max loops exceeded (5 iterations)"
+### "Max loops exceeded"
 
-**When:** The pipeline kept trying to improve content but couldn't reach the quality threshold.
-
-**What happened:** Phase 7 (Reviewer) scored the content below 7.0 multiple times and looped back to fix it, but improvements plateaued.
+**When:** The pipeline hit a loop limit (2 per edge or 5 total) without reaching the quality threshold.
 
 **Fix:**
-1. Check which dimension scored lowest (Content Quality? Citations? Brand Compliance?)
+1. Check which dimension scored lowest in `phase-7-review.json` (Content Quality? Citations? Brand Compliance?)
 2. If **Content Quality** is low → topic needs more depth or the angle is too broad
 3. If **Citation Integrity** is low → sources are weak or behind paywalls
 4. If **Brand Compliance** is low → brand profile may be incomplete
 5. Re-run with adjustments: more specific topic, better keywords, or updated brand profile
 
-### "Processing time >45 min for article"
+### "Pipeline appears stalled"
 
-**When:** The pipeline is taking longer than expected.
-
-**This is usually normal** — API rate limits or network latency cause delays. ContentForge auto-retries with backoff.
-
-**If it persists beyond 60 min:**
+API rate limits or network latency cause delays; ContentForge auto-retries with backoff. If it persists:
 1. Check internet connection
-2. Run `/contentforge:integrations` to verify MCP servers are responding
-3. Try a simpler topic to isolate the issue
-4. Large whitepapers (5000+ words) can legitimately take 45-75 min
+2. Run `/contentforge:cf-integrations` to verify MCP servers are responding
+3. If the session died, run `/contentforge:resume` — every gate-passed phase is checkpointed
+4. Long content types (whitepaper, research paper) legitimately take much longer than blogs
 
 ### "Guardrails empty — compliance skipped"
 
 **When:** Your brand profile doesn't have prohibited claims or required disclaimers defined.
 
-**Impact:** Phase 5 (Brand Compliance) will report "SKIPPED" instead of actually checking content. Phase 7 applies a -1.0 penalty to Brand Compliance score.
+**Impact:** Phase 5 reports brand compliance "SKIPPED" instead of actually checking content. Phase 7 applies the empty-guardrails penalty per `config/scoring-thresholds.json`.
 
 **Fix:**
 ```
-/contentforge:style-guide --update [brand]
+/contentforge:cf-style-guide --update [brand]
 ```
 Add at minimum: 3-5 prohibited claims, any required legal disclaimers, and industry-specific restrictions.
 
@@ -446,40 +458,40 @@ Add at minimum: 3-5 prohibited claims, any required legal disclaimers, and indus
 
 During content production, you'll see updates as each phase completes:
 
-| Phase | What's Happening | Duration | What You'll See |
-|-------|-----------------|----------|----------------|
-| Title Curation | Generating 4-5 title options from SERP data | 1-2 min | Title options with character counts |
-| Phase 1: Research | SERP analysis, source mining, outline | 3-5 min | Source count, outline sections |
-| Phase 2: Fact Check | URL verification, claim validation | 2-3 min | Verified %, flagged claims |
-| Phase 3: Draft | First draft with brand voice | 5-7 min | Word count, citation density |
-| Phase 3.5: Visuals | Charts, image generation (if opted in) | 2-3 min | Visual count, chart specs |
-| Phase 4: Validation | Hallucination detection | 2-3 min | Zero hallucinations confirmed |
-| Phase 5: Structure | Grammar, readability, brand compliance | 2-3 min | Compliance status |
-| Phase 6: SEO | Keyword optimization, meta tags | 2-3 min | Keyword density, GEO score |
-| Phase 6.5: Humanize | AI pattern removal, personality | 1-2 min | Burstiness score |
-| Phase 7: Review | 5-dimension quality scoring | 2-3 min | Score breakdown, pass/fail |
-| Phase 8: Output | .docx generation, tracking, delivery | 1-2 min | Output location, final metrics |
-
-**If a phase loops back:** The system shows which phase failed, why, and what it's fixing. Loops are automatic — you don't need to do anything unless it escalates to human review.
+| Phase | What's Happening | What You'll See |
+|-------|-----------------|----------------|
+| Step 0.5: Title Curation | Generating 4-5 title options | Title options with character counts |
+| Phase 1: Research | SERP analysis, source mining, outline | Source count, outline sections |
+| Phase 2: Fact Check | URL verification, claim validation | Verified %, flagged claims |
+| Phase 3: Draft | First draft with brand voice | Word count, citation density |
+| Phase 3.5: Visuals | Charts, image generation (if opted in) | Visual count, chart specs |
+| Phase 4: Validation | Hallucination detection | Zero hallucinations confirmed |
+| Phase 5: Structure | Grammar, readability, brand compliance | Compliance status |
+| Phase 6: SEO | Keyword placements, meta tags | Placement checklist, GEO score |
+| Phase 6.5: Humanize | AI pattern removal, personality | Burstiness score |
+| Phase 7: Review | 5-dimension quality scoring | Score breakdown, pass/fail |
+| Phase 8: Output | .docx generation, tracking, delivery | Output location, final metrics |
 
 ## Example Workflow
 
-**Scenario:** Create 1 thought leadership article for AcmeMed brand
+(SYNTHETIC EXAMPLE — fabricated for illustration; never reuse these numbers.)
+
+**Scenario:** Create 1 thought leadership article for the AcmeMed brand
 
 ### Step 1: Create Brand Profile (One-Time Setup)
 ```
-/contentforge:style-guide
+/contentforge:cf-style-guide
 ```
 Provide: Brand name (AcmeMed), Industry (Healthcare), Voice (Authoritative), Tone (Professional), Terminology, Guardrails
 
 ### Step 2: Start Content Production
 ```
-/contentforge "AI-Powered Diagnostics in Precision Medicine" --type=article --brand=AcmeMed --audience="Healthcare Executives" --keyword="AI diagnostics precision medicine"
+/contentforge "AI-Powered Diagnostics in Precision Medicine" --type=article --brand=acmemed --audience="Healthcare Executives" --keyword="AI diagnostics precision medicine"
 ```
 
-### Step 3: Select Title (1-2 minutes)
+### Step 3: Select Title
 ContentForge generates 4-5 title options:
-1. "AI-Powered Diagnostics: The Future of Precision Medicine in 2026"
+1. "AI-Powered Diagnostics: The Future of Precision Medicine"
 2. "How AI Diagnostics Are Transforming Precision Medicine for Healthcare Leaders"
 3. "5 AI Diagnostic Breakthroughs Reshaping Precision Medicine Right Now"
 4. "The Executive's Guide to AI-Powered Precision Medicine Diagnostics"
@@ -487,35 +499,33 @@ ContentForge generates 4-5 title options:
 
 You select Option 1 → Pipeline starts with that title as the anchor.
 
-### Step 4: Review Output (24 minutes later)
+### Step 4: Review Output
 - Quality Score: 9.1/10 ✅
 - Word Count: 1,922 ✅
 - Citations: 12 sources ✅
-- SEO: Keyword density 2.3% ✅
+- SEO: all keyword placements hit ✅
 
 ### Step 5: Publish
 ```
 /contentforge:publish --platform=webflow
 ```
 
-**Total Time:** 25 minutes (setup once, then 20-30 min per piece)
-
 ## Limitations
 
-- **Sequential processing** (for parallel, use `/batch-process`)
-- **20-30 min per piece** (cannot be rushed without compromising quality)
-- **Best with brand profile** — works without one but uses generic defaults
+- **Sequential phases** — the pipeline is strictly ordered; each gate consumes the previous phase's artifact
+- **Depth takes time** — the pipeline cannot be rushed without compromising quality (use `--title` and `--sources` to shave the interactive steps)
+- **Best with brand profile** — No-Brand Mode works but the Brand Compliance dimension is SKIPPED and the run is flagged for manual review
 
 ## Related Skills
 
-- **[/batch-process](../batch-process/SKILL.md)** — Process 10-50+ pieces in parallel (4-5x faster)
-- **[/content-refresh](../content-refresh/SKILL.md)** — Update old content with fresh data
-- **[/contentforge:variants](../cf-variants/SKILL.md)** — A/B test headline/hook/CTA variations
-- **[/contentforge:analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Queue 10-50+ pieces through the same pipeline
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Update old content with fresh data
+- **[/contentforge:cf-variants](../cf-variants/SKILL.md)** — A/B test headline/hook/CTA variations
+- **[/contentforge:cf-analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance
 - **[/contentforge:social-adapt](../cf-social-adapt/SKILL.md)** — Transform article into social media posts
 - **[/contentforge:publish](../cf-publish/SKILL.md)** — Publish to Webflow/WordPress
 - **[/contentforge:translate](../cf-translate/SKILL.md)** — Translate preserving brand voice
-- **[/contentforge:brief](../cf-brief/SKILL.md)** — Generate research-backed content briefs
+- **[/contentforge:content-brief](../cf-brief/SKILL.md)** — Generate research-backed content briefs
 
 ---
 
@@ -524,14 +534,11 @@ You select Option 1 → Pipeline starts with that title as the anchor.
      bodies -- they drift out of sync every release. The canonical source of
      truth is .claude-plugin/plugin.json + the agents/ + skills/ directories. -->
 
-**Pipeline:** 10 phases plus Step 0.5 (Title Curation). Phase agents are
-defined in `agents/*.md` and enumerated by `scripts/plugin-metadata.py
---section pipeline`. Post-pipeline agents include Batch Orchestrator,
-Social Adapter, and Translator.
+**Pipeline:** 10 phases plus Step 0.5 (Title Curation); 10 quality gates. Phase
+agents are defined in `agents/*.md` and enumerated by `scripts/plugin-metadata.py
+--section pipeline`. Post-pipeline agents include Batch Orchestrator, Social
+Adapter, and Translator.
 
-**Processing Time:** 20-30 minutes avg for an article on Opus 4.7. Slower
-on smaller models and for whitepaper / research-paper content types.
-
-**Quality target:** composite Reviewer score ≥7.0 to pass; max 2 loops per
-phase; three-layer verification (Fact Checker → Scientific Validator →
-Reviewer) for zero-hallucination production output.
+**Quality target:** composite Reviewer score ≥7.0 to pass (industry-adjusted per
+`config/scoring-thresholds.json`); max 2 loops per edge, 5 total; three-layer
+verification (Fact Checker → Scientific Validator → Reviewer).

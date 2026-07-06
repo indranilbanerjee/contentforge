@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.16.0] - 2026-07-07
+
+**The Reliability & Truth release — five-layer deep audit implemented end to end.**
+
+A full-repo audit (orchestration, agents, skills/commands, Python scripts, configs/templates) surfaced ~120 findings; this release fixes all of them in one coordinated pass. Canonical claim is now **10 phases + Step 0.5, 10 quality gates** (previously advertised 11 with 8 defined).
+
+### Added
+
+- **Canonical run-directory contract**: every phase artifact saves to `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-N-*.md|json` via checkpoint-manager; SKILL.md Pipeline Contract table defines reads/writes/gate/loop-target for every phase. `/contentforge:resume` now works for skill-started runs (previously only command-started).
+- **`scripts/_common.py`** — single shared slugifier (fixes the checkpoint↔drive-sync path mismatch that silently broke Cowork sync for brand names with spaces/capitals), atomic JSON writes, UTF-8 console guard (fixes Windows cp1252 crash), JSON-error exit codes across all 15 scripts.
+- **`scripts/text-metrics.py`** — burstiness, Flesch-Kincaid, keyword placements, structured-element counts; quality gates are now measured, not self-certified.
+- **Phase 6 → 6.5 protected-structure manifest** (`phase-6-structure-manifest.json`): the humanizer must preserve GEO answer-blocks/tables/lists or the gate fails — closes the "humanizer dismantles GEO structure" gap.
+- **checkpoint-manager**: run metadata (`--keyword/--audience/--word-count/--tone/--meta`), `loop` subcommand (persistent per-edge + total loop counters), `pending_rework` (mid-loop resume returns to the rework target instead of skipping it).
+- **pipeline-tracker `--run-id`** — per-run timing files; concurrent same-brand batch runs no longer clobber each other.
+- **EU AI Act Article 50 disclosure step** (applicable 2026-08-02) in cf-publish: C2PA for .docx, disclosure line for CMS, platform AI-labels for social; per-platform `ai_disclosure` fields in social-platform-specs.json.
+- **Humanizer patterns 30-35** (colon-subtitle headlines, false-dichotomy openers, scene-setting openers, parallel-H2 grammar, FAQ-shaped conclusions, bottom-line headers) + defined `ai_signal_scoring` formula behind the 0.3 gate. Catalog now 35 patterns.
+- **Social platforms**: TikTok (incl. photo posts), Bluesky, YouTube Shorts blocks; Instagram Reels 180s; X Premium 25K note; hashtag guidance updated; posting-time folklore removed.
+- **generate-docx**: image embedding (block + inline, missing-file placeholders), TOC field, "Page X of Y" footer, 1.15 line spacing, nested lists, underscore/triple-star emphasis, atomic C2PA rename.
+- **90 new tests** (53 → 143): checkpoint roundtrip, path contract, text metrics, docx parser + render, pipeline tracker isolation, resolve_model semantics, _common, plus release-consistency locks (no version literals in doc bodies, every `/contentforge:*` reference resolves, thresholds config == brand template, phase/gate-count claims, social-spec keys).
+- **AEO/GEO strategy section in cf-brief** (AI Overview presence, citation-worthiness, answer blocks, PAA mining, llms.txt, entity consistency); E-E-A-T folded in from the command twin.
+- Industry packs: `_last_reviewed` dates, `humanizer_notes` per industry, FDA 2024 CCN rule (pharma), HHS/OCR tracking-tech guidance (healthcare), SEC Marketing Rule 206(4)-1 (bfsi), INFORM Consumers Act + EU DSA/GPSR (ecommerce).
+
+### Changed
+
+- **User interaction hoisted out of subagents** — title curation and image approvals are orchestrator-owned; agents return `needs_user_decision` payloads instead of waiting (subagents cannot talk to the user; previously a silent-failure point). Documented `--title` bypass for non-interactive runs.
+- **Keyword-density hard gate retired** — SEO gate now checks placements (title, first 100 words, H2s, conclusion, meta); density is advisory ~1-2%. LSI-keyword advice removed everywhere.
+- **Batch orchestrator honest rewrite**: sequential checkpointed queue, success = reviewer-approved ≥7.0 (5.0-6.9 routes to review, never "completed"), event-driven status instead of impossible 30-second dashboards, maxTurns 200.
+- **`config/scoring-thresholds.json` is the single source of truth** for every gate number; brand template, quality scorecard, loop tracker, agents, and skills all reference it (drift-locked by tests). Word counts, source gates, readability tolerances unified.
+- **Command/skill twins collapsed**: publish, social-adapt, translate, content-brief, audit-content, create-content are thin wrappers over their skills — the drifted duplicate procedure bodies (two freshness formulas, Phase 8 "Reviewer" mislabel, contradictory hashtag counts) are gone.
+- Connector skills rewritten to match the shipped empty `.mcp.json` (no more "7 pre-configured connectors" fiction); all status output comes from live `connector-status.py`; unverified endpoints and fictional npm packages removed.
+- Fact-checker: paywalled sources are UNVERIFIED unless corroborated; full SERP re-validation reduced to top-3 spot-check; worked example now models flag resolution before PASS.
+- Scientific validator rescoped as the universal draft-vs-ledger hallucination audit (all content types) with a no-refetch fence.
+- Reviewer industry weight overrides fully specified for all 5 dimensions and all 5 regulated industries.
+- All worked examples labeled SYNTHETIC; fabricated real-org stats (McKinsey, Cleveland Clinic) replaced with fictional organizations.
+- ~50 dangling slash-command references fixed across agents/skills/commands; `python3` → `python` throughout (Windows-first).
+
+### Fixed
+
+- setup.py `CLAUDE_PLUGIN_DATA` fallback never firing (Google credentials misreported).
+- `resolve_model.py --check` now exits 1 for retired models.
+- Airtable formula injection via brand names with apostrophes; Drive pagination past 100 files; backend-migrator lost file linkage; sheets-tracker crash on non-numeric priority; non-atomic tracker writes; corrupt-JSON recovery.
+- Custom templates now save to `~/.claude-marketing/_templates/` (previously written inside the plugin install dir and wiped on update).
+- Stale `**Version:** 3.4.0` footers stripped from 14 skills; `~~` strikethrough artifacts removed from 6 commands; phantom `humanizer.py`/`fact-checker.py` references removed from AGENTS.md.
+
+---
+
 ## [3.15.3] - 2026-06-28
 
 **README-sync patch — Release notes catch-up + test-coverage extension.**

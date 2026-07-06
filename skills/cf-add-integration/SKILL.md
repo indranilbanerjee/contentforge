@@ -6,7 +6,7 @@ argument-hint: "[service-name]"
 effort: medium
 ---
 
-# /contentforge:add-integration
+# /contentforge:cf-add-integration
 
 ## Purpose
 
@@ -44,26 +44,15 @@ Run `python scripts/connector-status.py --action check <name>` to see if the con
 
 ### Step 3: Find an MCP package
 
-Search for an existing MCP server package that provides the desired integration:
+Search for an existing MCP server package that provides the desired integration.
 
-1. **Check known HTTP endpoints first** — Anthropic-hosted HTTP MCP servers are the easiest (work in both Cowork and Claude Code, no API keys for OAuth-based ones):
-   - Slack: `https://mcp.slack.com/mcp`
-   - Canva: `https://mcp.canva.com/mcp`
-   - Figma: `https://mcp.figma.com/mcp`
-   - HubSpot: `https://mcp.hubspot.com/anthropic`
-   - Notion: `https://mcp.notion.com/mcp`
-   - Ahrefs: `https://api.ahrefs.com/mcp/mcp`
-   - Similarweb: `https://mcp.similarweb.com`
-   - Klaviyo: `https://mcp.klaviyo.com/mcp`
-   - Google Calendar: `https://calendarmcp.googleapis.com/mcp/v1`
-   - Gmail: `https://gmailmcp.googleapis.com/mcp/v1`
-   - Stripe: `https://mcp.stripe.com/`
-   - Asana: `https://mcp.asana.com/sse`
-   - Webflow: `https://mcp.webflow.com/sse`
+Note: ContentForge ships with an empty `.mcp.json` (`"mcpServers": {}`) by design — every connector is opt-in and user-added. Nothing is pre-wired.
 
-2. **Search npm for npx packages** — Search for `mcp-<service-name>` or `@anthropic/mcp-<service-name>`. Evaluate by downloads, last update, and GitHub stars.
+1. **Check verified HTTP endpoints first** — hosted HTTP MCP servers are the easiest (work in both Cowork and Claude Code, no API keys for OAuth-based ones). The plugin's catalog of verified HTTP endpoints lives in **`.mcp.json.connectors-reference`** — use the URL from that file. If the service isn't listed there, check the vendor's official documentation for an MCP endpoint before guessing. Do not use endpoint URLs from memory: unverified URLs waste the user's setup time.
 
-3. **If no package exists** — Guide the user through custom MCP server development (see Step 5).
+2. **Search npm for MCP packages** — Search for `mcp-<service-name>` or `<service-name>-mcp-server`. **Verify the package actually exists and is maintained before recommending it:** run `npm view <package-name> version` and check last-publish date and download counts. If nothing maintained exists, say so honestly.
+
+3. **If no endpoint or package exists** — Guide the user through custom MCP server development (see Step 5).
 
 ### Step 4: Configure the connector
 
@@ -139,7 +128,7 @@ Provide a starter skeleton specific to the user's API, with:
 After configuration:
 
 1. Ask the user to restart their Claude session
-2. Run `/contentforge:integrations` to verify the new connector shows up
+2. Run `/contentforge:cf-integrations` to verify the new connector shows up
 3. Try a basic read operation to confirm it works
 4. Report success or diagnose failures
 

@@ -30,11 +30,10 @@ import re
 import sys
 from pathlib import Path
 
-if hasattr(sys.stdout, "reconfigure"):
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 
@@ -335,6 +334,34 @@ def format_text(data: dict) -> str:
     return "\n".join(lines)
 
 
+def render_text(section: str, result) -> str:
+    """Human-readable rendering for EVERY section (the old code silently fell
+    back to JSON for anything except all-with-environment)."""
+    if section in ("all", "all-with-environment"):
+        return format_text(result)
+    if isinstance(result, list):
+        lines = []
+        for item in result:
+            if isinstance(item, dict):
+                label = (item.get("slash_command") or item.get("phase")
+                         or item.get("name") or item.get("skill_dir") or "")
+                desc = item.get("description", "")
+                if section == "pipeline":
+                    label = f"Phase {item.get('phase', '?'):>4}  {item.get('role', '')}"
+                lines.append(f"  {str(label):40s}  {str(desc)[:70]}")
+            else:
+                lines.append(f"  {item}")
+        return "\n".join(lines) if lines else "(empty)"
+    if isinstance(result, dict):
+        lines = []
+        for k, v in result.items():
+            if isinstance(v, (dict, list)):
+                v = json.dumps(v, ensure_ascii=False)
+            lines.append(f"{k}: {v}")
+        return "\n".join(lines)
+    return str(result)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--section",
@@ -366,12 +393,8 @@ def main():
     else:
         result = {"error": f"unknown section: {args.section}"}
 
-    if args.format == "text" and isinstance(result, dict) and "environment" not in result:
-        # text only meaningful for the all-sections variant
-        print(json.dumps(result, indent=2))
-        return
     if args.format == "text":
-        print(format_text(result))
+        print(render_text(args.section, result))
         return
     print(json.dumps(result, indent=2))
 

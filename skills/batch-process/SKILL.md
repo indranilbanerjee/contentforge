@@ -1,101 +1,97 @@
 ---
 name: batch-process
-description: Process multiple content pieces in parallel with queue management, priority scheduling, and progress tracking
+description: Process multiple content pieces through a prioritized, checkpointed queue with progress tracking and per-piece quality gates
 argument-hint: "[sheet-url or topic-list]"
 effort: max
 ---
 
 # Batch Content Processing
 
-Process multiple content requirements simultaneously through the ContentForge pipeline with intelligent queue management, priority-based scheduling, and real-time progress tracking.
+Process multiple content requirements through the ContentForge pipeline as a **sequential, checkpointed queue** with priority-based scheduling and event-driven progress tracking. Each piece runs the full 10-phase pipeline (plus Step 0.5) with all 10 quality gates — batch mode changes the intake, not the standards.
 
 ## When to Use
 
-Use `/batch-process` when:
+Use `/contentforge:batch-process` when:
 - You have 2+ content pieces to produce
-- You want to maximize throughput with parallel execution
+- You want hands-off production of a whole queue (each piece needs a pre-set title — batch runs are non-interactive)
 - You need priority scheduling (urgent pieces first)
-- You want real-time progress visibility
+- You want per-piece progress visibility and resumability
 - You're running agency-scale production (10-50+ pieces)
 
 ## What This Command Does
 
-1. **Intake Multiple Requirements** — Read from Google Sheets or CSV with multiple rows
-2. **Build Execution Queue** — Create prioritized queue with estimated completion times
-3. **Parallel Orchestration** — Launch multiple ContentForge pipelines simultaneously (max 5 concurrent)
-4. **Progress Tracking** — Real-time dashboard showing status of each piece (phase completion, quality scores, ETA)
-5. **Error Handling** — Automatic retry for transient failures, human escalation for persistent issues
-6. **Completion Report** — Summary of all pieces (successes, failures, quality scores, total time)
+1. **Intake Multiple Requirements** — Read from the brand's tracking backend: local JSON (default), Google Sheets, Airtable, or a CSV file
+2. **Build Execution Queue** — Validate rows and sort by priority
+3. **Sequential Orchestration** — Run one full ContentForge pipeline per piece, in queue order; every phase of every piece is checkpointed, so an interrupted batch resumes where it stopped
+4. **Progress Tracking** — Status table redrawn after each piece/phase event (piece started, gate passed, piece finished)
+5. **Error Handling** — Automatic retry for transient failures (resuming from checkpoints), human escalation for persistent issues
+6. **Completion Report** — Summary of all pieces: APPROVED, review_required, failed, with quality scores and output locations
 
 ## Required Inputs
 
-**Google Sheets** (Recommended):
-- Sheet with columns: `Requirement ID`, `Content Type`, `Title/Topic`, `Target Audience`, `Brand`, `Word Count Target`, `Priority` (1-5), `Status`
-- Each row = one content piece
-- Example sheet: [ContentForge Batch Template](https://docs.google.com/spreadsheets/d/your-template)
+**Tracking backend** (per brand, via `tracking.backend` in the brand profile — `local` is the default):
+- **Local JSON** — requirements managed by `scripts/local-tracker.py`
+- **Google Sheets** — sheet with columns: `Requirement ID`, `Content Type`, `Title`, `Target Audience`, `Brand`, `Word Count Target`, `Priority` (1-5), `Status`
+- **Airtable** — base with the same fields
 
-**CSV** (Alternative):
+**CSV** (alternative intake):
 ```csv
 requirement_id,content_type,title,target_audience,brand,word_count,priority,status
-REQ-001,article,AI in Healthcare 2026,Healthcare CIOs,AcmeMed,2000,1,pending
-REQ-002,blog,10 Tips for Remote Teams,HR Managers,TechCorp,1500,3,pending
+REQ-001,article,AI in Healthcare,Healthcare CIOs,acmemed,2000,1,pending
+REQ-002,blog,10 Tips for Remote Teams,HR Managers,techcorp,1500,3,pending
 ```
+
+**Note:** the `title` column doubles as the `--title` bypass — batch pieces skip interactive title curation and use it verbatim.
 
 ## How to Use
 
 ### Basic Usage
 ```
-/batch-process
+/contentforge:batch-process
 ```
-**Prompt:** "Which Google Sheet contains your content requirements?"
+**Prompt:** "Where are your content requirements? (local queue / Google Sheet URL / Airtable / CSV)"
 
 ### With Direct Sheet URL
 ```
-/batch-process https://docs.google.com/spreadsheets/d/ABC123/edit
+/contentforge:batch-process https://docs.google.com/spreadsheets/d/ABC123/edit
 ```
 
 ### With CSV Upload
 ```
-/batch-process batch-requirements.csv
+/contentforge:batch-process batch-requirements.csv
 ```
 
 ## What Happens
 
-### Step 1: Queue Building (1-2 minutes)
+### Step 1: Queue Building
 - Load all requirements from source
-- Validate each row (required fields, brand exists, content type supported)
-- Calculate estimated time per piece based on content type and word count
+- Validate each row (required fields, brand exists, content type supported, word count within the type's canonical range)
 - Sort by priority (1=highest, 5=lowest)
-- Display queue summary: Total pieces, estimated total time, concurrent execution plan
+- Display queue summary: total pieces, priority mix, execution order
 
-### Step 2: Parallel Execution (20-30 min per piece, up to 5 concurrent)
-- Launch up to 5 ContentForge pipelines simultaneously
-- Each pipeline runs full 10-phase process independently
-- Progress tracker updates in real-time
-- When one completes, next in queue starts automatically
+### Step 2: Sequential Execution
+- Run one ContentForge pipeline per piece, front-to-back
+- Each pipeline runs the full protocol from `skills/contentforge/SKILL.md` — Step 0 init, title bypass, phases 1–8 with orchestrator-verified gates, per-phase checkpoints
+- When one piece finishes (or is escalated), the next starts automatically
 
-### Step 3: Progress Dashboard (Live Updates)
+### Step 3: Progress Table (event-driven)
+Redrawn after each piece/phase event — not on a timer:
 ```
-╔═════════════════════════════════════════════════════════════════╗
-║ ContentForge Batch Processing Dashboard                        ║
-║ Total: 12 pieces | Running: 5 | Completed: 4 | Failed: 0       ║
-║ Estimated Completion: 45 minutes                                ║
-╠═════════════════════════════════════════════════════════════════╣
-║ REQ-001 | AI in Healthcare    | Phase 7  ✓ | Score: 9.2 | 2min ║
-║ REQ-002 | Remote Teams Blog   | Phase 4  → | Est: 18min         ║
-║ REQ-003 | SEO Whitepaper      | Phase 2  → | Est: 42min         ║
-║ REQ-004 | FAQ Product Launch  | Completed ✓ | Score: 8.8        ║
-║ REQ-005 | Case Study Acme     | Phase 6.5→ | Est: 8min          ║
-╚═════════════════════════════════════════════════════════════════╝
+CONTENTFORGE BATCH — 2/5 complete | 1 review_required | 0 failed
+─────────────────────────────────────────────────────────────
+▶ REQ-003 | SEO Whitepaper       | Phase 4 (Validation)
+✓ REQ-001 | AI in Healthcare     | APPROVED 8.4
+✓ REQ-004 | FAQ Product Launch   | APPROVED 7.6
+⚠ REQ-002 | Remote Teams Blog    | review_required (6.1)
+· REQ-005 | Case Study Acme      | queued
 ```
 
 ### Step 4: Completion Report
-- Total pieces processed: X
-- Successful completions: Y (Z%)
-- Human review required: N pieces (scores <5.0)
-- Average quality score: 8.7/10
-- Total processing time: HH:MM
-- Output locations: [Google Drive folder link]
+- Total pieces processed
+- APPROVED count (reviewer composite ≥7.0, industry-adjusted, all dimension minimums met)
+- review_required count (5.0-6.9 after loop limits, or <5.0)
+- Failed count
+- Output locations: `~/Documents/ContentForge/{Brand}/` (+ Drive folder if configured)
 
 ## Priority Scheduling
 
@@ -106,126 +102,127 @@ REQ-002,blog,10 Tips for Remote Teams,HR Managers,TechCorp,1500,3,pending
 - **4 (Low)**: Evergreen content, no deadline
 - **5 (Backlog)**: Nice-to-have, filler content
 
-## Concurrency Limits
+## Execution Model
 
-- **Max 5 concurrent pipelines** (prevents resource exhaustion, API rate limits)
-- Each pipeline is fully independent (no shared state)
-- If piece fails, it's retried once; if fails again, marked for human review
+- **Sequential, one piece at a time** — no concurrent pipelines. Shared per-brand state, API rate limits, and context limits make in-session parallelism unsafe; resilience comes from per-phase checkpointing instead.
+- Each piece is fully independent (own checkpoint run directory, own quality gates)
+- If a piece's pipeline fails, it's retried once (resuming from its checkpoints); if it fails again, it's marked for human review and the queue continues
 
 ## Error Handling
 
 ### Transient Failures (Auto-Retry)
-- API rate limits → wait 60s, retry
-- Network timeouts → retry immediately
-- Source URL temporarily unavailable → retry with alternate sources
+- API rate limits → the inner pipeline backs off and retries
+- Network timeouts → retry
+- Source URL temporarily unavailable → Gate 2 re-sourcing loop handles it
 
 ### Persistent Failures (Human Escalation)
 - Brand profile not found
 - Requirement validation fails (missing required fields)
-- Quality score <3.0 after max loops (2 attempts)
-- Two consecutive pipeline failures
+- Reviewer score below the approval threshold after loop limits (2 per edge, 5 total)
+- Two consecutive pipeline failures on the same piece
+
+**Success criteria are canonical:** a piece is "completed" ONLY if the reviewer decision is APPROVED (composite ≥7.0 per `config/scoring-thresholds.json`). Scores of 5.0-6.9 are `review_required` — never silently marked complete.
 
 ## Requirements
 
-### MCP Integrations
-- ✅ **Google Sheets** — Requirement intake
-- ✅ **Google Drive** — Output storage
+### Backends
+- **Local JSON** (default) — no integrations required
+- **Google Sheets + Drive** — optional, for sheet intake and Drive delivery
+- **Airtable** — optional, for base intake and attachments
 
 ### Brand Profiles
 - All brands referenced in requirements must have existing profiles
-- Use `/brand-setup` to create missing brands before batch processing
+- Use `/contentforge:brand-setup` to create missing brands before batch processing
 
 ## Output Structure
 
-All outputs organized in Google Drive:
+Local (always):
 ```
-ContentForge Output/
-└── Batch_2026-02-17_14-30/
+~/Documents/ContentForge/
+└── {Brand}/
     ├── REQ-001_AI-in-Healthcare_v1.0.docx
     ├── REQ-002_Remote-Teams-Blog_v1.0.docx
-    ├── REQ-003_SEO-Whitepaper_v1.0.docx
-    ├── batch-summary-report.txt
+    └── batch-summary-report.txt
+```
+
+Google Drive (if configured):
+```
+ContentForge Output/
+└── {batch_id}/
+    ├── Completed/ ...
+    ├── Review/ ...
     └── failed-requirements.csv (if any)
 ```
 
-## Performance Metrics
+## Resuming an Interrupted Batch
 
-**Typical Batch Run (12 pieces):**
-- Sequential (v1.0): ~240-360 minutes (4-6 hours)
-- Parallel (v2.0): ~60-90 minutes (1-1.5 hours)
-- **Speedup: 4-5x faster**
+Batch state lives in the tracking backend plus each piece's checkpoint run directory — both on disk. If the session dies:
+1. Re-run `/contentforge:batch-process` — rows already `completed`/`review_required`/`failed` are skipped
+2. The in-flight piece resumes from its last gate-passed phase via its checkpoints (see `commands/resume.md`)
+3. Remaining `pending` rows queue normally
 
 ## Troubleshooting
 
 ### "Queue is empty"
-- Check Google Sheet has rows with `status=pending`
-- Ensure Sheet URL is correct and accessible
-
-### "Max concurrency reached"
-- Wait for one pipeline to complete
-- Current limit is 5 concurrent (can't be increased)
+- Check the backend has rows with `status=pending`
+- Ensure the Sheet URL / base ID is correct and accessible
 
 ### "Brand profile not found"
-- Run `/brand-setup [brand-name]` for missing brands
-- Update requirements sheet with correct brand names
+- Run `/contentforge:brand-setup` for missing brands
+- Update the requirements source with correct brand names
 
-### "Multiple pieces stuck in Phase X"
-- Likely API rate limit across all pipelines
-- System will auto-throttle and continue
-- Check API quotas (web_search, Drive API)
+### "A piece is stuck in Phase X"
+- Likely an API rate limit; the inner pipeline auto-throttles and continues
+- If the session died, re-run the batch — the piece resumes from its checkpoint
 
 ## Example Workflow
 
+(SYNTHETIC EXAMPLE — fabricated for illustration; never reuse these numbers.)
+
 **Scenario:** Agency needs 15 blog posts for 3 clients by end of week
 
-1. **Prepare Requirements Sheet**
-   - 15 rows in Google Sheet
+1. **Prepare Requirements**
+   - 15 rows (local queue or Google Sheet)
    - Columns: ID, type=blog, title, audience, brand, word_count=1200, priority=2
 
 2. **Run Batch Processing**
    ```
-   /batch-process https://docs.google.com/spreadsheets/d/ABC123/edit
+   /contentforge:batch-process https://docs.google.com/spreadsheets/d/ABC123/edit
    ```
 
 3. **Monitor Progress**
-   - Dashboard shows 5 running, 0 completed
-   - Estimated completion: 90 minutes
+   - Status table updates as each piece moves through its phases
 
 4. **Review Outputs**
-   - 14/15 completed successfully (scores 8.5-9.5)
-   - 1/15 requires human review (score 4.8, citation issues)
+   - 14/15 APPROVED (scores 7.4-9.1)
+   - 1/15 review_required (6.2, citation issues) — feedback stored in its `phase-7-review.json`
 
 5. **Quality Check**
    - Spot-check 3 random pieces
    - Fix the one flagged for review
 
 6. **Deliver to Clients**
-   - All 15 pieces delivered in 2 hours vs. 6 hours sequential
+   - All approved pieces in `~/Documents/ContentForge/{Brand}/`
 
 ## Integration with Other Skills
 
-- **Before Batch**: `/brand-setup` for new brands
-- **During Batch**: Progress tracker auto-updates
-- **After Batch**: Use outputs directly or run `/content-refresh` for updates
+- **Before Batch**: `/contentforge:brand-setup` for new brands
+- **During Batch**: status table auto-updates on events
+- **After Batch**: use outputs directly or run `/contentforge:content-refresh` for updates
 
-## Limitations (v2.0)
+## Limitations
 
-- Max 5 concurrent pipelines (more can overwhelm APIs)
+- Sequential execution — one pipeline at a time (throughput comes from checkpointed resume, not concurrency)
 - All pieces must use existing brand profiles (no on-the-fly creation)
-- Google Sheets or CSV only (no Notion, Airtable yet — coming in v2.1)
+- Every requirement needs a title (batch runs are non-interactive)
+- Backends: local JSON (default), Google Sheets, or Airtable
 
 ## Agent Used
 
-- **Batch Orchestrator Agent** (new in v2.0) — see `agents/09-batch-orchestrator.md`
+- **Batch Orchestrator Agent** — see `agents/09-batch-orchestrator.md`
 
 ## Related Skills
 
-- `/brand-setup` — Create brand profiles
-- `/content-refresh` — Update existing content
-- `/generate-variants` — A/B test variations
-
----
-
-**Version:** 3.4.0
-**Agent:** Batch Orchestrator
-**Utilities:** batch-queue-manager.md, progress-tracker.md
+- `/contentforge:brand-setup` — Create brand profiles
+- `/contentforge:content-refresh` — Update existing content
+- `/contentforge:cf-variants` — A/B test variations

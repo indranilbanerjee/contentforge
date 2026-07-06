@@ -16,25 +16,32 @@ Usage:
 """
 
 import argparse
-import json
 import os
 import shutil
 import sys
 import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from urllib.request import urlretrieve
+from urllib.request import urlopen
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
 
 # ── Constants ───────────────────────────────────────────────────────
 
-BASE_DIR = Path.home() / ".claude-marketing"
-DEFAULT_CREDENTIALS = BASE_DIR / "google-credentials.json"
 DEFAULT_TABLE = "ContentForge Tracking"
+DOWNLOAD_TIMEOUT_SECONDS = 60
 
 GOOGLE_SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive",
 ]
+
+
+def default_credentials() -> Path:
+    return _common.marketing_home() / "google-credentials.json"
 
 
 # ── Lazy dependency installers ─────────────────────────────────────
@@ -45,12 +52,9 @@ def _ensure_pyairtable():
         from pyairtable import Api
         return Api
     except ImportError:
-        import subprocess
-        print("Installing pyairtable (first run only)...", file=sys.stderr)
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "-q", "pyairtable"],
-            stdout=subprocess.DEVNULL,
-        )
+        err = _common.pip_install(["pyairtable"], label="pyairtable")
+        if err:
+            _common.finish(err)
         from pyairtable import Api
         return Api
 
@@ -62,13 +66,11 @@ def _ensure_google():
         from google.oauth2.service_account import Credentials
         return gspread, Credentials
     except ImportError:
-        import subprocess
-        print("Installing Google packages (first run only)...", file=sys.stderr)
-        subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "-q",
-             "gspread", "google-auth", "google-api-python-client"],
-            stdout=subprocess.DEVNULL,
-        )
+        err = _common.pip_install(
+            ["gspread", "google-auth", "google-api-python-client"],
+            label="Google packages")
+        if err:
+            _common.finish(err)
         import gspread
         from google.oauth2.service_account import Credentials
         return gspread, Credentials
@@ -76,40 +78,45 @@ def _ensure_google():
 
 # ── Local backend ──────────────────────────────────────────────────
 
+def _local_tracking_file(brand) -> Path:
+    return _common.brand_dir(brand) / "tracking" / "tracking.json"
+
+
 def read_local(brand):
     """Read records from local tracking.json."""
-    tracking_file = BASE_DIR / brand / "tracking" / "tracking.json"
+    tracking_file = _local_tracking_file(brand)
     if not tracking_file.exists():
         return [], f"No local tracking for brand '{brand}'"
-    data = json.loads(tracking_file.read_text(encoding="utf-8"))
+    data = _common.load_json_safe(tracking_file)
+    if "error" in data:
+        return [], data["error"]
     return data.get("records", []), None
 
 
 def write_local_record(brand, record):
-    """Write a single record to local tracking.json."""
-    tracking_dir = BASE_DIR / brand / "tracking"
-    tracking_file = tracking_dir / "tracking.json"
-    tracking_dir.mkdir(parents=True, exist_ok=True)
+    """Write a single record to local tracking.json (atomic)."""
+    tracking_file = _local_tracking_file(brand)
     if tracking_file.exists():
-        data = json.loads(tracking_file.read_text(encoding="utf-8"))
+        data = _common.load_json_safe(tracking_file)
+        if "error" in data:
+            data = {"records": [], "schema_version": "1.0"}
     else:
         data = {"records": [], "schema_version": "1.0"}
     data["records"].append(record)
-    tracking_file.write_text(
-        json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    _common.atomic_write_json(tracking_file, data)
 
 
 def count_local_files(brand):
     """Count output files in the local outputs directory."""
-    outputs_dir = BASE_DIR / brand / "outputs"
+    outputs_dir = _common.brand_dir(brand) / "outputs"
     if not outputs_dir.exists():
         return 0
     return sum(1 for f in outputs_dir.rglob("*") if f.is_file())
 
 
 def copy_file_local(source_path, brand, record):
-    """Copy a file to the local tracking outputs directory."""
+    """Copy a file to the local tracking outputs directory.
+    Returns (dest_path, error)."""
     source = Path(source_path).expanduser()
     if not source.exists():
         return None, f"Source file not found: {source}"
@@ -122,7 +129,7 @@ def copy_file_local(source_path, brand, record):
     slug = record.get("title", record.get("requirement_id", "output"))
     slug = slug.lower().replace(" ", "-")[:60]
 
-    dest_dir = BASE_DIR / brand / "outputs" / year / month
+    dest_dir = _common.brand_dir(brand) / "outputs" / year / month
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest_file = dest_dir / f"{slug}{source.suffix}"
 
@@ -165,7 +172,8 @@ def write_airtable_record(base_id, table_name, record, attach_file=None):
 
         # Exclude file-related fields from the record dict
         fields = {k: v for k, v in record.items()
-                  if k not in ("output_file", "output_path", "drive_url", "_record_id")
+                  if k not in ("output_file", "output_path", "drive_url",
+                               "published_path", "_record_id")
                   and v not in (None, "")}
 
         created = table.create(fields)
@@ -185,7 +193,8 @@ def write_airtable_record(base_id, table_name, record, attach_file=None):
 
 
 def download_airtable_attachment(record, brand):
-    """Download attachment from Airtable record to local temp."""
+    """Download attachment from Airtable record to local temp.
+    Uses urlopen with a timeout so a stalled CDN response can't hang the migration."""
     attachments = record.get("output_file", [])
     if not attachments or not isinstance(attachments, list):
         return None, "No attachment"
@@ -200,7 +209,8 @@ def download_airtable_attachment(record, brand):
     dest = tmp_dir / filename
 
     try:
-        urlretrieve(url, str(dest))
+        with urlopen(url, timeout=DOWNLOAD_TIMEOUT_SECONDS) as resp, open(dest, "wb") as fh:
+            shutil.copyfileobj(resp, fh)
         return str(dest), None
     except Exception as e:
         return None, f"Download failed: {e}"
@@ -237,10 +247,20 @@ def read_google(sheet_id, credentials_path):
 
 
 def write_google_record(sheet_id, credentials_path, record, folder_id=None, file_path=None):
-    """Write record to Google Sheet, optionally upload file to Drive."""
+    """Write record to Google Sheet, optionally upload file to Drive first so
+    the row's drive_url column can point at the uploaded copy."""
     client, creds, err = _get_google_client(credentials_path)
     if err:
         return err
+
+    # Upload file to Drive FIRST (if requested) so the appended row carries
+    # the resulting drive_url instead of an empty cell.
+    record = dict(record)
+    if file_path and folder_id:
+        file_id, upload_err = _upload_to_drive(file_path, folder_id, creds)
+        if upload_err:
+            return f"Drive upload failed (record not written): {upload_err}"
+        record["drive_url"] = f"https://drive.google.com/file/d/{file_id}/view"
 
     try:
         sheet = client.open_by_key(sheet_id)
@@ -260,35 +280,29 @@ def write_google_record(sheet_id, credentials_path, record, folder_id=None, file
     except Exception as e:
         return f"Google Sheets write failed: {e}"
 
-    # Upload file to Drive if requested
-    if file_path and folder_id:
-        upload_err = _upload_to_drive(file_path, folder_id, creds)
-        if upload_err:
-            return f"Record created but Drive upload failed: {upload_err}"
-
     return None
 
 
 def _upload_to_drive(file_path, folder_id, creds):
-    """Upload file to Google Drive folder."""
+    """Upload file to Google Drive folder. Returns (file_id, error)."""
     try:
         from googleapiclient.discovery import build
         from googleapiclient.http import MediaFileUpload
     except ImportError:
-        return "google-api-python-client not available"
+        return None, "google-api-python-client not available"
 
     fp = Path(file_path).expanduser()
     if not fp.exists():
-        return f"File not found: {fp}"
+        return None, f"File not found: {fp}"
 
     try:
         service = build("drive", "v3", credentials=creds)
         metadata = {"name": fp.name, "parents": [folder_id]}
         media = MediaFileUpload(str(fp), resumable=True)
-        service.files().create(body=metadata, media_body=media, fields="id").execute()
-        return None
+        created = service.files().create(body=metadata, media_body=media, fields="id").execute()
+        return created.get("id"), None
     except Exception as e:
-        return f"Drive upload failed: {e}"
+        return None, f"Drive upload failed: {e}"
 
 
 # ── Migration engine ──────────────────────────────────────────────
@@ -397,14 +411,15 @@ def migrate_records(args):
             # Strip remote-only fields before local write
             clean = {k: v for k, v in record.items()
                      if k != "_record_id" and not isinstance(v, list)}
-            write_local_record(brand, clean)
             if local_file:
                 dest, copy_err = copy_file_local(local_file, brand, record)
                 if copy_err:
                     errors.append(f"{rid}: local file copy — {copy_err}")
                     files_failed += 1
                 else:
+                    clean["output_path"] = dest  # keep the record ↔ file linkage
                     files_migrated += 1
+            write_local_record(brand, clean)
 
         elif tgt == "airtable":
             if not args.base_id:
@@ -484,7 +499,7 @@ def check_status(args):
     if backend == "local":
         records, err = read_local(brand)
         file_count = count_local_files(brand)
-        tracking_file = BASE_DIR / brand / "tracking" / "tracking.json"
+        tracking_file = _local_tracking_file(brand)
 
         if err:
             return {
@@ -570,34 +585,37 @@ def main():
     parser.add_argument("--base-id", help="Airtable Base ID (if airtable involved)")
     parser.add_argument("--sheet-id", help="Google Sheet ID (if google involved)")
     parser.add_argument("--folder-id", help="Google Drive folder ID (if google involved)")
-    parser.add_argument("--credentials", default=str(DEFAULT_CREDENTIALS),
-                        help="Path to Google credentials JSON")
+    parser.add_argument("--credentials", default=None,
+                        help="Path to Google credentials JSON (default: <marketing-home>/google-credentials.json)")
     parser.add_argument("--table", default=DEFAULT_TABLE,
                         help="Airtable table name")
     args = parser.parse_args()
 
+    if args.credentials is None:
+        args.credentials = str(default_credentials())
+
     # ── Validate ───────────────────────────────────────────────────
     if not args.from_backend:
-        print(json.dumps({"error": "Provide --from (source backend)"}))
-        sys.exit(1)
+        _common.finish({"error": "Provide --from (source backend)"})
 
     if args.action == "migrate" and not args.to_backend:
-        print(json.dumps({"error": "Provide --to (target backend) for migrate"}))
-        sys.exit(1)
+        _common.finish({"error": "Provide --to (target backend) for migrate"})
 
     if args.action == "migrate" and args.from_backend == args.to_backend:
-        print(json.dumps({"error": "Source and target backends must be different"}))
-        sys.exit(1)
+        _common.finish({"error": "Source and target backends must be different"})
 
     # ── Dispatch ───────────────────────────────────────────────────
-    if args.action == "status":
-        result = check_status(args)
-    elif args.action == "migrate":
-        result = migrate_records(args)
-    else:
-        result = {"error": f"Unknown action: {args.action}"}
+    try:
+        if args.action == "status":
+            result = check_status(args)
+        elif args.action == "migrate":
+            result = migrate_records(args)
+        else:
+            result = {"error": f"Unknown action: {args.action}"}
+    except Exception as exc:
+        result = {"error": f"{type(exc).__name__}: {exc}"}
 
-    print(json.dumps(result, indent=2))
+    _common.finish(result)
 
 
 if __name__ == "__main__":

@@ -18,7 +18,7 @@ Usage:
     python sheets-tracker.py --action get-row --sheet-id SHEET_ID --row-id REQ-001
 
 Credentials: Reads service account JSON from --credentials flag
-             (default: ~/.claude-marketing/google-credentials.json)
+             (default: <marketing-home>/google-credentials.json)
 """
 
 import argparse
@@ -27,17 +27,19 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
+
+_common.ensure_utf8_stdout()
+
 # ── Auto-install dependencies ───────────────────────────────────────
 try:
     import gspread
     from google.oauth2.service_account import Credentials
 except ImportError:
-    import subprocess
-    print("Installing required packages (first run only)...", file=sys.stderr)
-    subprocess.check_call(
-        [sys.executable, "-m", "pip", "install", "-q", "gspread", "google-auth"],
-        stdout=subprocess.DEVNULL,
-    )
+    err = _common.pip_install(["gspread", "google-auth"], label="Google Sheets packages")
+    if err:
+        _common.finish(err)
     import gspread
     from google.oauth2.service_account import Credentials
 
@@ -48,7 +50,10 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive.file",
 ]
 
-DEFAULT_CREDENTIALS = Path.home() / ".claude-marketing" / "google-credentials.json"
+
+def default_credentials() -> Path:
+    return _common.marketing_home() / "google-credentials.json"
+
 
 # Tracking sheet column headers (A-T, 20 columns)
 HEADERS = [
@@ -142,16 +147,7 @@ def add_row(client, sheet_id, tab_name, data):
     # Generate requirement ID — use max existing ID to avoid collisions after deletions
     all_values = ws.col_values(1)  # Column A
     existing_ids = [v for v in all_values[1:] if v]  # Skip header
-    max_num = 0
-    for id_val in existing_ids:
-        if id_val.startswith("REQ-"):
-            try:
-                num = int(id_val.split("-", 1)[1])
-                max_num = max(max_num, num)
-            except (IndexError, ValueError):
-                pass
-    next_num = max_num + 1
-    req_id = data.get("requirement_id", f"REQ-{next_num:03d}")
+    req_id = data.get("requirement_id") or _common.next_req_id(existing_ids)
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 
@@ -162,7 +158,7 @@ def add_row(client, sheet_id, tab_name, data):
         data.get("title", ""),
         data.get("target_audience", ""),
         str(data.get("word_count_target", "")),
-        str(min(max(int(data.get("priority", 3)), 1), 5)),  # Clamp 1-5
+        str(_common.clamp_priority(data.get("priority", 3))),
         data.get("status", "pending"),
         now,                                    # created_at
         "",                                     # started_at
@@ -248,7 +244,7 @@ def update_row(client, sheet_id, tab_name, row_id, data):
     if not target_row:
         return {"error": f"No row with requirement_id={row_id}"}
 
-    # Map field names to column letters
+    # Map field names to column letters (safe for the fixed 20-column schema)
     col_map = {h: chr(65 + i) for i, h in enumerate(HEADERS)}  # A=65
 
     updates = []
@@ -305,24 +301,23 @@ def main():
                         choices=["init", "add-row", "get-pending", "get-row", "update-row", "mark-complete"])
     parser.add_argument("--sheet-id", required=True, help="Google Sheet ID (from the URL)")
     parser.add_argument("--tab", default=DEFAULT_TAB, help=f"Sheet tab name (default: {DEFAULT_TAB})")
-    parser.add_argument("--credentials", default=str(DEFAULT_CREDENTIALS),
-                        help=f"Path to service account JSON (default: {DEFAULT_CREDENTIALS})")
+    parser.add_argument("--credentials", default=None,
+                        help="Path to service account JSON (default: <marketing-home>/google-credentials.json)")
     parser.add_argument("--row-id", help="Requirement ID for row operations")
     parser.add_argument("--brand", help="Brand filter for get-pending")
     parser.add_argument("--data", help="JSON string with field values")
     args = parser.parse_args()
 
     # Authenticate
-    client, err = get_client(args.credentials)
+    client, err = get_client(args.credentials or default_credentials())
     if err:
-        print(json.dumps({"error": err, "help": (
+        _common.finish({"error": err, "help": (
             "To set up Google credentials:\n"
             "1. Go to Google Cloud Console > IAM & Admin > Service Accounts\n"
             "2. Create a service account and download the JSON key\n"
             "3. Save it to: ~/.claude-marketing/google-credentials.json\n"
             "4. Share your Google Sheet with the service account email (Editor access)"
-        )}))
-        sys.exit(1)
+        )})
 
     # Parse data JSON
     data = {}
@@ -330,35 +325,37 @@ def main():
         try:
             data = json.loads(args.data)
         except json.JSONDecodeError as e:
-            print(json.dumps({"error": f"Invalid JSON in --data: {e}"}))
-            sys.exit(1)
+            _common.finish({"error": f"Invalid JSON in --data: {e}"})
 
     # Dispatch
-    if args.action == "init":
-        result = init_sheet(client, args.sheet_id, args.tab)
-    elif args.action == "add-row":
-        result = add_row(client, args.sheet_id, args.tab, data)
-    elif args.action == "get-pending":
-        result = get_pending(client, args.sheet_id, args.tab, args.brand)
-    elif args.action == "get-row":
-        if not args.row_id:
-            result = {"error": "Provide --row-id for get-row"}
+    try:
+        if args.action == "init":
+            result = init_sheet(client, args.sheet_id, args.tab)
+        elif args.action == "add-row":
+            result = add_row(client, args.sheet_id, args.tab, data)
+        elif args.action == "get-pending":
+            result = get_pending(client, args.sheet_id, args.tab, args.brand)
+        elif args.action == "get-row":
+            if not args.row_id:
+                result = {"error": "Provide --row-id for get-row"}
+            else:
+                result = get_row(client, args.sheet_id, args.tab, args.row_id)
+        elif args.action == "update-row":
+            if not args.row_id:
+                result = {"error": "Provide --row-id for update-row"}
+            else:
+                result = update_row(client, args.sheet_id, args.tab, args.row_id, data)
+        elif args.action == "mark-complete":
+            if not args.row_id:
+                result = {"error": "Provide --row-id for mark-complete"}
+            else:
+                result = mark_complete(client, args.sheet_id, args.tab, args.row_id, data)
         else:
-            result = get_row(client, args.sheet_id, args.tab, args.row_id)
-    elif args.action == "update-row":
-        if not args.row_id:
-            result = {"error": "Provide --row-id for update-row"}
-        else:
-            result = update_row(client, args.sheet_id, args.tab, args.row_id, data)
-    elif args.action == "mark-complete":
-        if not args.row_id:
-            result = {"error": "Provide --row-id for mark-complete"}
-        else:
-            result = mark_complete(client, args.sheet_id, args.tab, args.row_id, data)
-    else:
-        result = {"error": f"Unknown action: {args.action}"}
+            result = {"error": f"Unknown action: {args.action}"}
+    except Exception as exc:  # surface API errors as JSON, not tracebacks
+        result = {"error": f"{type(exc).__name__}: {exc}"}
 
-    print(json.dumps(result, indent=2))
+    _common.finish(result)
 
 
 if __name__ == "__main__":

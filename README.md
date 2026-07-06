@@ -4,20 +4,20 @@
 
 Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 29-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.7. No re-edits for AI voice. No hallucinated citations. No orphan content.
 
-Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 11 quality gates · 29-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 10 quality gates · 29-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.15.3-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.16.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-53%2F53%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3153)
+[![Tests](https://img.shields.io/badge/tests-143%2F143%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3160)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
-> 🆕 **Just shipped — v3.15.3 (June 28, 2026):** README-sync patch — added v3.15.2, v3.15.1 entries to Release notes (they shipped without README updates) + extended `tests/test_release_consistency.py` to lock the `## Supported surfaces (vX.Y.Z)` heading + anchor links to canonical version, so this gap is caught in CI next time. v3.15.2 (also today) brought the **June market-refresh sync** — model registry rebuilt (47 entries), resolver auto-rewrites `retired` IDs, `--check-params` scanner. Docs-only — zero pipeline change. 53 tests passing. [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.16.0 (July 7, 2026): the Reliability & Truth release.** The deepest engineering pass since v3.0 — a five-layer audit (orchestration, agents, skills, scripts, configs) followed by a coordinated fix of everything it found. Checkpoint/resume now actually wired into the master skill (every phase saves to a canonical run directory; `/contentforge:resume` works for skill-started runs). File-based phase handoff contract (paths, not pasted drafts). Keyword-density gate retired in favor of placement checks; new Phase 6→6.5 protected-structure manifest stops the humanizer from dismantling GEO structure. EU AI Act Article 50 AI-disclosure step in the publish path (applicable Aug 2, 2026). Humanizer catalog 29→35 patterns with a defined AI-signal score. Social specs add TikTok, Bluesky, YouTube Shorts + per-platform AI-label fields. New `scripts/_common.py` (one slugifier, atomic writes, UTF-8-safe output, real exit codes), `scripts/text-metrics.py` (measured burstiness/FK/placement gates), .docx image embedding + TOC + nested lists. **Tests 53 → 143.** [Full changelog →](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -46,7 +46,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 | Capability | Why it matters |
 |---|---|
-| **11-phase pipeline with quality gates after each phase** | Bad output is caught and re-run before it propagates downstream |
+| **10-phase pipeline with a quality gate after every phase** | Bad output is caught and re-run before it propagates downstream |
 | **29-pattern AI-detection humanizer** + self-critique meta-pass | Output reads human, not AI — passes GPTZero / Originality.ai checks |
 | **Fact-checker subagent** verifies URLs and cross-references claims | Citations work and aren't hallucinated |
 | **Three-category internal linking** (topical / commercial / authority) | Content becomes a funnel, not a stranded page |
@@ -56,7 +56,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.15.3)
+## Supported surfaces (v3.16.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -117,7 +117,7 @@ The agent walks you through brand voice, terminology, guardrails, citation rules
 /contentforge:create-content
 ```
 
-The skill prompts you for content type, brand, topic, target word count, and audience. It then runs 11 phases via specialized subagents (research → fact-check → draft → visuals → validate → proofread → SEO → humanize → review → output), enforces a quality gate after each phase, and writes a real `.docx` you can hand to your editor or design team.
+The skill prompts you for content type, brand, topic, target word count, and audience. It then runs 10 phases via specialized subagents (research → fact-check → draft → visuals → validate → proofread → SEO → humanize → review → output), enforces a quality gate after each phase, and writes a real `.docx` you can hand to your editor or design team.
 
 ### 5. Find your output
 
@@ -144,7 +144,7 @@ The intermediate phase artefacts (research brief, fact-check report, draft, SEO 
 
 ### 6. If the run gets interrupted, resume it
 
-The 11-phase pipeline runs 20–60 minutes end to end. If the session terminates partway through (context-window exhaustion, network blip, Ctrl-C, machine sleep), v3.12.3+ saves each completed phase to disk via `scripts/checkpoint-manager.py`. Resume the run with:
+The 10-phase pipeline runs 20–60 minutes end to end. If the session terminates partway through (context-window exhaustion, network blip, Ctrl-C, machine sleep), v3.12.3+ saves each completed phase to disk via `scripts/checkpoint-manager.py`. Resume the run with:
 
 ```
 /contentforge:resume                 # auto-picks the most recent in-progress run for the active brand
@@ -155,7 +155,7 @@ The resumer reloads the saved Phase 1..N outputs and continues from Phase N+1 �
 
 ---
 
-## What ContentForge does (the 11-phase pipeline)
+## What ContentForge does (the 10-phase pipeline)
 
 ```
 0.5  Title Curation       → 4-5 SERP-aware title options; user selects
@@ -253,7 +253,7 @@ These 9 commands are the user-facing entry points:
 
 | Command | What it does |
 |---|---|
-| `/contentforge:create-content` | Run the full 11-phase pipeline for a single piece |
+| `/contentforge:create-content` | Run the full 10-phase pipeline for a single piece |
 | `/contentforge:content-brief` | Generate a research-backed brief with keyword data, competitor analysis, outline |
 | `/contentforge:social-adapt` | Repurpose an article into LinkedIn / Twitter / Instagram / Facebook / Threads posts |
 | `/contentforge:publish` | Push to Webflow or WordPress with preview, verification, HTML fallback |
@@ -271,7 +271,7 @@ These 9 commands are the user-facing entry points:
 
 | Skill | Purpose |
 |---|---|
-| `contentforge` | Full 11-phase production (the default skill the `/contentforge:create-content` command invokes) |
+| `contentforge` | Full 10-phase production (the default skill the `/contentforge:create-content` command invokes) |
 | `batch-process` | Process 10–50+ pieces in parallel (4–5× faster) |
 | `content-refresh` | Update old content with current data, preserve SEO |
 | `cf-brief` | Research-backed brief with keyword analysis and outline |
@@ -505,7 +505,7 @@ Run `/contentforge:cf-environment` after install to see exactly what's available
 
 ## About the maintainer
 
-ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 11-phase pipeline and 29-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
+ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 10-phase pipeline and 29-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
 
 - 🌐 **Website:** [indranil.in](https://indranil.in)
 - 💼 **LinkedIn:** [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)
@@ -533,7 +533,7 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 | Plugin | What it does |
 |---|---|
 | [Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro) | End-to-end engagement methodology — 12-Part Strategy Flow, Four Core Documents, 25 agents, 150 skills |
-| **ContentForge** (this plugin) | Publication-ready content via 11-phase pipeline, fact-checker, 29-pattern AI-detection humanizer, `.docx` export with C2PA signing |
+| **ContentForge** (this plugin) | Publication-ready content via 10-phase pipeline, fact-checker, 29-pattern AI-detection humanizer, `.docx` export with C2PA signing |
 | [SocialForge](https://github.com/indranilbanerjee/socialforge) | Social media calendar with AI image (Vertex AI Nano Banana Pro) + video (WaveSpeed Kling v3.0 Pro) generation, C2PA signing |
 
 ```
@@ -546,6 +546,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v3.16.0 (2026-07-07)** — **Reliability & Truth release.** Five-layer deep audit implemented end to end. Orchestration: checkpointing wired into the master skill (Step 0 init + per-phase saves + `loop` counters + `pending_rework`), per-phase input/output contract table with loop targets, orchestrator-owned gates verified via new `scripts/text-metrics.py`, no-brand and no-web modes, honest sequential batch orchestrator (success = reviewer-approved ≥7.0). Agents: user interaction hoisted out of subagents (title curation + image approvals now orchestrator-owned), fact-checker paywall/SERP fixes, drafter body-format contract, structure-manifest guard between SEO and humanizer phases, reviewer industry weights fully specified, ~50 dangling slash references fixed. Skills: connector docs now match the shipped empty `.mcp.json`, cf-brief rewritten for AEO/GEO (LSI/density dogma removed), EU AI Act Article 50 disclosure step in cf-publish, YouTube Shorts + TikTok long-form in cf-video-script, command/skill twins collapsed to thin wrappers. Configs: `scoring-thresholds.json` is now the single source of truth (10 gates incl. new Phase 8 gate), humanizer catalog 29→35 patterns + defined AI-signal formula (evasion framing removed), social specs add TikTok/Bluesky/YouTube Shorts + per-platform `ai_disclosure`, all 10 industry packs enriched (FDA CCN, OCR tracking-tech, SEC Marketing Rule) and dated. Scripts: new `_common.py` (single slugifier — fixes the Cowork sync-path bug, atomic JSON writes, UTF-8 console guard, real exit codes), checkpoint-manager meta/loop/pending-rework, pipeline-tracker run_id keying, .docx image embedding + TOC field + page footer + nested lists + underscore emphasis, Airtable formula-injection fix, Drive pagination. **Tests 53 → 143.**
 
 **v3.15.3 (2026-06-28)** — README sync patch. Adds v3.15.2, v3.15.1 entries to these release notes (they shipped without README updates here) + extends `tests/test_release_consistency.py` to also lock the `## Supported surfaces (vX.Y.Z)` heading + anchor links to canonical version, so this gap is caught in CI next time. No runtime change.
 

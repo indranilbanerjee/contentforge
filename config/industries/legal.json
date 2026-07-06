@@ -1,5 +1,6 @@
 {
   "industry": "legal",
+  "_last_reviewed": "2026-07-03",
   "display_name": "Legal Services & Law",
 
   "expertise_profile": {
@@ -117,6 +118,34 @@
       "Use legal terms incorrectly or imprecisely",
       "Fail to include disclaimers",
       "Confuse what the law says with how courts actually apply it"
+    ]
+  },
+
+  "humanizer_notes": {
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "ai_telltale_phrases": [
+      "navigate the legal landscape",
+      "legal complexities",
+      "in the ever-evolving regulatory environment",
+      "protect your legal rights",
+      "comprehensive legal solutions",
+      "leveraging legal expertise",
+      "at the intersection of law and technology",
+      "driving legal innovation",
+      "empowering legal teams",
+      "transforming legal operations"
+    ],
+    "preferred_replacements": [
+      "Reference specific statutes: 'Under 17 U.S.C. § 107...'",
+      "Cite case law: 'As established in Smith v. Jones (2024)...'",
+      "Use precise legal terminology without marketing gloss",
+      "Lead with jurisdictional specifics where applicable"
+    ],
+    "compliance_notes": [
+      "Include 'This does not constitute legal advice' disclaimer",
+      "Jurisdiction-specific disclaimers where relevant",
+      "Attorney advertising rules vary by state bar",
+      "Avoid creating implied attorney-client relationships"
     ]
   }
 }

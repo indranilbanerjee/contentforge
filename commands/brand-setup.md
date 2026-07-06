@@ -33,7 +33,7 @@ Create or update a brand voice profile that the ContentForge pipeline uses for e
 
 ## Trigger
 
-User runs `/brand-setup` or asks to set up a brand, configure brand voice, import a style guide, or onboard a new client.
+User runs `/contentforge:brand-setup` or asks to set up a brand, configure brand voice, import a style guide, or onboard a new client.
 
 ## Inputs
 
@@ -202,7 +202,7 @@ Tell the user:
 >
 > **Come back here when you've saved the file. I'll verify it automatically.**
 
-Then wait. When the user returns, check the file again. If found, read `client_email` and proceed. If still not found, say "No rush — you can set this up later and re-run `/brand-setup`."
+Then wait. When the user returns, check the file again. If found, read `client_email` and proceed. If still not found, say "No rush — you can set this up later and re-run `/contentforge:brand-setup`."
 
 #### Step B: Get the tracking sheet URL
 
@@ -606,8 +606,8 @@ After creating the profile, show a summary:
 | Key files | Generated / Updated / Pre-existing / Not created |
 
 Ask: "Brand profile for [name] is ready. Would you like to:
-- Start producing content? (`/create-content`)
-- Generate a content brief? (`/content-brief`)
+- Start producing content? (`/contentforge:create-content`)
+- Generate a content brief? (`/contentforge:content-brief`)
 - Import additional guidelines from another source?
 - Create a test piece to validate the voice settings?
 - Update brand knowledge files? (re-run Step F to regenerate or refresh)

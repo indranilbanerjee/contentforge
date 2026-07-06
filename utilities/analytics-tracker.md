@@ -1,5 +1,7 @@
 # Utility: Analytics Tracker
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 **Purpose:** Parse ContentForge production tracking data to generate performance insights, trend analysis, outlier detection, and actionable recommendations.
 
 ---

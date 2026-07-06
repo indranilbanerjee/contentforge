@@ -1,35 +1,15 @@
 {
-  "_readme": "ContentForge MCP Integrations — Required for pipeline operation. Google Sheets for requirement intake and Google Drive for brand knowledge + output delivery.",
+  "_readme": "ContentForge MCP examples — ALL OPTIONAL (the pipeline runs with zero MCP servers; local file tracking is the fallback). These are CLI-only stdio/npx servers. For verified, Cowork-compatible HTTP equivalents — including Google Sheets and Google Drive via Pipedream/Composio, and image generation via fal.ai or Replicate — see '.mcp.json.connectors-reference'. Prefer those. SECURITY NOTE: 'npx -y' downloads and executes remote code. Verify each package exists on npm and is the package you intend (check publisher, downloads, repository link) before enabling any entry below.",
+  "_google_sheets_and_drive": "The former 'google-sheets' and 'google-drive' npx entries were removed (July 2026): the package names were unverifiable, and Cowork cannot run stdio servers at all. Use the HTTP equivalents in '.mcp.json.connectors-reference' instead ('pipedream-google-sheets', 'pipedream-google-drive', or the Composio equivalents), or the Anthropic platform-level Google Drive integration in Cowork (Settings → Integrations).",
   "mcpServers": {
-    "google-sheets": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@anthropic/mcp-google-sheets"
-      ],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}"
-      },
-      "description": "REQUIRED: Google Sheets — requirement intake, status tracking, quality score reporting"
-    },
-    "google-drive": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-google-drive"
-      ],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}"
-      },
-      "description": "REQUIRED: Google Drive — brand knowledge vault, output file storage, folder organization"
-    },
     "stability-ai": {
       "command": "npx",
       "args": ["-y", "mcp-server-stability-ai"],
       "env": {
         "STABILITY_AI_API_KEY": "${STABILITY_AI_API_KEY}"
       },
-      "description": "Stability AI — generate, edit, upscale images, remove backgrounds, outpaint. 11 image tools."
+      "_warning": "Verify this package exists on npm before use; npx executes remote code. Cowork-compatible alternative: 'fal-ai' HTTP entry in .mcp.json.connectors-reference.",
+      "description": "Optional: Stability AI — generate, edit, upscale images, remove backgrounds, outpaint."
     },
     "nanobanana": {
       "command": "npx",
@@ -37,7 +17,8 @@
       "env": {
         "GEMINI_API_KEY": "${GEMINI_API_KEY}"
       },
-      "description": "Gemini-powered image generation and editing via Google AI Studio. Free tier available."
+      "_warning": "Verify this package exists on npm before use; npx executes remote code. Cowork-compatible alternative: 'fal-ai' or 'replicate' HTTP entries in .mcp.json.connectors-reference.",
+      "description": "Optional: Gemini-powered image generation and editing via Google AI Studio. Free tier available."
     },
     "imagenate": {
       "command": "npx",
@@ -47,7 +28,8 @@
         "OPENAI_API_KEY": "${OPENAI_API_KEY}",
         "BFL_API_KEY": "${BFL_API_KEY}"
       },
-      "description": "Multi-provider image generation — Gemini, OpenAI gpt-image, Flux 2. Configure one or more API keys."
+      "_warning": "Verify this package exists on npm before use; npx executes remote code. Cowork-compatible alternative: 'fal-ai' or 'replicate' HTTP entries in .mcp.json.connectors-reference.",
+      "description": "Optional: Multi-provider image generation — Gemini, OpenAI gpt-image, Flux 2. Configure one or more API keys."
     }
   }
 }

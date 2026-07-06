@@ -21,11 +21,13 @@ Three concerns:
 The agent reads these markers after running Python steps and uses its
 Drive MCP tools to perform the actual file transfers.
 
-State files:
+State files (brand dir resolved via _common.brand_dir — IDENTICAL to the
+paths checkpoint-manager.py writes, so the pending-sync roundtrip works
+for every brand name):
 
-  ~/.claude-marketing/_cowork-config.json          (Drive root + namespace)
-  ~/.claude-marketing/{brand}/_drive-sync.json     (per-brand sync state)
-  ~/.claude-marketing/{brand}/runs/{run}/_sync-pending.json (per-run pending uploads)
+  <marketing-home>/_cowork-config.json               (Drive root + namespace)
+  <brand-dir>/_drive-sync.json                       (per-brand sync state)
+  <brand-dir>/runs/{run}/_sync-pending.json          (per-run pending uploads)
 
 Usage:
     # Cowork+Drive config
@@ -52,14 +54,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-if hasattr(sys.stdout, "reconfigure"):
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except Exception:
-        pass
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _common  # noqa: E402
 
-CLAUDE_MARKETING = Path.home() / ".claude-marketing"
-COWORK_CONFIG_PATH = CLAUDE_MARKETING / "_cowork-config.json"
+_common.ensure_utf8_stdout()
+
+
+def _cowork_config_path() -> Path:
+    return _common.marketing_home() / "_cowork-config.json"
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -68,26 +70,26 @@ COWORK_CONFIG_PATH = CLAUDE_MARKETING / "_cowork-config.json"
 
 def read_cowork_config() -> dict:
     """Read the Cowork+Drive root config written by cf-cowork-setup."""
-    if not COWORK_CONFIG_PATH.exists():
+    path = _cowork_config_path()
+    if not path.exists():
         return {"configured": False,
                 "note": "Run /contentforge:cf-cowork-setup to wire ContentForge for Cowork team usage."}
-    try:
-        data = json.loads(COWORK_CONFIG_PATH.read_text(encoding="utf-8"))
-        data["configured"] = True
-        return data
-    except (json.JSONDecodeError, OSError) as e:
-        return {"configured": False, "error": f"{type(e).__name__}: {e}"}
+    data = _common.load_json_safe(path)
+    if "error" in data:
+        return {"configured": False, "error": data["error"]}
+    data["configured"] = True
+    return data
 
 
 def write_cowork_config(data: dict) -> dict:
     """Write the Cowork+Drive root config. Used by cf-cowork-setup."""
-    CLAUDE_MARKETING.mkdir(parents=True, exist_ok=True)
+    path = _cowork_config_path()
     payload = {
         **data,
         "configured_at": data.get("configured_at") or _now_iso(),
     }
-    COWORK_CONFIG_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    return {"status": "written", "path": str(COWORK_CONFIG_PATH), "config": payload}
+    _common.atomic_write_json(path, payload)
+    return {"status": "written", "path": str(path), "config": payload}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -95,12 +97,11 @@ def write_cowork_config(data: dict) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _brand_sync_path(brand: str) -> Path:
-    brand_slug = _slugify(brand)
-    return CLAUDE_MARKETING / brand_slug / "_drive-sync.json"
+    return _common.brand_dir(brand) / "_drive-sync.json"
 
 
 def _profile_path(brand: str) -> Path:
-    return CLAUDE_MARKETING / _slugify(brand) / "profile.json"
+    return _common.brand_dir(brand) / "profile.json"
 
 
 def profile_needs_upload(brand: str) -> dict:
@@ -185,14 +186,14 @@ def profile_drive_state(brand: str) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 
 def _run_pending_path(brand: str, run_id: str) -> Path:
-    return CLAUDE_MARKETING / _slugify(brand) / "runs" / run_id / "_sync-pending.json"
+    # Same path checkpoint-manager.py writes (_common.brand_dir keeps them aligned).
+    return _common.brand_dir(brand) / "runs" / run_id / "_sync-pending.json"
 
 
 def add_pending_upload(brand: str, run_id: str, file: str) -> dict:
     """Mark a checkpoint file as needing upload to Drive. Called by
     checkpoint-manager.py after each phase save."""
     path = _run_pending_path(brand, run_id)
-    path.parent.mkdir(parents=True, exist_ok=True)
     pending = _read_pending(path)
     if file not in pending["pending"]:
         pending["pending"].append(file)
@@ -240,7 +241,7 @@ def mark_run_file_uploaded(brand: str, run_id: str, file: str,
 def list_runs_needing_sync(brand: str) -> dict:
     """List every run for a brand that has at least one pending upload.
     Used at resume time to detect which runs need their state pulled from Drive."""
-    runs_dir = CLAUDE_MARKETING / _slugify(brand) / "runs"
+    runs_dir = _common.brand_dir(brand) / "runs"
     if not runs_dir.exists():
         return {"brand": brand, "runs": []}
     needing = []
@@ -250,9 +251,8 @@ def list_runs_needing_sync(brand: str) -> dict:
         pending_path = run_dir / "_sync-pending.json"
         if not pending_path.exists():
             continue
-        try:
-            pending = json.loads(pending_path.read_text(encoding="utf-8"))
-        except (json.JSONDecodeError, OSError):
+        pending = _common.load_json_safe(pending_path)
+        if "error" in pending:
             continue
         if pending.get("pending"):
             needing.append({
@@ -266,10 +266,6 @@ def list_runs_needing_sync(brand: str) -> dict:
 # ─────────────────────────────────────────────────────────────────────────────
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
-
-def _slugify(s: str) -> str:
-    return "".join(c.lower() if c.isalnum() else "-" for c in s.strip()).strip("-")
-
 
 def _file_hash(path: Path) -> str:
     """SHA-256 of file contents."""
@@ -288,32 +284,27 @@ def _read_brand_sync(brand: str) -> dict:
     path = _brand_sync_path(brand)
     if not path.exists():
         return {}
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError):
-        return {}
+    data = _common.load_json_safe(path)
+    return {} if "error" in data else data
 
 
 def _write_brand_sync(brand: str, data: dict):
-    path = _brand_sync_path(brand)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    _common.atomic_write_json(_brand_sync_path(brand), data)
 
 
 def _read_pending(path: Path) -> dict:
     if not path.exists():
         return {"pending": [], "uploaded": []}
-    try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-        data.setdefault("pending", [])
-        data.setdefault("uploaded", [])
-        return data
-    except (json.JSONDecodeError, OSError):
+    data = _common.load_json_safe(path)
+    if "error" in data:
         return {"pending": [], "uploaded": []}
+    data.setdefault("pending", [])
+    data.setdefault("uploaded", [])
+    return data
 
 
 def _write_pending(path: Path, data: dict):
-    path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    _common.atomic_write_json(path, data)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -382,7 +373,7 @@ def main():
     else:
         result = {"error": f"unknown action: {args.action}"}
 
-    print(json.dumps(result, indent=2))
+    _common.finish(result)
 
 
 if __name__ == "__main__":

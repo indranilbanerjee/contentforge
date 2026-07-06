@@ -4,6 +4,10 @@
 
 **Used by:** Social Adapter Agent (`agents/10-social-adapter.md`) and `/cf-social-adapt` skill
 
+**Platforms covered:** LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, YouTube Shorts (specs: `config/social-platform-specs.json`)
+
+> **All worked examples below are SYNTHETIC EXAMPLES — fabricated for illustration.** Every statistic, organization, study, and result is invented (including "Meridian Health System" and all percentages). Never reuse them as facts in real posts.
+
 ---
 
 ## Framework 1: Announcement
@@ -51,7 +55,23 @@
 - Conversation prompt at end
 - 1-2 hashtags
 
+**TikTok (caption 80-300 chars):**
+- Put the claim as on-screen text in the first second; caption adds one line of context
+- Photo post (up to 35 images) works well: claim slide, context slide, implication slide
+- 3-5 discovery hashtags; keyword-rich caption for TikTok search
+
+**Bluesky (100-280 chars):**
+- Trend statement + one supporting data point + link card
+- 0-2 hashtags; write for keyword search, not tags — conversational, no broadcast tone
+
+**YouTube Shorts (title <=100 chars):**
+- The claim IS the title; front-load the topic keyword
+- First ~100 description characters restate the claim (only that much shows uncollapsed)
+- Video pays off the claim in under 60 seconds
+
 ### Example: Announcement
+
+> SYNTHETIC EXAMPLE — fabricated for illustration.
 
 **Source moment:** "73% of healthcare organizations now use AI-powered diagnostics, up from 12% in 2024"
 
@@ -134,7 +154,22 @@ That is not a trend. That is a transformation.
 - "[Stat]. Let that sink in. [One sentence of context]."
 - Short, punchy, conversation-ready
 
+**TikTok (caption 80-300 chars):**
+- Stat as large on-screen text over the visual; voiceover or text slides unpack it
+- Photo-post carousel for multiple related stats (one per slide)
+- Caption: the "so what" in one line + 3-5 hashtags
+
+**Bluesky (100-280 chars):**
+- Number first, one line of context, invite pushback: "Am I reading this wrong?"
+- Link card to the source; skeptical-friendly framing outperforms hype
+
+**YouTube Shorts (title <=100 chars):**
+- Title: "[Stat] — here's why" pattern with topic keyword
+- Open the video ON the number; explain baseline and implication in 30-45s
+
 ### Example: Data-Driven Insight
+
+> SYNTHETIC EXAMPLE — fabricated for illustration.
 
 **Source moment:** "AI diagnostic accuracy now exceeds human radiologists by 14% for early-stage cancers"
 
@@ -214,14 +249,29 @@ Not marginal. In diagnostics, that is the difference between Stage 1 and Stage 3
 - One supporting proof point
 - "Try this and let me know what happens."
 
+**TikTok (photo post or video):**
+- Photo post: cover slide "How to [goal] in [X] steps", one step per slide (up to 35)
+- Video: each step as an on-screen text chapter; under 60s total
+- Caption lists the steps in one line each + 3-5 hashtags
+
+**Bluesky (100-280 chars):**
+- One tip per post, stated plainly; thread replies for additional steps
+- Link card to the full guide; no listicle formatting
+
+**YouTube Shorts (title <=100 chars):**
+- Title: "How to [goal] in [X] steps" with keyword first
+- One step per on-screen chapter; recap frame at the end drives rewatches
+
 ### Example: How-To / Tip
+
+> SYNTHETIC EXAMPLE — fabricated for illustration.
 
 **Source moment:** "Three steps to evaluate AI diagnostic tools: accuracy benchmarks, integration requirements, compliance checklist"
 
 **LinkedIn:**
 ```
 Evaluating AI diagnostic tools? Here is the 3-step framework that
-Cleveland Clinic used before achieving a 78% reduction in diagnostic
+Meridian Health System (fictional) used before achieving a 78% reduction in diagnostic
 wait times.
 
 Step 1: Accuracy Benchmarks
@@ -251,11 +301,11 @@ Slide 1: "How to Evaluate AI Diagnostic Tools (3 Steps)"
 Slide 2: "Step 1: Accuracy Benchmarks -- Test against YOUR patient data"
 Slide 3: "Step 2: Integration Mapping -- EHR, PACS, clinical workflows"
 Slide 4: "Step 3: Compliance Checklist -- FDA, HIPAA, audit trails"
-Slide 5: "Cleveland Clinic used this framework. Result: 78% faster diagnostics."
+Slide 5: "Meridian Health System (fictional) used this framework. Result: 78% faster diagnostics."
 Slide 6: "Save this for your next vendor evaluation."
 
 Caption:
-Cleveland Clinic cut diagnostic wait times by 78% with AI.
+Meridian Health System (fictional) cut diagnostic wait times by 78% with AI.
 
 But they did not just plug in a tool and hope for the best.
 They used this 3-step evaluation framework first.
@@ -313,7 +363,21 @@ Full guide linked in bio.
 - Quote + one-line hot take
 - "Agree or disagree?" to drive replies
 
+**TikTok (caption 80-300 chars):**
+- Quote as full-screen text card (or spoken to camera); caption gives attribution + your take
+- 3-5 hashtags; quote text also in caption for search
+
+**Bluesky (100-280 chars):**
+- Quote + attribution + one-line reaction; invite dissent explicitly
+- Skip the quote-card image — plain text travels further on Bluesky
+
+**YouTube Shorts (title <=100 chars):**
+- Title: the quote (trimmed to fit) or its sharpest clause
+- React to the quote on camera in 30-45s; end with "agree?"
+
 ### Example: Quote Highlight
+
+> SYNTHETIC EXAMPLE — fabricated for illustration.
 
 **Source moment:** "The question is no longer whether to adopt AI in healthcare, but how fast you can implement it"
 
@@ -393,13 +457,28 @@ The debate is over. Implementation speed is the differentiator now.
 - "[Company] cut [metric] by [amount] using [approach]. Here is what they did differently."
 - Short, punchy, conversation-starting
 
+**TikTok (photo post or video):**
+- Photo post: problem slide, 2-3 solution slides, results slide, lesson slide
+- Video: story-time format with on-screen result numbers; hook = the outcome, not the setup
+- Caption: one-line arc + 3-5 hashtags
+
+**Bluesky (100-280 chars):**
+- Outcome first: "[Company] cut [metric] by [amount]. The interesting part is how."
+- Link card to the case study; follow-up details in a reply thread
+
+**YouTube Shorts (title <=100 chars):**
+- Title: "[Result] — how [Company] did it" with keyword
+- Structure the video problem -> decision -> result in under 60s; numbers on screen
+
 ### Example: Story / Case Study
 
-**Source moment:** "Cleveland Clinic reduced diagnostic wait times by 78% after implementing AI triage"
+> SYNTHETIC EXAMPLE — fabricated for illustration.
+
+**Source moment:** "Meridian Health System (fictional) reduced diagnostic wait times by 78% after implementing AI triage"
 
 **LinkedIn:**
 ```
-Cleveland Clinic had a problem.
+Meridian Health System (fictional) had a problem.
 
 Diagnostic wait times were climbing. Patient satisfaction scores were
 dropping. And their best radiologists were burning out from the sheer
@@ -425,12 +504,12 @@ discipline.
 Full case study with the replicable framework:
 [link]
 
-#HealthcareInnovation #AIinHealthcare #ClevelandClinic #ClinicalAI
+#HealthcareInnovation #AIinHealthcare #HealthSystemAI #ClinicalAI
 ```
 
 **Twitter/X:**
 ```
-Cleveland Clinic cut diagnostic wait times by 78% with AI triage.
+Meridian Health System (fictional) cut diagnostic wait times by 78% with AI triage.
 
 Key: They started with radiology (highest ROI), benchmarked against their own specialists, and built override protocols BEFORE launch.
 
@@ -537,6 +616,6 @@ Trust us. Click now. You will not regret it.
 
 ---
 
-**Version:** 2.1.0
+**Version:** 2.2.0
 **Frameworks:** 5 (Announcement, Data-Driven Insight, How-To/Tip, Quote Highlight, Story/Case Study)
-**Platforms:** LinkedIn, Twitter/X, Instagram, Facebook, Threads
+**Platforms:** 8 — LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, YouTube Shorts (per-platform limits, AI-disclosure mechanisms, and specs in `config/social-platform-specs.json`)

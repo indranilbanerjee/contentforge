@@ -1,5 +1,7 @@
 # Utility: Batch Queue Manager
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 **Purpose:** Build, sort, and manage the execution queue for batch content processing.
 
 ---

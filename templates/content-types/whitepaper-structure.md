@@ -252,14 +252,16 @@ Immediate Actions (0-3 months):
 - Consistent formatting throughout
 
 **Example (APA style):**
+SYNTHETIC EXAMPLE — fabricated entries showing FORMAT only; never reuse these authors, titles, or URLs:
+
 ```
 References
 
 1. Anderson, M., & Chen, L. (2025). Multi-agent systems for enterprise content production. *Journal of AI Applications*, 42(3), 215-234. https://doi.org/10.xxxx/jaai.2025.xxxxx
 
-2. Gartner Research. (2025, October 15). *The state of marketing automation 2025*. https://www.gartner.com/reports/marketing-automation-2025
+2. Meridian Research Group. (2025, October 15). *The state of marketing automation*. https://example.com/reports/marketing-automation
 
-3. McKinsey & Company. (2026, January). *Generative AI in marketing: Early adoption and lessons learned*. https://www.mckinsey.com/capabilities/marketing-and-sales/gen-ai-marketing
+3. Northgate Advisory. (2026, January). *Generative AI in marketing: Early adoption and lessons learned*. https://example.com/insights/gen-ai-marketing
 ```
 
 **Requirements:**
@@ -306,7 +308,7 @@ References
 - [ ] Headings are descriptive and professional
 
 **Keyword Usage:**
-- [ ] Primary keyword: 1.0-1.5% density (lower than blog/article)
+- [ ] Primary keyword density: advisory ~1-2%, placement-first (see config/scoring-thresholds.json phase_6_seo); keep to the low end for whitepapers
 - [ ] Keywords used naturally in academic context
 - [ ] No keyword stuffing (quality > SEO)
 
@@ -404,6 +406,8 @@ Source: Adapted from Anderson & Chen (2025), with modifications.
 ---
 
 ## Example Whitepaper Outline
+
+> SYNTHETIC EXAMPLE — fabricated for illustration. All statistics, authors, studies, and organizations below are invented; never reuse them as facts in real content.
 
 **Title:** "AI-Powered Content Production: A Quantitative Analysis of Multi-Agent Systems in Enterprise Marketing Operations"
 

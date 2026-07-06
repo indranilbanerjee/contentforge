@@ -1,5 +1,7 @@
 # Utility: Translation Manager
 
+> REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
+
 **Purpose:** Orchestrate the translation workflow from source analysis through quality verification, managing element classification, brand voice mapping, citation preservation, and SEO adaptation across 15+ languages.
 
 ---

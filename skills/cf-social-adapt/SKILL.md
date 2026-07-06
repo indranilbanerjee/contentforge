@@ -10,13 +10,13 @@ effort: medium
 
 Repurpose any ContentForge article into ready-to-publish social media posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads. Each post is tailored to platform character limits, audience expectations, hashtag conventions, and optimal posting times.
 
-## Context efficiency
+## Platform rules — single source of truth
 
-Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.json`, brand voice profiles. Pass earlier-phase outputs by path + line range, not by reloading. On `/contentforge:resume`, load only the failed phase's state.
+**All character limits, hashtag counts, ideal lengths, and format rules come from `config/social-platform-specs.json`. Read that file at run time and use its values. Never use remembered limits, and never trust any limit that appears in an example in this file.** The supported platform list is exactly the set of platform keys in that config (e.g., linkedin, twitter, instagram, facebook, threads — plus any additions such as tiktok, bluesky, youtube-shorts).
 
 ## When to Use
 
-Use `/cf-social-adapt` when:
+Use `/contentforge:cf-social-adapt` when:
 - You have a **published or approved article** and want to promote it on social media
 - You need **platform-native posts** (not the same text copy-pasted everywhere)
 - You want **multiple posts per platform** to sustain engagement over days/weeks
@@ -41,7 +41,7 @@ Use `/cf-social-adapt` when:
 
 **Minimum Required:**
 - **Source Content** -- Google Drive URL, local file path, or requirement ID (e.g., `REQ-001`)
-- **Platforms** -- Comma-separated list: `linkedin`, `twitter`, `instagram`, `facebook`, `threads` (or `all`)
+- **Platforms** -- `all`, or a comma-separated subset of the platform keys defined in `config/social-platform-specs.json`
 
 **Optional:**
 - **Posts Per Platform** -- Number of posts per platform (default: 3, max: 10)
@@ -55,7 +55,7 @@ Use `/cf-social-adapt` when:
 
 ### Interactive Mode
 ```
-/cf-social-adapt
+/contentforge:cf-social-adapt
 ```
 **Prompts you for:**
 1. Content source (Drive URL, file path, or requirement ID)
@@ -65,17 +65,17 @@ Use `/cf-social-adapt` when:
 
 ### Quick Mode (All Parameters)
 ```
-/cf-social-adapt REQ-001 --platforms=linkedin,twitter,instagram --count=5 --url=https://acme-corp.com/blog/ai-healthcare-2026
+/contentforge:cf-social-adapt REQ-001 --platforms=linkedin,twitter,instagram --count=5 --url=https://acme-corp.com/blog/ai-healthcare-2026
 ```
 
 ### All Platforms, Default Count
 ```
-/cf-social-adapt REQ-001 --platforms=all
+/contentforge:cf-social-adapt REQ-001 --platforms=all
 ```
 
 ### With Campaign Hashtag
 ```
-/cf-social-adapt REQ-001 --platforms=all --hashtag=#AcmeMedInsights --count=4
+/contentforge:cf-social-adapt REQ-001 --platforms=all --hashtag=#AcmeMedInsights --count=4
 ```
 
 ## What Happens
@@ -108,7 +108,7 @@ The Social Adapter Agent (`agents/10-social-adapter.md`) identifies 10-15 moment
 - Before/after comparisons (transformation stories)
 - Lists and frameworks (easy to visualize)
 
-**Example extraction:**
+**SYNTHETIC EXAMPLE — fabricated for illustration. All statistics and organizations below are invented; never reuse them in real output:**
 ```
 Shareworthy Moments Extracted: 12
 
@@ -121,7 +121,7 @@ Shareworthy Moments Extracted: 12
 7. COMPARISON: "AI-assisted diagnosis: 4 minutes avg vs. traditional: 45 minutes"
 8. FRAMEWORK: "The 3-layer AI healthcare stack: data ingestion, model inference, clinical integration"
 9. TREND: "Precision medicine powered by AI will reduce misdiagnosis rates by 60% by 2028"
-10. CASE STUDY: "Cleveland Clinic reduced diagnostic wait times by 78% after implementing AI triage"
+10. CASE STUDY: "Northlake Clinic (a fictional example hospital) reduced diagnostic wait times by 78% after implementing AI triage"
 11. LIST: "Top 5 AI healthcare applications: diagnostics, drug discovery, patient monitoring, administrative automation, clinical trials"
 12. ACTIONABLE: "Start with radiology -- it has the highest AI ROI and lowest integration complexity"
 ```
@@ -154,6 +154,8 @@ For each platform, generate the requested number of posts using platform specs f
 ### Per-Platform Post Set
 
 The output is organized by platform with all metadata included.
+
+**SYNTHETIC EXAMPLE — fabricated for illustration.** Every statistic, organization, URL, character count, and reach estimate below is invented. Character limits shown are examples only — always use the current values from `config/social-platform-specs.json`.
 
 ```
 SOCIAL ADAPTATION REPORT
@@ -201,7 +203,7 @@ Hook: Actionable framework
 Recommended Time: Thursday 10:00 AM
 
 Evaluating AI diagnostic tools? Here is a 3-step framework
-that Cleveland Clinic used before their 78% reduction in
+that Northlake Clinic (a fictional example hospital) used before their 78% reduction in
 diagnostic wait times:
 
 Step 1: Accuracy Benchmarks
@@ -285,7 +287,7 @@ Image: Data visualization card (1200x675 px, PNG)
 [Twitter Post 2 of 3] -- Type: Thread Starter
 Recommended Time: Wednesday 11:00 AM
 
-Cleveland Clinic cut diagnostic wait times by 78% with AI triage.
+Northlake Clinic (a fictional example hospital) cut diagnostic wait times by 78% with AI triage.
 
 Here is what they did differently (thread):
 
@@ -298,7 +300,7 @@ Full breakdown: https://acme-corp.com/blog/ai-healthcare-2026
 #HealthcareAI #ClinicalAI
 
 Character Count: 274 / 280
-Image: Cleveland Clinic case study card (1200x675 px, PNG)
+Image: Northlake Clinic (a fictional example hospital) case study card (1200x675 px, PNG)
 
 ---------------------------------------------------
 
@@ -330,7 +332,7 @@ Slide 2: 73% of healthcare orgs now use AI diagnostics (was 12% in 2024)
 Slide 3: AI accuracy exceeds human radiologists by 14%
 Slide 4: Diagnosis time: 4 minutes (AI) vs 45 minutes (manual)
 Slide 5: $4.2 billion saved annually from AI triage
-Slide 6: 78% reduction in wait times at Cleveland Clinic
+Slide 6: 78% reduction in wait times at Northlake Clinic (a fictional example hospital)
 Slide 7: CTA -- "Save this for your next strategy meeting"
 
 Caption:
@@ -383,7 +385,7 @@ Image: Bold text overlay on medical-tech background (1080x1080 px, PNG)
 Recommended Time: Thursday 12:00 PM
 
 Hook (0-3 sec): "One hospital cut wait times by 78%."
-Body (3-20 sec): "Cleveland Clinic implemented AI triage and
+Body (3-20 sec): "Northlake Clinic (a fictional example hospital) implemented AI triage and
   reduced diagnostic wait times by 78%. Here is the 3-step
   framework they used. Step 1: Start with radiology.
   Step 2: Benchmark against your own data.
@@ -392,13 +394,13 @@ CTA (20-30 sec): "Full case study linked in bio. Follow for
   more healthcare innovation insights."
 
 Caption:
-Cleveland Clinic's AI triage playbook, broken down.
+Northlake Clinic (a fictional example hospital)'s AI triage playbook, broken down.
 
 78% faster diagnostics. Not theory -- real results.
 
 Save this if you are evaluating AI for your organization.
 
-#AIinHealthcare #HealthTech #ClevelandClinic #HealthcareAI
+#AIinHealthcare #HealthTech #NorthlakeClinic #HealthcareAI
 #MedTech #Diagnostics #Innovation #ClinicalAI
 
 Character Count: 278 / 2,200
@@ -426,7 +428,7 @@ Key findings:
 -- AI diagnostic accuracy exceeds human radiologists by 14%
 -- Average diagnosis time drops from 45 minutes to 4 minutes
 -- Hospitals are saving $4.2 billion annually with AI triage
--- Cleveland Clinic cut diagnostic wait times by 78%
+-- Northlake Clinic (a fictional example hospital) cut diagnostic wait times by 78%
 
 Read the full analysis:
 https://acme-corp.com/blog/ai-healthcare-2026
@@ -468,7 +470,7 @@ Image: Poll graphic with A/B/C options (1200x630 px)
 [Facebook Post 3 of 3] -- Type: Story/Case Study
 Recommended Time: Saturday 9:00 AM
 
-Cleveland Clinic had a problem.
+Northlake Clinic (a fictional example hospital) had a problem.
 
 Diagnostic wait times were climbing. Patient satisfaction
 was dropping. And their best radiologists were burning out
@@ -488,10 +490,10 @@ an AI tool and hope for the best. They followed a disciplined
 The full case study (and the framework you can copy):
 https://acme-corp.com/blog/ai-healthcare-2026
 
-#HealthcareInnovation #AIinHealthcare #ClevelandClinic
+#HealthcareInnovation #AIinHealthcare #NorthlakeClinic
 
 Character Count: 701 / 63,206
-Image: Cleveland Clinic case study graphic (1200x630 px)
+Image: Northlake Clinic (a fictional example hospital) case study graphic (1200x630 px)
 
 ===================================================
 
@@ -523,7 +525,7 @@ If you are evaluating AI diagnostic tools, start with radiology.
 
 Highest ROI. Lowest integration complexity. Largest evidence base.
 
-Cleveland Clinic started there and cut wait times by 78%.
+Northlake Clinic (a fictional example hospital) started there and cut wait times by 78%.
 
 Do not try to boil the ocean. Pick the highest-impact department first.
 
@@ -591,9 +593,10 @@ Action: Content must pass quality review before social adaptation.
 
 ### Platform Not Recognized
 ```
-Error: Platform "tiktok" is not supported
-Supported: linkedin, twitter, instagram, facebook, threads
-Action: Use a supported platform or request feature addition
+Error: Platform "<name>" is not in config/social-platform-specs.json
+Supported: <list the platform keys actually present in the config>
+Action: Use a supported platform, or add a spec block for the new
+  platform to config/social-platform-specs.json
 ```
 
 ### Missing Published URL
@@ -603,18 +606,12 @@ Action: Posts generated without link. Add --url parameter to include article lin
   Some post types (link share, CTA) will use "[link in bio]" placeholder.
 ```
 
-## Performance Metrics
+## AI-Content Labels (platform disclosure)
 
-**Typical Processing Times:**
-- 1 platform, 3 posts: 30-60 seconds
-- 3 platforms, 3 posts each: 1-2 minutes
-- 5 platforms, 5 posts each: 2-4 minutes
+Major platforms provide AI-content labeling options, and EU AI Act Article 50 (applicable from 2 Aug 2026) requires disclosure of AI-generated content shown to EU audiences:
 
-**Quality Metrics (avg across beta testing):**
-- Character limit compliance: 100%
-- Self-contained readability: 95%+
-- Brand voice alignment: 92%+
-- Engagement hook present: 100%
+- **LinkedIn / Meta (Facebook, Instagram) / TikTok / YouTube** — each offers an "AI-generated or AI-assisted" label or disclosure toggle at posting time. If the brand targets EU audiences or the brand profile's guardrails require disclosure, remind the user to enable the platform label when scheduling these posts, and note it in the handoff summary.
+- When disclosure applies, include a per-post metadata note in the output: `AI-label: recommended (EU targeting)`.
 
 ## Agent Used
 
@@ -628,8 +625,8 @@ Action: Posts generated without link. Add --url parameter to include article lin
 ## Integration with Other Skills
 
 **Before Social Adaptation:**
-- `/contentforge` -- Produce the source article
-- `/cf-publish` -- Publish the article to your CMS (get the URL for social posts)
+- `/contentforge:create-content` -- Produce the source article
+- `/contentforge:cf-publish` -- Publish the article to your CMS (get the URL for social posts)
 
 **After Social Adaptation:**
 - Copy posts to your social scheduling tool (Buffer, Hootsuite, Sprout Social)
@@ -637,16 +634,14 @@ Action: Posts generated without link. Add --url parameter to include article lin
 
 ## Related Skills
 
-- **[/contentforge](../contentforge/SKILL.md)** -- Full content production pipeline
-- **[/cf-publish](../cf-publish/SKILL.md)** -- Publish to Webflow/WordPress
-- **[/content-refresh](../content-refresh/SKILL.md)** -- Update existing content
-- **[/batch-process](../batch-process/SKILL.md)** -- Parallel content production
+- **[/contentforge:create-content](../../commands/create-content.md)** -- Full content production pipeline
+- **[/contentforge:cf-publish](../cf-publish/SKILL.md)** -- Publish to Webflow/WordPress
+- **[/contentforge:content-refresh](../content-refresh/SKILL.md)** -- Update existing content
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Parallel content production
 
 ---
 
-**Version:** 3.4.0
 **Agent:** Social Adapter (10-social-adapter)
-**Config:** social-platform-specs.json
-**Templates:** social-post-templates.md
-**Platforms:** LinkedIn, Twitter/X, Instagram, Facebook, Threads
-**Default:** 3 posts per platform (15 total for all platforms)
+**Config:** `config/social-platform-specs.json` (single source of truth for platform rules)
+**Templates:** `templates/social-post-templates.md`
+**Default:** 3 posts per platform
