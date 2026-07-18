@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.16.1] - 2026-07-12
+
+### Changed - plugin self-containment
+
+- **Removed cross-plugin capability references.** `content-refresh` no longer recommends Digital Marketing Pro skills for pre-refresh diagnosis; it now routes to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit`. ContentForge is fully standalone.
+- README suite table: corrected stale sibling stats (DMP 24 agents / 158 skills; humanizer is 35-pattern) and stated explicitly that each plugin in the suite is fully standalone.
+
 ## [3.16.0] - 2026-07-07
 
 **The Reliability & Truth release — five-layer deep audit implemented end to end.**

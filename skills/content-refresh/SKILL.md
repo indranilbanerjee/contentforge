@@ -342,8 +342,7 @@ Parallel batch runs finish substantially faster than sequential refreshes; actua
 
 **Before Refresh:**
 - `/contentforge:cf-audit` — Identify which content needs refreshing (freshness scores, declining candidates)
-- `/digital-marketing-pro:seo-audit` — Deeper ranking diagnosis (requires the Digital Marketing Pro plugin)
-- `/digital-marketing-pro:competitor-analysis` — See what competitors added that you're missing (requires the Digital Marketing Pro plugin)
+- `/contentforge:cf-brief` — Re-run keyword + competitor research on the topic to see what the SERP now rewards and what competitors have added since you published
 
 **After Refresh:**
 - `/contentforge:publish` — Push updated content to WordPress/Webflow

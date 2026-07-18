@@ -1,4 +1,4 @@
-"""
+﻿"""
 Hermes Agent native plugin adapter for ContentForge.
 
 This file is read ONLY by Hermes Agent (Nous Research). Every other platform
@@ -28,7 +28,7 @@ logger = logging.getLogger("contentforge")
 
 PLUGIN_ROOT = Path(__file__).resolve().parent
 SKILLS_DIR = PLUGIN_ROOT / "skills"
-PLUGIN_VERSION = "3.16.0"
+PLUGIN_VERSION = "3.16.1"
 
 
 def _parse_skill_frontmatter(skill_md_path: Path) -> dict:
