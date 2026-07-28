@@ -42,5 +42,5 @@ To set up a missing connector: `/contentforge:cf-connect webflow` or `/contentfo
 Ask: "Would you like me to:
 - Create social media posts to promote this? (`/contentforge:social-adapt`)
 - Publish to another platform?
-- Set up rank monitoring for the target keywords? (`/digital-marketing-pro:rank-monitor` — requires the Digital Marketing Pro plugin)
+- Add this piece to the next freshness/performance audit cycle? (`/contentforge:cf-audit`)
 - Schedule the next content piece? (`/contentforge:cf-calendar`)"

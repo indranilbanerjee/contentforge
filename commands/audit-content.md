@@ -41,5 +41,5 @@ Ask: "Would you like me to:
 - Create content briefs for the top gap opportunities? (`/contentforge:content-brief`)
 - Start refreshing the highest-priority piece? (`/contentforge:content-refresh`)
 - Build a quarterly content calendar from these recommendations? (`/contentforge:cf-calendar`)
-- Run a deeper SEO analysis for specific pieces? (`/digital-marketing-pro:seo-audit` — requires the Digital Marketing Pro plugin)
+- Re-research the SERP and competitors for a specific topic in depth? (`/contentforge:cf-brief`)
 - Export this audit to a spreadsheet?"
