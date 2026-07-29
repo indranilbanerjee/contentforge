@@ -110,7 +110,7 @@
       "released": "2025-08",
       "deprecation_date": "2026-06-05",
       "shutdown_date": "2026-08-05",
-      "replacement_id": "claude-opus-4-8",
+      "replacement_id": "claude-opus-5",
       "notes": "RETIRES 2026-08-05 per Anthropic model deprecations — migrate to claude-opus-5 before that date."
     },
     {
