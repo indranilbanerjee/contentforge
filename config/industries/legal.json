@@ -33,6 +33,7 @@
       "article": "Legal analysis with authority citations. Include jurisdictional notes. Discuss both majority and minority positions where relevant. Always include 'this is not legal advice' disclaimer.",
       "blog": "Accessible legal education. Explain legal concepts in plain language. Use hypothetical examples. Practical implications for business readers.",
       "whitepaper": "Deep legal analysis. Include statutory analysis, case law review, and policy considerations. Multiple jurisdictions if cross-border. Include footnotes.",
+      "research_paper": "Law-review register. Full Bluebook citation in footnotes, pinpoint cites for every proposition, and a stated jurisdiction and 'law as of' date. Verify that each authority is still good law before citing, engage the counterarguments and minority positions, and separate doctrinal analysis from normative argument. Retain the 'this is not legal advice' disclaimer.",
       "faq": "Plain-language legal Q&A. Emphasis on practical next steps. Always recommend consulting an attorney for specific situations."
     }
   },
@@ -122,7 +123,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
     "ai_telltale_phrases": [
       "navigate the legal landscape",
       "legal complexities",

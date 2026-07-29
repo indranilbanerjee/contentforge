@@ -170,7 +170,7 @@
 **Structure & Formatting (0-10):**
 - Proper heading hierarchy (H1→H2→H3): [✓/✗]
 - Internal links: [Number] (Recommended: 2-5)
-- Schema markup applicable: [Article/FAQ/HowTo] [✓/✗]
+- Schema markup applicable: [Article/NewsArticle/Product] [✓/✗] (FAQPage and HowTo are structure-only — HowTo rich results were deprecated Sept 2023 and FAQ rich results restricted to gov/health Aug 2023, so neither produces a SERP feature)
 - Image alt text (if applicable): [✓/✗]
 
 **Score:** [X.X/10]
@@ -318,7 +318,7 @@ Overall Score = (Content Quality × 0.30) +
 
 **Phase 8 (Output & Delivery):**
 - [✓/✗] .docx generated successfully
-- [✓/✗] All 3 appendices present (SEO scorecard, quality report, citation list)
+- [✓/✗] All appendices present: A — SEO Scorecard, B — Quality Scorecard, C — Production Details, D — Internal Link Map
 - [✓/✗] Delivery verified (file at output path, tracking record updated)
 
 ---
@@ -359,7 +359,7 @@ Overall Score = (Content Quality × 0.30) +
 **If APPROVED:**
 → Proceed to Phase 8: Output Manager
 → Generate .docx in branded format
-→ Upload to Drive folder structure
+→ Save to the brand's configured backend (local by default)
 → Update requirement sheet with scores and link
 
 **If LOOP:**

@@ -38,10 +38,10 @@ Verify every factual claim, statistic, quote, and source URL to ensure the Conte
 
 **For EACH source in the Citation Library (all 12-15 sources):**
 
-Use Claude's `web_fetch` capability to verify:
+Use the **WebFetch** tool to verify:
 
 ```
-web_fetch(url)
+WebFetch(url)
 ```
 
 **Timeout & Fallback:**
@@ -72,7 +72,7 @@ web_fetch(url)
 **Actions:**
 
 - **LIVE & Valid** → Mark source as ✅ VERIFIED
-- **PAYWALL** → Mark as ⚠️ UNVERIFIED unless a non-paywalled corroborating source confirms the documented data points — **never mark VERIFIED on faith**. (`web_fetch` cannot read behind paywalls, so Phase 1 could not have verified the content either.) If a free corroborating source is found, mark ✅ VERIFIED VIA CORROBORATION and add the corroborating URL to the Citation Library.
+- **PAYWALL** → Mark as ⚠️ UNVERIFIED unless a non-paywalled corroborating source confirms the documented data points — **never mark VERIFIED on faith**. (**WebFetch** cannot read behind paywalls, so Phase 1 could not have verified the content either.) If a free corroborating source is found, mark ✅ VERIFIED VIA CORROBORATION and add the corroborating URL to the Citation Library.
 - **RATE LIMITED** → Retry once. If still blocked, mark as ⚠️ UNVERIFIED (cannot confirm)
 - **404 or BROKEN** → Mark as ❌ FLAGGED FOR REMOVAL. Find replacement source.
 - **Source Type Mismatch** → Mark as ⚠️ UNVERIFIED, document discrepancy
@@ -98,7 +98,7 @@ Source: Citation #1 (Meridian Research Group report — fictional)
 
 **Verify:**
 1. **Can you find this exact statistic in the source document?**
-   - Use `web_fetch` on the source URL
+   - Use **WebFetch** on the source URL
    - Search for the number "73%" in the content
    - Confirm the context matches (is it really about "marketing agencies" and "AI content production"?)
 
@@ -112,10 +112,9 @@ Source: Citation #1 (Meridian Research Group report — fictional)
 
 **For each statistic marked as VERIFIED or LIKELY:**
 
-Search for corroborating evidence from a SECOND independent source:
+Search for corroborating evidence from a SECOND independent source. Use **WebSearch** with queries like:
 
 ```
-Use web_search:
 "73% marketing agencies AI content production 2026"
 "marketing AI adoption statistics 2026"
 ```
@@ -128,19 +127,23 @@ Use web_search:
 **Cross-Reference Results:**
 - ✅ **STRONGLY VERIFIED** — 2+ independent sources report same/similar number
 - ✅ **VERIFIED** — Original source confirmed, no contradicting sources found
-- ⚠️ **SINGLE SOURCE ONLY** — Only one source reports this number (still usable but note the limitation)
+- ⚠️ **SINGLE SOURCE ONLY** — only one source reports this number. `config/data-sources-template.json` → `citation_verification_rules.cross_reference` sets `require_corroboration: true` and `min_corroborating_sources: 2`, so this status is **gate-blocking for any KEY claim** — a statistic that appears in the title, the content angle/thesis, or the core argument of an outline section. Corroborate it with a second independent source, or remove/replace it, before Gate 2 can pass. **Narrow exception:** a non-key supporting statistic may ship as SINGLE SOURCE ONLY when the source is a reliability-9+ primary source (peer-reviewed journal or government database) publishing its own original data — and only if the draft attributes it in-line ("per [source]") and hedges the scope.
 - ❌ **CONFLICTING DATA** — Multiple sources report very different numbers → FLAG for human review
 
 #### 2.3 Publication Date Validation
 
 **Check recency rules from `config/data-sources-template.json`:**
 
-Default rule: Statistics should be from within the last 2 years (relative to today's date)
+Read `citation_verification_rules.source_age` and apply it verbatim — do not substitute remembered numbers:
 
-Industry-specific overrides:
-- **Technology/Marketing:** Last 2 years (fast-moving)
-- **Healthcare/Pharma:** Last 3 years (clinical data slower)
-- **Historical/Evergreen Topics:** Up to 5 years acceptable
+| Config key | Applies to | Max age |
+|------------|-----------|---------|
+| `max_age_years_default` | every industry without an override | **2 years** |
+| `max_age_years_pharma` | pharma | **1 year** |
+| `max_age_years_technology` | technology | **1 year** |
+| `max_age_years_legal` | legal | **5 years** |
+
+`evergreen_topics_exception: true` — a genuinely evergreen data point may exceed its band, but you must name the topic as evergreen and note that no newer figure exists. Ages are measured relative to today's date.
 
 **Actions:**
 - ✅ **CURRENT** — Within acceptable time range
@@ -183,7 +186,7 @@ Source: Citation #5
 **Verify:**
 
 1. **Exact Quote Match**
-   - Use `web_fetch` to access the source
+   - Use **WebFetch** to access the source
    - Search for the exact quote or close paraphrase
    - Verify attribution (is it really John Smith who said this?)
 
@@ -211,7 +214,7 @@ Source: Citation #5
 
 Spot-check only the **top 3** competitor results from Phase 1:
 
-1. **Accessibility** — `web_fetch` each of the 3 URLs; if any is now 404, note it (do not rebuild the analysis)
+1. **Accessibility** — **WebFetch** each of the 3 URLs; if any is now 404, note it (do not rebuild the analysis)
 2. **Analysis Accuracy** — Verify the documented "Content Angle" and "Structure" (H1→H2 outline) match the actual content; spot-check word count estimate (±500 words acceptable variance)
 
 **Why this matters:** A quick sample confirms Phase 1's analysis is trustworthy without duplicating its work.
@@ -273,7 +276,7 @@ Sources to Cite: [Citation #1, Citation #5, Citation #9]
 
 1. **Source Relevance**
    - Do Citations #1, #5, and #9 actually contain information about "multi-agent AI systems"?
-   - Use `web_fetch` to spot-check 2-3 section-source mappings
+   - Use **WebFetch** to spot-check 2-3 section-source mappings
 
 2. **Adequate Coverage**
    - Does each major section have at least 2 designated sources?
@@ -432,7 +435,7 @@ Create a **Verified Research Brief** using this structure.
 ## QUALITY GATE 2 CRITERIA CHECK
 
 **Gate 2 criteria (source of truth: `config/scoring-thresholds.json`):**
-0. **Industry overrides apply** — check `config/scoring-thresholds.json` for `phase_2` industry overrides (e.g., pharma raises `min_verified_sources` to **12**)
+0. **Industry overrides apply** — check `config/scoring-thresholds.json` `industry_overrides.{industry}` (e.g., pharma raises `phase_1_research.min_verified_sources` to **12** and `phase_2_fact_check.min_verified_percentage` to **95**)
 1. **≥80% of claims verified**
 2. **Zero UNRESOLVED flagged items** — every flagged source/stat must be REMOVED or RE-SOURCED *within this phase* before the gate can pass
 3. **≤3 UNVERIFIED items tolerated** (documented, with limitations noted)
@@ -454,8 +457,8 @@ Create a **Verified Research Brief** using this structure.
 ## FACT VERIFICATION METHODOLOGY NOTES
 
 **Tools Used:**
-- `web_fetch` for URL accessibility and content verification
-- `web_search` for cross-referencing statistics and finding corroborating sources
+- **WebFetch** for URL accessibility and content verification
+- **WebSearch** for cross-referencing statistics and finding corroborating sources
 - Manual review of source credibility and publication dates
 
 **Confidence Score Definitions:**
@@ -465,14 +468,14 @@ Create a **Verified Research Brief** using this structure.
 - ❌ **FLAGGED** (0-39% confidence) — Evidence contradicts claim OR source is unreliable
 
 **Cross-Reference Standard:**
-- Key statistics require 2+ independent sources for "STRONGLY VERIFIED" status
-- Single high-authority source (e.g., a top-tier peer-reviewed journal or government database) acceptable for "VERIFIED" status
+- `require_corroboration: true`, `min_corroborating_sources: 2` — key statistics require 2+ independent sources; a key statistic that stays single-sourced is gate-blocking (see Step 2.2)
+- Single high-authority source (e.g., a top-tier peer-reviewed journal or government database) is acceptable for "VERIFIED" status only on **non-key supporting** statistics, and only with in-line attribution
 - Claims with only low-authority sources must be corroborated or flagged
 
-**Recency Validation:**
-- Default: Data within the last 2 years (relative to today's date)
-- Industry-specific overrides applied per `config/data-sources-template.json`
-- Evergreen content: Up to 5 years acceptable if no newer data available
+**Recency Validation** (per `config/data-sources-template.json` → `citation_verification_rules.source_age`):
+- Default: within the last **2 years** (relative to today's date)
+- Pharma: **1 year** | Technology: **1 year** | Legal: **5 years**
+- Evergreen exception (`evergreen_topics_exception: true`): an older figure may stand if the topic is genuinely evergreen and no newer data exists — state both facts when you invoke it
 
 ---
 

@@ -307,7 +307,17 @@ Procedure:
 2. Read the `.docx` bytes from the sandbox path produced by the local pipeline.
 3. Use the Drive MCP's create-file / upload tool to upload the bytes to the target folder.
 4. Capture the returned Drive file ID and `webViewLink` (or equivalent).
-5. **Skip the configured-backend dispatch below — Drive IS the delivery.** Still call `local-tracker.py --action mark-complete` for tracking-state purposes, BUT pass `--published-path=<Drive URL>` so the tracking record points to Drive, not a non-existent Windows path.
+5. **Skip the configured-backend dispatch below — Drive IS the delivery.** Still call `local-tracker.py --action mark-complete` for tracking-state purposes, but pass `--skip-publish` (there is no host `~/Documents` to publish to in the sandbox) and carry the Drive URL in the `notes` field of `--data`:
+   ```bash
+   python {scripts_dir}/local-tracker.py \
+     --action mark-complete \
+     --brand "{brand_name}" \
+     --row-id {requirement_id} \
+     --data '{"quality_score": {score}, "actual_word_count": {words}, "notes": "Delivered to Drive: <Drive webViewLink>"}' \
+     --output-file {sandbox path to generated .docx} \
+     --skip-publish
+   ```
+   There is **no `--published-path` flag** — the script accepts only `--action`, `--brand`, `--row-id`, `--data`, `--output-file`, `--publish-dir`, `--skip-publish`. With `--skip-publish` the returned `published_path` is `null` by design; the Drive link in `notes` is the record of delivery. Do not quote a non-existent Windows path.
 6. In the completion card, lead with the Drive link as a clickable URL. Do NOT quote a Windows / Documents path — that path is empty in Cowork.
 
 **If NO Drive MCP is available in Cowork** (the user hasn't set up the Anthropic platform Drive integration or any aggregator):
@@ -539,7 +549,7 @@ Tip: `/contentforge:output-folder` reveals this folder in the OS file manager.
 ### Error: Google Drive Upload Fails
 
 **Case A: `"error": "storage_quota"` (permanent -- do NOT retry)**
-1. Save .docx locally to `./output/{content-type}/{date}/`
+1. Save .docx locally to `~/.claude-marketing/{brand-slug}/output/{content-type}/{YYYY-MM-DD}/` (absolute — never a relative `./output/` path)
 2. Update tracking sheet: `drive_url: "LOCAL — see conversation"`
 3. Present .docx in conversation for download
 4. Inform user: Drive upload requires Google Workspace Shared Drive for service account uploads
@@ -602,17 +612,16 @@ Load timing from `run.json`. If unavailable, leave blank.
 
 ---
 
-## EXTENDED OUTPUT FORMATS (v3.0)
+## EXTENDED OUTPUT FORMATS (on request)
 
-Additional formats when requested:
+There is no `--format=` flag anywhere in ContentForge. These are formats **you hand-author with the Write tool** when the user asks for them, in addition to the .docx. Write each alongside the .docx in the same output directory.
 
-| Format | Flag | Key Rules | Output |
-|--------|------|-----------|--------|
-| **Medium** | `--format=medium` | Clean markdown, `##` headers, `---` separators, `> ` pull quotes, reading time, no broken internal links | `{title}-medium.md` |
-| **Substack** | `--format=substack` | Email-friendly HTML, single-column 600px, simplified tables, subscriber CTA, preview text (90 chars) | `{title}-substack.html` |
-| **Newsletter** | `--format=newsletter` | Responsive HTML, brand header, executive summary, inline CSS only, images max 580px, CTA button, unsubscribe placeholder | `{title}-newsletter.html` |
-| **PDF** | `--format=pdf` | Brand header/footer, TOC from H2/H3, page numbers, endnotes, optional cover page, print-optimized | `{title}.pdf` |
-| **Social** | `--format=social` | Calls Social Adapter Agent (Agent 10), generates posts for all platforms with metadata | `{title}-social-package.md` |
+| Format | Ask it for | Key Rules | Filename |
+|--------|-----------|-----------|----------|
+| **Medium** | "give me a Medium version" | Clean markdown, `##` headers, `---` separators, `> ` pull quotes, reading time, no broken internal links | `{title}-medium.md` |
+| **Substack** | "give me a Substack version" | Email-friendly HTML, single-column 600px, simplified tables, subscriber CTA, preview text (90 chars) | `{title}-substack.html` |
+| **Newsletter** | "give me a newsletter version" | Responsive HTML, brand header, executive summary, inline CSS only, images max 580px, CTA button, unsubscribe placeholder | `{title}-newsletter.html` |
+| **Social** | "adapt this for social" | Hand off to the Social Adapter Agent (Agent 10) / `/contentforge:social-adapt` — posts for all platforms with metadata | `{title}-social-package.md` |
 
 ---
 

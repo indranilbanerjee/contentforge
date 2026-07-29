@@ -1,6 +1,6 @@
 ---
-description: Repurpose articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads
-argument-hint: "<article source> [platforms: all|linkedin|twitter|instagram|facebook|threads]"
+description: Repurpose articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, and YouTube Shorts
+argument-hint: "<article source> [platforms: all|linkedin|twitter|instagram|facebook|threads|tiktok|bluesky|youtube-shorts]"
 ---
 
 # Social Adapt

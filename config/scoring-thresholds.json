@@ -11,7 +11,9 @@
       "article": [1500, 2000],
       "whitepaper": [2500, 5000],
       "research_paper": [4000, 8000],
-      "faq": [600, 1200]
+      "faq": [600, 1200],
+      "video_script": [60, 1500],
+      "_video_script_note": "Spoken-dialogue word count only (excludes on-screen text, B-roll, and music/SFX direction). The band spans the 30s profile (60-75 words) through the 10min profile (1,200-1,500 words) in templates/content-types/video-script-structure.md; the Phase 3 gate checks against the brief's target duration profile, not the full band."
     },
     "dimension_weights": {
       "content_quality": 0.30,
@@ -51,8 +53,10 @@
           "article": 1,
           "whitepaper": 2,
           "research_paper": 1,
-          "faq": 0
+          "faq": 0,
+          "video_script": 0
         },
+        "_video_script_note": "video_script carries its own visual direction inline (B-roll, on-screen text) rather than embedded assets, so the visual-density requirement is 0; the Phase 3.5 gate still checks alt text and captions on any chart actually produced.",
         "require_alt_text": true,
         "require_captions": true
       },
@@ -65,10 +69,10 @@
       "phase_5_structure": {
         "max_grammar_errors": 0,
         "require_brand_compliance_pass": true,
-        "min_readability_score": 60,
-        "max_readability_score": 80,
+        "min_flesch_reading_ease": 60,
+        "max_flesch_reading_ease": 80,
         "readability_grade_tolerance": 0.5,
-        "_readability_note": "Flesch-Kincaid grade may deviate from the brief's target grade by at most +/-0.5 before the gate fails."
+        "_readability_note": "Two different scales, do not mix them. min_flesch_reading_ease/max_flesch_reading_ease are Flesch READING EASE points (0-100, higher = easier); 60-80 is the default band. readability_grade_tolerance is in Flesch-Kincaid GRADE levels: the grade may deviate from the brief's target grade by at most +/-0.5 before the gate fails. Dense long-form types relax the Reading Ease band — see content_type_overrides."
       },
       "phase_6_seo": {
         "keyword_placement_required": {
@@ -101,9 +105,9 @@
       },
       "phase_8_output": {
         "docx_generated": true,
-        "appendices_present": 3,
+        "appendices_present": 4,
         "delivery_verified": true,
-        "_note": "Appendices required in the delivered .docx: SEO scorecard, quality report, citation list. delivery_verified = file exists at the output path (Drive or local) and tracking record updated."
+        "_note": "Appendices required in the delivered .docx, matching scripts/generate-docx.py add_appendices(): A - SEO Scorecard, B - Quality Scorecard, C - Production Details, D - Internal Link Map. delivery_verified = file exists at the output path (local by default, Drive if configured) and tracking record updated."
       }
     },
     "feedback_loop_limits": {
@@ -112,6 +116,27 @@
       "phase_6_to_5": 1,
       "phase_7_to_any": 2,
       "max_total_loops": 5
+    }
+  },
+  "content_type_overrides": {
+    "_description": "Per-content-type overrides applied on top of `default` (and under any industry override). Same gate-keyed merge as industry_overrides: only the keys listed here change.",
+    "whitepaper": {
+      "quality_gates": {
+        "phase_5_structure": {
+          "min_flesch_reading_ease": 30,
+          "max_flesch_reading_ease": 50,
+          "_note": "Whitepapers are dense technical long-form; the default 60-80 Reading Ease band is unreachable. See templates/content-types/whitepaper-structure.md."
+        }
+      }
+    },
+    "research_paper": {
+      "quality_gates": {
+        "phase_5_structure": {
+          "min_flesch_reading_ease": 30,
+          "max_flesch_reading_ease": 50,
+          "_note": "Academic register; same relaxed Reading Ease band as whitepaper."
+        }
+      }
     }
   },
   "industry_overrides": {
@@ -125,8 +150,10 @@
         "readability": 0.05
       },
       "quality_gates": {
+        "phase_1_research": {
+          "min_verified_sources": 12
+        },
         "phase_2_fact_check": {
-          "min_verified_sources": 12,
           "min_verified_percentage": 95,
           "max_source_age_years": 1,
           "require_peer_reviewed": true

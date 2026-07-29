@@ -1,6 +1,6 @@
 ---
 name: cf-translate
-description: Translate content into 15+ languages preserving brand voice, citations, and SEO. Three localization levels.
+description: Translate content into 15 languages preserving brand voice, citations, and SEO. Three localization levels.
 disable-model-invocation: true
 argument-hint: "[target-language]"
 effort: high
@@ -8,12 +8,12 @@ effort: high
 
 # Content Translation — Multilingual Publishing
 
-Translate publication-ready ContentForge content into 15+ languages while preserving brand voice integrity, citation accuracy, and SEO optimization. Three localization levels let you control the depth of cultural adaptation.
+Translate publication-ready ContentForge content into 15 languages while preserving brand voice integrity, citation accuracy, and SEO optimization. Three localization levels let you control the depth of cultural adaptation.
 
 ## When to Use
 
 Use `/contentforge:cf-translate` when you need:
-- **Translated content** for international markets (15+ languages)
+- **Translated content** for international markets (15 languages)
 - **Brand-consistent multilingual content** that matches your source voice in the target language
 - **SEO-localized content** with keywords adapted for target market search behavior
 - **Citation-safe translations** where URLs, source references, and inline citations remain intact
@@ -97,27 +97,27 @@ Queues translations for all specified languages and processes them sequentially.
 
 ## What Happens
 
-### Phase 1: Source Analysis (1-2 minutes)
+### Step 1: Source Analysis
 - Loads source content and brand profile
 - Identifies content type, word count, citation count, SEO keywords
 - Detects source language (auto-detected or confirmed)
 - **Quality Gate:** Source must be ContentForge output with quality score >= 7.0
 
-### Phase 2: Element Classification (1-2 minutes)
+### Step 2: Element Classification
 - Separates content into translatable and immutable elements
 - **Translatable:** Body text, headings, meta tags, alt text, CTAs
 - **Immutable:** Citation URLs, DOIs, proper nouns (configurable), brand names, code snippets, email addresses, phone numbers
 - Creates element map with translation instructions per element
 - **Quality Gate:** All elements classified, immutable list confirmed
 
-### Phase 3: Translation Execution (3-5 minutes)
+### Step 3: Translation Execution
 - Translator Agent (11-translator) processes content section by section
 - Applies localization level rules (literal / adapted / transcreated)
 - Uses DeepL MCP if available (optional) -- falls back to built-in translation
 - Preserves document structure, heading hierarchy, and formatting
 - **Quality Gate:** All translatable elements processed, document structure intact
 
-### Phase 4: Brand Voice Mapping (2-3 minutes)
+### Step 4: Brand Voice Mapping
 - Loads brand voice mapping from `config/multilingual-patterns.json`
 - Maps source voice characteristics to target language equivalents
   - Example: "authoritative" in English maps to "formal, datos primero" in Spanish
@@ -125,37 +125,37 @@ Queues translations for all specified languages and processes them sequentially.
 - Adjusts personality markers for cultural appropriateness
 - **Quality Gate:** Brand voice rating >= 8/10 in target language
 
-### Phase 5: Citation Preservation Check (1 minute)
+### Step 5: Citation Preservation Check
 - Verifies all citation URLs remain unchanged
 - Translates article and book titles in bibliography (preserving original in brackets)
 - Confirms inline citation formatting matches source pattern
 - Verifies DOIs, ISBNs, and reference identifiers are untouched
 - **Quality Gate:** Zero citation URL changes, zero broken references
 
-### Phase 6: SEO Adaptation (2-3 minutes)
+### Step 6: SEO Adaptation
 - Researches target market keywords (or uses provided overrides)
 - Translates meta title (<= 60 chars in target language)
 - Translates meta description (<= 155 chars in target language)
-- Adjusts keyword density for target language norms
+- Monitors keyword density for target language norms (advisory only — never pad copy to hit a number)
 - Generates localized URL slug
-- **Quality Gate:** Meta tags within char limits, keyword density within target range
+- **Quality Gate:** Meta tags within char limits, and the source's keyword **placements** (title, H1, first 100 words, 2-3 H2s, conclusion) preserved in the target language. Density is reported, not gated.
 
-### Phase 7: Target Language Humanization (2-3 minutes)
+### Step 7: Target Language Humanization
 - Runs Humanizer Agent for target language fluency
 - Removes AI telltale phrases specific to target language (loaded from `config/multilingual-patterns.json`)
 - Checks sentence variety (burstiness) against target language norms
 - Ensures natural reading flow for native speakers
-- **Quality Gate:** Target language burstiness >= 0.7, zero AI patterns in target language
+- **Quality Gate:** Target language burstiness >= 0.7 and `ai_signal_score` <= 0.3
 
-### Phase 8: Quality Verification (1-2 minutes)
+### Step 8: Quality Verification
 - Readability check calibrated for target language (grade level equivalents)
 - Brand voice consistency rating (target: >= 8/10)
 - Citation integrity confirmation (zero errors)
-- SEO keyword density within +/- 0.5% of target
+- SEO keyword placements preserved (density reported as advisory drift, not gated)
 - Back-translation spot check (3-5 key sentences translated back to source for meaning verification)
 - **Quality Gate:** All checks pass, composite translation score >= 8.0/10
 
-### Phase 9: Output (1 minute)
+### Step 9: Output
 - Generates translated .docx with proper formatting
 - Delivers via the brand's tracking backend (`tracking.backend` in the brand profile): Google Drive folder, Airtable attachment, or local filesystem (`~/Documents/ContentForge/{brand}/{type}/{YYYY-MM}/{slug}_{lang}.docx`)
 - Creates translation report with quality metrics
@@ -177,9 +177,9 @@ Regional Variant: es (Spain, neutral)
 Quality Metrics:
 - Brand Voice Consistency: 9.0/10 (authoritative mapped to "formal, datos primero")
 - Citation Integrity: 100% (14 URLs unchanged, 14 titles translated)
-- SEO Adaptation: 8.5/10 (meta tags localized, keyword density 2.0%)
+- SEO Adaptation: 8.5/10 (meta tags localized, all keyword placements preserved; density 2.0% — advisory)
 - Readability: 8.8/10 (Grade 11 equivalent for Spanish)
-- Humanization: 9.0/10 (burstiness 0.74, zero AI patterns in Spanish)
+- Humanization: 9.0/10 (burstiness 0.74, ai_signal_score 0.18)
 
 Content Stats:
 - Source Word Count: 1,947
@@ -189,10 +189,10 @@ Content Stats:
 - Back-Translation Check: 5/5 sentences verified
 
 Output Location:
-Google Drive: ContentForge Output/AcmeMed/es/AI-in-Healthcare-2026-Trends_es_v1.0.docx
+Google Drive: My Drive/ContentForge Output/AcmeMed/article/2026-07/AI-in-Healthcare-2026-Trends_es_v1.0.docx
 
 Translation Report:
-Google Drive: ContentForge Output/AcmeMed/es/AI-in-Healthcare-2026-Trends_es_translation-report.json
+Google Drive: My Drive/ContentForge Output/AcmeMed/article/2026-07/AI-in-Healthcare-2026-Trends_es_translation-report.json
 ```
 
 ## Brand Voice Mapping Examples

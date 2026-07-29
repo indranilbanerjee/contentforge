@@ -20,8 +20,8 @@
 
   "writing_conventions": {
     "evidence_hierarchy": [
-      "Nielsen/IRI panel data and market share reports",
-      "Consumer panel data (Kantar, NPD, Numerator)",
+      "Nielsen and Circana (formerly IRI/NPD) panel data and market share reports",
+      "Consumer panel data (Kantar, Circana (formerly IRI/NPD), Numerator)",
       "Industry reports (McKinsey Consumer, Bain Retail, Deloitte Consumer)",
       "Academic consumer research (Journal of Consumer Research, Journal of Marketing)",
       "Company filings and investor presentations (P&G, Unilever, Nestle annual reports)",
@@ -84,7 +84,7 @@
   },
 
   "evidence_standards": {
-    "minimum_evidence_level": "Panel data (Nielsen, IRI, Kantar) for market claims. Published consumer research for behavior claims. Named case studies for strategy examples. Avoid citing social media trends as market data.",
+    "minimum_evidence_level": "Panel data (Nielsen, Circana (formerly IRI/NPD), Kantar) for market claims. Published consumer research for behavior claims. Named case studies for strategy examples. Avoid citing social media trends as market data.",
     "citation_requirements": "For market data: specify the market definition (geography, channel, timeframe, value vs volume). For consumer data: specify the methodology and sample. For trend data: show multi-year trajectory, not point-in-time.",
     "data_presentation": "Include market definition for all share data. Show trends over time (not just current snapshot). Segment by channel, geography, and consumer demographic where relevant.",
     "recency": "Market share data: within 1 quarter. Consumer trends: within 1 year. Category analysis: within 6 months. Innovation pipeline: current."
@@ -122,7 +122,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
     "ai_telltale_phrases": [
       "consumer landscape",
       "elevate everyday moments",

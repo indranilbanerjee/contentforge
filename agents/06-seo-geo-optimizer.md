@@ -225,12 +225,12 @@ If checks fail: add more links, replace forced placements, or expand placeholder
 
 **Purpose:** Maximize visibility in Google AI Overviews, Perplexity featured answers, ChatGPT search, Claude search, Bing Copilot, and other AI-generated search results.
 
-**May 2026 reality check** — the world the optimizer is shipping into:
-- Google AI Overviews now appear on **~55% of all Google searches** (Seer Interactive, Sept 2025); organic CTR on AIO queries dropped ~61%; **~58% of Google searches are zero-click**
+**Market reality check** — the world the optimizer is shipping into (each figure carries its own source date; re-verify before quoting any of them in content):
+- Google AI Overviews appear on **~55% of all Google searches** (Seer Interactive, Sept 2025); organic CTR on AIO queries dropped ~61%; **~58% of Google searches are zero-click**
 - ChatGPT search reaches ~883M MAU; AI-referred sessions jumped 527% YoY through mid-2025
 - **Citation source skew varies sharply by engine** — Wikipedia = 47.9% of ChatGPT factual cites; Reddit = 46.7% of Perplexity cites; Google AIO over-indexes on Facebook/Yelp
-- **Google's March 2026 core update demoted FAQPage / HowTo / Review schema** rich-result eligibility on non-primary pages (the Phase 7 reviewer rubric reflects this — emphasize entity-rich Article + Organization JSON-LD + LLMs.txt)
-- **LLMs.txt** is the emerging companion standard (a curated map of high-value pages for AI crawlers; sits alongside sitemap.xml)
+- **FAQPage / HowTo schema earn no rich results for almost anyone.** Google **deprecated HowTo rich results in September 2023** (all sites) and **restricted FAQ rich results in August 2023** to authoritative government and health sites. This is settled 2023 policy, not a recent update. Put the effort into entity-rich **Article + Organization** JSON-LD instead (the Phase 7 reviewer rubric scores it that way)
+- **llms.txt** is an unadopted community proposal, not a standard. **Google has publicly said it does not use llms.txt**, and no major AI engine has confirmed it as an eligibility signal. Do not recommend it as an AI-visibility tactic or score content on its presence; mention it, at most, as optional low-cost housekeeping
 - For ongoing AI-citation measurement integrate with a third-party platform: **Profound / Otterly / Conductor AgentStack / HubSpot AEO** — none ship a first-party HTTP MCP yet but Pipedream / Composio aggregators expose them
 
 #### 6.1 Structured Q&A Format
@@ -282,12 +282,14 @@ Mark at least 3 passages AI engines would quote — each with location and reaso
 **Generate JSON-LD schema recommendations for the applicable types:**
 
 - **Article** (all content) — headline, author, dates, publisher, description, mainEntityOfPage
-- **FAQPage** (if FAQ section present) — mainEntity array of Question/Answer pairs
-- **HowTo** (if step-by-step section present) — name, step array with position/name/text
 - **Product** (if product content) — name, description, offers, reviews
 - **BreadcrumbList** (if site structure available) — itemListElement array
+- **FAQPage** (OPTIONAL, structure only — if an FAQ section is present) — mainEntity array of Question/Answer pairs
+- **HowTo** (OPTIONAL, structure only — if a step-by-step section is present) — name, step array with position/name/text
 
-For each applicable schema type, provide a complete JSON-LD template with placeholders filled from actual content. Note priority (CRITICAL / RECOMMENDED / OPTIONAL) and expected rich snippet benefits.
+**No rich-result eligibility for FAQPage / HowTo on most sites.** Google deprecated HowTo rich results in September 2023 and restricted FAQ rich results in August 2023 to authoritative government and health sites. Emit these two types only as machine-readable structure that AI answer engines may parse — never present them as a rich-snippet win, and never mark them CRITICAL or RECOMMENDED.
+
+For each applicable schema type, provide a complete JSON-LD template with placeholders filled from actual content. Note priority (CRITICAL / RECOMMENDED / OPTIONAL) and, for the types that still qualify, the expected rich-result benefit — citing the type's current Google eligibility rather than assuming one.
 
 ### Step 8: Emit the Structure Manifest (protects GEO work from the Humanizer)
 

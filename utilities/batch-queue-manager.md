@@ -79,13 +79,23 @@ if row['content_type'] not in valid_content_types:
 
 ### Brand Profile Validation
 ```python
-# Check if brand profile exists in Google Drive
-brand_profile_path = f"ContentForge/{row['brand']}-profile-cache.json"
+# Canonical location is local; Drive is an optional fallback cache.
+brand_slug = slugify(row['brand'])
+local_profile_path = Path.home() / '.claude-marketing' / brand_slug / \
+    'Brand-Guidelines' / f"{row['brand']}-brand-profile.json"
 
-if not drive_file_exists(brand_profile_path):
+profile_found = local_profile_path.exists()
+
+if not profile_found and drive_backend_configured():
+    profile_found = drive_file_exists(
+        f"ContentForge-Knowledge/{row['brand']}/Brand-Guidelines/"
+        f"{row['brand']}-brand-profile.json"
+    )
+
+if not profile_found:
     validation_errors.append(
-        f"{row['requirement_id']}: Brand '{row['brand']}' profile not found. "
-        f"Run /brand-setup {row['brand']} first."
+        f"{row['requirement_id']}: Brand '{row['brand']}' profile not found at "
+        f"{local_profile_path}. Run /contentforge:brand-setup {row['brand']} first."
     )
 ```
 
@@ -98,6 +108,11 @@ word_count_ranges = {
     'faq': (600, 1200),
     'research_paper': (4000, 8000)
 }
+
+# content_type was already range-checked above, but guard anyway: an unknown
+# type must not raise KeyError mid-batch.
+if row['content_type'] not in word_count_ranges:
+    continue
 
 min_wc, max_wc = word_count_ranges[row['content_type']]
 
@@ -201,12 +216,16 @@ def estimate_batch_time(queue, concurrency=5):
         # All pieces can run in parallel
         return max([piece['estimated_time'] for piece in queue])
     else:
+        # Sort ONCE, then slice both halves from the same ordering so no
+        # piece is counted in both the first wave and the remainder.
+        ordered = sorted(queue, key=lambda x: x['estimated_time'], reverse=True)
+
         # First wave: longest N pieces (N=concurrency)
-        first_wave = sorted(queue, key=lambda x: x['estimated_time'], reverse=True)[:concurrency]
+        first_wave = ordered[:concurrency]
         longest_first_wave = max([p['estimated_time'] for p in first_wave])
 
         # Remaining pieces
-        remaining = queue[concurrency:]
+        remaining = ordered[concurrency:]
         total_remaining_time = sum([p['estimated_time'] for p in remaining])
         avg_remaining_time = total_remaining_time / concurrency
 
@@ -225,15 +244,17 @@ for piece in validated_queue:
     priority_groups[piece['priority']].append(piece)
 ```
 
-### Step 2: Sort Within Priority by Estimated Time (Descending)
+### Step 2: Sort Within Priority by Deadline, then Estimated Time (Descending)
 ```python
-# Longest pieces first within each priority group
-# Rationale: Start long-running pieces early for better parallelization
+# Within a priority group: earliest deadline first, then longest piece first.
+# Rationale: honour committed dates, and start long-running pieces early.
+# Pieces with no deadline sort after every dated piece.
+
+FAR_FUTURE = '9999-12-31'
 
 for priority in priority_groups:
     priority_groups[priority].sort(
-        key=lambda x: x['estimated_time'],
-        reverse=True  # Descending: longest first
+        key=lambda x: (x.get('deadline') or FAR_FUTURE, -x['estimated_time'])
     )
 ```
 
@@ -267,32 +288,18 @@ for priority in [1, 2, 3, 4, 5]:  # Process priorities in order
 
 ---
 
-## Concurrency Planning
+## Execution Planning
 
-### Determine Initial Wave
-```python
-def plan_execution_waves(queue, concurrency=5):
-    """Divide queue into waves for parallel execution."""
+### Continuous Queue Consumption
+There are **no pre-defined waves**. The orchestrator walks the sorted queue and
+starts the next piece as soon as a slot frees up:
 
-    waves = []
+- Take pieces off the head of the sorted queue, one at a time
+- As a piece completes, immediately start the next one
+- Keep going until the queue is exhausted
 
-    for i in range(0, len(queue), concurrency):
-        wave = queue[i:i+concurrency]
-        waves.append(wave)
-
-    return waves
-
-# Example:
-# 12 pieces, concurrency=5
-# Wave 1: REQ-002, REQ-004, REQ-001, REQ-005, REQ-003 (5 pieces)
-# Wave 2: REQ-006, REQ-007, REQ-008, REQ-009, REQ-010 (5 pieces)
-# Wave 3: REQ-011, REQ-012 (2 pieces)
-```
-
-### Dynamic Wave Management
-- As pieces in Wave 1 complete, start pieces from Wave 2
-- Maintain exactly 5 active pipelines at all times (until queue exhausted)
-- No pre-defined waves — continuous queue consumption
+Do not pre-partition the queue into fixed wave lists — a piece that finishes
+early must not wait for the rest of its wave.
 
 ---
 
@@ -383,8 +390,9 @@ with open('batch-validation-log.txt', 'w') as f:
 
 2. **Execution Planning**
    ```python
-   waves = batch_queue_manager.plan_waves(queue, concurrency=5)
    total_time = batch_queue_manager.estimate_batch_time(queue)
+   # The orchestrator then consumes `queue` continuously from the head —
+   # there is no wave partitioning step.
    ```
 
 3. **Error Reporting**
@@ -404,10 +412,9 @@ with open('batch-validation-log.txt', 'w') as f:
 
 ---
 
-## Version History
+## Planned Extensions
 
-- **v2.0.0**: Initial implementation with priority sorting and time estimation
-- Future: Add deadline-based priority overrides, team assignment routing
+- Team assignment routing (`assigned_to` column is captured but not yet acted on)
 
 ---
 

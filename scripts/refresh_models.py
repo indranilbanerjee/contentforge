@@ -5,8 +5,12 @@ refresh_models.py — Poll provider APIs and report drift against the registry.
 Reads model_registry.json, calls the provider list endpoints where available,
 and prints:
   • Models in the provider catalog that are NOT in the registry (additions to triage)
-  • Models in the registry marked "current" that the provider no longer lists
-  • Models in the registry marked "deprecated" that the provider has stopped serving
+  • Models the registry still treats as live (current / supported / preview) that
+    the provider no longer lists — the real alarm
+  • Models the registry already marks deprecated / retired that the provider has
+    stopped serving — expected, no action
+  • Models the registry marks deprecated / retired that the provider STILL serves
+    — the shutdown has not landed yet
   • A simple summary + next_review_due reminder
 
 By default this is REPORT-ONLY. Pass --bump-timestamp to update last_updated
@@ -32,7 +36,7 @@ import os
 import sys
 import urllib.error
 import urllib.request
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -91,10 +95,42 @@ def list_gemini() -> set[str] | None:
     }
 
 
-def diff(registry_ids: set[str], live_ids: set[str]) -> dict[str, list[str]]:
+# Registry statuses the provider is still expected to serve.
+LIVE_STATUSES = {"current", "supported", "preview"}
+
+# Fallback review cadence — the quarterly floor from stewardship_policy.
+DEFAULT_REVIEW_INTERVAL_DAYS = 90
+
+
+def _review_interval_days(last_updated: str | None, next_review_due: str | None) -> int:
+    """Days between the registry's last_updated and next_review_due.
+
+    Used to carry the existing cadence forward on --bump-timestamp. Falls back
+    to the quarterly floor if either date is missing or unparseable."""
+    try:
+        gap = (date.fromisoformat(next_review_due) - date.fromisoformat(last_updated)).days
+    except (TypeError, ValueError):
+        return DEFAULT_REVIEW_INTERVAL_DAYS
+    return gap if gap > 0 else DEFAULT_REVIEW_INTERVAL_DAYS
+
+
+def diff(registry_statuses: dict[str, str], live_ids: set[str]) -> dict[str, list[str]]:
+    """Partition drift by registry status.
+
+    Comparing bare id sets reports every deprecated/retired entry as STALE, which
+    buries the one bucket that matters. `registry_statuses` maps model id ->
+    status so each absence can be judged: a live-status model the provider no
+    longer lists is an alarm; a deprecated/retired one is the expected outcome.
+    """
+    registry_ids = set(registry_statuses)
+    gone = registry_ids - live_ids
+    live_status = {i for i in registry_ids if registry_statuses.get(i, "current") in LIVE_STATUSES}
+    sunset = registry_ids - live_status
     return {
         "missing_from_registry": sorted(live_ids - registry_ids),
-        "missing_from_live": sorted(registry_ids - live_ids),
+        "current_but_unlisted": sorted(gone & live_status),
+        "deprecated_and_unlisted": sorted(gone & sunset),
+        "deprecated_but_still_served": sorted(sunset & live_ids),
     }
 
 
@@ -110,11 +146,11 @@ def main() -> int:
 
     reg = get_registry()
     reg_path = _find_registry()
-    by_vendor: dict[str, set[str]] = {}
+    by_vendor: dict[str, dict[str, str]] = {}
     for m in reg.get("models", []):
-        by_vendor.setdefault(m.get("vendor", ""), set()).add(m.get("id"))
+        by_vendor.setdefault(m.get("vendor", ""), {})[m.get("id")] = m.get("status", "current")
 
-    report: dict[str, dict] = {
+    report: dict[str, object] = {
         "registry_path": str(reg_path),
         "registry_last_updated": reg.get("last_updated"),
         "registry_next_review_due": reg.get("next_review_due"),
@@ -129,19 +165,28 @@ def main() -> int:
         if live is None:
             report[vendor] = {"status": "skipped (no API key or fetch failed)"}
             continue
-        d = diff(by_vendor.get(vendor, set()), live)
+        registry_statuses = by_vendor.get(vendor, {})
+        d = diff(registry_statuses, live)
         report[vendor] = {
             "status": "checked",
             "live_count": len(live),
-            "registry_count": len(by_vendor.get(vendor, set())),
+            "registry_count": len(registry_statuses),
             **d,
         }
 
     if args.bump_timestamp:
+        previous_updated = reg.get("last_updated")
+        previous_due = reg.get("next_review_due")
         reg["last_updated"] = date.today().isoformat()
+        # Carry the existing review cadence forward instead of leaving
+        # next_review_due stuck in the past after every bump.
+        reg["next_review_due"] = (
+            date.today() + timedelta(days=_review_interval_days(previous_updated, previous_due))
+        ).isoformat()
         reg_path.write_text(json.dumps(reg, indent=2, ensure_ascii=False) + "\n",
                             encoding="utf-8")
         report["timestamp_bumped"] = reg["last_updated"]
+        report["next_review_due_bumped"] = reg["next_review_due"]
 
     if args.json:
         print(json.dumps(report, indent=2, ensure_ascii=False))
@@ -150,20 +195,26 @@ def main() -> int:
         print(f"Last updated: {report['registry_last_updated']}  "
               f"(next review due: {report['registry_next_review_due']})")
         if "timestamp_bumped" in report:
-            print(f"  -> timestamp bumped to {report['timestamp_bumped']}")
+            print(f"  -> timestamp bumped to {report['timestamp_bumped']} "
+                  f"(next review due {report['next_review_due_bumped']})")
+        buckets = (
+            ("missing_from_registry", "NEW (served by provider, not in registry — triage)", "+"),
+            ("current_but_unlisted", "ALARM (registry says live, provider no longer lists it)", "!"),
+            ("deprecated_but_still_served", "PENDING (registry says deprecated/retired, provider still serves it)", "~"),
+            ("deprecated_and_unlisted", "EXPECTED (deprecated/retired and gone — no action)", "-"),
+        )
         for v in ("anthropic", "openai", "google"):
             r = report.get(v, {})
             print(f"\n{v.upper()}: {r.get('status')}")
             if r.get("status") == "checked":
-                if r["missing_from_registry"]:
-                    print(f"  NEW (not in registry, may need to add):")
-                    for m in r["missing_from_registry"]:
-                        print(f"    + {m}")
-                if r["missing_from_live"]:
-                    print(f"  STALE (in registry, not in provider list):")
-                    for m in r["missing_from_live"]:
-                        print(f"    - {m}")
-                if not r["missing_from_registry"] and not r["missing_from_live"]:
+                drift = False
+                for key, label, marker in buckets:
+                    if r.get(key):
+                        drift = True
+                        print(f"  {label}:")
+                        for m in r[key]:
+                            print(f"    {marker} {m}")
+                if not drift:
                     print("  no drift")
     return 0
 

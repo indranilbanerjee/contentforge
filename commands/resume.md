@@ -102,7 +102,7 @@ Before continuing, tell the user what's being skipped vs re-run:
    Topic:   {topic}
    Type:    {content_type}
    Brand:   {brand}
-   Keyword: {meta.keyword} | Audience: {meta.audience} | Target: {meta.word_count_target} words
+   Keyword: {meta.keyword} | Audience: {meta.audience} | Target: {meta.word_count} words
 
    ✅ Already completed (skipping): Phase 1 (Research), Phase 2 (Fact Check), Phase 3 (Content Draft)
    ➡️  Resuming from: Phase 3.5 (Visual Assets)

@@ -6,18 +6,18 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 10 quality gates · 35-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.16.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.17.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-144%2F144%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3161)
+[![Tests](https://img.shields.io/badge/tests-145%2F145%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3170)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
-> 🆕 **Just shipped — v3.16.1 (July 12, 2026): self-containment patch.** Removed cross-plugin capability references — `content-refresh` now routes pre-refresh diagnosis to ContentForge's own `cf-brief` + `cf-audit`; ContentForge is fully standalone (install it alone and every documented capability works). [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.17.0 (July 12, 2026): self-containment patch.** Removed cross-plugin capability references — `content-refresh` now routes pre-refresh diagnosis to ContentForge's own `cf-brief` + `cf-audit`; ContentForge is fully standalone (install it alone and every documented capability works). [Full changelog →](CHANGELOG.md)
 >
 > <sub>Previously — **v3.16.0 (July 7, 2026): the Reliability & Truth release.** The deepest engineering pass since v3.0 — a five-layer audit (orchestration, agents, skills, scripts, configs) followed by a coordinated fix of everything it found. Checkpoint/resume now actually wired into the master skill (every phase saves to a canonical run directory; `/contentforge:resume` works for skill-started runs). File-based phase handoff contract (paths, not pasted drafts). Keyword-density gate retired in favor of placement checks; new Phase 6→6.5 protected-structure manifest stops the humanizer from dismantling GEO structure. EU AI Act Article 50 AI-disclosure step in the publish path (applicable Aug 2, 2026). Humanizer catalog 29→35 patterns with a defined AI-signal score. Social specs add TikTok, Bluesky, YouTube Shorts + per-platform AI-label fields. New `scripts/_common.py` (one slugifier, atomic writes, UTF-8-safe output, real exit codes), `scripts/text-metrics.py` (measured burstiness/FK/placement gates), .docx image embedding + TOC + nested lists. **Tests 53 → 143.** [Full changelog →](CHANGELOG.md)</sub>
 
@@ -57,7 +57,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.16.1)
+## Supported surfaces (v3.17.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -167,7 +167,7 @@ The resumer reloads the saved Phase 1..N outputs and continues from Phase N+1 �
  4   Scientific Validation → hallucination check, domain rules, regulatory
  5   Structuring & Proofread → grammar, readability, brand compliance
  6   SEO/GEO Optimization  → keywords, meta tags, schema, internal links (3 categories)
- 6.5 Humanizer             → 29-pattern AI-detection catalog + self-critique
+ 6.5 Humanizer             → 35-pattern AI-detection catalog + self-critique
  7   Review                → 5-dimension scoring (Content, Citation, Brand, SEO, Readability)
  8   Output Manager        → real .docx with embedded scorecards + link map
 ```
@@ -307,7 +307,7 @@ These 9 commands are the user-facing entry points:
 | 4 | Scientific Validator | Hallucination detection, domain validation | 3–9 min |
 | 5 | Structurer & Proofreader | Grammar, readability, brand compliance | 2–7 min |
 | 6 | SEO/GEO Optimizer | Keywords, meta tags, AI Overview, **3-category internal linking** | 3–8 min |
-| 6.5 | Humanizer | 29-pattern AI-detection catalog + self-critique meta-pass | 5–8 min |
+| 6.5 | Humanizer | 35-pattern AI-detection catalog + self-critique meta-pass | 5–8 min |
 | 7 | Reviewer | 5-dimension scoring with comparative ranking | 1–4 min |
 | 8 | Output Manager | `.docx` with hyperlinks, charts, scorecards, link map | <1 min |
 | 9 | Batch Orchestrator | Parallel pipeline coordination | post-pipeline |
@@ -336,7 +336,7 @@ Single-pass fact-checking misses 15–20% of hallucinations. ContentForge uses t
 
 ### Phase 6.5 Humanizer (the differentiator)
 
-29-pattern AI-detection catalog (5 buckets: content, language/grammar, style, communication, filler/hedging) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, burstiness 0.50 → 0.72, AI signal score ≤3/10, em dashes ≤2 per 500 words.
+35-pattern AI-detection catalog (5 buckets: content, language/grammar, style, communication, filler/hedging) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, burstiness 0.50 → 0.72, AI signal score ≤3/10, em dashes ≤2 per 500 words.
 
 ### Model curator (v3.12.2+) — no hardcoded model ids
 
@@ -393,7 +393,7 @@ Expected — the humanizer auto-loops back to Phase 6 once if SEO degrades, and 
 
 ### Connector not working
 
-Run `/contentforge:integrations` to check status. Run `/contentforge:connect <name>` for guided setup.
+Run `/contentforge:cf-integrations` to check status. Run `/contentforge:cf-connect <name>` for guided setup.
 
 ### Manifest install error: "repository field is an object" or "$schema unknown"
 
@@ -458,13 +458,13 @@ Cowork is the Anthropic Desktop computer-use product (macOS/Windows). It support
 Single-prompt tools produce content in 30 seconds with ~15–20% hallucination rate, generic voice, and visible AI patterns. ContentForge takes 35–60 minutes but applies three-layer fact verification, brand voice calibration, AI-pattern removal, and dimensioned quality scoring. Each piece comes with a transparent scorecard.
 
 **Q: Can I use ContentForge without Google Drive / Sheets?**
-Yes. Three tracking backends: Google Sheets + Drive, Airtable, or local filesystem. Local works zero-config. Switch any time with `/contentforge:switch-backend`.
+Yes. Three tracking backends: Google Sheets + Drive, Airtable, or local filesystem. Local works zero-config. Switch any time with `/contentforge:cf-switch-backend`.
 
 **Q: How much does it cost to run?**
 Plugin is MIT-licensed and free. Claude API costs are typically $1–4 per piece depending on length and how many quality-gate loops are needed.
 
 **Q: What content types are supported?**
-5 built-in: articles (1500–2000 words), blog posts (800–1500), whitepapers (2500–5000), FAQs (600–1200), research papers (4000–8000). Use `/contentforge:template` to add custom types.
+5 built-in: articles (1500–2000 words), blog posts (800–1500), whitepapers (2500–5000), FAQs (600–1200), research papers (4000–8000). Use `/contentforge:cf-template` to add custom types.
 
 **Q: Can I run multiple pieces in parallel?**
 Yes — `/batch-process` handles 10–50+ pieces simultaneously with 4–5× speedup over sequential.
@@ -506,7 +506,7 @@ Run `/contentforge:cf-environment` after install to see exactly what's available
 
 ## About the maintainer
 
-ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 10-phase pipeline and 29-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
+ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 10-phase pipeline and 35-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
 
 - 🌐 **Website:** [indranil.in](https://indranil.in)
 - 💼 **LinkedIn:** [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)
@@ -523,7 +523,7 @@ If ContentForge saves your team time, [⭐ star the repo](https://github.com/ind
 
 ## Contributing
 
-PRs welcome — especially on the 29-pattern AI-detection catalog, industry-specific content templates, and platform-specific schema improvements. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) for the PR checklist, and [TESTING-GUIDE.md](TESTING-GUIDE.md) for the per-phase test checklist. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: use [Private Security Advisories](https://github.com/indranilbanerjee/contentforge/security/advisories/new) per [SECURITY.md](SECURITY.md) — do not file public issues for vulnerabilities.
+PRs welcome — especially on the 35-pattern AI-detection catalog, industry-specific content templates, and platform-specific schema improvements. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) for the PR checklist, and [TESTING-GUIDE.md](TESTING-GUIDE.md) for the per-phase test checklist. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: use [Private Security Advisories](https://github.com/indranilbanerjee/contentforge/security/advisories/new) per [SECURITY.md](SECURITY.md) — do not file public issues for vulnerabilities.
 
 ---
 
@@ -548,7 +548,7 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v3.16.1 (2026-07-12)** — **Self-containment patch.** Removed cross-plugin capability references from the skill surface: `content-refresh` routes pre-refresh diagnosis to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit` instead of recommending another plugin's skills. Suite table in this README corrected (sibling stats were stale) and now states each plugin is fully standalone. No runtime change.
+**v3.17.0 (2026-07-12)** — **Self-containment patch.** Removed cross-plugin capability references from the skill surface: `content-refresh` routes pre-refresh diagnosis to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit` instead of recommending another plugin's skills. Suite table in this README corrected (sibling stats were stale) and now states each plugin is fully standalone. No runtime change.
 
 **v3.16.0 (2026-07-07)** — **Reliability & Truth release.** Five-layer deep audit implemented end to end. Orchestration: checkpointing wired into the master skill (Step 0 init + per-phase saves + `loop` counters + `pending_rework`), per-phase input/output contract table with loop targets, orchestrator-owned gates verified via new `scripts/text-metrics.py`, no-brand and no-web modes, honest sequential batch orchestrator (success = reviewer-approved ≥7.0). Agents: user interaction hoisted out of subagents (title curation + image approvals now orchestrator-owned), fact-checker paywall/SERP fixes, drafter body-format contract, structure-manifest guard between SEO and humanizer phases, reviewer industry weights fully specified, ~50 dangling slash references fixed. Skills: connector docs now match the shipped empty `.mcp.json`, cf-brief rewritten for AEO/GEO (LSI/density dogma removed), EU AI Act Article 50 disclosure step in cf-publish, YouTube Shorts + TikTok long-form in cf-video-script, command/skill twins collapsed to thin wrappers. Configs: `scoring-thresholds.json` is now the single source of truth (10 gates incl. new Phase 8 gate), humanizer catalog 29→35 patterns + defined AI-signal formula (evasion framing removed), social specs add TikTok/Bluesky/YouTube Shorts + per-platform `ai_disclosure`, all 10 industry packs enriched (FDA CCN, OCR tracking-tech, SEC Marketing Rule) and dated. Scripts: new `_common.py` (single slugifier — fixes the Cowork sync-path bug, atomic JSON writes, UTF-8 console guard, real exit codes), checkpoint-manager meta/loop/pending-rework, pipeline-tracker run_id keying, .docx image embedding + TOC field + page footer + nested lists + underscore emphasis, Airtable formula-injection fix, Drive pagination. **Tests 53 → 143.**
 
@@ -578,7 +578,7 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 **v3.9.1 (2026-05-03)** — Cowork-compatible aggregator MCP catalog (Pipedream, Composio, Zapier, Make.com) for Google Sheets/Drive and other services without a first-party HTTP MCP.
 
-**v3.9.0 (2026-05-03)** — World-class humanizer rebuilt around 29-pattern AI-detection catalog (5 buckets), self-critique meta-pass, optional voice calibration from a brand `writing_sample`. Removed all 4 global hooks for multi-plugin coexistence.
+**v3.9.0 (2026-05-03)** — World-class humanizer rebuilt around 35-pattern AI-detection catalog (5 buckets), self-critique meta-pass, optional voice calibration from a brand `writing_sample`. Removed all 4 global hooks for multi-plugin coexistence.
 
 **Earlier versions:** see [CHANGELOG.md](CHANGELOG.md) for the full history (v3.0 through v3.8 — social adaptation, CMS publishing, translation, video scripts, content briefs, A/B variants, content audits, calendars, style guides, analytics, visual asset annotator, industry knowledge packs, multi-backend I/O, AI image generation, SERP-informed title curation).
 
@@ -601,4 +601,4 @@ Created by [Indranil Banerjee](https://indranil.in). Built for Claude Code and A
 
 <sub>Made with care by [Indranil Banerjee](https://indranil.in) · MIT-licensed · [⭐ Star the repo](https://github.com/indranilbanerjee/contentforge) if it helps you</sub>
 
-Humanizer 29-pattern catalog adapted from [Wikipedia: Signs of AI Writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (CC BY-SA, WikiProject AI Cleanup) with structure influenced by [blader/humanizer](https://github.com/blader/humanizer) (MIT).
+Humanizer 35-pattern catalog adapted from [Wikipedia: Signs of AI Writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (CC BY-SA, WikiProject AI Cleanup) with structure influenced by [blader/humanizer](https://github.com/blader/humanizer) (MIT).

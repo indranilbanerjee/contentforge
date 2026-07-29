@@ -1,4 +1,4 @@
-# ContentForge v3.8 — Complete User Guide
+# ContentForge v3.16.1 — Complete User Guide
 
 **From zero to first published article.** This guide walks you through every step of using ContentForge in Claude Cowork or Claude Code, from initial setup to running the full content production pipeline.
 
@@ -8,7 +8,7 @@
 
 1. [Before You Start](#1-before-you-start)
 2. [Installation & Verification](#2-installation--verification)
-3. [Understanding the Startup Banner](#3-understanding-the-startup-banner)
+3. [Reading the Install Report](#3-reading-the-install-report)
 4. [Setting Up Your Brand Profile](#4-setting-up-your-brand-profile)
 5. [Setting Up Google Sheets (Optional)](#5-setting-up-google-sheets-optional)
 6. [Setting Up Google Drive Knowledge Vault (Optional)](#6-setting-up-google-drive-knowledge-vault-optional)
@@ -49,7 +49,7 @@
 | **Google Drive MCP** | Brand knowledge vault, output file storage, .docx uploads |
 | **Webflow or WordPress MCP** | Direct CMS publishing via `/contentforge:publish` |
 | **Slack MCP** | Pipeline completion notifications |
-| **Google Calendar MCP** | Content calendar sync via `/contentforge:calendar` |
+| **Google Calendar MCP** | Content calendar sync via `/contentforge:cf-calendar` |
 | **Notion MCP** | Content brief storage, knowledge base |
 
 **Key point:** ContentForge works fully without any MCP connectors. The core pipeline runs entirely within the Claude session. Connectors add platform integrations but are NOT required.
@@ -62,7 +62,7 @@
 | Single article (1,800 words) | 20-30 minutes |
 | Single blog post (1,200 words) | 15-22 minutes |
 | Whitepaper (3,500 words) | 30-45 minutes |
-| Batch of 10 articles | 60-90 minutes (parallel) |
+| Batch of 10 articles | 3-5 hours (sequential — sum of the individual runs) |
 | Social adaptation of 1 article | 3-5 minutes |
 | Content brief | 5-8 minutes |
 
@@ -76,7 +76,8 @@ In Claude Cowork, go to Settings > Plugins > Marketplace and search for "Content
 
 Or, if using CLI:
 ```
-claude plugins install contentforge
+claude plugin marketplace add indranilbanerjee/neels-plugins
+claude plugin install contentforge@neels-plugins
 ```
 
 ### Method B: Manual Install
@@ -91,50 +92,57 @@ Move the cloned folder to your Claude plugins directory:
 
 ### Verify Installation
 
-Start a new Claude session. You should see the ContentForge banner:
+ContentForge ships **zero active hooks** by design (since v3.9.0), so there is no startup banner and nothing runs automatically when a session opens. Verify the install explicitly instead:
 
 ```
-✓ ContentForge v3.1 loaded — Enterprise content production with zero hallucinations
-  /contentforge — Single piece (20-30 min)
-  /batch-process — Multiple pieces in parallel (4-5x faster)
-  /content-refresh — Update old content with fresh data
-  /contentforge:integrations — See connected integrations
-  /contentforge:social-adapt — Repurpose content for social
-  /contentforge:publish — Push to CMS
+/contentforge:cf-help
 ```
 
-**If you don't see this banner:**
+That prints the user guide plus live version, agent, skill, and command counts read straight off disk.
+
+For a raw report you can paste into a bug ticket, run the metadata script directly:
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py --section all-with-environment --format text
+```
+
+It reports the installed version, plugin root, scripts directory, Python version, agent/skill/command counts, and which connectors are currently wired.
+
+**If neither works:**
 1. Check the plugin is in the correct directory
-2. Ensure `hooks/hooks.json` exists
+2. Check `.claude-plugin/plugin.json` exists and has `"name": "contentforge"`
 3. Try reinstalling: clear `~/.claude/plugins/cache/` first
 
 ### Check Your Connectors
 
 Run immediately after install:
 ```
-/contentforge:integrations
+/contentforge:cf-integrations
 ```
 
-This shows which connectors are active and what they unlock. You should see at least 9 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Google Calendar, fal-ai, Replicate) if the plugin installed correctly.
+This shows which connectors are active and what they unlock. **Out of the box, zero connectors are active** — `.mcp.json` ships empty on purpose. The opt-in catalog lives in `.mcp.json.connectors-reference` (16 HTTP entries: Notion, Canva, Webflow, Slack, Gmail, Google Calendar, Figma, fal.ai, Replicate, plus Pipedream/Composio/Zapier/Make aggregators). Enable the ones you need with `/contentforge:cf-connect`.
 
 ---
 
-## 3. Understanding the Startup Banner
+## 3. Reading the Install Report
 
-When ContentForge loads, the `setup.py` script runs automatically and reports:
+`plugin-metadata.py` is the single source of truth for "what's in this install right now" — every count it prints is read from the filesystem, so it never drifts from the shipped plugin:
 
 ```
-[ContentForge] Python 3.10.12 ✓
-[ContentForge] PLUGIN_ROOT=/home/user/.claude/plugins/contentforge
-[ContentForge] SCRIPTS_DIR=/home/user/.claude/plugins/contentforge/scripts
-[ContentForge] CONNECTORS=9 HTTP connectors loaded
+Version: 3.16.1
+PLUGIN_ROOT=/home/user/.claude/plugins/contentforge
+SCRIPTS_DIR=/home/user/.claude/plugins/contentforge/scripts
+Python: 3.10.12
+Agents: 13 · Skills: 21 · Commands: 9
+Connectors active: 0 (catalog: 16 HTTP, opt-in)
 ```
 
 This tells you:
-- **Python version** — Must be 3.8+. Cowork VM has 3.10.12.
+- **Version** — Read from `.claude-plugin/plugin.json`, not hardcoded in any doc.
 - **PLUGIN_ROOT** — Where the plugin is installed. All scripts reference this path.
 - **SCRIPTS_DIR** — Where Python scripts live.
-- **CONNECTORS** — How many HTTP connectors are in `.mcp.json`.
+- **Python version** — Must be 3.8+. Cowork VM has 3.10.12.
+- **Connectors active** — How many entries are in `.mcp.json` (empty by default).
 
 If you see errors here, check the [Troubleshooting](#21-troubleshooting) section.
 
@@ -144,12 +152,18 @@ If you see errors here, check the [Troubleshooting](#21-troubleshooting) section
 
 **This is the most important step.** Brand profiles control voice, tone, terminology, guardrails, citation rules, and quality thresholds for all content. Without a brand profile, ContentForge uses generic defaults.
 
-### Method 1: Quick Setup with `/contentforge:style-guide` (Recommended)
+### Method 1: Guided Setup (Recommended)
 
-The fastest way to create a brand profile:
+The primary route — an interview that walks you through every profile section:
 
 ```
-/contentforge:style-guide
+/contentforge:brand-setup
+```
+
+If you already have brand documents (style guide PDFs, voice guidelines, sample articles, a live brand page), use the import variant instead — it reads your material and extracts the profile for you:
+
+```
+/contentforge:cf-style-guide
 ```
 
 **What happens:**
@@ -166,7 +180,7 @@ The fastest way to create a brand profile:
 
 **Example:**
 ```
-/contentforge:style-guide
+/contentforge:cf-style-guide
 
 Brand: AcmeMed
 Industry: Healthcare/Pharma
@@ -255,7 +269,7 @@ Google Drive/
 2. If unchanged → loads cached profile in <5 seconds
 3. If changed → re-processes (2-5 minutes)
 
-**Requirement:** Google Drive MCP must be connected. Run `/contentforge:integrations` to verify.
+**Requirement:** Google Drive MCP must be connected. Run `/contentforge:cf-integrations` to verify.
 
 ### What If I Don't Have a Brand Profile?
 
@@ -335,11 +349,11 @@ Create a Google Sheet with these columns:
 
 ### Connecting Google Sheets
 
-**If you see "Google Sheets" as connected in `/contentforge:integrations`:** You're ready. No additional setup needed.
+**If you see "Google Sheets" as connected in `/contentforge:cf-integrations`:** You're ready. No additional setup needed.
 
 **If not connected:**
 ```
-/contentforge:connect google-sheets
+/contentforge:cf-connect google-sheets
 ```
 
 This walks you through the setup. Google Sheets uses npx MCP (not HTTP), so you'll need:
@@ -478,7 +492,7 @@ Business casual. Use contractions (it's, we're) but avoid slang.
 | Approach | When to Use |
 |----------|------------|
 | **Auto (via Knowledge Vault)** | You have existing brand documents. ContentForge extracts and structures them. |
-| **Auto (via `/contentforge:style-guide`)** | You describe your brand verbally or share a URL. ContentForge generates the profile. |
+| **Auto (via `/contentforge:cf-style-guide`)** | You describe your brand verbally or share a URL. ContentForge generates the profile. |
 | **Manual (copy template)** | You want full control over every field. Copy `config/brand-registry-template.json` and edit. |
 
 **All three approaches produce the same result:** a structured brand profile JSON that all agents reference.
@@ -556,12 +570,14 @@ Phase 2: Fact Checker — Verifying 12 sources...
 ✓ Phase 2 complete — 11 URLs live, 1 flagged for replacement
 Phase 3: Content Drafter — Writing first draft...
 ✓ Phase 3 complete — 1,847 words, 12 citations
+Phase 3.5: Visual Asset Annotator — Finding visual opportunities...
+✓ Phase 3.5 complete — 2 charts from verified stats, 3 visuals annotated for human action
 Phase 4: Scientific Validator — Checking for hallucinations...
 ✓ Phase 4 complete — 0 hallucinations, all claims traceable
 Phase 5: Structurer & Proofreader — Polishing grammar and structure...
 ✓ Phase 5 complete — 0 errors, readability Grade 11.2
 Phase 6: SEO/GEO Optimizer — Optimizing for search engines...
-✓ Phase 6 complete — Keyword density 2.1%, GEO score 8.5
+✓ Phase 6 complete — Keyword placements 5/5 (title, first 100 words, 2 H2s, conclusion, meta), GEO score 8.5
 Phase 6.5: Humanizer — Removing AI patterns...
 ✓ Phase 6.5 complete — 14 AI patterns removed, burstiness 0.74
 Phase 7: Reviewer — Scoring content quality...
@@ -579,27 +595,38 @@ TOTAL TIME: 24 minutes
 ### Phase Flow
 
 ```
-┌─────────────┐    ┌──────────────┐    ┌────────────────┐
-│ Phase 1      │───▶│ Phase 2      │───▶│ Phase 3        │
-│ Research     │    │ Fact Checker  │    │ Content Drafter │
-│ (3-5 min)    │    │ (2-3 min)     │    │ (5-7 min)       │
-└─────────────┘    └──────────────┘    └───────┬────────┘
-                                               │
-                              ┌────────────────┘
-                              ▼
-┌─────────────┐    ┌──────────────┐    ┌────────────────┐
-│ Phase 6      │◀──│ Phase 5      │◀──│ Phase 4         │
-│ SEO/GEO     │    │ Structurer    │    │ Sci. Validator  │
-│ (2-3 min)    │    │ (2-3 min)     │    │ (2-3 min)       │
-└──────┬──────┘    └──────────────┘    └────────────────┘
-       │
-       ▼
-┌─────────────┐    ┌──────────────┐    ┌────────────────┐
-│ Phase 6.5    │───▶│ Phase 7      │───▶│ Phase 8         │
-│ Humanizer   │    │ Reviewer      │    │ Output Manager  │
-│ (1-2 min)    │    │ (2-3 min)     │    │ (1-2 min)       │
-└─────────────┘    └──────────────┘    └────────────────┘
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Phase 1         │───▶│ Phase 2         │───▶│ Phase 3         │
+│ Research        │    │ Fact Checker    │    │ Content Drafter │
+│ (3-5 min)       │    │ (2-3 min)       │    │ (5-7 min)       │
+└─────────────────┘    └─────────────────┘    └────────┬────────┘
+                                                       │
+        ┌──────────────────────────────────────────────┘
+        ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Phase 3.5       │───▶│ Phase 4         │───▶│ Phase 5         │
+│ Visual Assets   │    │ Sci. Validator  │    │ Structurer      │
+│ (2-3 min)       │    │ (2-3 min)       │    │ (2-3 min)       │
+└─────────────────┘    └─────────────────┘    └────────┬────────┘
+                                                       │
+        ┌──────────────────────────────────────────────┘
+        ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Phase 6         │───▶│ Phase 6.5       │───▶│ Phase 7         │
+│ SEO/GEO         │    │ Humanizer       │    │ Reviewer        │
+│ (2-3 min)       │    │ (1-2 min)       │    │ (2-3 min)       │
+└─────────────────┘    └─────────────────┘    └────────┬────────┘
+                                                       │
+        ┌──────────────────────────────────────────────┘
+        ▼
+┌─────────────────┐
+│ Phase 8         │
+│ Output Manager  │
+│ (1-2 min)       │
+└─────────────────┘
 ```
+
+Phase 3.5 (Visual Asset Annotator) turns verified statistics into charts and marks every remaining visual that needs human action. It sits between the draft and the validator so that charts are audited alongside the prose they illustrate.
 
 ### Feedback Loops (When Things Fail)
 
@@ -612,9 +639,8 @@ Phase 7 (Reviewer) scores <7.0 → Loops to weakest phase with feedback
 ```
 
 **Loop limits:**
-- Phase 4 → Phase 3: Max 2 loops
-- Phase 6 → Phase 5: Max 1 loop
-- Phase 7 → Any: Max 2 loops
+- **Per edge:** Max 2 loops on any single edge (Phase 4 → Phase 3, Phase 6.5 → Phase 6, Phase 7 → the responsible phase)
+- Phase 3.5 re-runs for rejected visuals are not a loop edge and don't count against the budget
 - **Total:** Max 5 loops across entire pipeline
 - **If exceeded:** Escalates to human review (never auto-publishes bad content)
 
@@ -628,7 +654,7 @@ This is what makes ContentForge different from single-prompt tools:
 | Layer 2 | Phase 4 (Scientific Validator) | Did the drafter fabricate any statistics? Are there logical inconsistencies? |
 | Layer 3 | Phase 7 (Reviewer) | Final citation integrity audit as part of holistic quality assessment |
 
-**Result:** 100% factual accuracy in production testing, zero hallucinations.
+**What this buys you:** every statistic, quote, and citation in the finished piece has been traced back to a source that was checked for existence (Layer 1), re-checked against the draft for fabrication or drift (Layer 2), and audited once more for citation integrity during scoring (Layer 3). Claims that fail any layer are removed, re-sourced, or escalated — they never survive to the deliverable. It is a verification chain, not a guarantee: sources can themselves be wrong, and anything a layer flags as unresolved is handed to you rather than silently fixed.
 
 ---
 
@@ -669,7 +695,7 @@ Grade: A
 | **SEO Performance** | 15% | Keywords, meta tags, on-page elements, GEO readiness |
 | **Readability** | 10% | Grade level, sentence variety, scannability, humanization |
 
-### New in v3.0: Comparative Analysis
+### Comparative Analysis
 
 If you've produced content for this brand before, the scorecard also shows:
 
@@ -679,9 +705,9 @@ Percentile Ranking: 94th percentile (scores better than 94% of AcmeMed content)
 vs. Brand Average: +1.2 above average (9.0 vs 7.8)
 ```
 
-### New in v3.0: Recommendations
+### Recommendations
 
-The reviewer now suggests next steps:
+The reviewer suggests next steps:
 
 ```
 RECOMMENDATIONS
@@ -690,12 +716,12 @@ Score-Based Tier: Tier 1 — PUBLISH + REPURPOSE + AMPLIFY
 Immediate Actions:
 1. ✅ Proceed to publication
 2. 📱 Run /contentforge:social-adapt — 5 shareworthy moments identified
-3. 🎬 Run /contentforge:video-script — strong video potential
+3. 🎬 Run /contentforge:cf-video-script — strong video potential
 
 Strategic Actions:
-4. 📊 Record to /contentforge:analytics for benchmark tracking
+4. 📊 Record to /contentforge:cf-analytics for benchmark tracking
 5. 🌍 Queue for /contentforge:translate --language=es,de
-6. 📅 Add to /contentforge:calendar for 6-month refresh
+6. 📅 Add to /contentforge:cf-calendar for 6-month refresh
 ```
 
 ---
@@ -752,7 +778,7 @@ The Social Adapter Agent (#10) identifies 10-15 shareworthy moments from your ar
 
 ### When to Use
 
-When you have 2+ content pieces to produce. `/batch-process` runs up to 5 pipelines in parallel, achieving 4-5x throughput vs. sequential.
+When you have 2+ content pieces to produce. `/batch-process` turns them into a prioritized, checkpointed queue and runs them **one at a time** — each piece gets the full 10-phase pipeline and all 10 quality gates. There is no concurrency and no speedup multiplier: batch mode changes the intake and the recovery story, not the standards or the clock. What you gain is that an interrupted batch resumes at the exact piece and phase where it stopped instead of restarting.
 
 ### Setup
 
@@ -781,9 +807,10 @@ You'll be prompted for: source (sheet/CSV/manual), requirements, processing opti
 ### What Happens
 
 1. **Queue builds** — All requirements sorted by priority
-2. **Parallel execution** — Up to 5 pipelines run simultaneously
-3. **Progress tracking** — Real-time dashboard showing each piece's phase and ETA
-4. **Completion report** — Summary of all pieces with scores, times, links
+2. **Sequential execution** — One pipeline at a time, in queue order; every phase of every piece is checkpointed to disk
+3. **Progress tracking** — Dashboard showing the in-flight piece's phase, plus completed/queued counts
+4. **Resume on interruption** — Completed pieces are skipped; the in-flight piece restarts from its last gate-passed phase
+5. **Completion report** — Summary of all pieces with scores, times, links
 
 ### Completion Report
 
@@ -800,7 +827,8 @@ Results:
 
 Summary:
 - Average Score: 8.6/10
-- Total Time: 87 minutes (vs. 240 min sequential = 2.8x faster)
+- Total Time: 240 minutes (sum of the 10 runs — pieces run one at a time)
+- Resumed after interruption: 1 piece (REQ-007, from Phase 5)
 - Failures: 0
 - Human Review: 0
 ```
@@ -848,7 +876,7 @@ Content Refresh NEVER overwrites the original. It saves as:
 ### Creating a Brief
 
 ```
-/contentforge:brief "AI diagnostics in healthcare"
+/contentforge:cf-brief "AI diagnostics in healthcare"
 ```
 
 **Output includes:**
@@ -872,7 +900,7 @@ Content Refresh NEVER overwrites the original. It saves as:
 ### Generating Variants
 
 ```
-/contentforge:variants "headline for the AI Healthcare article"
+/contentforge:cf-variants "headline for the AI Healthcare article"
 ```
 
 **Generates 3-10 variations** of:
@@ -934,7 +962,7 @@ The Translator Agent (#11):
 ### Generating a Video Script
 
 ```
-/contentforge:video-script --source="the article we produced" --platform=youtube --duration=5min
+/contentforge:cf-video-script --source="the article we produced" --platform=youtube --duration=5min
 ```
 
 ### Supported Platforms
@@ -968,7 +996,7 @@ B-roll: Hospital technology room
 ### Content Audit
 
 ```
-/contentforge:audit
+/contentforge:cf-audit
 ```
 
 **What it does:**
@@ -981,7 +1009,7 @@ B-roll: Hospital technology room
 ### Content Calendar
 
 ```
-/contentforge:calendar
+/contentforge:cf-calendar
 ```
 
 **What it does:**
@@ -998,7 +1026,7 @@ B-roll: Hospital technology room
 ### Creating a Style Guide
 
 ```
-/contentforge:style-guide
+/contentforge:cf-style-guide
 ```
 
 See [Section 4](#4-setting-up-your-brand-profile) for full details. This skill creates brand profiles from natural language descriptions, URLs, or existing documents.
@@ -1010,7 +1038,7 @@ ContentForge ships with 5 content type templates: Article, Blog, Whitepaper, FAQ
 Need a different type? Create it:
 
 ```
-/contentforge:template "case study"
+/contentforge:cf-template "case study"
 ```
 
 **Define:**
@@ -1030,7 +1058,7 @@ The new template is saved and available for all future `/contentforge` and `/bat
 ### Viewing Analytics
 
 ```
-/contentforge:analytics
+/contentforge:cf-analytics
 ```
 
 **Shows:**
@@ -1042,7 +1070,7 @@ The new template is saved and available for all future `/contentforge` and `/bat
 
 **Data sources:**
 - **Google Sheets** (recommended) — Reads from tracking sheet
-- **Local CSV** — Falls back to local tracking file at `~/.claude-marketing/contentforge/tracking/`
+- **Local** — Falls back to a per-brand JSON tracking file at `~/.claude-marketing/{brand-slug}/tracking/tracking.json` (managed by `scripts/local-tracker.py`; no setup, no auth)
 
 ---
 
@@ -1051,7 +1079,7 @@ The new template is saved and available for all future `/contentforge` and `/bat
 ### Checking Connector Status
 
 ```
-/contentforge:integrations
+/contentforge:cf-integrations
 ```
 
 **Shows a dashboard:**
@@ -1065,14 +1093,14 @@ Connected (6):                         What They Unlock
 ✅ Webflow (HTTP)                      CMS publishing via /contentforge:publish
 ✅ Slack (HTTP)                        Pipeline completion notifications
 ✅ Gmail (HTTP)                        Content delivery via email
-✅ Google Calendar (HTTP)              Calendar sync via /contentforge:calendar
+✅ Google Calendar (HTTP)              Calendar sync via /contentforge:cf-calendar
 
 Available (16):                        How to Connect
 ─────────────────────────────────────────────────────────
-○ Google Sheets (npx)                  /contentforge:connect google-sheets
-○ Google Drive (npx)                   /contentforge:connect google-drive
-○ WordPress (npx)                      /contentforge:connect wordpress
-○ HubSpot (HTTP)                       /contentforge:connect hubspot
+○ Google Sheets (npx)                  /contentforge:cf-connect google-sheets
+○ Google Drive (npx)                   /contentforge:cf-connect google-drive
+○ WordPress (npx)                      /contentforge:cf-connect wordpress
+○ HubSpot (HTTP)                       /contentforge:cf-connect hubspot
 ...
 
 Coverage: 6 of 22 (27%)
@@ -1082,7 +1110,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 ### Setting Up a Connector
 
 ```
-/contentforge:connect google-sheets
+/contentforge:cf-connect google-sheets
 ```
 
 **For HTTP connectors (Notion, Slack, etc.):**
@@ -1096,7 +1124,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 3. Add the npx server config to `.mcp.json`
 4. Restart Claude session
 
-`/contentforge:connect` walks you through every step with copy-paste commands.
+`/contentforge:cf-connect` walks you through every step with copy-paste commands.
 
 ---
 
@@ -1104,12 +1132,14 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 ### Plugin Doesn't Load
 
-**Symptom:** No ContentForge banner on session start.
+**Symptom:** `/contentforge:cf-help` isn't recognized and no ContentForge skills appear.
+
+Note that silence at session start is **normal** — ContentForge ships zero active hooks, so it prints nothing until you invoke a skill.
 
 **Fixes:**
 1. Verify plugin is in `~/.claude/plugins/contentforge/`
 2. Check `.claude-plugin/plugin.json` exists and has `"name": "contentforge"`
-3. Check `hooks/hooks.json` is valid JSON
+3. Run `claude plugin validate ~/.claude/plugins/contentforge`
 4. Clear plugin cache: delete `~/.claude/plugins/cache/` and reinstall
 
 ### "Brand profile not found"
@@ -1117,7 +1147,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 **Symptom:** Pipeline asks for brand but can't find your profile.
 
 **Fixes:**
-1. Create a profile: `/contentforge:style-guide`
+1. Create a profile: `/contentforge:cf-style-guide`
 2. Or use default: run without specifying `--brand`
 3. If using Knowledge Vault: verify Google Drive MCP is connected
 
@@ -1127,8 +1157,8 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 **Fixes:**
 1. Check the quality scorecard — which dimension is failing?
-2. Run `/contentforge:brief` — a better brief leads to better content
-3. Run `/contentforge:style-guide` — ensure brand profile is complete
+2. Run `/contentforge:cf-brief` — a better brief leads to better content
+3. Run `/contentforge:cf-style-guide` — ensure brand profile is complete
 4. Lower thresholds temporarily: edit `config/scoring-thresholds.json`
 5. Check topic — very niche topics may lack sufficient sources
 
@@ -1143,8 +1173,8 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 **Symptom:** Skill says connector unavailable.
 
 **Fixes:**
-1. Run `/contentforge:integrations` to check status
-2. Run `/contentforge:connect <name>` for setup guide
+1. Run `/contentforge:cf-integrations` to check status
+2. Run `/contentforge:cf-connect <name>` for setup guide
 3. Verify `.mcp.json` has the connector entry
 4. For npx: check environment variables are set
 
@@ -1153,8 +1183,8 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 **Symptom:** Pieces scoring 5.0-6.5 regularly.
 
 **Root causes and fixes:**
-- **Weak briefs** → Run `/contentforge:brief` before `/contentforge`
-- **Incomplete brand profile** → Run `/contentforge:style-guide` to enhance it
+- **Weak briefs** → Run `/contentforge:cf-brief` before `/contentforge`
+- **Incomplete brand profile** → Run `/contentforge:cf-style-guide` to enhance it
 - **Complex topics** → ContentForge needs good source material; try broader topics first
 - **Restrictive guardrails** → Review brand profile guardrails, ensure they're not overly limiting
 
@@ -1167,7 +1197,7 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 | Command | Purpose | Time |
 |---------|---------|------|
 | `/contentforge` | Full 10-phase content pipeline | 20-30 min |
-| `/batch-process` | Parallel production (10-50+ pieces) | 4-5x faster |
+| `/batch-process` | Sequential, checkpointed, resumable queue (10-50+ pieces) | ~25 min per piece |
 | `/content-refresh` | Update old content with fresh data | 10-25 min |
 
 ### Publishing & Social
@@ -1181,32 +1211,43 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/contentforge:variants` | Generate 3-10 headline/hook/CTA variations | 2-3 min |
-| `/contentforge:analytics` | Quality trends, timing, brand performance | 1-2 min |
+| `/contentforge:cf-variants` | Generate 3-10 headline/hook/CTA variations | 2-3 min |
+| `/contentforge:cf-analytics` | Quality trends, timing, brand performance | 1-2 min |
 
 ### Multilingual & Video
 
 | Command | Purpose | Time |
 |---------|---------|------|
 | `/contentforge:translate` | Translate preserving brand voice | 5-10 min |
-| `/contentforge:video-script` | Generate timestamped video scripts | 3-5 min |
+| `/contentforge:cf-video-script` | Generate timestamped video scripts | 3-5 min |
 
 ### Content Management
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/contentforge:brief` | Research-backed content brief | 5-8 min |
-| `/contentforge:audit` | Content freshness/decay/gap analysis | 3-5 min |
-| `/contentforge:calendar` | Production scheduling + Google Calendar sync | 2-3 min |
-| `/contentforge:style-guide` | Import brand voice, generate profile JSON | 5-10 min |
-| `/contentforge:template` | Create custom content type templates | 3-5 min |
+| `/contentforge:cf-brief` | Research-backed content brief | 5-8 min |
+| `/contentforge:cf-audit` | Content freshness/decay/gap analysis | 3-5 min |
+| `/contentforge:cf-calendar` | Production scheduling + Google Calendar sync | 2-3 min |
+| `/contentforge:brand-setup` | Guided brand-profile interview | 5-10 min |
+| `/contentforge:cf-style-guide` | Import brand voice, generate profile JSON | 5-10 min |
+| `/contentforge:cf-template` | Create custom content type templates | 3-5 min |
 
 ### Connector Management
 
 | Command | Purpose | Time |
 |---------|---------|------|
-| `/contentforge:integrations` | Dashboard of connected/available connectors | Instant |
-| `/contentforge:connect <name>` | Guided setup for any connector | 2-10 min |
+| `/contentforge:cf-integrations` | Dashboard of connected/available connectors | Instant |
+| `/contentforge:cf-connect <name>` | Guided setup for any connector | 2-10 min |
+| `/contentforge:cf-add-integration` | Add a custom MCP server not in the registry | 5-15 min |
+
+### Setup & Diagnostics
+
+| Command | Purpose | Time |
+|---------|---------|------|
+| `/contentforge:cf-help` | User guide + live version/asset counts for this install | Instant |
+| `/contentforge:cf-environment` | Detect runtime environment (Cowork sandbox vs local Claude Code) | Instant |
+| `/contentforge:cf-cowork-setup` | One-shot wiring for Anthropic Cowork team usage | 5-10 min |
+| `/contentforge:cf-switch-backend` | Switch tracking backend (local / Airtable / Google Sheets) with optional data migration | 2-10 min |
 
 ---
 
@@ -1216,27 +1257,27 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 
 ### Step 1: Brand Setup (One-Time, 10 min)
 ```
-/contentforge:style-guide
+/contentforge:cf-style-guide
 ```
 Provide AcmeMed's brand guidelines. ContentForge generates the profile.
 
 ### Step 2: Content Briefs (10 min)
 ```
-/contentforge:brief "AI diagnostics in healthcare 2026"
-/contentforge:brief "patient data privacy regulations 2026"
-/contentforge:brief "telemedicine ROI for hospitals"
-/contentforge:brief "healthcare AI implementation roadmap"
-/contentforge:brief "clinical trial automation with AI"
+/contentforge:cf-brief "AI diagnostics in healthcare 2026"
+/contentforge:cf-brief "patient data privacy regulations 2026"
+/contentforge:cf-brief "telemedicine ROI for hospitals"
+/contentforge:cf-brief "healthcare AI implementation roadmap"
+/contentforge:cf-brief "clinical trial automation with AI"
 ```
 
 ### Step 3: Set Up Requirements Sheet (5 min)
 Create Google Sheet with 5 rows using briefs from Step 2.
 
-### Step 4: Batch Production (60-90 min)
+### Step 4: Batch Production (2-2.5 hours)
 ```
 /batch-process --sheet-url=https://docs.google.com/spreadsheets/d/ABC123
 ```
-Pipeline runs 5 articles in parallel.
+The queue runs the 5 articles one at a time, checkpointing every phase. If the session drops, re-run the same command — finished pieces are skipped and the in-flight piece resumes from its last gate-passed phase.
 
 ### Step 5: Review Scorecards
 All 5 articles scored ≥7.0 → APPROVED.
@@ -1253,10 +1294,10 @@ All 5 articles scored ≥7.0 → APPROVED.
 
 ### Step 8: Track (Ongoing)
 ```
-/contentforge:analytics
+/contentforge:cf-analytics
 ```
 
-**Total time:** ~2 hours for 5 publication-ready articles + social posts + CMS publishing.
+**Total time:** ~3 hours for 5 publication-ready articles + social posts + CMS publishing.
 
 ---
 
@@ -1266,8 +1307,9 @@ All 5 articles scored ≥7.0 → APPROVED.
 ```
 contentforge/
 ├── .claude-plugin/plugin.json     # Manifest (name, version, description, author)
-├── .mcp.json                      # 9 HTTP connectors (Notion, Canva, Figma, Webflow, Slack, Gmail, Calendar, fal-ai, Replicate)
-├── .mcp.json.example              # 67 npx servers (opt-in, copy to .mcp.json)
+├── .mcp.json                      # Empty by design — zero MCP servers auto-connect
+├── .mcp.json.connectors-reference # Opt-in catalog: 16 HTTP connectors (Notion, Canva, Webflow, Slack, Gmail, Calendar, Figma, fal.ai, Replicate + Pipedream/Composio/Zapier/Make)
+├── .mcp.json.example              # 3 npx image-gen servers (Stability AI, nanobanana, imagenate) — CLI only
 ├── CONNECTORS.md                  # Full connector reference
 ├── README.md                      # Project overview
 ├── CHANGELOG.md                   # Release history
@@ -1284,27 +1326,32 @@ contentforge/
 │   ├── 06.5-humanizer.md          # Phase 6.5: AI pattern removal, personality
 │   ├── 07-reviewer.md             # Phase 7: 5-dim scoring, comparative, trends
 │   ├── 08-output-manager.md       # Phase 8: .docx, Medium, Substack, PDF, Social
-│   ├── 09-batch-orchestrator.md   # Parallel pipeline coordination
+│   ├── 09-batch-orchestrator.md   # Sequential, checkpointed queue coordination
 │   ├── 10-social-adapter.md       # Social media post generation
 │   └── 11-translator.md           # Multilingual translation
 │
-├── skills/                        # 18 skill commands
+├── skills/                        # 21 skills
 │   ├── contentforge/SKILL.md      # Main pipeline
-│   ├── batch-process/SKILL.md     # Parallel processing
+│   ├── batch-process/SKILL.md     # Sequential, checkpointed queue
 │   ├── content-refresh/SKILL.md   # Content updates
-│   ├── cf-integrations/SKILL.md   # Connector dashboard
+│   ├── cf-add-integration/SKILL.md # Add a custom MCP connector
+│   ├── cf-analytics/SKILL.md      # Quality analytics
+│   ├── cf-audit/SKILL.md          # Content audits
+│   ├── cf-brief/SKILL.md          # Content briefs
+│   ├── cf-calendar/SKILL.md       # Content calendar
 │   ├── cf-connect/SKILL.md        # Connector setup
+│   ├── cf-cowork-setup/SKILL.md   # One-shot Cowork team wiring
+│   ├── cf-environment/SKILL.md    # Runtime environment detection
+│   ├── cf-help/SKILL.md           # User guide + live install report
+│   ├── cf-integrations/SKILL.md   # Connector dashboard
 │   ├── cf-publish/SKILL.md        # CMS publishing
 │   ├── cf-social-adapt/SKILL.md   # Social adaptation
-│   ├── cf-variants/SKILL.md       # A/B variants
-│   ├── cf-analytics/SKILL.md      # Quality analytics
-│   ├── cf-translate/SKILL.md      # Translation
-│   ├── cf-video-script/SKILL.md   # Video scripts
-│   ├── cf-brief/SKILL.md          # Content briefs
-│   ├── cf-audit/SKILL.md          # Content audits
-│   ├── cf-calendar/SKILL.md       # Content calendar
 │   ├── cf-style-guide/SKILL.md    # Brand profile creation
-│   └── cf-template/SKILL.md       # Custom templates
+│   ├── cf-switch-backend/SKILL.md # Switch tracking backend + migrate
+│   ├── cf-template/SKILL.md       # Custom templates
+│   ├── cf-translate/SKILL.md      # Translation
+│   ├── cf-variants/SKILL.md       # A/B variants
+│   └── cf-video-script/SKILL.md   # Video scripts
 │
 ├── config/                        # 7 configuration files
 │   ├── brand-registry-template.json    # Brand profile schema
@@ -1313,7 +1360,18 @@ contentforge/
 │   ├── humanization-patterns.json      # AI patterns + personality profiles
 │   ├── analytics-config.json           # Analytics thresholds
 │   ├── social-platform-specs.json      # Social platform constraints
-│   └── multilingual-patterns.json      # Language-specific patterns
+│   ├── multilingual-patterns.json      # Language-specific patterns
+│   └── industries/                     # 10 industry knowledge packs
+│       ├── b2b_saas.json
+│       ├── bfsi.json
+│       ├── consumer_goods.json
+│       ├── ecommerce.json
+│       ├── education.json
+│       ├── healthcare.json
+│       ├── legal.json
+│       ├── pharma.json
+│       ├── real_estate.json
+│       └── technology.json
 │
 ├── templates/                     # 10 content templates
 │   ├── content-types/
@@ -1336,17 +1394,42 @@ contentforge/
 │   ├── translation-manager.md
 │   └── pipeline-optimizer.md
 │
-├── scripts/                       # 2 Python scripts
-│   ├── setup.py                   # Session startup validation
-│   └── connector-status.py        # Connector registry (22 connectors)
+├── utils/                         # 4 shared behaviour specs referenced by agents
+│   ├── brand-cache-manager.md     # Knowledge-vault hashing + profile cache
+│   ├── citation-formatter.md      # Citation styles and rules
+│   ├── drive-folder-manager.md    # Drive folder layout conventions
+│   └── loop-tracker.md            # Loop accounting rules
+│
+├── scripts/                       # 17 Python scripts (stdlib only)
+│   ├── _common.py                 # Shared storage-root/brand-dir/atomic-write helpers
+│   ├── checkpoint-manager.py      # Per-phase run checkpoints (powers resume)
+│   ├── pipeline-tracker.py        # Phase start/end events + progress
+│   ├── text-metrics.py            # Burstiness, Flesch-Kincaid, keyword placement
+│   ├── generate-docx.py           # .docx deliverable assembly
+│   ├── drive-sync-state.py        # Drive sync bookkeeping
+│   ├── local-tracker.py           # Local JSON tracking backend (default)
+│   ├── sheets-tracker.py          # Google Sheets tracking backend
+│   ├── airtable-tracker.py        # Airtable tracking backend
+│   ├── backend-migrator.py        # Migrate tracking data between backends
+│   ├── drive-uploader.py          # Output delivery to Google Drive
+│   ├── detect-drive-mcp.py        # Drive MCP availability probe
+│   ├── plugin-metadata.py         # Live version/asset counts (single source of truth)
+│   ├── connector-status.py        # Connector registry status
+│   ├── resolve_model.py           # Model registry resolver
+│   ├── refresh_models.py          # Model registry drift report
+│   ├── setup.py                   # Environment validation (run on demand)
+│   └── model_registry.json        # Curated model catalog (data, not a script)
 │
 ├── hooks/
-│   └── hooks.json                 # Session start, pre-tool, pre-sub-agent
+│   ├── hooks.json                 # Empty by design — ContentForge ships zero active hooks
+│   └── hooks-reference.example.json # The prior hook set, documented for opt-in
 │
 └── docs/
-    └── USER-GUIDE.md              # This file
+    ├── USER-GUIDE.md              # This file
+    ├── MODEL-CURATOR.md           # Model registry + resolver reference
+    └── c2pa-production-cert.md    # Content provenance signing notes
 ```
 
 ---
 
-**ContentForge v3.5.0** — 13 agents, 19 skills, 10 industry knowledge packs, zero hallucinations.
+**ContentForge v3.16.1** — 13 agents, 21 skills, 10 industry knowledge packs, three-layer fact verification.

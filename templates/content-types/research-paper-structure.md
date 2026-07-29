@@ -30,22 +30,27 @@ This is the standard structure for scientific/academic research papers. Adapt ba
 - Page numbers
 - Date of submission
 
-**Example (APA Style):**
+**Example (APA 7th Style):**
+
+> SYNTHETIC EXAMPLE — fabricated for illustration. All authors, affiliations, and dates below are placeholders; never reuse them as facts in real content.
+
 ```
-Running head: MULTI-AGENT CONTENT SYSTEMS
+MULTI-AGENT CONTENT SYSTEMS
 
 Multi-Agent AI Systems for Enterprise Content Production:
 A Quantitative Analysis of Quality, Efficiency, and Cost Impact
 
-Sarah M. Chen, PhD¹ and David L. Park, MS²
+[First Author Name], [Credential]¹ and [Second Author Name], [Credential]²
 
-¹ Department of Computer Science, Stanford University, Stanford, CA
-² ContentForge Research Institute, San Francisco, CA
+¹ [Department], [Institution], [City, State/Country]
+² [Department], [Institution], [City, State/Country]
 
-Correspondence: sarah.chen@stanford.edu
+Correspondence: [corresponding.author@institution.example]
 
-February 16, 2026
+[Submission Date]
 ```
+
+*APA 7th removed the "Running head:" label — the professional-paper running head is the abbreviated title alone, in the page header, in all caps.*
 
 ---
 
@@ -134,8 +139,11 @@ Keywords: artificial intelligence, content generation, multi-agent systems, natu
 - Ethical approvals and informed consent
 
 **Example:**
+
+> SYNTHETIC EXAMPLE — fabricated for illustration. All sample sizes, institutions, and protocol numbers below are invented placeholders; never reuse them as facts in real content.
+
 ```
-We recruited 50 digital marketing agencies (N=50) managing 5-20 brands each through industry conferences and professional networks. Inclusion criteria were: (1) minimum 2 years in operation, (2) at least 5 active brands, (3) monthly content production >20 pieces, and (4) willingness to implement and document AI content systems. Agencies were stratified by industry focus: 17 specialized in pharma, 18 in BFSI, and 15 in technology. Ethical approval was obtained from Stanford IRB (Protocol #2025-1234). All agencies provided informed consent.
+We recruited 50 digital marketing agencies (N=50) managing 5-20 brands each through industry conferences and professional networks. Inclusion criteria were: (1) minimum 2 years in operation, (2) at least 5 active brands, (3) monthly content production >20 pieces, and (4) willingness to implement and document AI content systems. Agencies were stratified by industry focus: 17 specialized in pharma, 18 in BFSI, and 15 in technology. Ethical approval was obtained from the [Institution] Institutional Review Board (Protocol #[NUMBER]). All agencies provided informed consent.
 ```
 
 #### 2.3 Materials and Instruments (150-250 words)
@@ -297,7 +305,7 @@ Future research should examine long-term effects, international generalizability
 - All references must be cited in text (no "padding")
 - Consistent formatting
 - DOIs included when available
-- Accessed dates for web sources (APA 7th ed.)
+- Retrieval dates ONLY for sources designed to change over time (wikis, live dashboards, unarchived pages). APA 7th dropped the blanket "Retrieved from" requirement for stable web sources.
 - Hanging indent formatting
 
 **Example (APA 7th Edition) — SYNTHETIC EXAMPLE: fabricated entries showing FORMAT only; never reuse these authors, titles, or URLs:**

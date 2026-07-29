@@ -21,7 +21,7 @@ The orchestrator passes you `{brand-slug}` and `{run_id}`. **Read the 8 phase re
 - `phase-4-validation.md` — Scientific Validation Report (includes visual data accuracy verification)
 - `phase-5-structured.md` — Structurer & Proofreader Report (includes Guardrails Scan + `compliance_status`)
 - `phase-6-seo.md` + `phase-6-structure-manifest.json` — SEO Scorecard (includes Internal Link Map) + protected GEO elements
-- `run.json` — `loop_counts` (populated by the orchestrator via the checkpoint-manager loop subcommand) — REQUIRED for loop-limit enforcement
+- `run.json` — edge-keyed `loop_counts` plus top-level `total_loops` (populated by the orchestrator via the checkpoint-manager `loop` subcommand) — REQUIRED for loop-limit enforcement
 
 From Orchestrator:
 - **Original Requirements** — Topic, keywords, content type, target word count
@@ -72,18 +72,13 @@ Apply this scale to ALL sub-components unless a component specifies otherwise:
 }
 ```
 
-**Industry Overrides (FULLY SPECIFIED — all 5 dimensions, each row sums to 100):**
+**Industry Overrides (READ AT RUN TIME — do not hardcode):**
 
-| Industry | Content Quality | Citation Integrity | Brand Compliance | SEO Performance | Readability |
-|----------|----------------|--------------------|--------------------|-----------------|-------------|
-| pharma | 20 | 35 | 30 | 5 | 10 |
-| bfsi | 20 | 30 | 30 | 10 | 10 |
-| healthcare | 20 | 30 | 25 | 10 | 15 |
-| legal | 20 | 30 | 30 | 10 | 10 |
-| real_estate | 25 | 25 | 25 | 15 | 10 |
-| (all others) | 30 | 25 | 20 | 15 | 10 |
+Read the brand's `industry` from the brand profile, then read `config/scoring-thresholds.json` → `industry_overrides.{industry}.dimension_weights`. Use exactly those five values. If the industry has no `industry_overrides` entry (or the entry has no `dimension_weights`), use `default.dimension_weights` above.
 
-**An industry override REPLACES the default weights entirely in the score calculation** — do not blend, do not fall back to default weights for any dimension when an override row applies.
+Config weights are decimal fractions summing to 1.00 (e.g. `0.30`); the scorecard reports them as percentages (30%). Convert for display only — never re-derive them from memory.
+
+**An industry override REPLACES the default weights entirely in the score calculation** — do not blend, do not fall back to default weights for any dimension when an override applies.
 
 **Overall Score Calculation:**
 ```
@@ -159,7 +154,7 @@ Brand Compliance Score: [X.X] / 10
 2. **Meta Tags Quality** — Meta title ≤60 chars, meta description ≤155 chars, both compelling with keywords.
 3. **On-Page SEO Elements** — H1 optimized, H2s keyword-rich, proper header hierarchy (H1→H2→H3), image alt tags.
 4. **GEO (AI Answer Engine) Readiness** — Structured Q&A format, clear definitions, list-based content, data citability. Check Phase 6 GEO scorecard. **Note:** GEO is a sub-score within SEO Performance, NOT a separate 6th dimension.
-5. **Schema Markup Recommendations** — Reflects Google's March 2026 core update, which demoted FAQPage / HowTo / Review schema rich-result eligibility on non-primary pages (these now only earn rich results on dedicated FAQ / how-to / review pages, not as supplements to other content). Score 10: Article + Organization + Person/Product schema with entity-rich JSON-LD + LLMs.txt companion file. Score 8: Article + Organization only. Score 7: Article + FAQPage/HowTo on dedicated FAQ/how-to page (still valuable in that context). Score 6: Article only. Score 4: none. Score 2: FAQPage/HowTo schema applied to non-FAQ/non-how-to content (post-March-2026 anti-pattern — Google may treat as spam signal).
+5. **Schema Markup Recommendations** — Reflects Google's actual rich-result history: **HowTo rich results were deprecated in September 2023** for all sites (Google no longer shows them), and **FAQ rich results were restricted in August 2023** to authoritative government and health sites only. Emitting FAQPage/HowTo JSON-LD is harmless as machine-readable structure, but it earns no rich results for the overwhelming majority of sites — never score it as an SEO win. Score 10: Article + Organization + Person/Product schema with entity-rich JSON-LD. Score 8: Article + Organization only. Score 6: Article only. Score 4: none. Score 2: FAQPage/HowTo schema presented as a rich-result play, or applied to content that is not actually an FAQ / how-to.
 6. **Internal Linking Quality (three categories)** — split into three independent checks. ContentForge is a marketing system; informational links alone are not enough.
     - **6a. Topical links** (informational, 0-10): ≥2 topical `<!-- INTERNAL-LINK: type=topical -->` markers, diverse anchor text, distributed across ≥2 sections. If brand has no site structure but agent emitted placeholder topical markers for human review → score 7. If agent emitted nothing → score 3.
     - **6b. Brand commercial links** (revenue, 0-10): ≥1 `<!-- INTERNAL-LINK: type=commercial -->` per configured product/service page that has a natural fit. If brand has `brand_pages.product_or_service_pages` configured AND content has natural commercial anchor opportunities AND agent placed them → 9-10. Configured but agent skipped without justification → 4. No product/service pages configured at all (informational-only brand) → score N/A and exclude from average (do NOT penalize).
@@ -212,7 +207,7 @@ Default weights: 0.30 / 0.25 / 0.20 / 0.15 / 0.10
 - SEO Performance: ≥6.0
 - Readability: ≥6.0
 
-**Empty Guardrails Penalty:** If Phase 3 logged that guardrails were empty, apply -1.0 to Brand Compliance dimension and note: "Brand Compliance score reduced — guardrails not configured."
+**Empty Guardrails Penalty:** If Phase 5 logged that guardrails were empty (`phase-5-structured.md` Step 5.4 Guardrails Scan → `compliance_status: skipped_empty_guardrails`), apply -1.0 to Brand Compliance dimension and note: "Brand Compliance score reduced — guardrails not configured."
 
 ## DECISION LOGIC
 
@@ -223,9 +218,9 @@ Default weights: 0.30 / 0.25 / 0.20 / 0.15 / 0.10
 3. **Score < 5.0** → HUMAN REVIEW REQUIRED — Mark "Pending Human Review", do NOT proceed to Phase 8, flag specific critical issues
 
 **Loop Enforcement (MANDATORY):**
-- Before initiating ANY loop, **read `loop_counts` from `~/.claude-marketing/{brand-slug}/runs/{run_id}/run.json`** (the orchestrator maintains it via the checkpoint-manager loop subcommand) and check:
-  1. How many times has Phase 7 already looped? (`loop_counts.phase_7`, max 2 from Phase 7)
-  2. How many total loops have occurred across the entire pipeline? (`loop_counts.total`, max 5)
+- Before initiating ANY loop, **read `~/.claude-marketing/{brand-slug}/runs/{run_id}/run.json`** (the orchestrator maintains it via the checkpoint-manager `loop` subcommand) and check both budgets. `loop_counts` is keyed by loop EDGE, not by phase — e.g. `{"phase_7_to_5": 1, "phase_4_to_3": 2}` — and the pipeline-wide total lives in the sibling top-level key `total_loops`:
+  1. How many times has Phase 7 already looped? **Sum the values of every `loop_counts` key beginning with `phase_7_to_`** (max 2 from Phase 7 — `feedback_loop_limits.phase_7_to_any`).
+  2. How many total loops have occurred across the entire pipeline? **Read the top-level `total_loops`** (max 5 — `feedback_loop_limits.max_total_loops`). Do NOT look for `loop_counts.total`; it does not exist.
 - If either limit reached: do NOT loop. Mark "Pending Human Review" and show: "Quality threshold not met after maximum revision attempts. Score: {score}/10. Recommend: review dimension breakdown and revise topic or brand profile."
 - **NEVER loop without checking limits first.** This prevents infinite revision cycles.
 
@@ -265,7 +260,7 @@ If HUMAN REVIEW:
 
 **Purpose:** Compare quality against the brand's historical production data.
 
-- **Source:** `~/.claude-marketing/contentforge/tracking/` or brand's Google Sheet
+- **Source:** `~/.claude-marketing/{brand-slug}/tracking/tracking.json` (or the brand's configured tracking backend, e.g. its Google Sheet)
 - **If no historical data:** Skip, note "Comparative scoring unavailable — first reviewed piece for this brand"
 - **If data exists:** Calculate percentile ranking for each dimension and overall. Identify standout dimension and opportunity area.
 - **Percentile formula:** `(pieces scoring below this / total pieces) × 100`
@@ -329,7 +324,7 @@ Return TWO things as your final output:
   "critical_violations": {"hallucinations": 0, "prohibited_claims": 0, "missing_disclaimers": 0},
   "compliance_status": "passed | passed_with_fixes | skipped_empty_guardrails",
   "feedback": ["specific actionable items if looping"],
-  "loop_counts_at_review": {"phase_7": 0, "total": 0}
+  "loop_counts_at_review": {"phase_7_edges_sum": 0, "total_loops": 0}
 }
 ```
 
@@ -349,11 +344,11 @@ Return TWO things as your final output:
 ## DIMENSION SCORES
 | Dimension | Weight | Score | Weighted | Status |
 |-----------|--------|-------|----------|--------|
-| Content Quality | 30% | [X.X] | [X.XX] | [status] |
-| Citation Integrity | 25% | [X.X] | [X.XX] | [status] |
-| Brand Compliance | 20% | [X.X] | [X.XX] | [status] |
-| SEO Performance | 15% | [X.X] | [X.XX] | [status] |
-| Readability | 10% | [X.X] | [X.XX] | [status] |
+| Content Quality | [w_cq]% | [X.X] | [X.XX] | [status] |
+| Citation Integrity | [w_ci]% | [X.X] | [X.XX] | [status] |
+| Brand Compliance | [w_bc]% | [X.X] | [X.XX] | [status] |
+| SEO Performance | [w_seo]% | [X.X] | [X.XX] | [status] |
+| Readability | [w_read]% | [X.X] | [X.XX] | [status] |
 | **OVERALL** | **100%** | **[X.X]** | **[X.XX]** | **[decision]** |
 
 ## DIMENSION DETAILS
@@ -398,7 +393,7 @@ Loop history JSON + current counts vs limits + status
 **Required Actions for Phase [X]:**
 1. [Specific, actionable fix with detail]
 
-**Loop Count:** [N] of 2 allowed (Phase 7 → Phase [X])
+**Loop Count:** [N] of 2 allowed (sum of all `phase_7_to_*` edges) | Pipeline total: [M] of 5
 **After fixes, return to Phase 7 for re-review.**
 ```
 

@@ -40,10 +40,11 @@ Use `/contentforge:cf-brief` when:
 - **Target Audience** — Who this content is for (e.g., "Healthcare CIOs", "Small business owners", "Marketing managers at B2B SaaS companies")
 
 **Optional:**
-- **Content Type** — article, blog, whitepaper, faq, video-script (if not specified, the brief recommends the best type based on search intent)
+- **Content Type** — article, blog, whitepaper, faq, research_paper, video-script (if not specified, the brief recommends the best type based on search intent)
 - **Competitor URLs** — 1-5 specific competitor pages to analyze (if not provided, top 5 SERP results are used)
 - **SEO Goals** — Primary goal: `traffic` (maximize organic visits), `conversions` (target bottom-of-funnel intent), or `awareness` (brand visibility and thought leadership)
 - **Brand** — Brand profile name to align voice/terminology recommendations in the brief
+- **`--no-mcp`** — Skip MCP-backed keyword/competitor lookups and build the brief from heuristic estimates instead (faster, lower fidelity)
 
 ## How to Use
 
@@ -413,7 +414,7 @@ Define the SEO approach for the content piece based on keyword data and competit
 - Meta title and meta description recommendations (2 options each)
 - Internal linking opportunities (suggest related content to link to)
 - Featured snippet optimization (format content for snippet capture)
-- Schema markup recommendations (Article, FAQ, HowTo)
+- Schema markup recommendations (Article is the workhorse). Recommend FAQ and HowTo markup for **machine readability**, not for rich results: Google deprecated HowTo rich results in 2023 and in 2023 restricted FAQ rich results to government and health sites. The markup still helps AI engines and other consumers parse the page — just never promise a SERP feature from it.
 - Header tag optimization (keyword placement in H2s/H3s)
 
 **SYNTHETIC EXAMPLE — fabricated for illustration:**

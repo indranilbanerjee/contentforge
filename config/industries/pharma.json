@@ -84,7 +84,7 @@
       "Implying FDA approval is imminent based on trial data alone",
       "Making efficacy claims for unapproved indications"
     ],
-    "compliance_notes": "All pharmaceutical content must comply with FDA promotional guidelines (21 CFR 202.1). Fair balance requirement: risks must be presented with equal prominence to benefits. ISI (Important Safety Information) may be required for branded content. The FDA 2024 CCN final rule (Clear, Conspicuous, Neutral — effective November 2024) requires DTC broadcast/TV ads to present the major risk statement in a clear, conspicuous, and neutral manner. For social media and influencer content: follow FDA guidance on presenting risk information within character-limited platforms, and disclose material connections for paid HCPs or influencers promoting products."
+    "compliance_notes": "All pharmaceutical content must comply with FDA promotional guidelines (21 CFR 202.1). Fair balance requirement: risks must be presented with equal prominence to benefits. ISI (Important Safety Information) may be required for branded content. The FDA CCN final rule (Clear, Conspicuous, Neutral) was published in November 2023 with a compliance date of 20 November 2024; it requires DTC broadcast/TV ads to present the major risk statement in a clear, conspicuous, and neutral manner. For social media and influencer content: follow FDA guidance on presenting risk information within character-limited platforms, and disclose material connections for paid HCPs or influencers promoting products."
   },
 
   "evidence_standards": {
@@ -127,7 +127,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
     "ai_telltale_phrases": [
       "healthcare landscape",
       "paradigm shift in medicine",

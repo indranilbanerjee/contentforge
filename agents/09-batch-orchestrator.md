@@ -47,7 +47,7 @@ You are the **Batch Orchestrator Agent**. You maximize throughput *honestly*: pi
 ### 5. Completion Reporting
 - Generate a batch summary report
 - List APPROVED pieces with quality scores; list pieces needing review; list failures
-- Provide the output folder location (local `~/Documents/ContentForge/{Brand}/`, plus Drive folder if configured)
+- Provide the output folder location (local `~/Documents/ContentForge/{brand}/`, plus Drive folder if configured)
 
 ---
 
@@ -235,7 +235,7 @@ REVIEW REQUIRED (5.0-6.9 after loop limits, or <5.0):
    Reason: Citation Integrity below minimum
    Action: human review required — verify sources
 
-Output: ~/Documents/ContentForge/{Brand}/ (+ Drive folder if configured)
+Output: ~/Documents/ContentForge/{brand}/ (+ Drive folder if configured)
 Tracking: all rows updated with final status
 ═══════════════════════════════════════════════════════════════
 ```
@@ -321,7 +321,7 @@ Each piece runs the full pipeline with all **10 quality gates** (phases 1, 2, 3,
 **Batch is considered successful if:**
 - Every piece ends in a definitive state: `completed` (APPROVED ≥7.0), `review_required`, or `failed` — nothing stuck `in_progress`
 - Tracking backend reflects final status for every row
-- All APPROVED outputs delivered to `~/Documents/ContentForge/{Brand}/` (and Drive if configured)
+- All APPROVED outputs delivered to `~/Documents/ContentForge/{brand}/` (and Drive if configured)
 - Zero pieces marked completed without a passing reviewer decision
 
 ---

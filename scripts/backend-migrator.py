@@ -17,6 +17,7 @@ Usage:
 
 import argparse
 import os
+import re
 import shutil
 import sys
 import tempfile
@@ -33,6 +34,11 @@ _common.ensure_utf8_stdout()
 
 DEFAULT_TABLE = "ContentForge Tracking"
 DOWNLOAD_TIMEOUT_SECONDS = 60
+
+# Fields that carry backend-specific attachment payloads (Airtable returns a
+# list of attachment dicts). These are re-created per backend and must not be
+# copied verbatim into a local record.
+ATTACHMENT_FIELDS = ("output_file",)
 
 GOOGLE_SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -125,9 +131,12 @@ def copy_file_local(source_path, brand, record):
     year = str(now.year)
     month = f"{now.month:02d}"
 
-    # Build slug from record title or requirement_id
-    slug = record.get("title", record.get("requirement_id", "output"))
-    slug = slug.lower().replace(" ", "-")[:60]
+    # Build slug from record title or requirement_id. The raw title is
+    # attacker-controlled data from a remote backend, so it is slugified —
+    # never interpolated into the path as-is.
+    raw_slug = record.get("title") or record.get("requirement_id") or "output"
+    slug = re.sub(r"-+", "-", re.sub(r"[^a-z0-9-]+", "-", str(raw_slug).lower()))
+    slug = slug.strip("-")[:60].strip("-") or "output"
 
     dest_dir = _common.brand_dir(brand) / "outputs" / year / month
     dest_dir.mkdir(parents=True, exist_ok=True)
@@ -162,10 +171,15 @@ def read_airtable(base_id, table_name):
 
 
 def write_airtable_record(base_id, table_name, record, attach_file=None):
-    """Write a single record to Airtable, optionally with file attachment."""
+    """Write a single record to Airtable, optionally with file attachment.
+
+    Returns (error, record_created). A failed attachment upload after a
+    successful record create is a PARTIAL success: record_created is True and
+    the error describes only the attachment, so the caller can register the
+    requirement_id as migrated and avoid duplicating the record on re-run."""
     api, err = _get_airtable_api()
     if err:
-        return err
+        return err, False
 
     try:
         table = api.table(base_id, table_name)
@@ -177,22 +191,22 @@ def write_airtable_record(base_id, table_name, record, attach_file=None):
                   and v not in (None, "")}
 
         created = table.create(fields)
-
-        # Upload attachment if provided
-        if attach_file:
-            file_path = Path(attach_file).expanduser()
-            if file_path.exists():
-                try:
-                    table.upload_attachment(created["id"], "output_file", str(file_path))
-                except Exception as e:
-                    return f"Record created but attachment failed: {e}"
-
-        return None
     except Exception as e:
-        return f"Airtable write failed: {e}"
+        return f"Airtable write failed: {e}", False
+
+    # Upload attachment if provided
+    if attach_file:
+        file_path = Path(attach_file).expanduser()
+        if file_path.exists():
+            try:
+                table.upload_attachment(created["id"], "output_file", str(file_path))
+            except Exception as e:
+                return f"Record created but attachment failed: {e}", True
+
+    return None, True
 
 
-def download_airtable_attachment(record, brand):
+def download_airtable_attachment(record):
     """Download attachment from Airtable record to local temp.
     Uses urlopen with a timeout so a stalled CDN response can't hang the migration."""
     attachments = record.get("output_file", [])
@@ -401,16 +415,19 @@ def migrate_records(args):
 
         file_ref = get_file_path_from_record(record, src)
         if file_ref:
-            local_file, file_err = _resolve_file_to_local(file_ref, src, record, brand)
+            local_file, file_err = _resolve_file_to_local(file_ref, src, record)
             if file_err:
                 errors.append(f"{rid}: file download — {file_err}")
 
         # ── Write record to target ─────────────────────────────────
         write_err = None
+        record_written = False
         if tgt == "local":
-            # Strip remote-only fields before local write
+            # Strip remote-only fields before local write. Only the known
+            # attachment fields are dropped — other list values (e.g. tags,
+            # keywords) are real record data and must survive the migration.
             clean = {k: v for k, v in record.items()
-                     if k != "_record_id" and not isinstance(v, list)}
+                     if k not in ("_record_id",) + ATTACHMENT_FIELDS}
             if local_file:
                 dest, copy_err = copy_file_local(local_file, brand, record)
                 if copy_err:
@@ -420,11 +437,12 @@ def migrate_records(args):
                     clean["output_path"] = dest  # keep the record ↔ file linkage
                     files_migrated += 1
             write_local_record(brand, clean)
+            record_written = True
 
         elif tgt == "airtable":
             if not args.base_id:
                 return {"error": "--base-id required for airtable target"}
-            write_err = write_airtable_record(
+            write_err, record_written = write_airtable_record(
                 args.base_id, args.table, record,
                 attach_file=local_file,
             )
@@ -441,6 +459,7 @@ def migrate_records(args):
                 folder_id=args.folder_id,
                 file_path=local_file,
             )
+            record_written = write_err is None
             if local_file and not write_err:
                 files_migrated += 1
             elif local_file and write_err and "upload" in str(write_err).lower():
@@ -448,7 +467,10 @@ def migrate_records(args):
 
         if write_err:
             errors.append(f"{rid}: write — {write_err}")
-        else:
+        # The record counts as migrated whenever the row itself landed in the
+        # target — an attachment that failed afterwards is logged separately
+        # and must not cause a re-run to create the record a second time.
+        if record_written:
             migrated += 1
             if rid:
                 existing_ids.add(rid)
@@ -466,7 +488,7 @@ def migrate_records(args):
     }
 
 
-def _resolve_file_to_local(file_ref, backend, record, brand):
+def _resolve_file_to_local(file_ref, backend, record):
     """Ensure we have a local file path for transfer.
 
     For local backend, the reference is already a path.
@@ -479,7 +501,7 @@ def _resolve_file_to_local(file_ref, backend, record, brand):
         return None, f"Local file not found: {fp}"
 
     elif backend == "airtable":
-        return download_airtable_attachment(record, brand)
+        return download_airtable_attachment(record)
 
     elif backend == "google_sheets":
         # Google Drive download requires the Drive API and file ID extraction

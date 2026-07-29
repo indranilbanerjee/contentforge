@@ -1,6 +1,6 @@
 {
   "_description": "ContentForge Brand Profile Template — Complete schema for brand knowledge",
-  "_instructions": "Copy this template and fill in values for each brand. Store in Google Drive as {Brand-Name}-profile.json",
+  "_instructions": "Copy this template and fill in values for each brand. Save it as {Brand}-brand-profile.json. Canonical local path: ~/.claude-marketing/{brand-slug}/Brand-Guidelines/{Brand}-brand-profile.json (this is what every agent reads). If a Google Drive backend is configured, the same filename is mirrored to ContentForge-Knowledge/{Brand}/Brand-Guidelines/ as a fallback cache.",
   "brand_name": "Example Brand",
   "industry": "pharma | bfsi | real_estate | healthcare | legal | technology | ecommerce | b2b_saas | consumer_goods | education",
   "company_info": {
@@ -137,8 +137,9 @@
     "use_expert_quotes": true
   },
   "seo_preferences": {
-    "primary_keyword_density_target": 0.02,
-    "secondary_keyword_density_target": 0.01,
+    "_density_comment": "Density is ADVISORY only — keyword PLACEMENT is the Phase 6 gate (see config/scoring-thresholds.json phase_6_seo).",
+    "primary_keyword_density_advisory": 0.02,
+    "secondary_keyword_density_advisory": 0.01,
     "keyword_placement_priority": [
       "title",
       "h1",
@@ -184,10 +185,9 @@
         }
       ]
     },
+    "_schema_markup_comment": "Default to Article + Organization. FAQPage and HowTo are optional structure-only markup: Google deprecated HowTo rich results (Sept 2023) and restricted FAQ rich results to government and health sites (Aug 2023), so neither produces SERP features for a general site. Add them only if you want the machine-readable structure for AI engines.",
     "schema_markup_types": [
       "Article",
-      "FAQPage",
-      "HowTo",
       "Organization"
     ]
   },
@@ -206,7 +206,7 @@
         "Maintain quality standards",
         "Reduce production costs"
       ],
-      "reading_level": "College graduate (12-14 Flesch-Kincaid)",
+      "reading_level": "Grade 10-12 Flesch-Kincaid (college-educated reader; must stay within quality_thresholds.readability_range.max_flesch_kincaid_grade)",
       "preferred_content_length": "1200-1800 words",
       "content_consumption_context": "Desk research during work hours"
     },
@@ -311,10 +311,12 @@
     "include_toc": true,
     "include_executive_summary": false,
     "include_appendix": true,
+    "_appendix_comment": "Matches scripts/generate-docx.py: Appendix A - SEO Scorecard, B - Quality Scorecard, C - Production Details, D - Internal Link Map.",
     "appendix_includes": [
       "seo_scorecard",
-      "quality_report",
-      "citation_list"
+      "quality_scorecard",
+      "production_details",
+      "internal_link_map"
     ],
     "header_footer": {
       "header": "{Brand Name} | {Content Type}",

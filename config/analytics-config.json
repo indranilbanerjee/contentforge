@@ -7,13 +7,13 @@
     "needs_review": 3.0
   },
   "timing_benchmarks": {
-    "_description": "Expected processing time per content type in minutes",
-    "article": 25,
-    "blog": 18,
-    "whitepaper": 35,
-    "faq": 15,
-    "research_paper": 40,
-    "video_script": 20
+    "_description": "Expected whole-run processing time per content type in minutes. Derived value: the sum of that content type's phase_timing_benchmarks (seconds) divided by 60 and rounded to the nearest minute. Recompute these whenever phase_timing_benchmarks changes.",
+    "article": 34,
+    "blog": 24,
+    "whitepaper": 45,
+    "faq": 21,
+    "research_paper": 50,
+    "video_script": 24
   },
   "alert_rules": {
     "quality_decline": {
@@ -97,29 +97,30 @@
     }
   },
   "phase_timing_benchmarks": {
-    "_description": "Expected processing time per phase per content type in seconds",
+    "_description": "Expected processing time per phase per content type in seconds. Covers the full canon: Step 0.5 (Title Curation) plus phases 1, 2, 3, 3.5, 4, 5, 6, 6.5, 7, 8.",
+    "_sync_note": "scripts/pipeline-tracker.py currently HARDCODES its own copy of these constants (PHASE_BENCHMARKS, AGENT_INSTRUCTION_TOKENS, TOKENS_PER_WORD, BRAND_PROFILE_TOKENS) and does not read this file. Keep the two in sync until the script is wired up to load this config. Known remaining gap: the script has no video_script entry in PHASE_BENCHMARKS.",
     "article": {
-      "1": 300, "2": 180, "3": 420, "3.5": 120, "4": 180,
+      "0.5": 60, "1": 300, "2": 180, "3": 420, "3.5": 120, "4": 180,
       "5": 180, "6": 180, "6.5": 90, "7": 180, "8": 120
     },
     "blog": {
-      "1": 240, "2": 120, "3": 300, "3.5": 90, "4": 120,
+      "0.5": 60, "1": 240, "2": 120, "3": 300, "3.5": 90, "4": 120,
       "5": 120, "6": 120, "6.5": 60, "7": 120, "8": 90
     },
     "whitepaper": {
-      "1": 360, "2": 240, "3": 540, "3.5": 180, "4": 240,
+      "0.5": 90, "1": 360, "2": 240, "3": 540, "3.5": 180, "4": 240,
       "5": 240, "6": 240, "6.5": 120, "7": 240, "8": 180
     },
     "faq": {
-      "1": 180, "2": 120, "3": 240, "3.5": 60, "4": 120,
+      "0.5": 60, "1": 180, "2": 120, "3": 240, "3.5": 60, "4": 120,
       "5": 120, "6": 120, "6.5": 60, "7": 120, "8": 60
     },
     "research_paper": {
-      "1": 420, "2": 300, "3": 600, "3.5": 180, "4": 300,
+      "0.5": 90, "1": 420, "2": 300, "3": 600, "3.5": 180, "4": 300,
       "5": 240, "6": 240, "6.5": 120, "7": 300, "8": 180
     },
     "video_script": {
-      "1": 240, "2": 120, "3": 300, "3.5": 60, "4": 120,
+      "0.5": 60, "1": 240, "2": 120, "3": 300, "3.5": 60, "4": 120,
       "5": 120, "6": 120, "6.5": 60, "7": 120, "8": 90
     }
   },
@@ -130,7 +131,7 @@
     "brand_profile_tokens": 3000,
     "agent_instruction_tokens": {
       "_description": "Approximate token count per agent markdown instruction file",
-      "1": 3200, "2": 2400, "3": 3800, "3.5": 2600,
+      "0.5": 1200, "1": 3200, "2": 2400, "3": 3800, "3.5": 2600,
       "4": 2200, "5": 2800, "6": 3000, "6.5": 2200,
       "7": 2800, "8": 3400
     }

@@ -2,7 +2,7 @@
 
 **Purpose:** Five proven post frameworks for repurposing article content into social media posts. Each framework includes a template pattern, platform-specific variations, and a worked example.
 
-**Used by:** Social Adapter Agent (`agents/10-social-adapter.md`) and `/cf-social-adapt` skill
+**Used by:** Social Adapter Agent (`agents/10-social-adapter.md`) and the `/contentforge:cf-social-adapt` skill
 
 **Platforms covered:** LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, YouTube Shorts (specs: `config/social-platform-specs.json`)
 
@@ -616,6 +616,5 @@ Trust us. Click now. You will not regret it.
 
 ---
 
-**Version:** 2.2.0
 **Frameworks:** 5 (Announcement, Data-Driven Insight, How-To/Tip, Quote Highlight, Story/Case Study)
 **Platforms:** 8 — LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, YouTube Shorts (per-platform limits, AI-disclosure mechanisms, and specs in `config/social-platform-specs.json`)

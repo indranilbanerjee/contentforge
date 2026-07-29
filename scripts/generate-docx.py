@@ -61,7 +61,7 @@ Reports JSON schema (all sections optional, missing = skipped):
             "burstiness_score": float,
             "humanizer_patterns_removed": int,
             "em_dash_count": int,
-            "ai_signal_score": float,  # 1-10, lower = more human
+            "ai_signal_score": float,  # 0-1, lower = more human (gate ≤0.30)
             "brand_compliance_violations": int,
             "factual_accuracy_pct": float,
             "hallucination_risk": str  # low/medium/high
@@ -261,18 +261,23 @@ def parse_markdown_to_blocks(md_text):
     Strips ContentForge "completion card" / appendix sections that the agent may
     have inlined — those go in the proper appendix sections instead.
     """
-    # Strip YAML frontmatter
-    if md_text.lstrip().startswith("---"):
-        end = md_text.find("\n---", 3)
-        if end > 0:
-            md_text = md_text[end + 4:].lstrip()
+    # Strip YAML frontmatter. The opening delimiter must be a line that is
+    # exactly '---' — otherwise a document that legitimately opens with a
+    # horizontal rule (or a '----' rule) would have its first section eaten.
+    md_text = md_text.lstrip()
+    _fm_lines = md_text.split("\n")
+    if _fm_lines and _fm_lines[0].strip() == "---":
+        for _i in range(1, len(_fm_lines)):
+            if _fm_lines[_i].strip() == "---":
+                md_text = "\n".join(_fm_lines[_i + 1:]).lstrip()
+                break
 
     # Strip everything from "## CONTENTFORGE — COMPLETION CARD" onwards if present
     # (that content moves into the appendix section).
     cutoff_patterns = [
         r"\n##\s+CONTENTFORGE\s*[—-]+\s*COMPLETION\s+CARD",
-        r"\n##\s+Appendix\s+[ABC]:",
-        r"\n#\s+Appendix\s+[ABC]:",
+        r"\n##\s+Appendix\s+[A-D]:",
+        r"\n#\s+Appendix\s+[A-D]:",
     ]
     for pat in cutoff_patterns:
         m = re.search(pat, md_text, re.IGNORECASE)
@@ -857,7 +862,7 @@ def add_appendices(doc, reports, link_markers=None):
             ("Burstiness score", f"{production.get('burstiness_score', 0):.2f} (target ≥0.7)"),
             ("Humanizer patterns removed", str(production.get("humanizer_patterns_removed", 0))),
             ("Em dash count", f"{production.get('em_dash_count', 0)} (target ≤1-2 per 500w)"),
-            ("AI signal score", f"{production.get('ai_signal_score', 0):.1f}/10 (target ≤3)"),
+            ("AI signal score", f"{production.get('ai_signal_score', 0):.2f} (gate ≤0.30)"),
             ("Brand compliance violations", str(production.get("brand_compliance_violations", 0))),
             ("Factual accuracy", f"{production.get('factual_accuracy_pct', 0):.1f}%"),
             ("Hallucination risk", str(production.get("hallucination_risk", "—"))),
@@ -883,26 +888,28 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
     text on matters of public interest unless human-reviewed and brand assumes
     editorial responsibility).
 
-    Mirrors the SocialForge / DMP pattern. Self-contained installation of
+    Self-contained installation of
     c2pa-python on demand. Non-fatal — returns None if signing wasn't
     requested or failed; the unsigned .docx remains on disk either way.
     """
     if not args.c2pa_sign:
         return None
     try:
-        import subprocess as _sp
         try:
             import c2pa  # noqa: F401
         except ImportError:
-            _sp.check_call([sys.executable, "-m", "pip", "install", "--quiet", "c2pa-python>=0.32", "cryptography"])
-            import c2pa  # noqa: F811
+            err = _common.pip_install(["c2pa-python>=0.32", "cryptography"],
+                                      label="c2pa-python")
+            if err:
+                return {"c2pa_signed": False, "c2pa_error": err["error"],
+                        "recovery": err["recovery"]}
+            try:
+                import c2pa  # noqa: F811
+            except ImportError as exc:
+                return {"c2pa_signed": False,
+                        "c2pa_error": f"could not import c2pa after install: {exc}"}
 
-        try:
-            import c2pa  # type: ignore
-        except ImportError as exc:
-            return {"c2pa_signed": False, "c2pa_error": f"could not install c2pa-python: {exc}"}
-
-        # Use sibling C2PA module if present (DMP-style); otherwise inline-minimal sign
+        # Use the sibling C2PA module if present; otherwise inline-minimal sign
         # The .docx format is supported by c2pa-python via the "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         # MIME type — but the simpler/more portable path is a sidecar manifest. We do BOTH:
         # 1. Embed in .docx if supported

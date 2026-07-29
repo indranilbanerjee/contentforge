@@ -518,7 +518,7 @@
         "Use 'Here's the thing:' and 'But here's where it gets interesting'",
         "Include reader-directed asides: 'Sound familiar?', 'You've seen this before.'",
         "Break formality with occasional sentence fragments. Like this.",
-        "Use dashes for mid-thought additions — they feel more natural than parentheses"
+        "Use an occasional dash for a mid-thought addition — at most 1-2 per 500 words (see pattern 14)"
       ],
       "avoid": [
         "Third-person corporate speak ('one should consider')",
@@ -589,6 +589,6 @@
     }
   },
   "industry_specific_patterns": {
-    "_moved": "Industry-specific AI telltale phrases, preferred replacements, and compliance notes moved to config/industries/*.json under the humanizer_notes key (July 2026). The Humanizer agent (Phase 6.5 Step 7) should load config/industries/{industry}.json matching the brand profile and apply its humanizer_notes section. All 10 industries are now covered (previously only 5 here)."
+    "_moved": "Industry-specific AI telltale phrases, preferred replacements, and compliance notes moved to config/industries/*.json under the humanizer_notes key (July 2026). The Humanizer agent (Phase 6.5 Step 1) should load config/industries/{industry}.json matching the brand profile and apply its humanizer_notes section. All 10 industries are now covered (previously only 5 here)."
   }
 }

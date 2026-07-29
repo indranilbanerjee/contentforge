@@ -33,6 +33,7 @@
       "article": "Healthcare analysis with clinical and operational perspectives. Include patient impact stories alongside data. Cite clinical evidence and policy sources.",
       "blog": "Accessible health information. Patient-friendly language. Practical guidance. Always recommend consulting a healthcare provider for personal medical decisions.",
       "whitepaper": "Deep analysis of healthcare trends, policies, or technologies. Include data from multiple stakeholders (providers, payers, patients). Reference primary research.",
+      "research_paper": "Clinical or health-services research register. Follow the reporting guideline that matches the design (CONSORT for trials, STROBE for observational, PRISMA for reviews). State study design, population, endpoints, and statistical methods up front; report effect sizes with confidence intervals, not p-values alone. Declare funding, conflicts of interest, and IRB/ethics approval. Never state a causal clinical claim from observational data.",
       "faq": "Patient-accessible Q&A. 6th-8th grade reading level. Define medical terms. Focus on practical next steps."
     }
   },
@@ -124,7 +125,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
     "ai_telltale_phrases": [
       "healthcare landscape",
       "paradigm shift in medicine",

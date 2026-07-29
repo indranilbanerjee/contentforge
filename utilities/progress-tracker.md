@@ -33,17 +33,17 @@
 ║ Active Pipelines (Running Now)                                 ║
 ║ ┌─────────────────────────────────────────────────────────────┐ ║
 ║ │ REQ-010 | Article Remote Work | Phase 6.5 → | Est: 8min    │ ║
-║ │ Progress: ████████████████░░░░  (Phase 6.5/9 = 72%)        │ ║
+║ │ Progress: ███████████████░░░░░  (76%)                       │ ║
 ║ │ Status: Humanizing content (removing AI patterns)           │ ║
 ║ └─────────────────────────────────────────────────────────────┘ ║
 ║ ┌─────────────────────────────────────────────────────────────┐ ║
 ║ │ REQ-011 | Blog SEO Trends    | Phase 4  →  | Est: 14min    │ ║
-║ │ Progress: ██████████░░░░░░░░  (Phase 4/9 = 44%)            │ ║
+║ │ Progress: █████████░░░░░░░░░░░  (47%)                       │ ║
 ║ │ Status: Scientific validation (checking for hallucinations) │ ║
 ║ └─────────────────────────────────────────────────────────────┘ ║
 ║ ┌─────────────────────────────────────────────────────────────┐ ║
 ║ │ REQ-012 | Whitepaper AI      | Phase 2  →  | Est: 28min    │ ║
-║ │ Progress: ████░░░░░░░░░░░░░░  (Phase 2/9 = 22%)            │ ║
+║ │ Progress: ██░░░░░░░░░░░░░░░░░░  (14%)                       │ ║
 ║ │ Status: Fact-checking sources (12/20 URLs verified)         │ ║
 ║ └─────────────────────────────────────────────────────────────┘ ║
 ╠═════════════════════════════════════════════════════════════════╣
@@ -80,13 +80,13 @@ pipeline_state = {
     'content_type': 'article',
     'brand': 'TechCorp',
     'status': 'in_progress',
-    'current_phase': 6.5,  # Can be 1, 2, 3, 4, 5, 6, 6.5, 7, 8
+    'current_phase': 6.5,  # Can be 1, 2, 3, 3.5, 4, 5, 6, 6.5, 7, 8
     'phase_details': 'Humanizing content (removing AI patterns)',
     'start_time': '2026-02-17T14:30:15',
     'estimated_completion_time': '2026-02-17T14:38:15',  # 8 min from now
     'elapsed_time_minutes': 14,
     'estimated_remaining_minutes': 8,
-    'progress_percentage': 72,  # Phase 6.5/9 * 100
+    'progress_percentage': 76,  # calculate_progress_percentage(6.5) — weighted, not phase-count
     'quality_score': None,  # Filled after Phase 7
     'loops_used': 1,  # Feedback loops so far
     'errors': []
@@ -141,8 +141,12 @@ def calculate_progress_percentage(current_phase):
 
 # Example:
 # If current_phase = 6.5:
-# Completed phases: 1, 2, 3, 4, 5, 6
-# Weight: 0.15 + 0.12 + 0.18 + 0.08 + 0.10 + 0.12 = 0.75 = 75%
+# Completed phases: 1, 2, 3, 3.5, 4, 5, 6
+# Weight: 0.14 + 0.11 + 0.17 + 0.05 + 0.08 + 0.10 + 0.11 = 0.76 = 76%
+#
+# Other samples:
+#   current_phase = 4   → 1, 2, 3, 3.5            → 0.47 = 47%
+#   current_phase = 2   → 1                        → 0.14 = 14%
 ```
 
 ### Visual Progress Bar
@@ -153,8 +157,10 @@ def render_progress_bar(percentage, width=20):
     empty = width - filled
     return f"{'█' * filled}{'░' * empty}  ({percentage}%)"
 
-# Example:
-# 72% → "██████████████░░░░░░  (72%)"
+# Examples (width=20):
+# 76% → "███████████████░░░░░  (76%)"
+# 47% → "█████████░░░░░░░░░░░  (47%)"
+# 14% → "██░░░░░░░░░░░░░░░░░░  (14%)"
 ```
 
 ---
@@ -251,18 +257,19 @@ phase_status_messages = {
     1: "Researching topic (SERP analysis, source mining)",
     2: "Fact-checking sources ({verified}/{total} URLs verified)",
     3: "Drafting content ({current_words}/{target_words} words)",
+    3.5: "Annotating visual assets (charts, alt text, captions)",
     4: "Scientific validation (checking for hallucinations)",
     5: "Structuring & proofreading (grammar, readability)",
-    6: "SEO/GEO optimization (keyword density: {kw_density}%)",
+    6: "SEO/GEO optimization (keyword placements: {kw_placements}/5)",
     6.5: "Humanizing content (removing AI patterns)",
     7: "Reviewing quality (scoring 5 dimensions)",
-    8: "Generating output (.docx file, uploading to Drive)"
+    8: "Generating output (.docx file, saving to configured backend)"
 }
 
 def get_phase_status(pipeline_state):
     """Get human-readable status message for current phase."""
     phase = pipeline_state['current_phase']
-    message = phase_status_messages[phase]
+    message = phase_status_messages.get(phase, "Processing")
 
     # Fill in dynamic placeholders
     if phase == 2 and 'urls_verified' in pipeline_state:
@@ -275,9 +282,10 @@ def get_phase_status(pipeline_state):
             current_words=pipeline_state['current_word_count'],
             target_words=pipeline_state['target_word_count']
         )
-    elif phase == 6 and 'keyword_density' in pipeline_state:
+    elif phase == 6 and 'keyword_placements_met' in pipeline_state:
+        # Placement is the Phase 6 gate; density is advisory only.
         message = message.format(
-            kw_density=round(pipeline_state['keyword_density'], 2)
+            kw_placements=pipeline_state['keyword_placements_met']
         )
 
     return message
@@ -332,7 +340,15 @@ def calculate_speedup(batch_state):
     concurrency = len(batch_state['active_pipelines'])
 
     sequential_time = avg_time * total_pieces
-    parallel_time = batch_state['estimated_completion_time'] - batch_state['start_time']
+
+    # start_time / estimated_completion_time are ISO-8601 strings — parse them
+    # before subtracting, then convert the timedelta to minutes.
+    start = datetime.fromisoformat(batch_state['start_time'])
+    end = datetime.fromisoformat(batch_state['estimated_completion_time'])
+    parallel_time = (end - start).total_seconds() / 60
+
+    if parallel_time <= 0:
+        return 1.0
 
     speedup = sequential_time / parallel_time
     return round(speedup, 1)

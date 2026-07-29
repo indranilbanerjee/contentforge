@@ -3,7 +3,7 @@
 > REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
 
 ## Purpose
-Manage brand profile caching to avoid re-processing brand guidelines on every run.Implement hash-based cache invalidation to detect when source documents change.
+Manage brand profile caching to avoid re-processing brand guidelines on every run. Implement hash-based cache invalidation to detect when source documents change.
 
 ---
 
@@ -55,7 +55,7 @@ Each brand has:
       "avg_word_count": 1500
     },
     "seo_preferences": {
-      "primary_keyword_density_target": 0.02,
+      "primary_keyword_density_advisory": 0.02,
       "meta_title_format": "{Primary Keyword} | {Brand Name}"
     },
     "quality_thresholds": {

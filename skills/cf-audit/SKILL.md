@@ -107,7 +107,7 @@ Source: Google Drive / ContentForge Output / AcmeMed
 Total Pieces: 47
 Content Types: 22 articles, 15 blogs, 6 whitepapers, 4 FAQs
 
-Date Range: 2024-06-15 to 2026-01-20
+Date Range: 2024-06-15 to 2026-07-20
   Published in last 6 months: 12 (26%)
   Published 6-12 months ago: 18 (38%)
   Published 12-24 months ago: 14 (30%)
@@ -132,14 +132,15 @@ Freshness Score = (Age Score x 0.35) +
 
 **Factor 1: Age Score (35% weight)**
 ```
-Months since publication:
-  0-6 months:   100 (fresh)
-  6-12 months:  80-99 (aging)
-  12-18 months: 50-79 (stale)
-  18-24 months: 25-49 (outdated)
-  24+ months:   0-24 (expired)
-
 Formula: max(0, 100 - (months_since_publish * 4.2))
+
+Bands produced by that formula:
+  0-3 months:   100-87 (fresh)
+  3-6 months:   87-75  (aging)
+  6-12 months:  75-50  (stale)
+  12-18 months: 50-24  (outdated)
+  18-24 months: 24-0   (expired)
+  24+ months:   0      (floor)
 ```
 
 **Factor 2: Statistics Currency (25% weight)**
@@ -148,7 +149,12 @@ Scan content for statistics, data points, market projections.
 For each statistic found:
   - Extract the year referenced (e.g., "2024 market report")
   - Compare against current year (2026)
-  - Score: 100 if current year, -20 per year old
+  - Score by age of the referenced year:
+      current year: 100
+      1 year old:    80
+      2 years old:   50
+      3 years old:   25
+      4+ years old:   5
 
 Aggregate: Average score across all statistics found
   If no statistics: Score = 70 (neutral, not penalized)
@@ -157,12 +163,12 @@ Aggregate: Average score across all statistics found
 **Factor 3: Link Health (20% weight)**
 ```
 Check all outbound links in the content:
-  - Live (HTTP 200): +1 per link
+  - Live (HTTP 200): +1.0 per link
   - Redirect (301/302): +0.5 per link
-  - Broken (404/500): -2 per link
-  - Timeout: -1 per link
+  - Broken (404/410): -2.0 per link
+  - Timeout (no status): -1.0 per link
 
-Score = (live_score / total_links) * 100
+Score = max(0, (total_score / total_links) * 100)
   If no links: Score = 50 (neutral)
 ```
 
@@ -212,11 +218,11 @@ Top 10 Refresh Candidates (sorted by priority):
 │ 3  │ HIPAA Compliance Guide 2024    │ 31    │ 9.0   │ HIGH    │
 │ 4  │ Telemedicine ROI Framework     │ 35    │ 8.5   │ HIGH    │
 │ 5  │ Patient Engagement Strategies  │ 42    │ 8.7   │ HIGH    │
-│ 6  │ Healthcare Data Security       │ 48    │ 8.3   │ MEDIUM  │
+│ 6  │ Healthcare Data Security       │ 48    │ 8.3   │ HIGH    │
 │ 7  │ Value-Based Care Guide         │ 51    │ 8.9   │ MEDIUM  │
 │ 8  │ Digital Health Trends 2025     │ 55    │ 8.4   │ MEDIUM  │
 │ 9  │ Remote Patient Monitoring      │ 58    │ 7.9   │ MEDIUM  │
-│ 10 │ Clinical Trial Technology      │ 61    │ 8.1   │ LOW     │
+│ 10 │ Clinical Trial Technology      │ 61    │ 8.1   │ MEDIUM  │
 └────────────────────────────────────────────────────────────────┘
 
 Priority Logic: High original quality score + Low freshness = Best ROI
@@ -250,27 +256,35 @@ Top 10 Coverage Gaps (by opportunity score):
 ┌─────────────────────────────────────────────────────────────────┐
 │ #  │ Missing Keyword                │ Volume │ KD  │ Opportunity│
 ├─────────────────────────────────────────────────────────────────┤
-│ 1  │ AI diagnostics precision med.  │ 2,400  │ 62  │ 92/100    │
-│ 2  │ healthcare API integration     │ 1,800  │ 45  │ 88/100    │
-│ 3  │ FHIR implementation guide      │ 1,200  │ 38  │ 85/100    │
-│ 4  │ clinical decision support 2026 │ 980    │ 41  │ 82/100    │
-│ 5  │ healthcare data interoperab.   │ 860    │ 52  │ 78/100    │
-│ 6  │ AI radiology workflows         │ 720    │ 35  │ 76/100    │
-│ 7  │ patient data privacy 2026      │ 650    │ 48  │ 72/100    │
-│ 8  │ digital therapeutics guide     │ 580    │ 33  │ 70/100    │
-│ 9  │ healthcare cloud migration     │ 520    │ 55  │ 65/100    │
-│ 10 │ remote diagnostics platform    │ 440    │ 29  │ 63/100    │
+│ 1  │ healthcare API integration     │ 1,800  │ 45  │ 72/100    │
+│ 2  │ FHIR implementation guide      │ 1,200  │ 38  │ 72/100    │
+│ 3  │ clinical decision support 2026 │ 980    │ 41  │ 71/100    │
+│ 4  │ AI radiology workflows         │ 720    │ 35  │ 71/100    │
+│ 5  │ digital therapeutics guide     │ 580    │ 33  │ 71/100    │
+│ 6  │ remote diagnostics platform    │ 440    │ 29  │ 71/100    │
+│ 7  │ AI diagnostics precision med.  │ 2,400  │ 62  │ 67/100    │
+│ 8  │ healthcare data interoperab.   │ 860    │ 52  │ 66/100    │
+│ 9  │ patient data privacy 2026      │ 650    │ 48  │ 66/100    │
+│ 10 │ healthcare cloud migration     │ 520    │ 55  │ 63/100    │
 └─────────────────────────────────────────────────────────────────┘
 
-Opportunity Score = (Search Volume normalized) x (100 - KD) x relevance
+Opportunity Score = (volume_normalized x 0.40) +
+                    ((100 - KD) x 0.35) +
+                    (relevance x 0.25)
+
+  volume_normalized = min(100, (log10(max(volume,1)) / log10(10000)) x 100)
+  relevance defaults to 80 when no relevance signal is supplied —
+  the scores above are computed with that default, so they reproduce
+  from the Volume and KD columns alone.
+
   Higher score = easier to rank + more traffic potential
 
 Recommended Content Plan for Top 5 Gaps:
-  1. Create article: "AI Diagnostics in Precision Medicine" (2,500 words)
-  2. Create whitepaper: "Healthcare API Integration Guide" (3,500 words)
-  3. Create article: "FHIR Implementation: A 2026 Guide" (2,000 words)
-  4. Create article: "Clinical Decision Support Systems in 2026" (1,800 words)
-  5. Create article: "Healthcare Data Interoperability" (2,200 words)
+  1. Create whitepaper: "Healthcare API Integration Guide" (3,500 words)
+  2. Create article: "FHIR Implementation: A 2026 Guide" (2,000 words)
+  3. Create article: "Clinical Decision Support Systems in 2026" (1,800 words)
+  4. Create article: "AI Radiology Workflows" (2,000 words)
+  5. Create article: "Digital Therapeutics: A Practical Guide" (2,200 words)
 ================================================================
 ```
 

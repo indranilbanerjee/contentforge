@@ -1,6 +1,6 @@
 {
   "_description": "ContentForge Trusted Data Sources Registry — Master list of authoritative sources per industry/brand",
-  "_instructions": "Maintain this registry in Google Sheets for easier updates. ContentForge will reference this when conducting research and fact-checking.",
+  "_instructions": "Edit this file directly; it is read by the Phase 1/2 agents (researcher and fact-checker) when conducting research and verifying citations.",
   "source_types": {
     "academic_journal": {
       "description": "Peer-reviewed academic publications",
@@ -340,7 +340,8 @@
   "citation_verification_rules": {
     "url_accessibility": {
       "must_be_live": true,
-      "allow_paywall": true,
+      "allow_paywall_with_corroboration": true,
+      "_paywall_note": "A paywalled URL may be cited, but the claim behind it stays UNVERIFIED until corroborated by at least one openly accessible source. Set to false to reject paywalled sources outright.",
       "allow_archive_org": true,
       "handle_404": "flag_for_replacement"
     },

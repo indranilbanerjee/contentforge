@@ -29,12 +29,22 @@ _common.ensure_utf8_stdout()
 # Plugin root = parent of scripts/
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 MCP_JSON = PLUGIN_ROOT / ".mcp.json"
-MCP_EXAMPLE = PLUGIN_ROOT / ".mcp.json.example"
+CONNECTORS_REFERENCE = PLUGIN_ROOT / ".mcp.json.connectors-reference"
 
 # ── Connector Registry ──────────────────────────────────────────────
 # Every connector ContentForge knows about, grouped by category.
-# "http" = available as HTTP connector (works in Cowork + Claude Code)
-# "npx"  = requires local npx server (Claude Code only)
+# "http"   = HTTP MCP endpoint (works in Cowork + Claude Code). ContentForge
+#            ships an EMPTY .mcp.json, so an http connector is only live once
+#            the user copies its entry out of .mcp.json.connectors-reference.
+# "npx"    = requires a local npx server (Claude Code only)
+# "script" = bundled Python script + service-account credentials
+# "manual" = no verified MCP package or endpoint exists; reach the service
+#            through an aggregator (Pipedream/Composio/Zapier/Make) or a
+#            custom server. Never emit an npx/install line for these.
+#
+# "reference_key" points at the entry in .mcp.json.connectors-reference the
+# user should copy; connectors without one are not in that catalog and must be
+# wired manually.
 
 CONNECTOR_REGISTRY = {
     "knowledge-base": {
@@ -170,7 +180,7 @@ CONNECTOR_REGISTRY = {
                 "skills_unlocked": [
                     "batch-process", "cf-analytics", "cf-audit",
                 ],
-                "note": "Uses scripts/sheets-tracker.py with Google service account. Works in Cowork + Claude Code. Also available as npx MCP server (@anthropic/mcp-google-sheets) for Claude Code only.",
+                "note": "Uses scripts/sheets-tracker.py with Google service account. Works in Cowork + Claude Code. There is no verified first-party Google Sheets MCP package — if you prefer an MCP, use an aggregator entry such as pipedream-google-sheets or composio-google-sheets from .mcp.json.connectors-reference.",
             },
         },
     },
@@ -187,7 +197,7 @@ CONNECTOR_REGISTRY = {
                     "contentforge", "batch-process", "content-refresh",
                     "cf-style-guide", "cf-audit",
                 ],
-                "note": "Uses scripts/drive-uploader.py with Google service account. Works in Cowork + Claude Code. Also available as native Claude platform integration (Settings > Integrations) and as npx MCP server.",
+                "note": "Uses scripts/drive-uploader.py with Google service account. Works in Cowork + Claude Code. Also available as a native Claude platform integration (Settings > Integrations), or via the pipedream-google-drive entry in .mcp.json.connectors-reference.",
             },
         },
     },
@@ -202,15 +212,16 @@ CONNECTOR_REGISTRY = {
                 "skills_unlocked": [
                     "cf-brief", "cf-audit", "content-refresh",
                 ],
+                "note": "Not in .mcp.json.connectors-reference — add the entry to .mcp.json yourself: {\"type\": \"http\", \"url\": \"https://api.ahrefs.com/mcp/mcp\"}. Requires an Ahrefs API subscription.",
             },
             "similarweb": {
-                "transport": "http",
-                "url": "https://mcp.similarweb.com",
+                "transport": "manual",
                 "description": "Similarweb — traffic analysis, competitor content benchmarks",
                 "env_vars": [],
                 "skills_unlocked": [
                     "cf-brief", "cf-audit",
                 ],
+                "note": "No verified Similarweb MCP endpoint or package — reach the API through an aggregator (pipedream-generic / composio-generic / zapier) or a custom server.",
             },
             "semrush": {
                 "transport": "npx",
@@ -282,8 +293,7 @@ CONNECTOR_REGISTRY = {
         "description": "Website analytics — content performance tracking, traffic analysis",
         "connectors": {
             "google-analytics": {
-                "transport": "npx",
-                "package": "@anthropic/mcp-google-analytics",
+                "transport": "manual",
                 "description": "Google Analytics 4 — content traffic, engagement, conversions",
                 "env_vars": [
                     "GA_PROPERTY_ID", "GOOGLE_APPLICATION_CREDENTIALS",
@@ -291,10 +301,10 @@ CONNECTOR_REGISTRY = {
                 "skills_unlocked": [
                     "cf-analytics", "cf-audit",
                 ],
+                "note": "No verified MCP package — configure via an aggregator (pipedream-generic / composio-generic) or a custom server against the GA4 Data API.",
             },
             "google-search-console": {
-                "transport": "npx",
-                "package": "@anthropic/mcp-google-search-console",
+                "transport": "manual",
                 "description": "Google Search Console — rankings, impressions, CTR for content",
                 "env_vars": [
                     "GSC_SITE_URL", "GOOGLE_APPLICATION_CREDENTIALS",
@@ -302,9 +312,94 @@ CONNECTOR_REGISTRY = {
                 "skills_unlocked": [
                     "cf-analytics", "cf-audit", "cf-brief",
                 ],
+                "note": "No verified MCP package — configure via an aggregator (pipedream-generic / composio-generic) or a custom server against the Search Console API.",
             },
         },
     },
+    "media-generation": {
+        "description": "Image, video and audio generation — feature images, illustrations, social visuals",
+        "connectors": {
+            "fal-ai": {
+                "transport": "http",
+                "url": "https://mcp.fal.ai/mcp",
+                "description": "fal.ai — image/video/audio generation across 100+ models",
+                "env_vars": ["FAL_KEY"],
+                "skills_unlocked": [
+                    "contentforge", "cf-social-adapt", "batch-process",
+                ],
+            },
+            "replicate": {
+                "transport": "http",
+                "url": "https://mcp.replicate.com/sse",
+                "description": "Replicate — image/video generation across 1000+ models",
+                "env_vars": ["REPLICATE_API_TOKEN"],
+                "skills_unlocked": [
+                    "contentforge", "cf-social-adapt", "batch-process",
+                ],
+            },
+        },
+    },
+    "aggregators": {
+        "description": "Aggregator gateways — reach services that have no first-party MCP. Pick ONE; they overlap heavily and running several creates duplicate tools.",
+        "connectors": {
+            "pipedream-google-sheets": {
+                "transport": "http",
+                "url": "https://mcp.pipedream.com/app/google_sheets",
+                "description": "Pipedream — Cowork-compatible Google Sheets access for requirement intake and tracking",
+                "env_vars": [],
+                "skills_unlocked": ["batch-process", "cf-analytics", "cf-audit"],
+            },
+            "pipedream-google-drive": {
+                "transport": "http",
+                "url": "https://mcp.pipedream.com/app/google_drive",
+                "description": "Pipedream — Cowork-compatible Google Drive access for brand assets and output delivery",
+                "env_vars": [],
+                "skills_unlocked": ["contentforge", "batch-process", "cf-style-guide"],
+            },
+            "composio-google-sheets": {
+                "transport": "http",
+                "url": "https://mcp.composio.dev/googlesheets",
+                "description": "Composio — Google Sheets via API-key auth (alternative to the Pipedream entry)",
+                "env_vars": ["COMPOSIO_API_KEY"],
+                "skills_unlocked": ["batch-process", "cf-analytics", "cf-audit"],
+            },
+            "zapier": {
+                "transport": "http",
+                "url": "https://mcp.zapier.com/api/v1/connect",
+                "description": "Zapier — single endpoint exposing 8000+ app integrations",
+                "env_vars": [],
+                "skills_unlocked": ["cf-publish", "cf-social-adapt", "batch-process"],
+            },
+            "make-com": {
+                "transport": "http",
+                "url": "https://<MAKE_ZONE>/mcp/api/v1/u/<MCP_TOKEN>/sse",
+                "description": "Make.com — scenario-based automation exposed as MCP",
+                "env_vars": [],
+                "skills_unlocked": ["cf-publish", "cf-social-adapt", "batch-process"],
+                "note": "Substitute your Make zone (e.g. eu1.make.com) and MCP token into the URL before use.",
+            },
+        },
+    },
+}
+
+# Reconciliation map: registry connector name -> key in
+# .mcp.json.connectors-reference. Connectors absent from this map have no
+# catalog entry and must be wired by hand (or through an aggregator).
+REFERENCE_CATALOG_KEYS = {
+    "notion": "notion",
+    "canva": "canva",
+    "webflow": "webflow",
+    "slack": "slack",
+    "gmail": "gmail",
+    "google-calendar": "google-calendar",
+    "figma": "figma",
+    "fal-ai": "fal-ai",
+    "replicate": "replicate",
+    "pipedream-google-sheets": "pipedream-google-sheets",
+    "pipedream-google-drive": "pipedream-google-drive",
+    "composio-google-sheets": "composio-google-sheets",
+    "zapier": "zapier",
+    "make-com": "make-com",
 }
 
 
@@ -319,6 +414,33 @@ def _load_mcp_json():
         return {}
 
 
+def _resolve_credentials(creds_path):
+    """Resolve a registry credentials path to a real Path.
+
+    The registry stores the legacy literal '~/.claude-marketing/...' form;
+    resolve it through _common.marketing_home() so env overrides are honored.
+    Every caller (status checks and setup guides alike) must use this so they
+    never disagree about where the credentials file lives."""
+    if not creds_path:
+        return None
+    normalised = str(creds_path).replace("\\", "/")
+    if normalised.startswith("~/.claude-marketing/"):
+        return _common.marketing_home() / normalised.split("~/.claude-marketing/", 1)[1]
+    return Path(normalised).expanduser()
+
+
+def _reference_hint(name):
+    """How the user gets this connector into the (empty by default) .mcp.json."""
+    catalog = CONNECTORS_REFERENCE.name
+    key = REFERENCE_CATALOG_KEYS.get(name)
+    if key:
+        return (f"Copy the \"{key}\" entry from {catalog} into {MCP_JSON.name} "
+                f"under \"mcpServers\", then restart the session.")
+    return (f"Not present in {catalog} — add the entry to {MCP_JSON.name} "
+            f"manually, or reach the service through an aggregator "
+            f"(pipedream-generic / composio-generic / zapier / make-com).")
+
+
 def _is_configured(name, connector_info, active_servers):
     """Check if a connector is currently configured."""
     # HTTP connectors in .mcp.json
@@ -328,12 +450,7 @@ def _is_configured(name, connector_info, active_servers):
     if connector_info["transport"] == "script":
         creds_path = connector_info.get("credentials", "")
         if creds_path:
-            # The registry stores the legacy literal path; resolve it through
-            # _common.marketing_home() so env overrides are honored.
-            if creds_path.replace("\\", "/").startswith("~/.claude-marketing/"):
-                resolved = _common.marketing_home() / creds_path.replace("\\", "/").split("~/.claude-marketing/", 1)[1]
-            else:
-                resolved = Path(creds_path).expanduser()
+            resolved = _resolve_credentials(creds_path)
             return resolved.exists()
         return True  # No credentials needed
     # Check env vars for npx connectors
@@ -375,8 +492,11 @@ def status_dashboard():
                 elif conn["transport"] == "script":
                     entry["credentials_needed"] = conn.get("credentials", "")
                     entry["note"] = "Python script — works in Cowork + Claude Code (needs service account)"
+                elif conn["transport"] == "manual":
+                    entry["note"] = "No verified MCP package — configure via an aggregator or a custom server"
                 else:
-                    entry["note"] = "HTTP connector — works in Cowork + Claude Code"
+                    entry["note"] = ("HTTP connector — works in Cowork + Claude Code once you "
+                                     "add it to .mcp.json (ships empty). " + _reference_hint(name))
                 if "note" in conn:
                     entry["platform_note"] = conn["note"]
                 available.append(entry)
@@ -444,7 +564,31 @@ def check_connector(name):
 
             if conn["transport"] == "http":
                 result["url"] = conn.get("url", "")
-                result["setup"] = "HTTP connector — auto-connects via OAuth when you first use it"
+                result["setup"] = (
+                    "HTTP connector. ContentForge ships an EMPTY .mcp.json, so this "
+                    "connector is not wired until you add it. " + _reference_hint(name)
+                    + " Authorization (OAuth or API key) is then handled on first use."
+                )
+            elif conn["transport"] == "script":
+                result["script"] = conn.get("script", "")
+                result["credentials"] = conn.get("credentials", "")
+                creds = _resolve_credentials(conn.get("credentials", ""))
+                result["credentials_path"] = str(creds) if creds else ""
+                result["credentials_found"] = bool(creds and creds.exists())
+                if not configured:
+                    result["setup"] = (
+                        f"Bundled Python script ({conn.get('script', '')}) with a Google "
+                        f"service account. Save the service-account JSON key to "
+                        f"{creds} and share the target Sheet/folder with the service "
+                        f"account email. No npx or Node.js required."
+                    )
+            elif conn["transport"] == "manual":
+                result["env_vars"] = conn.get("env_vars", [])
+                result["setup"] = (
+                    "No verified MCP package or endpoint exists for this service. "
+                    "Reach it through an aggregator (pipedream-generic / "
+                    "composio-generic / zapier / make-com) or a custom MCP server."
+                )
             else:
                 result["package"] = conn.get("package", "")
                 result["env_vars"] = conn.get("env_vars", [])
@@ -456,8 +600,11 @@ def check_connector(name):
                     result["setup"] = (
                         f"Requires npx server. Set environment variables: "
                         f"{', '.join(conn['env_vars'])}. "
-                        f"Then add to .mcp.json or use /contentforge:connect."
+                        f"Then add to .mcp.json or use /contentforge:cf-connect."
                     )
+
+            if "note" in conn:
+                result["platform_note"] = conn["note"]
 
             return result
 
@@ -485,11 +632,17 @@ def setup_guide(name):
                 guide["transport"] = "http"
                 guide["url"] = conn.get("url", "")
                 guide["steps"] = [
-                    f"This connector is already in .mcp.json as an HTTP connector.",
-                    f"When you first use a skill that needs {name}, Claude will prompt you to authorize via OAuth.",
-                    f"No API keys or environment variables needed — authentication is handled by the platform.",
-                    f"Works in both Claude Code and Cowork.",
+                    "1. ContentForge ships an EMPTY .mcp.json — no connector is wired "
+                    "until you add it yourself.",
+                    f"2. {_reference_hint(name)}",
+                    f"3. Restart the session, then use a skill that needs {name}; you "
+                    f"will be prompted to authorize on first use.",
+                    "4. Works in both Claude Code and Cowork (HTTP transport).",
                 ]
+                if conn.get("env_vars"):
+                    guide["env_vars"] = conn["env_vars"]
+                    guide["steps"].insert(2, f"2b. Set {', '.join(conn['env_vars'])} "
+                                             f"before first use — this endpoint needs an API key.")
                 if configured:
                     guide["status_message"] = (
                         f"{name} is configured. Use any of these skills to activate it: "
@@ -499,12 +652,13 @@ def setup_guide(name):
                 guide["transport"] = "script"
                 guide["script"] = conn.get("script", "")
                 guide["credentials"] = conn.get("credentials", "")
-                creds_path = Path(conn.get("credentials", "")).expanduser()
+                creds_path = _resolve_credentials(conn.get("credentials", ""))
+                guide["credentials_path"] = str(creds_path) if creds_path else ""
                 guide["steps"] = [
                     f"1. Go to Google Cloud Console > IAM & Admin > Service Accounts",
                     f"2. Create a service account (e.g., 'contentforge-pipeline')",
                     f"3. Create a JSON key and download it",
-                    f"4. Save the key to: {conn.get('credentials', '~/.claude-marketing/google-credentials.json')}",
+                    f"4. Save the key to: {creds_path}",
                     f"5. Share your Google Sheet/Drive folder with the service account email (Editor access)",
                     f"6. Set tracking_sheet_id and drive_output_folder_id in your brand profile",
                 ]
@@ -520,6 +674,27 @@ def setup_guide(name):
                     "Credentials are stored locally, never in the plugin repository.",
                     "Dependencies (gspread, google-api-python-client) auto-install on first run.",
                 ]
+            elif conn["transport"] == "manual":
+                # No verified package exists — never emit an npx/install line here.
+                guide["transport"] = "manual"
+                guide["env_vars"] = conn.get("env_vars", [])
+                guide["steps"] = [
+                    f"1. There is no verified MCP package or endpoint for {name}.",
+                    f"2. Pick an aggregator that already supports it — pipedream-generic, "
+                    f"composio-generic, zapier or make-com — and copy that entry from "
+                    f".mcp.json.connectors-reference into .mcp.json.",
+                    f"3. Authorize the {name} account inside that aggregator's dashboard.",
+                    f"4. Alternatively, point a custom MCP server at the service's own API.",
+                ]
+                guide["notes"] = [
+                    "ContentForge does not ship or recommend an npm package for this service.",
+                    "Aggregator gateways are HTTP MCPs, so they work in Cowork as well as Claude Code.",
+                ]
+                if conn.get("env_vars"):
+                    guide["notes"].append(
+                        "If you build a custom server, these are the credentials it needs: "
+                        + ", ".join(conn["env_vars"]) + "."
+                    )
             else:
                 guide["transport"] = "npx"
                 guide["package"] = conn.get("package", "")
@@ -527,7 +702,7 @@ def setup_guide(name):
                 guide["steps"] = [
                     f"1. Obtain API credentials from the {name} platform.",
                     f"2. Set these environment variables: {', '.join(conn['env_vars'])}",
-                    f"3. Add the connector to .mcp.json using /contentforge:connect {name}",
+                    f"3. Add the connector to .mcp.json using /contentforge:cf-connect {name}",
                     f"   Or manually add this to .mcp.json:",
                 ]
                 guide["mcp_json_entry"] = {
@@ -542,6 +717,9 @@ def setup_guide(name):
                     "Works in Claude Code only (not Cowork).",
                     "API keys are read from environment variables — never stored in plugin files.",
                 ]
+
+            if "note" in conn:
+                guide.setdefault("notes", []).append(conn["note"])
 
             return guide
 

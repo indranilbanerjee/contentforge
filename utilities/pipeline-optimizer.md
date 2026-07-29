@@ -2,7 +2,7 @@
 
 > REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
 
-**Purpose:** Analyze pipeline performance, score content freshness, detect coverage gaps, identify bottlenecks, and generate prioritized recommendations for the `/contentforge:audit` skill.
+**Purpose:** Analyze pipeline performance, score content freshness, detect coverage gaps, identify bottlenecks, and generate prioritized recommendations for the `/contentforge:cf-audit` skill.
 
 ---
 
@@ -130,21 +130,21 @@ freshness_score = {
     'word_count': 2340,
 
     # Factor scores (each 0-100)
-    'age_score': 15,
+    'age_score': 24,
     'statistics_currency_score': 20,
-    'link_health_score': 45,
+    'link_health_score': 13,
     'citation_recency_score': 30,
 
     # Weighted composite
-    'composite_score': 18,  # Expired
+    'composite_score': 22,  # Expired (24*0.35 + 20*0.25 + 13*0.20 + 30*0.20)
 
     # Factor breakdown for transparency
     'factor_breakdown': {
         'age': {
             'months_since_publish': 18,
-            'raw_score': 15,
+            'raw_score': 24,
             'weight': 0.35,
-            'weighted_contribution': 5.25
+            'weighted_contribution': 8.40
         },
         'statistics': {
             'stats_found': 8,
@@ -159,9 +159,9 @@ freshness_score = {
             'live': 9,
             'redirected': 2,
             'broken': 4,
-            'raw_score': 45,
+            'raw_score': 13,
             'weight': 0.20,
-            'weighted_contribution': 9.00
+            'weighted_contribution': 2.60
         },
         'citations': {
             'total_citations': 12,
@@ -283,7 +283,7 @@ def calculate_link_health(outbound_links):
 # Examples:
 #   15 links, all live: 100
 #   15 links, 12 live + 3 broken: 40
-#   15 links, 9 live + 2 redirect + 4 broken: 23
+#   15 links, 9 live + 2 redirect + 4 broken: 13
 ```
 
 ### Factor 4: Citation Recency (Weight: 20%)
@@ -404,25 +404,30 @@ def recommend_refresh_scope(freshness_score, original_quality_score):
 ### Production Bottlenecks
 
 ```python
-def detect_bottlenecks(inventory, production_history):
-    """Identify pipeline bottlenecks from production patterns."""
+def detect_bottlenecks(inventory_summary, production_history):
+    """Identify pipeline bottlenecks from production patterns.
+
+    inventory_summary is the aggregate dict (the `inventory` block of AuditResponse:
+    total_pieces, by_type, by_brand, expired_percentage) — NOT the list of pieces.
+    The per-piece list is called `pieces` throughout this utility.
+    """
 
     bottlenecks = []
 
     # 1. Content velocity bottleneck
     pieces_per_month = calculate_monthly_velocity(production_history)
-    if pieces_per_month < inventory['total_pieces'] / 12:
+    if pieces_per_month < inventory_summary['total_pieces'] / 12:
         bottlenecks.append({
             'type': 'velocity',
             'severity': 'high',
             'description': f'Production velocity ({pieces_per_month}/mo) is below '
-                          f'replacement rate ({inventory["total_pieces"] / 12:.0f}/mo needed '
+                          f'replacement rate ({inventory_summary["total_pieces"] / 12:.0f}/mo needed '
                           f'to refresh entire library annually)',
-            'recommendation': 'Use /batch-process for parallel production to increase throughput'
+            'recommendation': 'Use /contentforge:batch-process to queue the backlog as a sequential, checkpointed run'
         })
 
     # 2. Content type imbalance
-    type_distribution = inventory['by_type']
+    type_distribution = inventory_summary['by_type']
     if type_distribution.get('whitepaper', 0) == 0:
         bottlenecks.append({
             'type': 'type_gap',
@@ -432,10 +437,10 @@ def detect_bottlenecks(inventory, production_history):
         })
 
     # 3. Brand concentration
-    brand_counts = inventory['by_brand']
+    brand_counts = inventory_summary['by_brand']
     if len(brand_counts) > 1:
         max_brand = max(brand_counts, key=brand_counts.get)
-        max_pct = brand_counts[max_brand] / inventory['total_pieces'] * 100
+        max_pct = brand_counts[max_brand] / inventory_summary['total_pieces'] * 100
         if max_pct > 80:
             bottlenecks.append({
                 'type': 'brand_concentration',
@@ -446,7 +451,7 @@ def detect_bottlenecks(inventory, production_history):
             })
 
     # 4. Freshness decay rate
-    expired_pct = inventory.get('expired_percentage', 0)
+    expired_pct = inventory_summary.get('expired_percentage', 0)
     if expired_pct > 15:
         bottlenecks.append({
             'type': 'freshness_decay',
@@ -549,7 +554,7 @@ RECOMMENDATION_TYPES = {
         'description': 'Create new content for coverage gaps',
         'effort': 'medium-high',  # 25-45 min per piece
         'impact': 'medium-high',  # new rankings, no existing equity
-        'command': '/contentforge:brief + /contentforge'
+        'command': '/contentforge:cf-brief + /contentforge'
     },
     'quality_improvement': {
         'description': 'Re-run low-scoring content through pipeline',
@@ -569,12 +574,19 @@ RECOMMENDATION_TYPES = {
 ### Priority Score Calculation
 
 ```python
-def calculate_recommendation_priority(rec_type, freshness_score, quality_score,
+def calculate_recommendation_priority(rec_type, freshness_score=0, quality_score=0,
                                        traffic_data=None, opportunity_score=None):
     """
     Calculate a priority score (0-100) for a recommendation.
     Higher = do this first.
+
+    Every branch is normalized so that 0-100 is actually reachable and the
+    scores are comparable across recommendation types when the final list is
+    sorted. freshness_score and quality_score default to 0 because some types
+    (e.g. 'new_content') have no existing piece to score.
     """
+
+    priority = 0
 
     if rec_type == 'refresh':
         # Priority = (value of existing content) x (urgency of refresh)
@@ -582,23 +594,23 @@ def calculate_recommendation_priority(rec_type, freshness_score, quality_score,
         urgency = 100 - freshness_score  # 0-100
         traffic_bonus = 0
         if traffic_data and traffic_data.get('monthly_sessions', 0) > 1000:
-            traffic_bonus = 20  # High-traffic content gets priority
+            traffic_bonus = 20  # 0-20; contributes the final 20 points
 
-        priority = (value * 0.40) + (urgency * 0.40) + (traffic_bonus * 0.20)
+        priority = (value * 0.40) + (urgency * 0.40) + traffic_bonus
 
     elif rec_type == 'new_content':
-        # Priority = opportunity score (volume, difficulty, relevance)
-        priority = opportunity_score or 50
+        # Priority = opportunity score (volume, difficulty, relevance), already 0-100
+        priority = opportunity_score if opportunity_score is not None else 50
 
     elif rec_type == 'quality_improvement':
-        # Priority = how far below quality threshold
-        quality_gap = max(0, 70 - (quality_score * 10))
-        priority = quality_gap
+        # Priority = how far below the 7.0 pass threshold, scaled to 0-100
+        priority = max(0, (7.0 - quality_score) / 7.0 * 100)
 
     elif rec_type == 'retire':
-        # Priority = how outdated x how low quality
-        priority = max(0, (100 - freshness_score) * 0.3 + (100 - quality_score * 10) * 0.3)
+        # Priority = how outdated x how low quality, scaled to 0-100
+        priority = max(0, (100 - freshness_score) * 0.5 + (100 - quality_score * 10) * 0.5)
 
+    # Any unrecognized rec_type falls through with priority = 0
     return round(min(100, priority))
 ```
 
@@ -642,7 +654,7 @@ def generate_recommendations(freshness_scores, coverage_gaps, bottlenecks,
             'keyword_difficulty': gap['keyword_difficulty'],
             'opportunity_score': gap['opportunity_score'],
             'projected_impact': f"+{gap['search_volume'] * 0.05:.0f} monthly sessions (est.)",
-            'command': f"/contentforge:brief \"{gap['keyword']}\""
+            'command': f"/contentforge:cf-brief \"{gap['keyword']}\""
         })
 
     # 3. Retire candidates (expired + low quality)
@@ -657,6 +669,17 @@ def generate_recommendations(freshness_scores, coverage_gaps, bottlenecks,
                 'command': '301 redirect to nearest fresh content'
             })
 
+    # 4. Bottlenecks (from detect_bottlenecks) — surfaced as process recommendations
+    severity_priority = {'high': 90, 'medium': 60, 'low': 30}
+    for bottleneck in bottlenecks or []:
+        recommendations.append({
+            'type': 'bottleneck',
+            'bottleneck_type': bottleneck['type'],
+            'priority_score': severity_priority.get(bottleneck['severity'], 30),
+            'description': bottleneck['description'],
+            'command': bottleneck['recommendation']
+        })
+
     # Sort all recommendations by priority score (descending)
     recommendations.sort(key=lambda x: x['priority_score'], reverse=True)
 
@@ -667,19 +690,20 @@ def generate_recommendations(freshness_scores, coverage_gaps, bottlenecks,
 
 ## Usage
 
-### Called by /contentforge:audit
+### Called by /contentforge:cf-audit
 
-The pipeline optimizer is the analytical engine behind the `/contentforge:audit` skill:
+The pipeline optimizer is the analytical engine behind the `/contentforge:cf-audit` skill:
 
 ```python
 # In cf-audit SKILL.md execution:
 
-# Step 1: Load inventory
-inventory = load_content_inventory(source_url, source_type)
+# Step 1: Load inventory (pieces = per-piece list; inventory_summary = aggregate dict)
+pieces = load_content_inventory(source_url, source_type)
+inventory_summary = summarize_inventory(pieces)
 
 # Step 2: Score freshness
 freshness_scores = []
-for piece in inventory:
+for piece in pieces:
     score = calculate_freshness_score(piece)
     score['refresh_priority'] = assign_refresh_priority(
         score['composite_score'], score['original_quality_score']
@@ -689,11 +713,11 @@ for piece in inventory:
     )
     freshness_scores.append(score)
 
-# Step 3: Detect bottlenecks
-bottlenecks = detect_bottlenecks(inventory, production_history)
+# Step 3: Detect bottlenecks (takes the aggregate summary)
+bottlenecks = detect_bottlenecks(inventory_summary, production_history)
 
-# Step 4: Analyze gaps
-covered, missing = map_coverage(inventory, target_keywords)
+# Step 4: Analyze gaps (takes the per-piece list)
+covered, missing = map_coverage(pieces, target_keywords)
 
 # Step 5: Generate recommendations
 recommendations = generate_recommendations(
@@ -703,7 +727,7 @@ recommendations = generate_recommendations(
 
 # Step 6: Produce audit report
 report = format_audit_report(
-    inventory, freshness_scores, bottlenecks, covered, missing, recommendations
+    inventory_summary, freshness_scores, bottlenecks, covered, missing, recommendations
 )
 ```
 
@@ -716,7 +740,7 @@ The optimizer can also be called directly for specific analysis:
 score = calculate_freshness_score(content_piece)
 
 # Just gap analysis (no freshness)
-covered, missing = map_coverage(inventory, keywords)
+covered, missing = map_coverage(pieces, keywords)
 
 # Just recommendation ranking
 recommendations = generate_recommendations(scores, gaps, bottlenecks)
@@ -762,7 +786,7 @@ recommendations = generate_recommendations(scores, gaps, bottlenecks)
 - [ ] `find_content_matching_keyword(content_list, keyword)` — Content-keyword matching
 
 ### Bottleneck Functions
-- [ ] `detect_bottlenecks(inventory, production_history)` — Constraint identification
+- [ ] `detect_bottlenecks(inventory_summary, production_history)` — Constraint identification
 - [ ] `calculate_monthly_velocity(production_history)` — Production rate calculation
 
 ### Recommendation Functions
@@ -770,7 +794,7 @@ recommendations = generate_recommendations(scores, gaps, bottlenecks)
 - [ ] `generate_recommendations(scores, gaps, bottlenecks, ...)` — Full recommendation list
 
 ### Output Formatting
-- [ ] `format_audit_report(inventory, scores, bottlenecks, coverage, recommendations)` — Full report
+- [ ] `format_audit_report(inventory_summary, scores, bottlenecks, coverage, recommendations)` — Full report
 - [ ] `format_freshness_table(scores)` — Top 10 refresh candidates table
 - [ ] `format_gap_table(missing_keywords)` — Coverage gaps table
 - [ ] `format_recommendation_list(recommendations)` — Prioritized action list
@@ -787,10 +811,9 @@ recommendations = generate_recommendations(scores, gaps, bottlenecks)
 
 ---
 
-## Version History
+## Planned Extensions
 
-- **v2.1.0**: Initial implementation with 4-factor freshness scoring, gap analysis, bottleneck detection, and recommendation ranking
-- Future: Machine learning-based freshness prediction, historical trend analysis, automated refresh scheduling
+- Machine learning-based freshness prediction, historical trend analysis, automated refresh scheduling
 
 ---
 

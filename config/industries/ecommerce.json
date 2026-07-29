@@ -121,7 +121,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
     "ai_telltale_phrases": [
       "elevate your shopping experience",
       "seamless checkout experience",
@@ -137,7 +137,7 @@
     "preferred_replacements": [
       "Use specific conversion data: 'Checkout completion rose from 61% to 74%'",
       "Name the platform and feature: 'Shopify Checkout Extensibility', not 'a modern platform'",
-      "Cite benchmark sources: 'Baymard Institute's 2026 cart-abandonment study'",
+      "Cite the benchmark by name and verify the current edition before publishing (e.g. Baymard Institute cart-abandonment research)",
       "Lead with revenue, AOV, or conversion impact, not superlatives"
     ],
     "compliance_notes": [

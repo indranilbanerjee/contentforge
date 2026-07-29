@@ -1,6 +1,6 @@
 ---
 name: cf-social-adapt
-description: Repurpose finished articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads
+description: Repurpose finished articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, and YouTube Shorts
 disable-model-invocation: true
 argument-hint: "[article-path]"
 effort: medium
@@ -8,11 +8,11 @@ effort: medium
 
 # Social Content Adaptation — ContentForge Post-Pipeline
 
-Repurpose any ContentForge article into ready-to-publish social media posts for LinkedIn, Twitter/X, Instagram, Facebook, and Threads. Each post is tailored to platform character limits, audience expectations, hashtag conventions, and optimal posting times.
+Repurpose any ContentForge article into ready-to-publish social media posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, and YouTube Shorts. Each post is tailored to platform character limits, audience expectations, hashtag conventions, and optimal posting times.
 
 ## Platform rules — single source of truth
 
-**All character limits, hashtag counts, ideal lengths, and format rules come from `config/social-platform-specs.json`. Read that file at run time and use its values. Never use remembered limits, and never trust any limit that appears in an example in this file.** The supported platform list is exactly the set of platform keys in that config (e.g., linkedin, twitter, instagram, facebook, threads — plus any additions such as tiktok, bluesky, youtube-shorts).
+**All character limits, hashtag counts, ideal lengths, and format rules come from `config/social-platform-specs.json`. Read that file at run time and use its values. Never use remembered limits, and never trust any limit that appears in an example in this file.** The supported platform list is exactly the set of top-level keys in that config whose value contains a `character_limit` field (or, for video platforms, a `title_max_chars` field). Top-level keys without one of those fields are not platforms — `_description`, `_posting_times_note`, `hashtag_tiers`, and `post_frameworks` must be skipped. As shipped this resolves to 8 platforms: `linkedin`, `twitter`, `instagram`, `facebook`, `threads`, `tiktok`, `bluesky`, `youtube_shorts`.
 
 ## When to Use
 
@@ -21,7 +21,7 @@ Use `/contentforge:cf-social-adapt` when:
 - You need **platform-native posts** (not the same text copy-pasted everywhere)
 - You want **multiple posts per platform** to sustain engagement over days/weeks
 - You need **hashtag strategies**, **image specifications**, and **posting schedules**
-- You want to **repurpose one article into 15-25 social posts** across 5 platforms
+- You want to **repurpose one article into 24-40 social posts** across 8 platforms
 
 **Do NOT use for:**
 - Content still in pipeline (must be Phase 7+ approved or Phase 8 complete)
@@ -162,8 +162,11 @@ SOCIAL ADAPTATION REPORT
 ===================================================
 Source: "AI in Healthcare: 2026 Trends"
 Brand: AcmeMed
-Platforms: 5 | Posts Per Platform: 3 | Total Posts: 15
+Platforms: 5 of 8 selected | Posts Per Platform: 3 | Total Posts: 15
 ===================================================
+
+(Illustrative run scoped to 5 platforms. A default `all` run covers all 8 —
+adding TikTok, Bluesky, and YouTube Shorts sections in the same format.)
 
 LINKEDIN (3 posts)
 ---------------------------------------------------
@@ -555,7 +558,7 @@ Image: None (text-driven platform)
 SUMMARY
 ===================================================
 Total Posts Generated: 15
-Platforms: 5
+Platforms: 5 of 8 selected
 Posts Per Platform: 3
 
 Character Limit Compliance: 15/15 (100%)

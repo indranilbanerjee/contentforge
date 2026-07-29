@@ -2,7 +2,7 @@
 name: cf-analytics
 description: Track content quality scores, pipeline timing, and compliance trends with insights and alerts.
 effort: low
-argument-hint: "[--export json|csv] [--period 30d|90d|all]"
+argument-hint: "[--period 7|30|90] [--brand <name>] [--type <content-type>] [--focus quality|timing|compliance|citations]"
 ---
 
 # Content Analytics Dashboard

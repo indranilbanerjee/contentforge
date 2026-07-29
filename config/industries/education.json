@@ -123,7 +123,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
     "ai_telltale_phrases": [
       "educational landscape",
       "empowering learners",
@@ -145,7 +145,7 @@
     "compliance_notes": [
       "FERPA compliance for student data references",
       "COPPA considerations for K-12 content",
-      "Accessibility requirements (WCAG 2.1 AA) for educational content",
+      "Accessibility requirements (WCAG 2.2 AA) for educational content; WCAG 2.1 AA is still accepted under older procurement rules",
       "Avoid making specific grade-improvement guarantees"
     ]
   }

@@ -33,6 +33,7 @@
       "article": "Tactical SaaS playbooks with specific metrics and frameworks. Include benchmark data. Reference real companies (with permission or public data).",
       "blog": "Practical advice for SaaS operators. Templates, frameworks, and step-by-step guides. Include specific examples with numbers.",
       "whitepaper": "Deep analysis of SaaS trends, benchmarks, or strategies. Include cohort analysis, benchmark comparisons, and financial models.",
+      "research_paper": "Formal empirical study of SaaS economics or product behaviour. State the sample frame and time window, define every metric (ARR, NRR, CAC payback, logo vs revenue churn) before use, report cohort methodology and confidence intervals, and separate correlation from causation. Disclose vendor funding and any survivorship bias in the dataset.",
       "faq": "Practical Q&A for SaaS buyers or operators. Include pricing model explanations, integration details, and comparison frameworks."
     }
   },
@@ -121,7 +122,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Moved here from config/humanization-patterns.json industry_specific_patterns (July 2026).",
     "ai_telltale_phrases": [
       "digital transformation journey",
       "seamless integration",

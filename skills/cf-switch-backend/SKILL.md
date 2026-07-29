@@ -1,8 +1,8 @@
 ---
 name: cf-switch-backend
-description: Switch tracking backend (local/airtable/google) with optional data migration
+description: Switch tracking backend (local/airtable/google_sheets) with optional data migration
 disable-model-invocation: true
-argument-hint: "[local | airtable | google] [--migrate]"
+argument-hint: "[local | airtable | google_sheets] [--status]"
 effort: high
 ---
 
@@ -23,7 +23,7 @@ Switch ContentForge's tracking and delivery backend between **Google Sheets + Dr
 
 ```
 /contentforge:cf-switch-backend airtable
-/contentforge:cf-switch-backend google
+/contentforge:cf-switch-backend google_sheets
 /contentforge:cf-switch-backend local
 /contentforge:cf-switch-backend --status
 ```
@@ -37,8 +37,8 @@ Read the active brand profile's `tracking.backend` field.
 Report current state:
 ```
 Current backend: local
-Records: 47 tracking records
-Output files: 42 files in ~/.claude-marketing/{brand}/tracking/outputs/
+Records: 47 tracking records (~/.claude-marketing/{brand}/tracking/tracking.json)
+Output files: 42 files in ~/.claude-marketing/{brand}/outputs/{YYYY}/{MM}/
 ```
 
 ### Step 2: Validate Target Backend
@@ -96,13 +96,16 @@ Would you like to migrate this data to Airtable?
 python {scripts_dir}/backend-migrator.py --action migrate --brand "{brand}" --from {current} --to {target} [backend-specific args]
 ```
 
+`{current}` and `{target}` must be one of `local`, `airtable`, `google_sheets` — the migrator rejects any other value.
+
 Report migration results:
 ```
 Migration complete:
   Records migrated: 47
   Files migrated: 42
   Files failed: 0
-  Source data preserved at: ~/.claude-marketing/{brand}/tracking/
+  Source data preserved at: ~/.claude-marketing/{brand}/tracking/tracking.json
+                        and ~/.claude-marketing/{brand}/outputs/{YYYY}/{MM}/
 ```
 
 ### Step 4: Update Brand Profile
@@ -117,7 +120,8 @@ Update the brand profile JSON:
 Backend switched to Airtable.
   New tracking records → Airtable base appXXXXXX
   Output files → Airtable attachment fields
-  Previous data preserved at: ~/.claude-marketing/{brand}/tracking/
+  Previous data preserved at: ~/.claude-marketing/{brand}/tracking/tracking.json
+                          and ~/.claude-marketing/{brand}/outputs/{YYYY}/{MM}/
 
 Run /contentforge:cf-switch-backend --status to verify anytime.
 ```
@@ -149,8 +153,9 @@ python {scripts_dir}/backend-migrator.py --action status --brand "{brand}" --fro
 ## Important Notes
 
 - **Migration is additive** — source data is never deleted
-- **Migration is idempotent** — running twice won't create duplicates
-- **Migration is resumable** — if interrupted, re-run picks up where it left off
+- **Migration is idempotent for records that carry a `requirement_id`** — dedup is keyed on that field, so records without one are re-written on every run
+- **Migration is resumable on the same basis** — re-running after an interruption skips whatever already landed with a matching `requirement_id`
+- **Migrating *from* `google_sheets` moves records only** — downloading the linked Drive files is not implemented yet, so rows arrive without their attachments (the source Drive copies are untouched)
 - **You can switch back anytime** — data is preserved on all backends you've used
 - **The pipeline uses whichever backend is set** in `tracking.backend` — switching takes effect immediately for the next content run
 

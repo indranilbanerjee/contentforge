@@ -15,11 +15,15 @@ ContentForge has two ways to reach Google Drive:
   B) MCP path — when a Drive-capable MCP server is in .mcp.json, Claude
      can read/list/upload via MCP tool calls. Works in Cowork (no
      service account, no Node.js). Known Drive-capable MCPs:
-       - google-drive (Anthropic-platform-level via Settings -> Integrations)
        - pipedream-google-drive
        - composio-google-drive
        - zapier-google-drive
        - make-google-drive
+
+  NOT detectable here: Anthropic's platform-level Google Drive integration
+  (Cowork / Claude.com Settings -> Integrations). It is wired at the platform
+  layer and never appears in .mcp.json, so this probe cannot see it — a "none"
+  result must be confirmed with the user rather than treated as proof.
 
 Before v3.12.7, brand-setup assumed (A) was the only path. If a user
 came in having already added (B), brand-setup would walk them through
@@ -51,10 +55,11 @@ _common.ensure_utf8_stdout()
 
 
 # Drive-capable MCP server names. Order = display priority.
+# "google-drive" is deliberately absent: Anthropic's platform-level Drive
+# integration is not an MCP server and never lands in .mcp.json, so probing
+# for that name only ever produced a false negative. A user who manually names
+# their own server "google-drive" is still caught by the heuristic below.
 KNOWN_DRIVE_MCPS = [
-    ("google-drive",
-     "Anthropic platform Google Drive (set up in Cowork Settings -> Integrations, "
-     "or Claude.com platform integrations)"),
     ("pipedream-google-drive",
      "Pipedream aggregator -- works in both Cowork and Claude Code"),
     ("composio-google-drive",
@@ -170,11 +175,17 @@ def synthesize_recommendation(mcp_probe: dict, sa_probe: dict) -> dict:
         }
     return {
         "recommended_path": "none",
-        "message": "No Google Drive route configured. brand-setup will default to "
-                   "local-only tracking (~/.claude-marketing/{brand}/) and offer "
-                   "the user the choice between (a) adding a Drive MCP via "
-                   "/contentforge:cf-add-integration, (b) setting up a service "
+        "message": "No Google Drive route is visible from here. brand-setup will "
+                   "default to local-only tracking (~/.claude-marketing/{brand}/) "
+                   "and offer the user the choice between (a) adding a Drive MCP "
+                   "via /contentforge:cf-add-integration, (b) setting up a service "
                    "account via the Step A flow, or (c) keeping local-only.",
+        "blind_spot": "Anthropic's platform-level Google Drive integration "
+                      "(Cowork / Claude.com Settings -> Integrations) is wired "
+                      "outside .mcp.json and is INVISIBLE to this probe. Before "
+                      "acting on this result, ask the user whether that "
+                      "integration is already enabled — 'none' here is not proof "
+                      "that Drive is unavailable.",
     }
 
 

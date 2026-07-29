@@ -87,8 +87,10 @@ Polish the validated draft to professional publication standards by:
 
 #### 2.1 Vary Sentence Length
 
-**Ideal Mix (from `config/humanization-patterns.json`):**
-- Short (5-12 words): 20% | Medium (13-25 words): 50% | Long (26+ words): 30%
+**Ideal Mix (from `config/humanization-patterns.json` → `humanization_techniques.sentence_variety`):**
+- Short (5-10 words): 20% | Medium (11-20 words): 50% | Long (21+ words): 30%
+
+Use these exact word boundaries — Phase 6.5's burstiness gate measures against the same config, and mismatched bands make the two phases disagree about the same draft.
 
 Analyze current distribution. If short sentences are underrepresented, break long multi-clause sentences into varied-length sequences.
 

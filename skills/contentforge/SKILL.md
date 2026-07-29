@@ -15,7 +15,7 @@ Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.j
 
 ## Execution Protocol (CRITICAL — read first)
 
-This skill orchestrates 10 phases plus Step 0.5 (Title Curation). **Each numbered phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 29-pattern catalog, and reviewer scoring that define ContentForge.
+This skill orchestrates 10 phases plus Step 0.5 (Title Curation). **Each numbered phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 35-pattern catalog, and reviewer scoring that define ContentForge.
 
 The one exception is Step 0.5: title curation is performed **inline by the orchestrator** (no subagent), because it requires user interaction and subagents must never wait on the user. Any subagent that needs a user decision returns a `{"status": "needs_user_decision", ...}` payload to the orchestrator, which owns all user interaction (including image-generation opt-in/approval).
 
@@ -26,7 +26,10 @@ The one exception is Step 0.5: title curation is performed **inline by the orche
 #    cross-session resume can recover keyword, audience, word count, and tone.
 RUN_RESULT=$(python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py init \
     --brand <brand-slug> --topic "<topic>" --content-type <type> \
-    --meta '{"keyword": "<primary keyword>", "audience": "<audience>", "word_count_target": <n>, "tone": "<tone>"}')
+    --keyword "<primary keyword>" --audience "<audience>" \
+    --word-count <n> --tone "<tone>")
+# These flags land in run.json under meta.keyword / meta.audience /
+# meta.word_count / meta.tone — use those exact key names when reading them back.
 # Parse RUN_ID from the JSON result's "run_id" field.
 
 # 2. Initialize the performance tracker for this run.
@@ -53,7 +56,7 @@ For every numbered phase:
    - the **original-requirements block** (topic, confirmed title, content type, audience, primary keyword, word-count target, tone).
 
    Subagents `Read` what they need from those paths. **Never inline a full draft into a Task prompt.**
-3. **Verify the quality gate yourself.** Gate ownership belongs to the **orchestrator**: check the returned artifact against the gate criteria in the Pipeline Contract table — count sources, check word count and citation density, and run `python ${CLAUDE_PLUGIN_ROOT}/scripts/text-metrics.py` for burstiness, Flesch-Kincaid grade, and keyword-placement checks. A subagent's self-reported "PASS" alone is **not** a gate pass.
+3. **Verify the quality gate yourself.** Gate ownership belongs to the **orchestrator**: check the returned artifact against the gate criteria in the Pipeline Contract table — count sources, check word count and citation density, and run `python ${CLAUDE_PLUGIN_ROOT}/scripts/text-metrics.py --file <artifact-path> [--keyword "<primary keyword>"]` for burstiness, Flesch-Kincaid grade, and keyword-placement checks (`--file` is required). A subagent's self-reported "PASS" alone is **not** a gate pass.
 4. **On gate PASS, checkpoint the artifact** so the run is resumable:
    ```bash
    python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
@@ -127,7 +130,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
 
 The `.docx` must contain: title page, full article body, sources/citations, **Appendix A (SEO Scorecard)**, **Appendix B (Quality Scorecard)**, **Appendix C (Production Details)**.
 
-**Dual-copy save:** the `.docx` is written into the run directory (`~/.claude-marketing/{brand-slug}/runs/{run_id}/`) AND copied to the user-visible folder `~/Documents/ContentForge/{Brand}/`. Always tell the user the `~/Documents/ContentForge/` path. If the brand has Google Drive configured (`tracking.backend == "google"`), additionally upload the .docx via `drive-uploader.py`.
+**Dual-copy save:** the `.docx` is written into the run directory (`~/.claude-marketing/{brand-slug}/runs/{run_id}/`) AND copied to the user-visible folder `~/Documents/ContentForge/{Brand}/`. Always tell the user the `~/Documents/ContentForge/` path. If the brand has Google Drive configured (`tracking.backend == "google_sheets"` with a `tracking.google_drive.folder_id`), additionally upload the .docx via `drive-uploader.py`.
 
 Then finalize the run:
 ```bash
@@ -136,7 +139,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize --brand <slu
 
 ### Why This Matters
 
-Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (29-pattern AI removal won't fire), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`run.json`, the per-phase checkpoint artifacts, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
+Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (35-pattern AI removal won't fire), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`run.json`, the per-phase checkpoint artifacts, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
 
 ## When to Use
 
@@ -260,7 +263,7 @@ Gate criteria and loop targets for every phase are defined once, in the **Pipeli
 - **Phase 4: Scientific Validation** — hallucination scan, claim traceability, logic validation. *Gate 4; failures loop to Phase 3.*
 - **Phase 5: Structure & Proofread** — grammar/spelling, readability to the content-type target (±0.5 grade), brand terminology and style. *Gate 5.*
 - **Phase 6: SEO/GEO** — keyword placements (title, first 100 words, ≥2 H2s, conclusion, meta description), meta tags, URL slug, AI-answer-engine readiness, structure manifest. Density is advisory (~1–2%), not a gate. *Gate 6.*
-- **Phase 6.5: Humanizer** — 29-pattern AI-telltale removal, burstiness ≥0.7, brand personality, SEO-placement preservation validated against the structure manifest. *Gate 6.5.*
+- **Phase 6.5: Humanizer** — 35-pattern AI-telltale removal, burstiness ≥0.7, brand personality, SEO-placement preservation validated against the structure manifest. *Gate 6.5.*
 - **Phase 7: Reviewer** — 5-dimension weighted scoring per `config/scoring-thresholds.json`; approve ≥7.0 (industry-adjusted), loop 5.0–6.9, human review <5.0. *Gate 7.*
 - **Phase 8: Output** — .docx generation with appendices, dual-copy save, optional Drive upload, tracking update. *Gate 8.*
 
@@ -375,7 +378,7 @@ Content is flagged for human review if:
 - `/contentforge:content-refresh` — Update content 6-12 months later with fresh data
 - `/contentforge:cf-variants` — Create A/B test headline/hook/CTA variations
 - `/contentforge:publish` — Publish to Webflow or WordPress via MCP
-- `/contentforge:social-adapt` — Transform article into LinkedIn, Twitter/X, Instagram, Facebook, Threads posts
+- `/contentforge:social-adapt` — Transform article into LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, and YouTube Shorts posts
 - `/contentforge:translate` — Translate preserving brand voice (15+ languages)
 - `/contentforge:cf-video-script` — Generate timestamped video scripts from the article
 - `/contentforge:cf-analytics` — Record quality scores for trend tracking

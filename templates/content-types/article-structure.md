@@ -13,9 +13,9 @@
 ### 1. Title (H1)
 - **Format:** Clear, benefit-driven, includes primary keyword
 - **Length:** 50-70 characters (for SEO + readability)
-- **Style:** Title Case or Sentence case (per brand preference)
+- **Style:** Sentence case by default (humanizer catalog pattern 17 flags Title Case Headings). Use title case only if the brand style guide explicitly requires it.
 - **Examples:**
-  - "How [Primary Keyword] Transforms [Outcome] in 2026"
+  - "How [Primary Keyword] changes [Outcome] in 2026" (avoid "transforms", "revolutionizes", "unlocks" and the rest of `ai_telltale_phrases.overused_verbs`)
   - "[Number] Ways to [Achieve Goal] with [Primary Keyword]"
   - "The Complete Guide to [Primary Keyword]"
 
@@ -97,7 +97,7 @@
 3. **Step 3:** [Action] — Brief explanation
 ...
 
-**Alternative Format:** "Key Takeaways" with bulleted action items
+**Alternative Format:** a short bulleted list of action items — but do NOT head it "Key Takeaways", "The Bottom Line", or "Final Thoughts" as a closing section; humanizer catalog pattern 35 strips those. A mid-article action list under a specific, descriptive heading is fine.
 
 ---
 
@@ -109,8 +109,8 @@
    - Reinforce core message
    - Include primary keyword naturally
 
-2. **Future Outlook** (1-2 sentences)
-   - Where this topic is heading
+2. **Forward-looking beat** (1-2 sentences) — include ONLY if you can cite dated, sourced specifics (a scheduled regulation, a published roadmap, a dated forecast). Generic "Future Outlook" / "Looking ahead" / "As we move forward" phrasing is deleted by humanizer catalog pattern 06; if you have no specifics, drop this beat entirely.
+   - Where this topic is heading, with the date and the source
    - Why it remains relevant
 
 3. **Call to Action** (1-2 sentences)
@@ -170,7 +170,7 @@
 **Schema Markup Recommendations:**
 - Article schema (required)
 - Organization schema (if brand-focused)
-- FAQ schema (if Q&A section included)
+- FAQ schema (optional, structure-only) — Google restricted FAQ rich results to government and health sites in Aug 2023, so this produces no SERP feature for a general site. Add it only for the machine-readable structure.
 
 ---
 
@@ -223,7 +223,7 @@
 
 > SYNTHETIC EXAMPLE — fabricated for illustration. All statistics, organizations, and citations below are invented; never reuse them as facts in real content.
 
-**Title:** "How AI Content Generation Transforms Marketing Workflows in 2026"
+**Title:** "How AI content generation changes marketing workflows in 2026"
 
 **Introduction (200 words)**
 - Hook: "73% of marketing agencies now use AI for content production—up from 12% in 2024."
@@ -254,7 +254,7 @@
 - Step 4: Pilot with 1 brand
 - Step 5: Scale systematically
 
-**H2: Challenges and Limitations (200 words)**
+**H2: Where these pipelines break down (200 words)** — include this section only if you can cite dated, sourced specifics; a generic "Challenges and Limitations" block is deleted by humanizer catalog pattern 06
 - AI can hallucinate (mitigation: multi-layer verification)
 - Brand voice drift (mitigation: persistent profiles)
 - Cost at scale (mitigation: hybrid human-AI)
@@ -262,7 +262,7 @@
 
 **Conclusion (150 words)**
 - Recap: AI doesn't replace humans, it augments workflows
-- Future: Expect even more sophisticated agents
+- Forward beat (only with a dated, sourced specific — otherwise drop it)
 - CTA: Download our AI Content Workflow Checklist
 
 **References (12 sources)**

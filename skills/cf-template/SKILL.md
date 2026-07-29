@@ -264,7 +264,7 @@ Brand Compliance:
 
 Humanization:
   Burstiness Target: 0.70+ (sentence variety)
-  AI Pattern Check: Standard (20+ telltale phrases)
+  AI Pattern Check: Standard (35-pattern catalog)
 ================================================================
 ```
 

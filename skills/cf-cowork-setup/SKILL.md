@@ -128,7 +128,10 @@ What this means in practice:
 - /contentforge:create-content -> final .docx lands in
   Drive/<folder>/{brand}/{content_type}/{YYYY-MM}/{slug}.docx
 - /contentforge:brand-setup -> brand profile JSON lands in
-  Drive/<folder>/_brands/{brand-slug}/profile.json (persists across sessions)
+  Drive/<folder>/{brand}/Brand-Guidelines/{Brand}-brand-profile.json
+  (persists across sessions; this is the layout
+  `drive-uploader.py --action verify-structure` checks, alongside the
+  Guardrails/ and Reference-Content/ subfolders)
 - /contentforge:resume -> checkpoint files in
   Drive/<folder>/_runs/{run-id}/ (works across sessions / browser tabs)
 - Your team accesses everything via Google Drive directly -- no

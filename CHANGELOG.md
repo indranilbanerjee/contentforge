@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.17.0] — 2026-07-29
+
+### Changed — The Line-by-Line Audit
+
+Every file in the repo (147 files, ~45K lines — all 21 skills, 13 agents, 9 commands, 17 scripts, every config, template, utility and doc) was read end-to-end by an 8-reader audit fleet, cross-checked against primary-source July-2026 facts and against the code itself, then fixed by a 6-worker fleet with disjoint file ownership. ~250 corrections:
+
+- **The docs now describe the plugin that actually ships.** 135 broken `/contentforge:<name>` references repaired (skills are `cf-`-prefixed; `docs/USER-GUIDE.md` alone taught 53 commands that did not exist). Removed every claim of active hooks and pre-connected MCP servers (both ship empty by design since v3.9.0), every promise of **parallel** batch processing with a "4-5x speedup" (the orchestrator is sequential and checkpointed by design), and the fabricated performance statistics in COWORK-GUIDE. Cowork install instructions rewritten around the Plugins panel — `/plugin` commands do not exist there.
+- **Contract repair between docs and code.** `cf-switch-backend` documented a backend value (`google`) the code rejects — every documented invocation failed. The Drive-upload branch keyed on the same wrong value and could never fire. `08-output-manager` documented a `--published-path` flag that does not exist, and five `--format=` outputs including a PDF with no renderer. Checkpoint metadata keys, approval payloads, quality-gate score bands, age/opportunity formulas, connector counts, and content-type taxonomies were all realigned to the implementation.
+- **Two safety mechanisms that silently never ran.** The Phase 7 reviewer read loop-count keys the checkpoint manager never writes, so loop limits could not fire; the humanizer gate enforced 5 of its 6 catalog buckets, leaving patterns 30-35 unchecked.
+- **Script hardening.** Path-traversal fixed in `checkpoint-manager.py` (`--run-id` reached `shutil.rmtree` unvalidated), `backend-migrator.py` and `local-tracker.py`; fictional `@anthropic/mcp-*` packages removed from `connector-status.py`; Airtable partial-success no longer duplicates records on re-run; `embed-c2pa` provenance and registry aliases brought current (balanced/fast tiers were a generation behind); atomic writes, trustworthy exit codes, and dead-code removal throughout.
+- **Statistical and factual integrity.** Sample-size, freshness, opportunity and progress examples recomputed so they reproduce from their own formulas; fabricated author/institution/IRB details removed from the research-paper and whitepaper templates; FAQ/HowTo rich-result guidance corrected to the real 2023 deprecations; a nonexistent "Google March 2026 core update" removed from two agents.
+- **Self-containment, everywhere.** The guard test now covers docs/, scripts/, utilities/, utils/, templates/, config/ and root docs — not just skills/agents/commands. It caught live leaks in `utilities/cms-publisher.md` (which told users to run a sibling plugin's command), the C2PA cert guide, `AGENTS.md`, `COWORK-GUIDE.md` and `generate-docx.py`; all removed.
+- Tests 144 → **145**; suite green.
+
 ## [3.16.1] - 2026-07-12
 
 ### Changed - plugin self-containment

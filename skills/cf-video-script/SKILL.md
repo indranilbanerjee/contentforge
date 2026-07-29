@@ -120,7 +120,7 @@ Extracts key points from the article and restructures for video format.
   - On-screen text list (for graphic designer)
   - Music recommendations with mood/tempo
   - YouTube metadata (title, description, tags, chapters) if applicable
-- Uploads to Google Drive
+- Delivers via the brand's configured tracking backend (local / Airtable / Google Drive)
 
 ## Output Example
 

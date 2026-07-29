@@ -8,12 +8,12 @@
 
 ## Responsibilities
 
-1. **Load Tracking Data** — Read from Google Sheets or local CSV with configurable filters
+1. **Load Tracking Data** — Read from Google Sheets or the local per-brand tracking store with configurable filters
 2. **Aggregate Metrics** — Calculate averages, medians, percentiles, and standard deviations
 3. **Detect Trends** — Linear regression on quality scores over rolling time windows
 4. **Identify Outliers** — Flag data points beyond configurable standard deviation thresholds
 5. **Generate Recommendations** — Translate metric patterns into specific improvement actions
-6. **Format Dashboard** — Render ASCII analytics display for `/contentforge:analytics` skill
+6. **Format Dashboard** — Render ASCII analytics display for `/contentforge:cf-analytics` skill
 
 ---
 
@@ -28,8 +28,12 @@ Data Loading → Filtering → Aggregation → Trend Analysis → Outlier Detect
 ### Step 1: Data Loading
 
 ```python
-def load_tracking_data(source='google_sheets', fallback='local_csv'):
-    """Load ContentForge tracking records from primary or fallback source."""
+def load_tracking_data(brand_slug, source='google_sheets', fallback='local'):
+    """Load ContentForge tracking records from primary or fallback source.
+
+    The local store is the per-brand JSON tracking file — there is no
+    suite-wide CSV.
+    """
 
     if source == 'google_sheets':
         try:
@@ -39,19 +43,19 @@ def load_tracking_data(source='google_sheets', fallback='local_csv'):
             )
             return parse_sheet_records(records)
         except ConnectionError:
-            print("Google Sheets unavailable, falling back to local CSV")
+            print("Google Sheets unavailable, falling back to the local store")
             source = fallback
 
-    if source == 'local_csv':
-        csv_path = os.path.expanduser(
-            '~/.claude-marketing/contentforge-tracking.csv'
+    if source == 'local':
+        tracking_path = os.path.expanduser(
+            f'~/.claude-marketing/{brand_slug}/tracking/tracking.json'
         )
-        if os.path.exists(csv_path):
-            return parse_csv_records(csv_path)
+        if os.path.exists(tracking_path):
+            return parse_tracking_records(tracking_path)
         else:
             raise FileNotFoundError(
-                f"No tracking data found at {csv_path}. "
-                "Run /contentforge to generate tracking records."
+                f"No tracking data found at {tracking_path}. "
+                "Run /contentforge:create-content to generate tracking records."
             )
 ```
 
@@ -519,12 +523,12 @@ where readability is high priority (blogs, FAQs).
 
 ## Usage
 
-### Called by `/contentforge:analytics` Skill
+### Called by `/contentforge:cf-analytics` Skill
 
-The analytics tracker is the computation engine behind the `/contentforge:analytics` skill. The skill handles user interaction (parameter collection, mode selection), while this utility handles all data processing.
+The analytics tracker is the computation engine behind the `/contentforge:cf-analytics` skill. The skill handles user interaction (parameter collection, mode selection), while this utility handles all data processing.
 
 ```python
-# Invocation flow inside /contentforge:analytics
+# Invocation flow inside /contentforge:cf-analytics
 request = AnalyticsRequest(
     time_period=30,
     brand_filter='AcmeMed',
@@ -585,30 +589,33 @@ analytics_tracker.export_csv(response, 'analytics-report-2026-02-25.csv')
 
 ---
 
-## Implementation Checklist
+## Capability Reference
 
-- [ ] Data loading from Google Sheets via MCP connector
-- [ ] Data loading fallback from local CSV (~/.claude-marketing/contentforge-tracking.csv)
-- [ ] Time-period filtering (7, 30, 90 days)
-- [ ] Brand filtering (single brand or all)
-- [ ] Content type filtering (single type or all)
-- [ ] Composite score aggregation (mean, median, min, max, stdev, percentiles)
-- [ ] Per-dimension score aggregation (5 dimensions)
-- [ ] Linear regression trend calculation with direction classification
-- [ ] Outlier detection with configurable z-score threshold
-- [ ] Phase timing breakdown with benchmark comparison
-- [ ] Brand performance comparison table
-- [ ] Content type performance comparison table
-- [ ] Feedback loop frequency analysis
-- [ ] Alert rule evaluation (quality_decline, phase_slowdown, citation_drop, loop_spike, score_floor, volume_gap)
-- [ ] Recommendation generation from detected patterns
-- [ ] ASCII dashboard rendering (quality focus)
-- [ ] ASCII dashboard rendering (timing focus)
-- [ ] ASCII dashboard rendering (compliance focus)
-- [ ] JSON export
-- [ ] CSV export
-- [ ] Brand anonymization option
-- [ ] Configuration loading from config/analytics-config.json
+The analytics layer covers the following. Use this as the reference for what
+`/contentforge:cf-analytics` is expected to do, not as a build backlog.
+
+- Data loading from Google Sheets via MCP connector
+- Data loading fallback from the local store (`~/.claude-marketing/{brand-slug}/tracking/tracking.json`)
+- Time-period filtering (7, 30, 90 days)
+- Brand filtering (single brand or all)
+- Content type filtering (single type or all)
+- Composite score aggregation (mean, median, min, max, stdev, percentiles)
+- Per-dimension score aggregation (5 dimensions)
+- Linear regression trend calculation with direction classification
+- Outlier detection with configurable z-score threshold
+- Phase timing breakdown with benchmark comparison
+- Brand performance comparison table
+- Content type performance comparison table
+- Feedback loop frequency analysis
+- Alert rule evaluation (quality_decline, phase_slowdown, citation_drop, loop_spike, score_floor, volume_gap)
+- Recommendation generation from detected patterns
+- ASCII dashboard rendering (quality focus)
+- ASCII dashboard rendering (timing focus)
+- ASCII dashboard rendering (compliance focus)
+- JSON export
+- CSV export
+- Brand anonymization option
+- Configuration loading from config/analytics-config.json
 
 ---
 

@@ -1,13 +1,12 @@
 # C2PA Production Signing Certificate
 
-**Master guide:** lives in the DMP repo at `digital-marketing-pro/docs/c2pa-production-cert-guide.md` — read that first.
-**Short version for ContentForge users below.**
+**Audience:** ContentForge users signing AI-assisted documents for EU markets ahead of EU AI Act Article 50, which applies **2 August 2026**.
 
 ## TL;DR
 
 `scripts/generate-docx.py --c2pa-sign` ships with a dev-only path that auto-generates a 90-day self-signed certificate. Production deployment requires a certificate from a **CAI-recognized signing authority**. The dev cert path signs successfully and the sidecar `.c2pa.json` parses correctly, but it verifies as "signer not in trust list" at contentcredentials.org/verify and won't pass EU AI Act Article 50 review for AI-assisted long-form text on matters of public interest.
 
-## Four recognized authorities (May 2026)
+## Four recognized authorities (July 2026)
 
 | Option | Best for | Cost |
 |---|---|---|
@@ -56,8 +55,16 @@ Your brand still needs an actual internal sign-off process backing this claim �
 
 ## Timeline
 
-EU AI Act Article 50 enforcement: **2 August 2026** (~76 days from 17 May 2026).
+EU AI Act Article 50 applies **2 August 2026**. If you do not yet hold a production certificate, start today — Truepic onboarding (account → API key → certificate) is the fastest path, and the dev-cert flow keeps your pipeline testable meanwhile.
 
-## Full reference
+## EU regulatory context (July 2026)
 
-See `digital-marketing-pro/docs/c2pa-production-cert-guide.md` for the detailed walkthrough.
+- The **final Code of Practice on Transparency of AI-Generated Content** was published **10 June 2026**, superseding all earlier drafts. It ships **standardized EU disclosure icons** — use them for visible disclosure.
+- The **initial-signatory window closed 22 July 2026**; late signing remains possible.
+- The final **Article 50 Guidelines** are adopted. Machine-readable marking (what C2PA provides) plus visible disclosure for synthetic media is the compliance pattern.
+
+## Further reading
+
+- Content Authenticity Initiative — https://contentauthenticity.org/
+- `c2patool` CLI docs — https://opensource.contentauthenticity.org/docs/c2patool/
+- C2PA specification — https://c2pa.org/specifications/

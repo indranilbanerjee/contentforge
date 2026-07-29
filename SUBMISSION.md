@@ -11,7 +11,7 @@ This file is the submission packet for the Anthropic Software Directory. It is *
 
 ## 1. One-line description
 
-> Enterprise content production via 10-phase autonomous pipeline — research, fact-check, draft, visualize, validate, structure, SEO/GEO, humanize, review, output (.docx). 29-pattern AI-detection humanizer. EU AI Act Article 50 C2PA provenance.
+> Enterprise content production via 10-phase autonomous pipeline — research, fact-check, draft, visualize, validate, structure, SEO/GEO, humanize, review, output (.docx). 35-pattern AI-detection humanizer. EU AI Act Article 50 C2PA provenance.
 
 ## 2. Long description
 
@@ -21,7 +21,7 @@ ContentForge is an enterprise-grade content production system for marketing team
 
 **v3.9.5** introduced the three-category internal linking framework — topical (informational), commercial (brand product/service pages), conversion (audience-matched CTA), authority (brand-name attribution) — with a `brand_pages` schema in the brand profile, color-coded inline Word hyperlinks in the .docx, and an Appendix D internal link map. Marketers verify funnel coverage at a glance rather than producing a "face document" with no commercial pathway.
 
-**v3.9.4** fixed pipeline orchestration so every phase actually invokes its subagent via the Task tool rather than single-pass generating. **v3.9** rebuilt the Phase 6.5 humanizer around a 29-pattern AI-detection catalog (adapted from Wikipedia: Signs of AI Writing + blader/humanizer) with a self-critique meta-pass and optional voice calibration from a brand `writing_sample` field.
+**v3.9.4** fixed pipeline orchestration so every phase actually invokes its subagent via the Task tool rather than single-pass generating. **v3.9** rebuilt the Phase 6.5 humanizer around a 35-pattern AI-detection catalog (adapted from Wikipedia: Signs of AI Writing + blader/humanizer) with a self-critique meta-pass and optional voice calibration from a brand `writing_sample` field.
 
 13 agents, 19 skills, 7 commands, 16 opt-in HTTP MCP connectors. Multi-plugin coexistence by design (zero global hooks, zero auto-connecting MCP servers). Full Cowork compatibility — all connectors are HTTP, all Python scripts run natively in the Anthropic Desktop computer-use environment.
 
@@ -45,7 +45,7 @@ ContentForge is an enterprise-grade content production system for marketing team
 /contentforge:create-content
 ```
 
-The 10-phase pipeline runs ~45–75 min for a 3500–4500-word whitepaper: Title curation → Research (5+ verified sources) → Fact-check (URL verification + claim cross-reference) → Drafting (SME calibration via industry knowledge pack) → Visual asset annotation → Scientific validation (hallucination detection + regulatory rules) → Structuring + proofreading → SEO/GEO with three-category internal linking → Humanizer (29-pattern catalog + self-critique meta-pass) → Reviewer (5-dimension scoring) → Output Manager (.docx with embedded SEO/Quality/Production scorecards + Appendix D internal link map).
+The 10-phase pipeline runs ~45–75 min for a 3500–4500-word whitepaper: Title curation → Research (5+ verified sources) → Fact-check (URL verification + claim cross-reference) → Drafting (SME calibration via industry knowledge pack) → Visual asset annotation → Scientific validation (hallucination detection + regulatory rules) → Structuring + proofreading → SEO/GEO with three-category internal linking → Humanizer (35-pattern catalog + self-critique meta-pass) → Reviewer (5-dimension scoring) → Output Manager (.docx with embedded SEO/Quality/Production scorecards + Appendix D internal link map).
 
 Empirically tested on a pharma whitepaper ("Antibody-Drug Conjugates in HER2-Low Metastatic Breast Cancer"): 4,353 words, 18 citations including 5 NEJM papers with verified DOIs, all 3 required compliance disclaimers, 0 prohibited terms, 8.4/10 B+ APPROVED at the pharma 8.0 threshold, 0 hallucinations.
 
@@ -133,7 +133,7 @@ Capture before submitting:
 2. The .docx Appendix D internal link map with the three color-coded link types
 3. A C2PA sidecar manifest opened in a JSON viewer alongside its .docx
 4. `/contentforge:create-content` pipeline running with the [N/11] phase progress indicators
-5. The humanizer report showing 29-pattern catalog hits + before/after burstiness numbers
+5. The humanizer report showing 35-pattern catalog hits + before/after burstiness numbers
 
 ## 12. Submission steps
 

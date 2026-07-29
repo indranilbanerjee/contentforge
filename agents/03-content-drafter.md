@@ -64,7 +64,7 @@ Verify critical fields are populated: voice.tone, voice.formality, terminology.p
 Content will be drafted WITHOUT compliance enforcement.
 Phase 5 will report "zero violations" = zero CHECKS, not zero issues.
 For regulated industries, this is a critical gap.
-Recommend: Update brand profile with /contentforge:cf-style-guide --update {brand}
+Recommend: Update brand profile with /contentforge:cf-style-guide {brand} --update
 ```
 Log warning in pipeline metadata for Phase 7.
 
@@ -79,8 +79,9 @@ Load from `templates/content-types/`:
 - Whitepaper → `whitepaper-structure.md` (2500-5000 words, Grade 12-14)
 - FAQ → `faq-structure.md` (600-1200 words, Grade 8-10)
 - Research Paper → `research-paper-structure.md` (4000-8000 words, Grade 14-16)
+- Video Script → `video-script-structure.md` (duration-driven, not word-count-driven: 120-150 dialogue words per minute; every scene needs dialogue + on-screen text + B-roll + music/SFX)
 
-Extract: target word count, Flesch-Kincaid level, section structure, tone expectations, citation frequency.
+Extract: target word count, Flesch-Kincaid level, section structure, tone expectations, citation frequency. For video scripts, read the duration profile instead of the word-count range.
 
 ### Step 0.3: SME Calibration — Load Industry Knowledge Pack
 

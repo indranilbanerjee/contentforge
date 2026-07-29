@@ -40,7 +40,7 @@ The Translation Manager coordinates a 5-stage pipeline that ensures translated c
 ### Stage 5: Quality Verification
 - Readability check calibrated for target language
 - Citation integrity verification (zero tolerance for URL changes)
-- SEO keyword density check (within +/- 0.5% of target)
+- SEO keyword PLACEMENT parity check (title, first 100 words, 2+ H2s, conclusion, meta description all carry the target-language keyword); density is advisory only
 - Meta tag character limit verification
 - Back-translation spot check (3-5 key sentences)
 - Composite translation score calculation
@@ -107,8 +107,9 @@ class TranslationResponse:
     meta_description: str            # Translated meta description
     meta_description_chars: int      # Character count
     url_slug: str                    # Localized URL slug
-    primary_keyword_density: float   # Keyword density in target (%)
-    keyword_density_delta: float     # Variance from source density
+    keyword_placements_met: int      # Of 5: title, first 100 words, 2+ H2s, conclusion, meta description (the gate)
+    primary_keyword_density: float   # Keyword density in target (%) — advisory, reported not gated
+    keyword_density_delta: float     # Variance from source density — advisory
 
     # Back-Translation
     back_translation_checks: int     # Number of sentences checked
@@ -239,7 +240,7 @@ Keyword translation is NOT a direct word-for-word process. The correct approach:
 1. **Identify source keywords** from the ContentForge SEO phase output
 2. **Research target market search terms** -- what do people in the target market actually search for?
 3. **Select best match** -- may be a direct translation, a local equivalent, or a different phrasing entirely
-4. **Verify density** -- keyword density should be within +/- 0.5% of the source density target
+4. **Verify placement parity** -- the target-language keyword must occupy the same five placements as the source (title, first 100 words, 2+ H2s, conclusion, meta description). Density is advisory only: report it, and only investigate if it falls well outside ~1-2%.
 
 ### Meta Tag Constraints
 
@@ -295,10 +296,10 @@ The Translator Agent handles all translation natively without quality loss. Deep
 
 ### Invoked By
 
-The Translation Manager is called by the `/cf-translate` skill:
+The Translation Manager is called by the `/contentforge:cf-translate` skill:
 
 ```
-/cf-translate --> Translation Manager --> Translator Agent (11-translator)
+/contentforge:cf-translate --> Translation Manager --> Translator Agent (11-translator)
                                       --> Humanizer Agent (06.5-humanizer)
                                       --> Google Drive (output)
 ```
@@ -306,7 +307,7 @@ The Translation Manager is called by the `/cf-translate` skill:
 ### Processing Flow
 
 ```
-1. /cf-translate receives user input
+1. /contentforge:cf-translate receives user input
 2. Translation Manager validates inputs and loads source content
 3. Element Classification scans and tags all elements
 4. Translator Agent processes content section by section
@@ -322,7 +323,7 @@ The Translation Manager is called by the `/cf-translate` skill:
 When multiple target languages are specified:
 
 ```
-/cf-translate source.docx --lang=es,fr,de
+/contentforge:cf-translate source.docx --lang=es,fr,de
 
 Translation Manager:
   1. Source analysis (once, shared across all languages)
@@ -350,22 +351,24 @@ Translation Manager:
 
 ---
 
-## Implementation Checklist
+## Required Behaviours
 
-- [x] Element classification engine (immutable vs translatable tagging)
-- [x] Brand voice mapping loader (reads from `config/multilingual-patterns.json`)
-- [x] Citation URL verification (pre/post comparison, zero tolerance)
-- [x] SEO keyword adaptation logic (research, not just translate)
-- [x] Meta tag character limit enforcement (per-language limits)
-- [x] Target language AI pattern detection (per-language phrase lists)
-- [x] Readability scoring per language (metric selection from config)
-- [x] Back-translation spot check (3-5 sentence sample)
-- [x] DeepL MCP integration with graceful fallback
-- [x] TranslationRequest / TranslationResponse data structures
-- [x] ElementRegistry with post-translation verification
-- [x] Multi-language batch orchestration with shared source analysis
-- [x] Google Drive output organization (`[Brand]/[Language]/` structure)
-- [x] Translation report generation (JSON + human-readable)
+The Translation Manager must provide all of the following:
+
+- Element classification engine (immutable vs translatable tagging)
+- Brand voice mapping loader (reads from `config/multilingual-patterns.json`)
+- Citation URL verification (pre/post comparison, zero tolerance)
+- SEO keyword adaptation logic (research, not just translate)
+- Meta tag character limit enforcement (per-language limits)
+- Target language AI pattern detection (per-language phrase lists)
+- Readability scoring per language (metric selection from config)
+- Back-translation spot check (3-5 sentence sample)
+- DeepL MCP integration with graceful fallback
+- TranslationRequest / TranslationResponse data structures
+- ElementRegistry with post-translation verification
+- Multi-language batch orchestration with shared source analysis
+- Output organization by `[Brand]/[Language]/` under the brand's configured backend (local by default, Drive if configured)
+- Translation report generation (JSON + human-readable)
 
 ---
 
@@ -374,7 +377,7 @@ Translation Manager:
 ### Source Quality Below Threshold
 ```
 Error: Source quality score 5.8 < 7.0 minimum
-Action: Return error to user, recommend /contentforge or /content-refresh first
+Action: Return error to user, recommend /contentforge:create-content or /contentforge:content-refresh first
 ```
 
 ### Unsupported Language

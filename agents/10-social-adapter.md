@@ -267,7 +267,7 @@ Deliver a **Social Adaptation Report** containing:
 
 | Content Type | Adjustment |
 |-------------|-----------|
-| **Whitepaper** | Extract 15-20 moments, simplify jargon (-2 grades), more carousels/lists, LinkedIn up to 1,500 chars, Twitter gets thread format (3-5 tweets) |
+| **Whitepaper** | Extract 15-20 moments, simplify jargon (-2 grades), more carousels/lists, LinkedIn posts run to the top of `linkedin.ideal_length` in `config/social-platform-specs.json` (never past `linkedin.character_limit`), Twitter gets thread format (3-5 tweets) |
 | **FAQ** | Each Q&A = potential post. Twitter: "Q: / A:" format. Instagram: Q&A carousel slides. Facebook: "What would YOU answer?" polls |
 | **Research Paper** | Strip academic language, lead with finding not methodology, use "Scientists found..." framing, cite institution name for credibility, more provocative/counterintuitive posts |
 

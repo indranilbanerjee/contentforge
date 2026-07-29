@@ -98,14 +98,19 @@ def get_client(credentials_path):
 
 
 def get_worksheet(client, sheet_id, tab_name=DEFAULT_TAB):
-    """Get or create the tracking worksheet."""
+    """Get or create the tracking worksheet.
+
+    Returns (worksheet, created, error). `created` is True when this call had to
+    add the tab (and therefore already wrote the headers) — init needs that to
+    avoid reporting "already_initialized" for a tab it just made."""
     try:
         spreadsheet = client.open_by_key(sheet_id)
     except gspread.SpreadsheetNotFound:
-        return None, f"Spreadsheet not found: {sheet_id}. Share it with the service account email."
+        return None, False, f"Spreadsheet not found: {sheet_id}. Share it with the service account email."
     except Exception as e:
-        return None, f"Error opening spreadsheet: {e}"
+        return None, False, f"Error opening spreadsheet: {e}"
 
+    created = False
     try:
         worksheet = spreadsheet.worksheet(tab_name)
     except gspread.WorksheetNotFound:
@@ -114,17 +119,23 @@ def get_worksheet(client, sheet_id, tab_name=DEFAULT_TAB):
         worksheet.update([HEADERS], "A1")
         # Bold the header row
         worksheet.format("A1:T1", {"textFormat": {"bold": True}})
+        created = True
 
-    return worksheet, None
+    return worksheet, created, None
 
 
 # ── Operations ──────────────────────────────────────────────────────
 
 def init_sheet(client, sheet_id, tab_name):
     """Initialize the tracking sheet with headers and formatting."""
-    ws, err = get_worksheet(client, sheet_id, tab_name)
+    ws, created, err = get_worksheet(client, sheet_id, tab_name)
     if err:
         return {"error": err}
+
+    if created:
+        # get_worksheet added the tab and wrote the headers just now.
+        return {"status": "initialized", "sheet_id": sheet_id, "tab": tab_name,
+                "columns": len(HEADERS), "tab_created": True}
 
     # Check if headers already exist
     existing = ws.row_values(1)
@@ -140,7 +151,7 @@ def init_sheet(client, sheet_id, tab_name):
 
 def add_row(client, sheet_id, tab_name, data):
     """Add a new content request row."""
-    ws, err = get_worksheet(client, sheet_id, tab_name)
+    ws, _created, err = get_worksheet(client, sheet_id, tab_name)
     if err:
         return {"error": err}
 
@@ -187,7 +198,7 @@ def add_row(client, sheet_id, tab_name, data):
 
 def get_pending(client, sheet_id, tab_name, brand_filter=None):
     """Get all rows with status='pending'."""
-    ws, err = get_worksheet(client, sheet_id, tab_name)
+    ws, _created, err = get_worksheet(client, sheet_id, tab_name)
     if err:
         return {"error": err}
 
@@ -214,7 +225,7 @@ def get_pending(client, sheet_id, tab_name, brand_filter=None):
 
 def get_row(client, sheet_id, tab_name, row_id):
     """Get a specific row by requirement_id."""
-    ws, err = get_worksheet(client, sheet_id, tab_name)
+    ws, _created, err = get_worksheet(client, sheet_id, tab_name)
     if err:
         return {"error": err}
 
@@ -229,7 +240,7 @@ def get_row(client, sheet_id, tab_name, row_id):
 
 def update_row(client, sheet_id, tab_name, row_id, data):
     """Update specific fields in a row identified by requirement_id."""
-    ws, err = get_worksheet(client, sheet_id, tab_name)
+    ws, _created, err = get_worksheet(client, sheet_id, tab_name)
     if err:
         return {"error": err}
 
@@ -273,22 +284,24 @@ def mark_complete(client, sheet_id, tab_name, row_id, data):
         "completed_at": now,
     }
 
-    # Map common fields from agent output
-    field_map = {
-        "quality_score": "quality_score",
-        "content_quality": "content_quality",
-        "citation_integrity": "citation_integrity",
-        "brand_compliance": "brand_compliance",
-        "seo_performance": "seo_performance",
-        "readability": "readability",
-        "actual_word_count": "actual_word_count",
-        "drive_url": "drive_url",
-        "notes": "notes",
-    }
+    # Fields the agent may supply on completion. Column names match the sheet
+    # headers, so this is a membership filter, not a rename map — anything else
+    # in --data is ignored rather than written to an arbitrary column.
+    COMPLETION_FIELDS = (
+        "quality_score",
+        "content_quality",
+        "citation_integrity",
+        "brand_compliance",
+        "seo_performance",
+        "readability",
+        "actual_word_count",
+        "drive_url",
+        "notes",
+    )
 
-    for key, col in field_map.items():
+    for key in COMPLETION_FIELDS:
         if key in data:
-            completion_data[col] = data[key]
+            completion_data[key] = data[key]
 
     return update_row(client, sheet_id, tab_name, row_id, completion_data)
 

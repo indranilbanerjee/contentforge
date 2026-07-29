@@ -25,7 +25,8 @@
     "format": {
       "line_breaks": true,
       "line_break_style": "double_newline_between_paragraphs",
-      "list_style": "-- (em dash prefix)",
+      "list_style": "plain_line_breaks_or_bullet",
+      "_list_style_note": "One item per line, optionally prefixed with a bullet character. Do NOT prefix list items with dashes — dash-prefixed lines read as em-dash overuse to the Phase 6.5 humanizer (catalog pattern 14).",
       "emojis": "minimal_or_none",
       "link_placement": "end_of_post_or_first_comment",
       "truncation_point": 210,
@@ -197,7 +198,8 @@
         "width": 1080,
         "height": 1080,
         "ratio": "1:1",
-        "max_slides": 10,
+        "max_slides": 20,
+        "_max_slides_note": "Instagram raised the carousel ceiling to 20 slides (from 10) in 2025. ~10 slides remains the practical engagement ceiling — completion rates fall off sharply beyond that.",
         "formats": ["PNG", "JPG"]
       }
     },

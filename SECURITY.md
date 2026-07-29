@@ -40,7 +40,7 @@ If you cannot use Private Security Advisories, contact the maintainer via the em
 
 In scope:
 - The CF plugin itself (skills, scripts, agents, manifests, MCP catalog)
-- The example C2PA signing flow (`scripts/c2pa_sign.py`)
+- The C2PA signing flow (`scripts/generate-docx.py --c2pa-sign`, incl. `--c2pa-signing-cert` / `--c2pa-signing-key` handling)
 - The Python scripts (any path traversal, command injection, or unsafe deserialization)
 - Plugin manifest parsing edge cases that could be exploited
 

@@ -21,14 +21,17 @@
 - Optional: Document version number
 
 **Example:**
+
+> SYNTHETIC EXAMPLE — fabricated for illustration. The author, title, and organization below are placeholders; never reuse them as facts in real content.
+
 ```
 The Future of AI-Powered Content Production:
 A Comprehensive Analysis of Multi-Agent Systems in Enterprise Marketing
 
-By Dr. Sarah Chen, Chief Research Officer
-ContentForge Research Institute
+By [Author Name], [Title]
+[Organization Name]
 
-February 2026
+[Publication Month Year]
 Version 1.0
 ```
 
@@ -269,7 +272,7 @@ References
 - All references must be cited in text
 - URLs must be live and accessible
 - Include DOI when available
-- Include access date for web sources (APA 7th ed. requires it)
+- Include a retrieval date ONLY for sources designed to change over time (wikis, live dashboards, unarchived pages) — APA 7th does not require one for stable web sources
 
 ---
 
@@ -330,7 +333,7 @@ References
 
 **Readability:**
 - Flesch-Kincaid Grade Level: 12-14 (college/professional level)
-- Flesch Reading Ease: 30-50 (difficult, appropriate for professional audience)
+- Flesch Reading Ease: 30-50 (difficult, appropriate for professional audience) — enforced by the `whitepaper` entry in `config/scoring-thresholds.json` → `content_type_overrides.whitepaper.quality_gates.phase_5_structure`, which relaxes the default 60-80 Reading Ease band for this content type
 - Average sentence length: 18-25 words
 - Paragraphs: 3-5 sentences (professional density)
 - Technical accuracy paramount
@@ -365,7 +368,7 @@ References
 ```
 Figure 3: Multi-Agent Content Pipeline Architecture
 
-[Diagram showing 8-phase pipeline]
+[Diagram showing the 10-phase pipeline]
 
 Source: Adapted from Anderson & Chen (2025), with modifications.
 ```

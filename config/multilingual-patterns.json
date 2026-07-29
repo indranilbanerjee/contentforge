@@ -44,6 +44,11 @@
         "characteristics": ["Confident phrasing", "Evidence-first structure", "Formal Lei register"],
         "avoid": ["Informal tu in professional context", "Hyperbole without evidence"]
       },
+      "nl": {
+        "equivalent": "Zakelijk, feitgedreven",
+        "characteristics": ["Objective, fact-first sentences", "Precise terminology", "Formal u register"],
+        "avoid": ["Informal je/jij in professional text", "Exaggeration", "Emotional appeals without data"]
+      },
       "ja": {
         "equivalent": "Formal keigo, data-driven",
         "characteristics": ["Formal keigo (honorific language)", "Data opens paragraphs", "Understated confidence"],
@@ -68,6 +73,26 @@
         "equivalent": "Formal, data-pradhaan",
         "characteristics": ["Formal Hindi with Sanskritized vocabulary", "Statistics prominent", "Respectful tone"],
         "avoid": ["Colloquial Hinglish", "Informal pronouns", "Slang"]
+      },
+      "ru": {
+        "equivalent": "Ofitsialno-delovoy, data-driven",
+        "characteristics": ["Official-business register", "Statistics lead paragraphs", "Formal vy address"],
+        "avoid": ["Informal ty", "Colloquial filler", "Hedging language"]
+      },
+      "pl": {
+        "equivalent": "Oficjalny, oparty na danych",
+        "characteristics": ["Formal Pan/Pani register", "Data-first structure", "Precise terminology"],
+        "avoid": ["Informal ty in professional text", "Colloquialisms", "Vague qualifiers"]
+      },
+      "tr": {
+        "equivalent": "Resmi, veriye dayali",
+        "characteristics": ["Formal siz address", "Data leads paragraphs", "Precise terminology"],
+        "avoid": ["Informal sen", "Slang", "Hedging language"]
+      },
+      "vi": {
+        "equivalent": "Trang trong, dua tren du lieu",
+        "characteristics": ["Formal register", "Data-first sentences", "Respectful address (quy khach / ban doc)"],
+        "avoid": ["Regional slang", "Overly casual sentence-final particles", "Unsupported superlatives"]
       }
     },
     "conversational": {
@@ -96,6 +121,11 @@
         "characteristics": ["Informal tu", "Engaging questions", "Natural flow"],
         "avoid": ["Formal Lei", "Stiff academic register"]
       },
+      "nl": {
+        "equivalent": "Vlot, je-vorm",
+        "characteristics": ["Informal je/jij", "Short direct sentences", "Reader-directed questions"],
+        "avoid": ["Formal u", "Long subordinate clauses", "Ambtelijk (bureaucratic) Dutch"]
+      },
       "ja": {
         "equivalent": "Casual desu/masu",
         "characteristics": ["Polite but casual desu/masu form", "Reader questions", "Relatable examples"],
@@ -120,6 +150,26 @@
         "equivalent": "Sahaj, aap-form friendly",
         "characteristics": ["Friendly aap register", "Simple Hindi", "Relatable examples"],
         "avoid": ["Heavy Sanskritized vocabulary", "Formal tum/aap distinctions"]
+      },
+      "ru": {
+        "equivalent": "Razgovorny, blizky k chitatelyu",
+        "characteristics": ["Direct reader address", "Short sentences", "Rhetorical questions"],
+        "avoid": ["Kantselyarit (bureaucratese)", "Stacked verbal nouns", "Passive constructions"]
+      },
+      "pl": {
+        "equivalent": "Swobodny, forma ty",
+        "characteristics": ["Informal ty", "Short sentences", "Direct address"],
+        "avoid": ["Formal Pan/Pani", "Bureaucratic phrasing", "Long subordinate chains"]
+      },
+      "tr": {
+        "equivalent": "Samimi, sen dili",
+        "characteristics": ["Informal sen address", "Short sentences", "Rhetorical questions"],
+        "avoid": ["Formal resmi register", "Long agglutinated sentences", "Bureaucratic phrasing"]
+      },
+      "vi": {
+        "equivalent": "Gan gui, xung ho than mat",
+        "characteristics": ["Friendly ban address", "Short sentences", "Direct questions to the reader"],
+        "avoid": ["Heavy Sino-Vietnamese vocabulary", "Officialese", "Regional slang that excludes readers"]
       }
     },
     "technical": {
@@ -148,6 +198,11 @@
         "characteristics": ["Italian technical vocabulary", "Precise definitions"],
         "avoid": ["Oversimplification of technical concepts"]
       },
+      "nl": {
+        "equivalent": "Vakinhoudelijk, samenstellingen",
+        "characteristics": ["Dutch compound terms for technical concepts", "Precise vaktaal", "NEN/EN standards awareness"],
+        "avoid": ["English loanwords where a standard Dutch term exists", "Imprecise paraphrasing"]
+      },
       "ja": {
         "equivalent": "Senmon-teki, katakana loanwords",
         "characteristics": ["Technical katakana terms where standard", "Precise Japanese equivalents where they exist", "Clear definitions for specialized terms"],
@@ -172,6 +227,26 @@
         "equivalent": "Takneeki, paribhashit shabd",
         "characteristics": ["Hindi technical terms (Sanskritized where standard)", "Clear definitions"],
         "avoid": ["Inconsistent term usage", "Unnecessary English mixing"]
+      },
+      "ru": {
+        "equivalent": "Tekhnichesky, tochnaya terminologiya",
+        "characteristics": ["Established Russian technical terms (GOST conventions where applicable)", "Define on first use, then use freely"],
+        "avoid": ["Unnecessary transliterated English", "Inconsistent terminology"]
+      },
+      "pl": {
+        "equivalent": "Techniczny, precyzyjna terminologia",
+        "characteristics": ["Established Polish technical terms", "Definitions on first use", "PN standards awareness"],
+        "avoid": ["Unnecessary English loanwords", "Inconsistent declension of borrowed terms"]
+      },
+      "tr": {
+        "equivalent": "Teknik, terim tutarliligi",
+        "characteristics": ["TDK-preferred Turkish terms where a standard exists", "Consistent term usage", "Definitions on first use"],
+        "avoid": ["Mixing English and Turkish forms of the same term", "Imprecise paraphrasing"]
+      },
+      "vi": {
+        "equivalent": "Ky thuat, thuat ngu nhat quan",
+        "characteristics": ["Consistent Vietnamese technical terms, English term in parentheses on first use", "Clear definitions"],
+        "avoid": ["Switching between English and Vietnamese forms of a term", "Imprecise paraphrasing"]
       }
     },
     "witty": {
@@ -200,6 +275,11 @@
         "characteristics": ["Elegant wit", "Double meanings", "Cultural cleverness"],
         "avoid": ["Heavy sarcasm in professional context"]
       },
+      "nl": {
+        "equivalent": "Droge humor, understatement",
+        "characteristics": ["Dry, understated wit", "Self-deprecating asides", "Wordplay on compounds"],
+        "avoid": ["Slapstick", "Sarcasm that reads as blunt rather than funny"]
+      },
       "ja": {
         "equivalent": "Light irony only",
         "characteristics": ["Subtle understatement", "Gentle self-deprecation", "Wordplay (dajare) only if brand allows"],
@@ -224,6 +304,26 @@
         "equivalent": "Haasyapoorn, light humor",
         "characteristics": ["Gentle wit", "Relatable observations", "Wordplay"],
         "avoid": ["Aggressive sarcasm", "Humor that crosses regional sensitivities"]
+      },
+      "ru": {
+        "equivalent": "Ironichny, sderzhanny yumor",
+        "characteristics": ["Dry irony", "Literary allusions", "Understatement"],
+        "avoid": ["Aggressive sarcasm", "Humor about politics or history"]
+      },
+      "pl": {
+        "equivalent": "Dowcipny, gra slow",
+        "characteristics": ["Wordplay", "Dry humor", "Self-aware asides"],
+        "avoid": ["Slapstick", "Humor about history or religion"]
+      },
+      "tr": {
+        "equivalent": "Nukteli, kelime oyunu",
+        "characteristics": ["Wordplay", "Warm humor", "Everyday observations"],
+        "avoid": ["Sarcasm aimed at the reader", "Humor about politics or religion"]
+      },
+      "vi": {
+        "equivalent": "Hom hinh, choi chu",
+        "characteristics": ["Light wordplay", "Everyday observations", "Gentle self-deprecation"],
+        "avoid": ["Sarcasm that reads as rude", "Humor about regional differences or history"]
       }
     }
   },
@@ -462,6 +562,13 @@
       "whitepaper_target": { "min": 35, "max": 50 },
       "grade_level_equivalent": "Higher = easier (0-100 scale)"
     },
+    "nl": {
+      "metric": "Flesch-Douma (Dutch adaptation of Flesch Reading Ease)",
+      "article_target": { "min": 45, "max": 65 },
+      "blog_target": { "min": 65, "max": 75 },
+      "whitepaper_target": { "min": 35, "max": 50 },
+      "grade_level_equivalent": "Same 0-100 direction as Flesch Reading Ease (higher = easier); Dutch compounds pull scores slightly below the English equivalent"
+    },
     "ja": {
       "metric": "Sentence length (chars)",
       "article_target": { "min": 35, "max": 45, "unit": "chars_per_sentence" },
@@ -529,7 +636,6 @@
   "ai_pattern_removal": {
     "es": [
       "profundizar",
-      "profundizar en",
       "es importante destacar",
       "cabe mencionar",
       "vale la pena senalar",
@@ -611,6 +717,23 @@
       "una soluzione robusta",
       "all'avanguardia",
       "rivoluzionario"
+    ],
+    "nl": [
+      "het is belangrijk om op te merken",
+      "het is van belang te vermelden",
+      "in de wereld van vandaag",
+      "in het huidige landschap",
+      "benutten",
+      "inzetten (as generic filler)",
+      "optimaliseren (overused)",
+      "in het kader van",
+      "kortom",
+      "samenvattend",
+      "daarnaast",
+      "in dit verband",
+      "op maat gemaakt",
+      "toekomstbestendig",
+      "een onmisbaar hulpmiddel"
     ],
     "ja": [
       "to iu koto wa juuyou desu",

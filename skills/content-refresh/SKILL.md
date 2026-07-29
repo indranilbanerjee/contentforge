@@ -21,7 +21,7 @@ Use `/contentforge:content-refresh` when:
 
 ## What This Command Does
 
-1. **Load Existing Content** — Read current .docx from Google Drive
+1. **Load Existing Content** — Read the current .docx from wherever the brand's `tracking.backend` stores it (local filesystem, Airtable attachment, or Google Drive)
 2. **Analyze What to Keep** — Identify evergreen sections, high-performing segments
 3. **Research Updates** — Find current statistics, new sources, recent examples
 4. **Selective Rewrite** — Update outdated sections, preserve working content
@@ -119,7 +119,7 @@ Recommendation: Medium Refresh (50% rewrite)
 - **Phase 2 (Fact-Checker)**: Verify ONLY new claims and updated statistics
 - **Phase 4 (Validator)**: Check for hallucinations in rewritten sections
 - **Phase 5 (Structurer)**: Ensure refreshed content flows naturally with preserved sections
-- **Phase 6 (SEO)**: Maintain keyword density ±0.3%, preserve meta structure
+- **Phase 6 (SEO)**: Preserve the original keyword **placements** (title, H1, first 100 words, 2-3 H2s, conclusion) and meta structure. Density is monitored for drift and reported — it is advisory, never a target to pad toward.
 - **Phase 6.5 (Humanizer)**: Re-humanize rewritten sections
 - **Phase 7 (Reviewer)**: Re-score (target: ±0.5 points from original score)
 
@@ -331,12 +331,12 @@ https://docs.google.com/.../article-3,heavy,3,Topic outdated, needs rewrite
 ```
 
 **Step 3: Process (standard batch orchestration)**
-- Up to 5 concurrent refresh pipelines
-- Prioritized by `priority` column
-- Progress dashboard shows refresh status
+- **Sequential — one refresh pipeline at a time.** There is no concurrency.
+- Queue order is set by the `priority` column
+- Every phase of every piece is checkpointed, so an interrupted batch resumes where it stopped rather than restarting
 - Completion report with before/after scores
 
-Parallel batch runs finish substantially faster than sequential refreshes; actual time varies by scope mix and model speed.
+Total time scales roughly with the number of pieces and their refresh scope; batching buys queue management and resumability, not a speedup.
 
 ## Integration with Other Skills
 
@@ -350,9 +350,9 @@ Parallel batch runs finish substantially faster than sequential refreshes; actua
 
 ## Limitations
 
-- Cannot refresh content not originally created by ContentForge (no baseline quality score)
+- Content not originally created by ContentForge has **no baseline quality score**, so the refresh is graded absolutely rather than as a delta — the "±0.5 of original" criterion below does not apply to imported pieces handed over from `/contentforge:cf-audit`
 - Heavy Refresh (80%) is almost same time as new content (use sparingly)
-- Requires original .docx file in Google Drive (can't refresh from published URLs alone)
+- Requires the original .docx to be retrievable from the brand's configured tracking backend (can't refresh from published URLs alone)
 
 ## Success Criteria
 
@@ -360,12 +360,12 @@ Parallel batch runs finish substantially faster than sequential refreshes; actua
 - Quality score within ±0.5 of original
 - Freshness score improves to 85-100
 - All broken links fixed
-- Keyword density maintained
+- Keyword placements preserved (density drift reported as advisory)
 - SEO rankings stable or improve within 2-4 weeks
 
 **Bad Refresh (requires redo):**
 - Quality score drops >1.0 point
-- Keyword density changes >1%
+- A keyword placement slot (title, H1, first 100 words, H2s, conclusion) lost its primary keyword
 - Internal links broken
 - Brand voice inconsistency
 

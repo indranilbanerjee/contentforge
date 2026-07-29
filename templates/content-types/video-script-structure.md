@@ -25,7 +25,7 @@
 | INTRO | 0:03-0:10 | 7s | 14-18 words | Frame the topic |
 | SCENE 1 | 0:10-0:28 | 18s | 36-45 words | Key point 1 |
 | SCENE 2 | 0:28-0:45 | 17s | 34-43 words | Key point 2 |
-| CTA | 0:45-0:60 | 15s | 30-38 words | Drive action |
+| CTA | 0:45-1:00 | 15s | 30-38 words | Drive action |
 | **Total** | | **60s** | **120-150 words** | |
 
 ### 3 Minutes
@@ -195,13 +195,16 @@ SFX: [any specific sound effects at timestamps]
 ```
 
 **Example Scene (5-minute YouTube):**
+
+> SYNTHETIC EXAMPLE — fabricated for illustration. The study, journal, statistics, and results below are invented; never reuse them as facts in real content.
+
 ```
 === SCENE 2: AI Diagnostic Accuracy ===
 TIMESTAMP: 1:30 - 2:30
 DURATION: 60 seconds
 
 --- DIALOGUE ---
-"The first breakthrough is accuracy. A study in The Lancet tested an AI
+"The first breakthrough is accuracy. A [journal] study tested an AI
 system against 200 experienced radiologists. (PAUSE)
 
 The AI detected cancerous lesions with 94.5% accuracy. The average
@@ -326,7 +329,7 @@ MUSIC: Fade out to channel theme
 - **Fast Cuts:** New visual every 2-3 seconds
 - **Trending Audio:** Reference trending sounds or use original with hook
 - **Loop Potential:** Last frame should connect thematically to first frame
-- **Text-Heavy:** Assume 40% of viewers watch without sound
+- **Text-Heavy:** Assume a large share of viewers watch without sound — every key point needs a text overlay
 - **Vertical:** All visual directions assume 9:16 frame
 - **Stitch/Duet Ready:** Open with a statement others can react to
 
@@ -453,6 +456,8 @@ Resources mentioned:
 
 **Topic:** "AI in Healthcare" | **Tone:** Entertaining | **Hook:** Statistic
 
+> SYNTHETIC EXAMPLE — fabricated for illustration. Every statistic, study, and result below is invented; never reuse them as facts in real content.
+
 ```
 === HOOK ===
 TIMESTAMP: 0:00-0:01
@@ -467,12 +472,12 @@ SFX: Impact sound on number reveal
 TIMESTAMP: 0:01-0:15
 
 DIALOGUE: "That's how accurate AI is at detecting cancer. Human doctors?
-88 percent. That 6% gap saves 32 lives. Every. Single. Day."
+88 percent. That 6.5-point gap is 32 more early catches. Every. Single. Day."
 
 ON-SCREEN TEXT:
 Line 1: "AI: 94.5%" (green)
 Line 2: "Doctors: 88%" (yellow)
-Line 3: "32 lives/day" (white, pulsing)
+Line 3: "+32 early catches/day" (white, pulsing)
 
 B-ROLL:
 Shot 1: AI scan with highlighted detection (4s)
@@ -490,7 +495,7 @@ scan like its first. Three hospitals piloted it last year. Result?
 Cancer detection up 23%. Costs down 40%."
 
 ON-SCREEN TEXT:
-Line 1: "Never tired. Never wrong."
+Line 1: "Never tired. Consistently accurate."
 Line 2: "+23% detection"
 Line 3: "-40% cost"
 

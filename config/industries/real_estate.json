@@ -124,7 +124,7 @@
   },
 
   "humanizer_notes": {
-    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 7). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
+    "_description": "Industry-specific AI telltale phrases and replacements applied by the Humanizer agent (Phase 6.5 Step 1). Authored July 2026 (this industry was not covered by the old humanization-patterns.json block).",
     "ai_telltale_phrases": [
       "nestled in the heart of",
       "boasts stunning views",

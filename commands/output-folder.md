@@ -16,7 +16,7 @@ User runs `/contentforge:output-folder`, or asks any variant of "where did my fi
 ContentForge writes two copies of every finished `.docx`:
 
 1. **Internal tracking copy** at `~/.claude-marketing/{brand}/tracking/outputs/{year}/{month}/{slug}_v1.0.docx`. This is the system-of-record for `/contentforge:cf-analytics`, `/contentforge:cf-audit`, etc. It lives inside a dotfolder that Windows hides by default — users rarely find it.
-2. **User-visible published copy** at `~/Documents/ContentForge/{brand}/{content_type}/{YYYY-MM}/{slug}.docx` (or wherever `$CONTENTFORGE_PUBLISH_DIR` points). This is the one to surface.
+2. **User-visible published copy** at `~/Documents/ContentForge/{brand}/{content_type}/{YYYY-MM}/{slug}.docx`. If `$CONTENTFORGE_PUBLISH_DIR` is set it replaces the whole `~/Documents/ContentForge/{brand}` prefix — see the warning in Configuration below. This is the copy to surface.
 
 The published copy was added in v3.12.3 specifically because end users reported "the file isn't saving on local drive" — it was saving, just somewhere they couldn't see.
 
@@ -24,10 +24,15 @@ The published copy was added in v3.12.3 specifically because end users reported 
 
 ### Step 1: Resolve the path
 
-The published-output directory is:
+The published-output directory resolves exactly as `local-tracker.py get_publish_dir()` does — first non-empty wins:
 
-- `$CONTENTFORGE_PUBLISH_DIR/{brand}/` if the env var is set, or
-- `~/Documents/ContentForge/{brand}/` otherwise.
+1. `--publish-dir` override, if passed
+2. `$CONTENTFORGE_PUBLISH_DIR/` if the env var is set — **note: no `{brand}` segment is appended in this branch**
+3. `~/Documents/ContentForge/{brand-slug}/` otherwise
+
+A `{content_type-slug}` segment is appended after that base in every branch.
+
+So when the env var is set, the resolved folder is `$CONTENTFORGE_PUBLISH_DIR/{content_type}/` — the same tree for every brand. Report the path that actually resolves; do not invent a `{brand}` segment that isn't there.
 
 Default to the active brand if no argument was provided. If neither is available, prompt: "Which brand's output folder? Run `/contentforge:output-folder <brand>` or set up a brand with `/contentforge:brand-setup`."
 
@@ -85,6 +90,14 @@ export CONTENTFORGE_PUBLISH_DIR="$HOME/Dropbox/Marketing/ContentForge"
 # Per-run
 CONTENTFORGE_PUBLISH_DIR="/mnt/team-share/ContentForge" /contentforge:create-content ...
 ```
+
+> **Warning — `CONTENTFORGE_PUBLISH_DIR` is shared across all brands.**
+> The default path includes a per-brand folder (`~/Documents/ContentForge/{brand}/...`), but
+> the env-var branch does **not** append the brand. Every brand publishes into the same
+> `$CONTENTFORGE_PUBLISH_DIR/{content_type}/{YYYY-MM}/` tree, so two brands producing a
+> piece with the same slug in the same month will collide. If you run more than one brand,
+> either leave the env var unset or point it at a per-brand location (for example, set it
+> per-run rather than in your shell profile).
 
 The internal tracking copy (under `~/.claude-marketing/`) is unchanged — that stays as the plugin's system-of-record. The env var only affects the published copy.
 

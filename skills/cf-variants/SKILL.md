@@ -215,7 +215,7 @@ VARIATION SCORES (Ranked by Composite)
     │ Keyword Presence: 6.5  ██████░░░░               │
     │ Brand Voice Fit:  7.5  ███████░░░               │
     ├────────────────────────────────────────────────┤
-    │ COMPOSITE SCORE:  8.3 / 10                     │
+    │ COMPOSITE SCORE:  8.5 / 10                     │
     └────────────────────────────────────────────────┘
     Why it works: Contrarian angle ("wrong about AI")
     provokes click. Specific stat (73%) adds authority.
@@ -232,30 +232,14 @@ VARIATION SCORES (Ranked by Composite)
     │ Keyword Presence: 9.0  █████████░               │
     │ Brand Voice Fit:  8.5  ████████░░               │
     ├────────────────────────────────────────────────┤
-    │ COMPOSITE SCORE:  8.1 / 10                     │
+    │ COMPOSITE SCORE:  8.2 / 10                     │
     └────────────────────────────────────────────────┘
     Why it works: How-to structure sets clear
     expectation. Concrete outcome ("40%") adds
     credibility. Year tag ("2026 Data") signals
     freshness. Strong SEO keyword placement.
 
-#4  "AI in Healthcare Is No Longer Optional
-     — Here's Your 90-Day Action Plan"
-    ┌────────────────────────────────────────────────┐
-    │ Clarity:          8.5  ████████░░               │
-    │ Emotional Appeal: 7.5  ███████░░░               │
-    │ Specificity:      7.0  ███████░░░               │
-    │ Curiosity Gap:    7.0  ███████░░░               │
-    │ Keyword Presence: 8.0  ████████░░               │
-    │ Brand Voice Fit:  8.0  ████████░░               │
-    ├────────────────────────────────────────────────┤
-    │ COMPOSITE SCORE:  7.6 / 10                     │
-    └────────────────────────────────────────────────┘
-    Why it works: Urgency framing ("no longer
-    optional"). Actionable promise ("90-day plan")
-    reduces perceived effort. Good keyword placement.
-
-#5  "What Happened When 12 Hospitals Deployed AI
+#4  "What Happened When 12 Hospitals Deployed AI
      Last Quarter"
     ┌────────────────────────────────────────────────┐
     │ Clarity:          8.0  ████████░░               │
@@ -265,12 +249,28 @@ VARIATION SCORES (Ranked by Composite)
     │ Keyword Presence: 6.0  ██████░░░░               │
     │ Brand Voice Fit:  7.5  ███████░░░               │
     ├────────────────────────────────────────────────┤
-    │ COMPOSITE SCORE:  7.4 / 10                     │
+    │ COMPOSITE SCORE:  7.7 / 10                     │
     └────────────────────────────────────────────────┘
     Why it works: Story-lead ("what happened when")
     creates narrative pull. Specific ("12 hospitals",
     "last quarter") builds trust. Curiosity gap is
     strong but keyword integration is weaker.
+
+#5  "AI in Healthcare Is No Longer Optional
+     — Here's Your 90-Day Action Plan"
+    ┌────────────────────────────────────────────────┐
+    │ Clarity:          8.5  ████████░░               │
+    │ Emotional Appeal: 7.5  ███████░░░               │
+    │ Specificity:      7.0  ███████░░░               │
+    │ Curiosity Gap:    7.0  ███████░░░               │
+    │ Keyword Presence: 8.0  ████████░░               │
+    │ Brand Voice Fit:  8.0  ████████░░               │
+    ├────────────────────────────────────────────────┤
+    │ COMPOSITE SCORE:  7.5 / 10                     │
+    └────────────────────────────────────────────────┘
+    Why it works: Urgency framing ("no longer
+    optional"). Actionable promise ("90-day plan")
+    reduces perceived effort. Good keyword placement.
 
 ================================================================
 TOP 3 RECOMMENDATIONS
@@ -351,7 +351,7 @@ Alignment with the registered brand personality. If no brand is specified, score
 ## Element Type Guidelines
 
 ### Headlines
-- Optimal length: 6-12 words (40-70 characters for search)
+- Optimal length: 6-12 words (40-60 characters for search — 60 is the `meta_title_max_chars` ceiling)
 - At least one variation should be a question
 - At least one should include a number
 - Avoid clickbait that content cannot deliver on

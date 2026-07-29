@@ -69,7 +69,7 @@ Use `/contentforge:cf-publish` when:
 
 ### Schedule for Later
 ```
-/contentforge:cf-publish REQ-001 --platform=wordpress --status=schedule --date="2026-03-01T09:00:00"
+/contentforge:cf-publish REQ-001 --platform=wordpress --status=schedule --date="2026-09-01T09:00:00"
 ```
 
 ### Publish from Google Drive
@@ -215,7 +215,7 @@ Before pushing, check whether AI-generation disclosure applies:
 
 **If it applies:**
 
-1. **For .docx deliverables** — note that C2PA content provenance signing is available via the `--c2pa` flags on `scripts/generate-docx.py` (see `docs/c2pa-production-cert.md` for certificate setup). If the piece was produced without signing and the user needs it, offer to regenerate the .docx with signing enabled.
+1. **For .docx deliverables** — note that C2PA content provenance signing is available via `--c2pa-sign` (with `--c2pa-signing-cert` and `--c2pa-signing-key`) on `scripts/generate-docx.py` (see `docs/c2pa-production-cert.md` for certificate setup). If the piece was produced without signing and the user needs it, offer to regenerate the .docx with signing enabled.
 2. **For CMS publishes (Webflow/WordPress)** — offer to append a disclosure line to the article, e.g.:
    > "This article was produced with AI assistance and reviewed by [brand]'s editorial team."
    Place it where the brand's guardrails specify (typically the footer or byline area). Record the user's choice in the tracking notes.
@@ -236,8 +236,8 @@ Live URL: https://acme-corp.webflow.io/blog/ai-in-healthcare-2026-trends
 
 **Schedule (future date):**
 ```
-Scheduling for 2026-03-01 09:00 UTC...
-API call: POST /collections/blog-posts/items (draft=true, scheduled_at=2026-03-01T09:00:00Z)
+Scheduling for 2026-09-01 09:00 UTC...
+API call: POST /collections/blog-posts/items (draft=true, scheduled_at=2026-09-01T09:00:00Z)
 Status: 201 Created
 Scheduled Publish: March 1, 2026 at 9:00 AM UTC
 Draft URL: https://acme-corp.webflow.io/blog/ai-in-healthcare-2026-trends (not live yet)
@@ -283,7 +283,7 @@ SEO Elements:
   Robots meta: index, follow                            PASS
 
 ===================================================
-All 12 checks passed. Content is live and verified.
+All 14 checks passed. Content is live and verified.
 ```
 
 **If verification fails:**
@@ -310,9 +310,9 @@ Tracking Sheet Updated:
   Row: 5
   Status: "Published"
   Published URL: https://acme-corp.webflow.io/blog/ai-in-healthcare-2026-trends
-  Published At: 2026-02-25 14:30:00
+  Published At: 2026-07-25 14:30:00
   Platform: Webflow
-  Verification: All 12 checks passed
+  Verification: All 14 checks passed
 ```
 
 ## Fallback: HTML Export Mode
@@ -400,10 +400,10 @@ Quality Score: 9.2/10
 Word Count: 1,947
 Meta Tags: All present and verified
 Images: 3 loaded
-Verification: 12/12 checks passed
+Verification: 14/14 checks passed
 
 Tracking Sheet: Updated (Row 5)
-Published At: 2026-02-25 14:30:00
+Published At: 2026-07-25 14:30:00
 
 ===================================================
 Content is live and verified. No further action required.

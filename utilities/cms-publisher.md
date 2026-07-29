@@ -40,7 +40,7 @@
 
 4. API CALL
    Push content to CMS
-   ├── Webflow: POST /collections/{slug}/items
+   ├── Webflow: POST /v2/collections/{collection_id}/items
    ├── WordPress: POST /wp-json/wp/v2/posts
    ├── Handle: draft / publish / schedule status
    └── Capture: item ID, live URL, API response
@@ -170,7 +170,7 @@ fallback_response = {
         "Set URL slug to: ai-in-healthcare-2026-trends",
         "Preview and publish"
     ],
-    "connector_setup_command": "/digital-marketing-pro:connect webflow"
+    "connector_setup_command": "/contentforge:cf-connect webflow"
 }
 ```
 
@@ -198,7 +198,7 @@ def check_webflow_connector():
     return {
         'connected': False,
         'endpoint': None,
-        'setup_command': '/digital-marketing-pro:connect webflow'
+        'setup_command': '/contentforge:cf-connect webflow'
     }
 ```
 
@@ -229,7 +229,10 @@ def format_for_webflow(content, metadata):
 
 ```
 1. Upload featured image → POST /assets (get asset ID)
-2. Create CMS item → POST /collections/{collection_id}/items
+2. Create CMS item → POST /v2/collections/{collection_id}/items
+   (the endpoint takes the collection ID, not the slug — resolve a
+    human-readable slug first via GET /v2/sites/{site_id}/collections
+    and match on the collection's `slug` field)
 3. If status=publish → POST /sites/{site_id}/publish
 4. Verify → GET published URL
 
@@ -490,7 +493,7 @@ def publish_with_retry(publish_fn, max_retries=3):
 
 ### From cf-publish Skill
 
-The `/cf-publish` skill calls this utility's logic in sequence:
+The `/contentforge:cf-publish` skill calls this utility's logic in sequence:
 
 ```python
 # Step 1: Check connector
@@ -569,10 +572,9 @@ if brand_profile.get('auto_publish', {}).get('enabled', False):
 
 ---
 
-## Version History
+## Planned Extensions
 
-- **v2.1.0**: Initial implementation with Webflow and WordPress support, HTML fallback
-- Future: Notion publishing, HubSpot CMS, Ghost CMS, Medium API
+- Notion publishing, HubSpot CMS, Ghost CMS
 
 ---
 

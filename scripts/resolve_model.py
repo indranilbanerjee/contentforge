@@ -135,7 +135,8 @@ def resolve(alias_or_id: str, *, allow_deprecated: bool = False) -> str:
 
 def check(model_id: str) -> tuple[str, str | None]:
     """Return (status, replacement_id) for a model ID.
-    status is one of: current, supported, preview, deprecated, unknown."""
+    status is one of: current, supported, preview, deprecated, retired, unknown.
+    `retired` means the id no longer responds at the API layer at all."""
     idx = _model_index()
     if model_id not in idx:
         return ("unknown", None)
@@ -223,7 +224,14 @@ def _cmd_check_params(path_str: str, *, as_json: bool = False) -> int:
     unsafe_params = ("temperature", "top_p", "top_k")
     findings = []
     has_opus_47_plus = bool(risky_model_pat.search(text))
-    has_alias_call = "latest-text-anthropic" in text  # resolves to opus-4-8 in the registry
+    # The alias only matters if it currently points at an affected model — resolve
+    # it live rather than baking yesterday's target into a comment.
+    try:
+        alias_target = resolve("latest-text-anthropic")
+    except (KeyError, ValueError, FileNotFoundError):
+        alias_target = ""
+    alias_is_risky = bool(risky_model_pat.fullmatch(alias_target))
+    has_alias_call = "latest-text-anthropic" in text and alias_is_risky
     targets_47_plus = has_opus_47_plus or has_alias_call
 
     if targets_47_plus:
@@ -244,7 +252,9 @@ def _cmd_check_params(path_str: str, *, as_json: bool = False) -> int:
         "path": path_str,
         "targets_opus_47_plus": targets_47_plus,
         "explicit_opus_47_plus_ref": has_opus_47_plus,
-        "uses_latest_text_anthropic_alias": has_alias_call,
+        "uses_latest_text_anthropic_alias": "latest-text-anthropic" in text,
+        "latest_text_anthropic_resolves_to": alias_target,
+        "alias_target_is_affected": alias_is_risky,
         "findings_count": len(findings),
         "findings": findings,
     }
@@ -270,7 +280,7 @@ def main() -> int:
     )
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--alias", help="Resolve an alias (e.g. latest-fast-anthropic) OR a model id")
-    group.add_argument("--check", help="Report status (current/deprecated/supported/preview/unknown) for a model id")
+    group.add_argument("--check", help="Report status (current/supported/preview/deprecated/retired/unknown) for a model id")
     group.add_argument("--list", action="store_true", help="List models (filter with --vendor / --modality / --status / --tier)")
     group.add_argument("--registry-age", action="store_true", help="Print days since last_updated")
     group.add_argument("--registry-path", action="store_true", help="Print path to the loaded registry file")
