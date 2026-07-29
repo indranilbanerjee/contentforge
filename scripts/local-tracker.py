@@ -258,7 +258,7 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
     """Mark a record as completed and copy output to two locations:
 
     1. Internal tracking copy under ``<brand-dir>/tracking/outputs/...``
-       (machine-readable, used by /contentforge:analytics, /contentforge:audit, etc.)
+       (machine-readable, used by /contentforge:cf-analytics, /contentforge:cf-audit, etc.)
     2. **User-visible published copy** under ``~/Documents/ContentForge/{brand}/...``
        (the path end users actually open — fixes the "file isn't saving on local
        drive" report from the v3.12.2 user feedback).
@@ -314,7 +314,13 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
     published_path = None
     today = datetime.now(timezone.utc)
     month_dir = MONTH_NAMES[today.month]
-    title_slug = slugify(target.get("title", row_id))
+    # add_row always writes a "title" key (defaulting to ""), so a dict .get()
+    # default never fires. An empty title used to slugify to "" and publish the
+    # deliverable as a bare ".md" — a hidden dotfile on macOS/Linux that every
+    # other untitled record then overwrote. Fall through to the requirement id.
+    title_slug = (slugify(target.get("title") or "")
+                  or slugify(row_id or "")
+                  or "untitled")
     ext = src.suffix
     content_type = target.get("content_type", "") or None
 

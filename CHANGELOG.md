@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.17.1] — 2026-07-30
+
+### Fixed — Functional testing pass
+
+Every script was executed end-to-end against real inputs (not just unit-tested), which surfaced defects the 145-test suite could not see:
+
+- **Untitled records published a hidden, self-overwriting file.** `local-tracker.py mark-complete` built the output filename from `slugify(target.get("title", row_id))`, but `add_row` always writes a `title` key (defaulting to `""`), so the `row_id` fallback could never fire. An untitled record published the finished deliverable as a bare `.md` — a dotfile that is hidden on macOS and Linux — and every subsequent untitled record silently overwrote it. The slug now falls through title → requirement id → `untitled`.
+- **Dead command references in shipped runtime files.** `scripts/local-tracker.py` and `config/brand-registry-template.json` still pointed at `/contentforge:analytics`, `/contentforge:audit` and `/contentforge:switch-backend`; the shipped skills are `cf-`-prefixed. Corrected.
+- Tests 145 → **149**: new `test_local_tracker_publish.py` covers untitled records, collision between two untitled records, punctuation-only titles, and the normal titled path.
+
 ## [3.17.0] — 2026-07-29
 
 ### Changed — The Line-by-Line Audit

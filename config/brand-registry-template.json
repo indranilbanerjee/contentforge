@@ -239,7 +239,7 @@
     "human_review_required_below": 5.0
   },
   "tracking": {
-    "_instructions": "Configured during brand setup (Step G). Switch backends anytime with /contentforge:switch-backend.",
+    "_instructions": "Configured during brand setup (Step G). Switch backends anytime with /contentforge:cf-switch-backend.",
     "backend": "",
     "_options": "google_sheets | airtable | local",
     "airtable": {
