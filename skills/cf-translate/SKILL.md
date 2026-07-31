@@ -111,6 +111,9 @@ Queues translations for all specified languages and processes them sequentially.
 - **Quality Gate:** All elements classified, immutable list confirmed
 
 ### Step 3: Translation Execution
+
+**Dispatch the agent — do not translate inline.** Call `Task` with `subagent_type: contentforge:translator`, the same way the main orchestrator dispatches its pipeline phases. The Task prompt carries only the source-content path, the brand-profile path, the element map from Step 2, the target language(s) and the localization level. The agent `Read`s the content itself — never inline a full article into the Task prompt. `agents/11-translator.md` owns the translation rules, brand-voice mapping, citation preservation and the per-language quality gate; this skill owns argument parsing, source validation and result presentation.
+
 - Translator Agent (11-translator) processes content section by section
 - Applies localization level rules (literal / adapted / transcreated)
 - Uses DeepL MCP if available (optional) -- falls back to built-in translation

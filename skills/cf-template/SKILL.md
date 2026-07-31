@@ -1,30 +1,30 @@
 ---
 name: cf-template
-description: Create custom content type templates beyond the 5 built-in types with structure and quality standards.
+description: Create custom content type templates beyond the 6 built-in types with structure and quality standards.
 argument-hint: "[content-type]"
 effort: high
 ---
 
 # Custom Content Template Manager
 
-Create and manage custom content type templates beyond the 5 built-in types (article, blog, whitepaper, faq, research-paper). Define section structure, word count ranges, readability targets, citation requirements, and quality standards — then use the template with `/contentforge:create-content` for consistent, repeatable content production.
+Create and manage custom content type templates beyond the 6 built-in types (article, blog, whitepaper, faq, research-paper, video-script). Define section structure, word count ranges, readability targets, citation requirements, and quality standards — then use the template with `/contentforge:create-content` for consistent, repeatable content production.
 
 ## Where templates live
 
-- **Built-in templates (read-only):** `templates/content-types/` inside the installed plugin — article, blog, whitepaper, faq, research-paper.
+- **Built-in templates (read-only):** `templates/content-types/` inside the installed plugin — article, blog, whitepaper, faq, research-paper, video-script.
 - **Custom templates (user-created):** `~/.claude-marketing/_templates/` — **never** write into the installed plugin directory. Plugin updates and reinstalls wipe the plugin folder; anything saved there is lost. `~/.claude-marketing/_templates/` survives updates.
 
 ## When to Use
 
 Use `/contentforge:cf-template` when:
-- You need a **content type not covered** by the 5 built-in templates (case study, product comparison, landing page copy, email newsletter, press release, etc.)
+- You need a **content type not covered** by the 6 built-in templates (case study, product comparison, landing page copy, email newsletter, press release, etc.)
 - You want to **standardize a content format** your team produces regularly
 - You need to **modify an existing template** (e.g., add a section to the article template)
 - You're onboarding a client who has **specific content format requirements**
 - You want to **import a content structure** from an example file
 
 **For producing content using a template**, use `/contentforge:create-content --type=custom:template-name`.
-**For the 5 built-in templates**, see `templates/content-types/` (these ship with the plugin and cannot be deleted).
+**For the 6 built-in templates**, see `templates/content-types/` (these ship with the plugin and cannot be deleted).
 
 ## What This Command Does
 

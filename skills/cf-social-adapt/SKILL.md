@@ -97,7 +97,14 @@ Primary Keyword: "AI in healthcare"
 
 ### Step 2: Extract Shareworthy Moments (30-60 seconds)
 
-The Social Adapter Agent (`agents/10-social-adapter.md`) identifies 10-15 moments from the article that will resonate on social media.
+**Dispatch the agent — do not do this inline.** Call `Task` with `subagent_type: contentforge:social-adapter`, exactly as the main orchestrator dispatches its pipeline phases. The Task prompt carries only:
+- the source-content path (`phase-6.5-humanized.md` in pipeline mode, or the user-supplied file/URL in standalone mode),
+- `phase-7-review.json` and `phase-6-seo.md` paths when running after a pipeline run,
+- the brand-profile path, target platforms, posts-per-platform, published URL and campaign hashtag.
+
+The agent `Read`s what it needs from those paths — never inline the full article into the Task prompt. `agents/10-social-adapter.md` owns the extraction rules, platform formatting, hashtag tiers and the post-quality gate; this skill owns argument parsing, the quality-score precondition, and presenting the result.
+
+The Social Adapter Agent identifies 10-15 moments from the article that will resonate on social media.
 
 **Extraction criteria:**
 - Statistics and data points (numbers grab attention)

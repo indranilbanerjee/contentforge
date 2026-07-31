@@ -70,6 +70,9 @@ REQ-002,blog,10 Tips for Remote Teams,HR Managers,techcorp,1500,3,pending
 - Display queue summary: total pieces, priority mix, execution order
 
 ### Step 2: Sequential Execution
+
+**Dispatch the agent — do not drive the queue inline.** Call `Task` with `subagent_type: contentforge:batch-orchestrator`, passing the validated queue path, the backend, and the resume state. `agents/09-batch-orchestrator.md` owns queue traversal, per-piece checkpointing, retry policy and escalation; this skill owns source loading, row validation and the progress table.
+
 - Run one ContentForge pipeline per piece, front-to-back
 - Each pipeline runs the full protocol from `skills/contentforge/SKILL.md` — Step 0 init, title bypass, phases 1–8 with orchestrator-verified gates, per-phase checkpoints
 - When one piece finishes (or is escalated), the next starts automatically

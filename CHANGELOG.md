@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.17.3] — 2026-07-30
+
+### Fixed — Cross-file contract review (the pipeline as a graph, not a pile of files)
+
+Extracted ContentForge's actual interconnection graph — who writes each run artifact, who reads it, which skill dispatches which agent, which config key each gate cites — across all 34 skills and agents, then diffed it. The defects live in the edges:
+
+- **Three shipped agents were never dispatched.** The main orchestrator calls every pipeline phase with `Task` + a qualified `subagent_type` (`contentforge:researcher`, etc.). But `cf-social-adapt`, `cf-translate` and `batch-process` only *described* their agents in prose — "The Social Adapter Agent (`agents/10-social-adapter.md`) identifies 10-15 moments" — without ever naming a `subagent_type`. So `10-social-adapter`, `11-translator` and `09-batch-orchestrator` (903 lines of extraction rules, platform formatting, hashtag tiers, localization levels, citation preservation, queue traversal, retry and escalation policy) shipped as registered agents that nothing invoked, while each skill inlined its own drifting copy of the logic. All three now dispatch explicitly, with the same "pass paths, never inline the draft" contract the orchestrator uses.
+- **`cf-template` advertised 5 built-in templates; 6 ship.** `video-script-structure.md` was missing from the list in four places, even though `03-content-drafter` actively loads it for video-script content. Users asking for a video-script template were told to build one that already exists.
+- New `tests/test_pipeline_graph.py` locks the graph itself: every shipped agent must have a declared dispatcher skill that names it as a `subagent_type`; the three non-orchestrator dispatchers must say `Task`/`subagent_type` rather than prose; no agent may read a run artifact the orchestrator's Pipeline Contract does not produce; the built-in template count and every template name must match `templates/content-types/` on disk; and every config key an agent cites (loop limits, phase-7 minimums, industry packs, per-platform `ai_disclosure`) must resolve. All four fixes above fail these tests on the previous commit.
+- Tests 149 → **158**.
+
 ## [3.17.2] — 2026-07-30
 
 ### Fixed — Agent currency and contract review
