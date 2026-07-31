@@ -389,7 +389,7 @@ def main():
                         help="Path to service account JSON (default: <marketing-home>/google-credentials.json)")
     parser.add_argument("--file", help="Path to file to upload")
     parser.add_argument("--brand", help="Brand name for folder organization")
-    parser.add_argument("--content-type", help="Content type (article, blog, whitepaper, faq, research_paper)")
+    parser.add_argument("--content-type", help="Content type (article, blog, whitepaper, faq, research_paper, video_script, case_study, newsletter)")
     parser.add_argument("--assets-dir", help="Directory containing visual assets to upload")
     args = parser.parse_args()
 

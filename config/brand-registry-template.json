@@ -125,7 +125,10 @@
       "article": 1800,
       "whitepaper": 3000,
       "faq": 800,
-      "research_paper": 5000
+      "research_paper": 5000,
+      "video_script": 450,
+      "case_study": 1600,
+      "newsletter": 800
     },
     "preferred_heading_style": "Title Case | Sentence case | ALL CAPS",
     "use_subheadings": true,
@@ -135,6 +138,23 @@
     "use_statistics": true,
     "use_case_studies": true,
     "use_expert_quotes": true
+  },
+  "author_profiles": {
+    "_instructions": "E-E-A-T author layer (v3.18.0). Authorless content is a search + AI-citation handicap: cf-brief scores COMPETITORS on named authors with credentials, so the pipeline must apply the same standard to its own output. Phase 3 applies the byline, Phase 6 emits Person JSON-LD from these fields, Phase 8 renders it. Leave `authors` empty to keep authorless output (Phase 6 will note the handicap in the SEO Scorecard). NEVER invent credentials — every field here is user-supplied fact.",
+    "default_author": "jane-doe",
+    "authors": [
+      {
+        "slug": "jane-doe",
+        "name": "Jane Doe",
+        "title": "Head of Content, Acme Corp",
+        "credentials": "MSc Health Informatics; 12 years in healthcare marketing",
+        "bio": "One to two sentences, written in third person, usable verbatim as a byline bio.",
+        "profile_url": "https://acme.com/team/jane-doe",
+        "linkedin_url": "https://www.linkedin.com/in/example",
+        "expertise": ["healthcare AI", "content strategy"],
+        "content_types": ["article", "blog", "whitepaper", "case_study", "newsletter"]
+      }
+    ]
   },
   "seo_preferences": {
     "_density_comment": "Density is ADVISORY only — keyword PLACEMENT is the Phase 6 gate (see config/scoring-thresholds.json phase_6_seo).",

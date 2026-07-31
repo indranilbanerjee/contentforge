@@ -19,7 +19,7 @@ Collect the following. If a required input is missing, ask before proceeding:
 
 **Required:**
 1. **Topic** — the subject the content is about (e.g., "AI in Healthcare"). This is NOT the final title.
-2. **Content type** — one of: `article`, `blog`, `whitepaper`, `faq`, `research_paper`. Word-count and readability standards per type are defined in the skill's Content Types & Specifications table.
+2. **Content type** — one of: `article`, `blog`, `whitepaper`, `faq`, `research_paper`, `video_script`, `case_study`, `newsletter`. Word-count and readability standards per type are defined in the skill's Content Types & Specifications table.
 3. **Brand** — which brand profile to use. If none exists, offer `/contentforge:brand-setup` or the skill's No-Brand Mode (non-regulated topics only).
 
 **Optional flags (pass through to the skill unchanged):**

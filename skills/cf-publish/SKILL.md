@@ -46,7 +46,7 @@ Use `/contentforge:cf-publish` when:
 - **Schedule Date** -- ISO date/time for scheduled publishing (required if status=schedule)
 - **Collection/Category** -- Webflow collection slug or WordPress category
 - **Featured Image** -- URL or local path to hero image
-- **Author** -- Override default author
+- **Author** -- Override the byline author (default: the author applied in Phase 3 from the brand's `author_profiles`; falls back to authorless if none configured)
 - **Tags** -- Comma-separated list of tags
 - **Slug Override** -- Custom URL slug (defaults to SEO-optimized slug from Phase 6)
 
@@ -186,7 +186,7 @@ Meta Description: Explore how AI is transforming healthcare in 2026,
   14 verified sources.
 
 Featured Image: hero-ai-healthcare.jpg (1200x630, 245KB)
-Author: ContentForge
+Author: Jane Doe, Head of Content (from brand author_profiles; 'ContentForge' only if the brand is deliberately authorless)
 Tags: AI, Healthcare, Technology Trends, 2026
 Word Count: 1,947
 ---------------------------------------------------

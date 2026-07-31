@@ -1,30 +1,30 @@
 ---
 name: cf-template
-description: Create custom content type templates beyond the 6 built-in types with structure and quality standards.
+description: Create custom content type templates beyond the 8 built-in types with structure and quality standards.
 argument-hint: "[content-type]"
 effort: high
 ---
 
 # Custom Content Template Manager
 
-Create and manage custom content type templates beyond the 6 built-in types (article, blog, whitepaper, faq, research-paper, video-script). Define section structure, word count ranges, readability targets, citation requirements, and quality standards — then use the template with `/contentforge:create-content` for consistent, repeatable content production.
+Create and manage custom content type templates beyond the 8 built-in types (article, blog, whitepaper, faq, research-paper, video-script, case-study, newsletter). Define section structure, word count ranges, readability targets, citation requirements, and quality standards — then use the template with `/contentforge:create-content` for consistent, repeatable content production.
 
 ## Where templates live
 
-- **Built-in templates (read-only):** `templates/content-types/` inside the installed plugin — article, blog, whitepaper, faq, research-paper, video-script.
+- **Built-in templates (read-only):** `templates/content-types/` inside the installed plugin — article, blog, whitepaper, faq, research-paper, video-script, case-study, newsletter.
 - **Custom templates (user-created):** `~/.claude-marketing/_templates/` — **never** write into the installed plugin directory. Plugin updates and reinstalls wipe the plugin folder; anything saved there is lost. `~/.claude-marketing/_templates/` survives updates.
 
 ## When to Use
 
 Use `/contentforge:cf-template` when:
-- You need a **content type not covered** by the 6 built-in templates (case study, product comparison, landing page copy, email newsletter, press release, etc.)
+- You need a **content type not covered** by the 8 built-in templates (product comparison, landing page copy, press release, webinar outline, etc.)
 - You want to **standardize a content format** your team produces regularly
 - You need to **modify an existing template** (e.g., add a section to the article template)
 - You're onboarding a client who has **specific content format requirements**
 - You want to **import a content structure** from an example file
 
 **For producing content using a template**, use `/contentforge:create-content --type=custom:template-name`.
-**For the 6 built-in templates**, see `templates/content-types/` (these ship with the plugin and cannot be deleted).
+**For the 8 built-in templates**, see `templates/content-types/` (these ship with the plugin and cannot be deleted).
 
 ## What This Command Does
 
@@ -40,7 +40,7 @@ Use `/contentforge:cf-template` when:
 - **Template Name** — Name for the custom template (e.g., "case-study", "product-comparison", "email-newsletter")
 
 **Optional:**
-- **Base Type** — Start from an existing template and modify: article, blog, whitepaper, faq, research-paper, video-script, or `custom` (blank slate)
+- **Base Type** — Start from an existing template and modify: article, blog, whitepaper, faq, research-paper, video-script, case-study, newsletter, or `custom` (blank slate)
 - **Word Count Range** — Minimum and maximum word count (e.g., 1500-2500)
 - **Readability Target** — Flesch-Kincaid grade level target (e.g., 8-10 for general, 12-14 for professional)
 - **Citation Minimum** — Minimum number of citations required (e.g., 5)
@@ -402,7 +402,7 @@ Usage:
     --type=custom:case-study --brand=AcmeMed
 
 Templates Available (Built-In + Custom):
-  Built-in: article, blog, whitepaper, faq, research-paper, video-script
+  Built-in: article, blog, whitepaper, faq, research-paper, video-script, case-study, newsletter
   Custom: case-study (new)
 ================================================================
 ```
@@ -423,6 +423,9 @@ BUILT-IN (5):
   whitepaper       | 2,500-5,000 words | Grade 12-14 | 15-25 citations
   faq              | 600-1,200 words   | Grade 8-10  | 3-5 citations
   research-paper   | 4,000-8,000 words | Grade 14-16 | 25-50 citations
+  video-script     | duration-driven   | Grade 6-9   | 2-5 citations
+  case-study       | 1,200-2,000 words | Grade 9-11  | 5-10 external citations
+  newsletter       | 500-1,200 words   | Grade 7-9   | 2-5 inline links
 
 CUSTOM (1):
   case-study       | 1,500-2,500 words | Grade 10-12 | 8+ citations
@@ -462,7 +465,7 @@ Exports the template as JSON for sharing with other ContentForge installations.
 **Solution:** Run `/contentforge:cf-template --list` to see available templates. Names are kebab-case (e.g., `case-study`, not `Case Study`). Custom templates created before mid-2026 may still sit inside the old plugin-directory location — if so, move them to `~/.claude-marketing/_templates/` so plugin updates don't delete them.
 
 ### "Can't modify built-in template"
-**Cause:** Built-in templates (article, blog, whitepaper, faq, research-paper, video-script) are read-only.
+**Cause:** Built-in templates (article, blog, whitepaper, faq, research-paper, video-script, case-study, newsletter) are read-only.
 **Solution:** Create a custom template based on the built-in one: `/contentforge:cf-template my-article --base=article`. This creates a copy you can modify freely.
 
 ## Limitations

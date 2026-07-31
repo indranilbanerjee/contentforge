@@ -124,38 +124,130 @@ class TestContentTypeRegistryIsConsistent(unittest.TestCase):
     shipped for months while batch, calendar, analytics and the brand profile
     all listed only five types."""
 
-    # files that enumerate the supported content types, and the token form each uses
+    # The three token spellings a type appears under across the repo.
+    TYPES = {
+        # stem on disk: (underscore, hyphen, Title)
+        "video-script": ("video_script", "video-script", "Video Script"),
+        "case-study": ("case_study", "case-study", "Case Study"),
+        "newsletter": ("newsletter", "newsletter", "Newsletter"),
+    }
+
+    # files that enumerate the supported content types, and the token style each uses
     ENUMERATIONS = {
-        "skills/contentforge/SKILL.md": "video_script",
-        "agents/09-batch-orchestrator.md": "video_script",
-        "skills/cf-analytics/SKILL.md": "video_script",
-        "skills/cf-calendar/SKILL.md": "video_script",
-        "skills/cf-style-guide/SKILL.md": "video_script",
-        "skills/cf-template/SKILL.md": "video-script",
-        "skills/cf-brief/SKILL.md": "video-script",
-        "agents/03-content-drafter.md": "video-script",
-        "agents/08-output-manager.md": "Video Script",
+        "skills/contentforge/SKILL.md": 0,
+        "agents/09-batch-orchestrator.md": 0,
+        "skills/cf-analytics/SKILL.md": 0,
+        "skills/cf-calendar/SKILL.md": 0,
+        "skills/cf-style-guide/SKILL.md": 0,
+        "commands/create-content.md": 0,
+        "commands/output-folder.md": 0,
+        "scripts/pipeline-tracker.py": 0,
+        "config/brand-registry-template.json": 0,
+        "skills/cf-template/SKILL.md": 1,
+        "skills/cf-brief/SKILL.md": 1,
+        "agents/03-content-drafter.md": 2,
+        "agents/08-output-manager.md": 2,
     }
 
     def test_shipped_templates_match_the_orchestrator_table(self):
         shipped = {p.stem.replace("-structure", "")
                    for p in (REPO / "templates" / "content-types").glob("*-structure.md")}
-        self.assertEqual(len(shipped), 6, f"expected 6 shipped templates, found {sorted(shipped)}")
+        self.assertEqual(len(shipped), 8, f"expected 8 shipped templates, found {sorted(shipped)}")
+        for stem in self.TYPES:
+            self.assertIn(stem, shipped, f"{stem}-structure.md is asserted below but not shipped")
 
-    def test_every_enumeration_includes_video_script(self):
-        for rel, token in self.ENUMERATIONS.items():
-            with self.subTest(file=rel):
-                self.assertIn(token, read(REPO / rel),
-                              f"{rel} enumerates content types but omits {token!r} — "
-                              f"that type ships a template and would be rejected here")
+    def test_every_enumeration_includes_every_registered_type(self):
+        for rel, style in self.ENUMERATIONS.items():
+            text = read(REPO / rel)
+            for stem, tokens in self.TYPES.items():
+                with self.subTest(file=rel, type=stem):
+                    self.assertIn(tokens[style], text,
+                                  f"{rel} enumerates content types but omits {tokens[style]!r} — "
+                                  f"that type ships a template and would be rejected here")
 
     def test_orchestrator_spec_table_has_a_row_per_shipped_type(self):
         orch = read(REPO / "skills" / "contentforge" / "SKILL.md")
-        for label in ("Article", "Blog", "Whitepaper", "FAQ", "Research Paper", "Video Script"):
+        for label in ("Article", "Blog", "Whitepaper", "FAQ", "Research Paper",
+                      "Video Script", "Case Study", "Newsletter"):
             with self.subTest(type=label):
                 self.assertIn(f"**{label}**", orch,
                               f"Content Types & Specifications has no row for {label}, so "
                               f"Gate 3/Gate 5 have no target to check it against")
+
+    def test_pipeline_tracker_has_benchmarks_for_every_type(self):
+        text = read(REPO / "scripts" / "pipeline-tracker.py")
+        for t in ("article", "blog", "whitepaper", "research_paper", "faq",
+                  "video_script", "case_study", "newsletter"):
+            with self.subTest(type=t):
+                self.assertIn(f'"{t}": {{"0.5"', text,
+                              f"PHASE_BENCHMARKS has no entry for {t}")
+
+
+class TestAuthorEEATLayer(unittest.TestCase):
+    """v3.18.0: the byline layer must stay wired end-to-end — profile schema →
+    drafter byline → Person schema → capture path. A break anywhere reverts the
+    pipeline to authorless output silently."""
+
+    def test_brand_registry_defines_author_profiles(self):
+        cfg = json.loads(read(REPO / "config" / "brand-registry-template.json"))
+        ap = cfg.get("author_profiles")
+        self.assertIsInstance(ap, dict, "brand-registry-template lost author_profiles")
+        self.assertIn("default_author", ap)
+        self.assertTrue(ap.get("authors"), "author_profiles.authors must ship a sample entry")
+        sample = ap["authors"][0]
+        for field in ("slug", "name", "title", "credentials", "bio", "expertise", "content_types"):
+            self.assertIn(field, sample, f"sample author entry lost {field!r}")
+
+    def test_drafter_applies_the_byline(self):
+        text = read(REPO / "agents" / "03-content-drafter.md")
+        self.assertIn("author_profiles", text)
+        self.assertIn("Author selection (E-E-A-T)", text)
+        self.assertIn("*By {author.name}, {author.title}*", text,
+                      "the skeleton lost the byline line")
+
+    def test_phase6_emits_person_schema_and_flags_authorless(self):
+        text = read(REPO / "agents" / "06-seo-geo-optimizer.md")
+        self.assertIn("**Person**", text)
+        self.assertIn("author_profiles", text)
+        self.assertIn("Authorless content", text,
+                      "Phase 6 must flag the authorless E-E-A-T handicap")
+
+    def test_style_guide_captures_authors(self):
+        text = read(REPO / "skills" / "cf-style-guide" / "SKILL.md")
+        self.assertIn("Capture Author Profiles", text)
+
+
+class TestAeoCheckSkill(unittest.TestCase):
+    """cf-aeo-check closes the brief's pre-production loop. It must stay honest
+    about engine coverage and keep its cross-skill routing intact."""
+
+    SKILL = REPO / "skills" / "cf-aeo-check" / "SKILL.md"
+
+    def test_skill_ships_with_correct_frontmatter(self):
+        self.assertTrue(self.SKILL.exists(), "cf-aeo-check skill missing")
+        text = read(self.SKILL)
+        m = re.search(r"^name:\s*(.+?)\s*$", text, re.M)
+        self.assertIsNotNone(m)
+        self.assertEqual(m.group(1), "cf-aeo-check")
+        self.assertIn("description:", text)
+
+    def test_skill_is_honest_about_engine_coverage(self):
+        text = read(self.SKILL)
+        self.assertIn("cannot measure directly", text,
+                      "the honest-scope section is the skill's contract — keep it")
+        self.assertIn("google-only", text)
+        self.assertIn("Never present an estimate as a measurement", text)
+
+    def test_routing_targets_exist(self):
+        text = read(self.SKILL)
+        for target in ("cf-brief", "content-refresh", "cf-audit", "cf-publish"):
+            with self.subTest(target=target):
+                self.assertIn(f"/contentforge:{target}", text,
+                              f"cf-aeo-check lost its routing to {target}")
+        # every relative link must resolve on disk
+        for m in re.finditer(r"\]\((\.\./[^)#]+)", text):
+            link = (self.SKILL.parent / m.group(1)).resolve()
+            self.assertTrue(link.exists(), f"broken link in cf-aeo-check: {m.group(1)}")
 
 
 class TestNoParallelBatchClaims(unittest.TestCase):

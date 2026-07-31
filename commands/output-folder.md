@@ -44,7 +44,7 @@ Always show the path explicitly in the conversation so the user can copy/paste i
 📂 ContentForge output folder for {brand}:
    {absolute_path}
 
-   Subfolders are organized by content type (article / blog / whitepaper / faq / research_paper)
+   Subfolders are organized by content type (article / blog / whitepaper / faq / research_paper / video_script / case_study / newsletter)
    and by month (YYYY-MM). The newest run is in the latest month folder.
 ```
 

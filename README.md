@@ -4,20 +4,20 @@
 
 Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 35-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.8. No re-edits for AI voice. No hallucinated citations. No orphan content.
 
-Open-source enterprise content production pipeline — **21 skills · 13 specialist agents · 10 quality gates · 35-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 35-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.17.5-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.18.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-162%2F162%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3175)
+[![Tests](https://img.shields.io/badge/tests-170%2F170%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3180)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
-> 🆕 **Just shipped — v3.17.5 (July 12, 2026): self-containment patch.** Removed cross-plugin capability references — `content-refresh` now routes pre-refresh diagnosis to ContentForge's own `cf-brief` + `cf-audit`; ContentForge is fully standalone (install it alone and every documented capability works). [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.18.0 (July 30, 2026): four new capabilities.** **Author/E-E-A-T byline layer** (`author_profiles` in the brand profile → Phase 3 byline → Person JSON-LD in Phase 6 — no more authorless content), **Case Study** and **Newsletter** as built-in content types 7 and 8 (case studies enforce a client-data provenance rule: fabricating a client metric halts the pipeline), and **`/contentforge:cf-aeo-check`** — a post-publication AI-citation check that probes your target queries, audits on-page extractability, tracks deltas across re-checks, and routes losses to `content-refresh` with evidence. 22 skills, 170 tests. [Full changelog →](CHANGELOG.md)
 >
 > <sub>Previously — **v3.16.0 (July 7, 2026): the Reliability & Truth release.** The deepest engineering pass since v3.0 — a five-layer audit (orchestration, agents, skills, scripts, configs) followed by a coordinated fix of everything it found. Checkpoint/resume now actually wired into the master skill (every phase saves to a canonical run directory; `/contentforge:resume` works for skill-started runs). File-based phase handoff contract (paths, not pasted drafts). Keyword-density gate retired in favor of placement checks; new Phase 6→6.5 protected-structure manifest stops the humanizer from dismantling GEO structure. EU AI Act Article 50 AI-disclosure step in the publish path (applicable Aug 2, 2026). Humanizer catalog 29→35 patterns with a defined AI-signal score. Social specs add TikTok, Bluesky, YouTube Shorts + per-platform AI-label fields. New `scripts/_common.py` (one slugifier, atomic writes, UTF-8-safe output, real exit codes), `scripts/text-metrics.py` (measured burstiness/FK/placement gates), .docx image embedding + TOC + nested lists. **Tests 53 → 143.** [Full changelog →](CHANGELOG.md)</sub>
 
@@ -57,7 +57,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.17.5)
+## Supported surfaces (v3.18.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -67,7 +67,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 | **Cursor 2.5+** | In any Cursor Agent chat: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` | `.cursor-plugin/plugin.json` (verified Cursor 2.5+ JSON Schema) | Full skills + agents + commands support |
 | **GitHub Copilot CLI** | `copilot plugin marketplace add indranilbanerjee/neels-plugins` then `copilot plugin install contentforge@neels-plugins` | `.github/plugin/plugin.json` (Copilot also recognizes `.claude-plugin/plugin.json` as fallback) | Full skills + MCP support |
 | **Google Antigravity 2.0** CLI + IDE | `agy plugin install https://github.com/indranilbanerjee/contentforge` | `gemini-extension.json` (at repo root, per Google's reference pattern) | Full skills + hooks support |
-| **Hermes Agent** (Nous Research) — Desktop + CLI on macOS / Windows / Linux | `hermes plugins install indranilbanerjee/contentforge` | `plugin.yaml` + `__init__.py` at repo root (Hermes native spec) | Native plugin — adapter walks `skills/` at register time and exposes all 21 skills via `ctx.register_skill()`. Targets Hermes Desktop v0.15.2+ (public preview June 2 2026). |
+| **Hermes Agent** (Nous Research) — Desktop + CLI on macOS / Windows / Linux | `hermes plugins install indranilbanerjee/contentforge` | `plugin.yaml` + `__init__.py` at repo root (Hermes native spec) | Native plugin — adapter walks `skills/` at register time and exposes all 22 skills via `ctx.register_skill()`. Targets Hermes Desktop v0.15.2+ (public preview June 2 2026). |
 | **OpenClaw** (formerly Clawdbot / Moltbot) | `openclaw plugins install git:github.com/indranilbanerjee/contentforge` | `openclaw.plugin.json` at repo root (also auto-detects `.claude-plugin/plugin.json` as Claude-compatible bundle) | Native plugin via `openclaw.plugin.json`; `skills` field points at `./skills`. |
 
 **Why this works:** Agent Skills became an open standard in December 2025 (41+ agent products by June 2026). All 21 SKILL.md files in ContentForge are platform-portable as written. The sibling manifests are thin platform-specific wrappers around the same `skills/` directory — no skill duplication.
@@ -483,7 +483,7 @@ Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_page
 | Claude Code CLI | ✅ Full local support | Reference environment for developers. Files land in `~/Documents/ContentForge/<brand>/...` on your host. Every feature tested here first. |
 | Claude Code IDE extension (VS Code / JetBrains) | ✅ Full local support | Same as CLI; uses host filesystem. |
 | Standard Claude chat (browser `claude.ai` OR installed Claude Desktop app) | ❌ `/plugin` slash commands not available | Plugins still install and run via the **Plugins** UI button at the bottom of the chat. |
-| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 21 skills, same scripts, same MCP catalog as Claude Code. |
+| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 22 skills, same scripts, same MCP catalog as Claude Code. |
 | **Cursor 2.5+** | ✅ Full skills + agents + commands | `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` in any Cursor Agent chat. |
 | **GitHub Copilot CLI** | ✅ Full skills + MCP | `copilot plugin install contentforge@neels-plugins`. Custom slash commands not yet supported in Copilot CLI (open issue) — invoke skills by natural language. |
 | **Google Antigravity 2.0** CLI + IDE | ✅ Full skills + hooks | `agy plugin install https://github.com/indranilbanerjee/contentforge`. Subagents need `/agent` CLI spawning; slash commands fold into skills. |
@@ -548,7 +548,7 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v3.17.5 (2026-07-12)** — **Self-containment patch.** Removed cross-plugin capability references from the skill surface: `content-refresh` routes pre-refresh diagnosis to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit` instead of recommending another plugin's skills. Suite table in this README corrected (sibling stats were stale) and now states each plugin is fully standalone. No runtime change.
+**v3.18.0 (2026-07-12)** — **Self-containment patch.** Removed cross-plugin capability references from the skill surface: `content-refresh` routes pre-refresh diagnosis to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit` instead of recommending another plugin's skills. Suite table in this README corrected (sibling stats were stale) and now states each plugin is fully standalone. No runtime change.
 
 **v3.16.0 (2026-07-07)** — **Reliability & Truth release.** Five-layer deep audit implemented end to end. Orchestration: checkpointing wired into the master skill (Step 0 init + per-phase saves + `loop` counters + `pending_rework`), per-phase input/output contract table with loop targets, orchestrator-owned gates verified via new `scripts/text-metrics.py`, no-brand and no-web modes, honest sequential batch orchestrator (success = reviewer-approved ≥7.0). Agents: user interaction hoisted out of subagents (title curation + image approvals now orchestrator-owned), fact-checker paywall/SERP fixes, drafter body-format contract, structure-manifest guard between SEO and humanizer phases, reviewer industry weights fully specified, ~50 dangling slash references fixed. Skills: connector docs now match the shipped empty `.mcp.json`, cf-brief rewritten for AEO/GEO (LSI/density dogma removed), EU AI Act Article 50 disclosure step in cf-publish, YouTube Shorts + TikTok long-form in cf-video-script, command/skill twins collapsed to thin wrappers. Configs: `scoring-thresholds.json` is now the single source of truth (10 gates incl. new Phase 8 gate), humanizer catalog 29→35 patterns + defined AI-signal formula (evasion framing removed), social specs add TikTok/Bluesky/YouTube Shorts + per-platform `ai_disclosure`, all 10 industry packs enriched (FDA CCN, OCR tracking-tech, SEC Marketing Rule) and dated. Scripts: new `_common.py` (single slugifier — fixes the Cowork sync-path bug, atomic JSON writes, UTF-8 console guard, real exit codes), checkpoint-manager meta/loop/pending-rework, pipeline-tracker run_id keying, .docx image embedding + TOC field + page footer + nested lists + underscore emphasis, Airtable formula-injection fix, Drive pagination. **Tests 53 → 143.**
 

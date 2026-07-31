@@ -40,7 +40,7 @@ Use `/contentforge:cf-brief` when:
 - **Target Audience** — Who this content is for (e.g., "Healthcare CIOs", "Small business owners", "Marketing managers at B2B SaaS companies")
 
 **Optional:**
-- **Content Type** — article, blog, whitepaper, faq, research_paper, video-script (if not specified, the brief recommends the best type based on search intent)
+- **Content Type** — article, blog, whitepaper, faq, research_paper, video-script, case-study, newsletter (if not specified, the brief recommends the best type based on search intent)
 - **Competitor URLs** — 1-5 specific competitor pages to analyze (if not provided, top 5 SERP results are used)
 - **SEO Goals** — Primary goal: `traffic` (maximize organic visits), `conversions` (target bottom-of-funnel intent), or `awareness` (brand visibility and thought leadership)
 - **Brand** — Brand profile name to align voice/terminology recommendations in the brief
@@ -471,7 +471,7 @@ Optimize for AI answer engines (Google AI Overviews, ChatGPT, Perplexity, Gemini
 2. **Citation-worthiness checklist** — AI engines cite content that is easy to quote. The brief must direct the draft to include:
    - Quotable statistics with clear attribution ("According to [source]'s 2026 survey, X% ...")
    - A crisp definitional sentence for the core concept within the first 150 words (one sentence an engine can lift verbatim)
-   - Expert attribution — named author with credentials, or quoted subject-matter experts
+   - Expert attribution — named author with credentials, or quoted subject-matter experts. When a brand is provided, recommend the byline author from the brand's `author_profiles` (match `expertise` to the topic); if the brand has none, flag the E-E-A-T gap in the brief
    - Original data, benchmarks, or first-hand experience competitors lack (the strongest citation magnet)
    - Publication and last-updated dates visible on the page
 

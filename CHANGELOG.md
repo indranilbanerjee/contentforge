@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.18.0] — 2026-07-30
+
+### Added — Four capabilities, wired the ContentForge way
+
+Every addition registers in the full interconnection graph (all enumerations, gates, tests) — nothing ships half-wired.
+
+- **Author / E-E-A-T byline layer.** The pipeline scored *competitors* on named authors with credentials while producing authorless content itself (`cf-publish` literally previewed "Author: ContentForge"). New `author_profiles` block in the brand profile (sample + instructions in `config/brand-registry-template.json`); `/contentforge:cf-style-guide` captures authors at import or prompts for one; Phase 3 resolves the byline (`--author` → type match → default → authorless) and stamps it in the skeleton + Draft Metadata; Phase 6 emits **Person JSON-LD** from profile fields only — never fabricated — and flags authorless runs in the SEO Scorecard; `cf-brief` recommends the byline author by expertise match. Authorless remains a legitimate, explicitly-recorded choice.
+- **Case Study — 7th built-in content type.** `templates/content-types/case-study-structure.md` with the **Data Provenance rule** the type lives or dies on: client-attested facts (intake-supplied, marked CLIENT-ATTESTED, internal-consistency-checked, approval-tracked) vs external context facts (normal Phase 2 verification). Fabricating a client, metric, or quote is a pipeline HALT, not a loop. Required intake, executive-snapshot metrics table (structure-manifest-protected for AI liftability), honest-friction requirement, and per-phase adaptations.
+- **Newsletter — 8th built-in content type.** `templates/content-types/newsletter-structure.md` with a Phase 6 mapping table so email runs the same gates without special-casing the orchestrator (subject line ≐ meta title, preview text ≐ meta description, schema N/A-neutral). Subject-line package with a real A/B variable, one-CTA rule, skim test, named sender from `author_profiles`, 600px/inline-CSS/plain-text constraints, and the same AI-disclosure rule as `cf-publish`.
+- **`/contentforge:cf-aeo-check` — 22nd skill.** Post-publication AI-citation check that closes the loop `cf-brief` opens: per-query AI Overview + own-citation probe, on-page extractability audit (definition block, dates, structure survival, schema stripped by CMS, byline rendered), append-only history at `{brand}/aeo/checks.json` with deltas, and evidence-based routing to `/contentforge:content-refresh`. Brutally honest scope: Google-observable signals only unless an AEO-tracking connector is present — "Never present an estimate as a measurement."
+- **Both types registered in all 25 enumeration sites** — orchestrator spec table (with gate targets), batch validation, calendar validation, analytics filters + schema, cf-template lists (its custom-template walkthrough now uses product-comparison, since case-study went built-in), cf-brief, drafter template list, output-manager folder mapping, both commands docs, script help texts, pipeline-tracker benchmarks, and brand-registry word counts + tone map. Also closed the same-class stragglers for `video_script` (commands docs, tracker benchmarks, brand-registry) found during registration.
+- Graph tests extended: generic 3-spelling registry check across 13 enumeration files, per-type tracker benchmarks, the author layer end-to-end, and cf-aeo-check's honesty contract + routing. Tests 162 → **170**.
+
 ## [3.17.5] — 2026-07-30
 
 ### Fixed — Quality audit pass (every agent and skill judged on methodology, not just contracts)

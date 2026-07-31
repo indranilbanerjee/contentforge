@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "description": "Open-source enterprise content pipeline — 21 skills, 13 agents, 35-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
-  "version": "3.17.5",
+  "description": "Open-source enterprise content pipeline — 22 skills, 13 agents, 35-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
+  "version": "3.18.0",
   "author": {
     "name": "Indranil Banerjee",
     "email": "neel@neelverse.com",

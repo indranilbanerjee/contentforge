@@ -283,6 +283,7 @@ Mark at least 3 passages AI engines would quote — each with location and reaso
 **Generate JSON-LD schema recommendations for the applicable types:**
 
 - **Article** (all content) — headline, author, dates, publisher, description, mainEntityOfPage
+- **Person** (when the Draft Metadata block names an author) — build from the brand profile's `author_profiles` entry: `name`, `jobTitle` (from title), `description` (from bio), `url` (profile_url), `sameAs` (linkedin_url + any other profile URLs), `knowsAbout` (expertise array). Reference it from Article's `author` property rather than duplicating fields. **Use ONLY fields present in the profile — never fabricate credentials, and omit any empty field rather than inventing a value.** If the draft is authorless, note in the SEO Scorecard: "Authorless content — E-E-A-T handicap for both organic ranking and AI-answer citation. Add `author_profiles` to the brand profile (see `config/brand-registry-template.json`)." Newsletters skip schema entirely (email has no JSON-LD — score the sub-component 8/neutral, per the newsletter template's Phase 6 mapping).
 - **Product** (if product content) — name, description, offers, reviews
 - **BreadcrumbList** (if site structure available) — itemListElement array
 - **FAQPage** (OPTIONAL, structure only — if an FAQ section is present) — mainEntity array of Question/Answer pairs

@@ -46,7 +46,9 @@ Write a complete, publication-ready first draft that:
 1. If cache exists: compare SHA256 hash of source files → if match, load cache; if differs, regenerate
 2. If no cache: process all brand guidelines, generate profile, save with hash
 
-**Extract from Brand Profile:** voice (tone, formality, personality, writing style), terminology (preferred/avoid/jargon rules), guardrails (prohibited claims, required disclaimers, compliance notes), content patterns (structures, opening/closing styles).
+**Extract from Brand Profile:** voice (tone, formality, personality, writing style), terminology (preferred/avoid/jargon rules), guardrails (prohibited claims, required disclaimers, compliance notes), content patterns (structures, opening/closing styles), **author_profiles** (E-E-A-T byline layer).
+
+**Author selection (E-E-A-T):** resolve the byline author in this order: (1) `--author=<slug>` from requirements, (2) an author whose `content_types` includes this piece's type, (3) `author_profiles.default_author`, (4) none. If an author resolves, apply the byline line in the skeleton below and record it in Draft Metadata. If none resolves, note `author: none (authorless — E-E-A-T handicap)` in Draft Metadata; Phase 6 will flag it in the SEO Scorecard. **Never invent an author or credentials — only apply what the profile supplies.**
 
 **Critical Brand Elements to Apply:**
 - **Voice & Tone** — Maintain throughout entire draft
@@ -79,6 +81,8 @@ Load from `templates/content-types/`:
 - Whitepaper → `whitepaper-structure.md` (2500-5000 words, Grade 12-14)
 - FAQ → `faq-structure.md` (600-1200 words, Grade 8-10)
 - Research Paper → `research-paper-structure.md` (4000-8000 words, Grade 14-16)
+- Case Study → `case-study-structure.md` (1200-2000 words, Grade 9-11; client data is intake-supplied and CLIENT-ATTESTED — never fabricated; see the template's Data Provenance rules)
+- Newsletter → `newsletter-structure.md` (500-1200 words, Grade 7-9; subject-line package in metadata, one CTA, named sender from author_profiles)
 - Video Script → `video-script-structure.md` (duration-driven, not word-count-driven: 120-150 dialogue words per minute; every scene needs dialogue + on-screen text + B-roll + music/SFX)
 
 Extract: target word count, Flesch-Kincaid level, section structure, tone expectations, citation frequency. For video scripts, read the duration profile instead of the word-count range.
@@ -202,6 +206,8 @@ Use `utils/citation-formatter.md` for brand's preferred style. Generate complete
 ```markdown
 # {Confirmed Title — verbatim from phase-0.5-title.txt}
 
+*By {author.name}, {author.title}* ← (only when an author resolved in Step 0.1 — omit the line entirely when authorless; never emit placeholder text)
+
 **Content Type:** [type] | **Target Audience:** [audience] | **Reading Time:** [X min]
 **Primary Keyword:** [keyword] | **Secondary Keywords:** [keywords]
 
@@ -246,6 +252,7 @@ Use `utils/citation-formatter.md` for brand's preferred style. Generate complete
 **DRAFT METADATA**
 
 Word Count: [actual] | Target: [range] | Variance: [±X%] | Status
+Author: [author slug + name, or "none (authorless — E-E-A-T handicap)"]
 Citations: [total] | Unique Sources: [count] | Per 300 words: [ratio] | Status
 Section Coverage: [written/outline count] | Missing: [none/list]
 Brand Voice: preferred terms ✅, prohibited terms ✅, citation format ✅, tone ✅, guardrails ✅

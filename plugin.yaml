@@ -12,9 +12,9 @@
 #   hermes plugins install indranilbanerjee/contentforge
 
 name: contentforge
-version: 3.17.5
+version: 3.18.0
 description: >-
-  Open-source enterprise content production plugin. 21 skills, 13 specialist
+  Open-source enterprise content production plugin. 22 skills, 13 specialist
   agents, 10 quality gates, 35-pattern AI humanizer, fact-checker, real .docx
   output with C2PA signing (EU AI Act Article 50 ready). Now native on Hermes.
 author: Indranil Banerjee

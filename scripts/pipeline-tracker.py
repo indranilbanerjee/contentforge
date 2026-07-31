@@ -59,6 +59,9 @@ PHASE_BENCHMARKS = {
     "whitepaper": {"0.5": 90, "1": 360, "2": 240, "3": 540, "3.5": 180, "4": 240, "5": 240, "6": 240, "6.5": 120, "7": 240, "8": 180},
     "faq": {"0.5": 60, "1": 180, "2": 120, "3": 240, "3.5": 60, "4": 120, "5": 120, "6": 120, "6.5": 60, "7": 120, "8": 60},
     "research_paper": {"0.5": 90, "1": 420, "2": 300, "3": 600, "3.5": 180, "4": 300, "5": 240, "6": 240, "6.5": 120, "7": 300, "8": 180},
+    "video_script": {"0.5": 60, "1": 240, "2": 120, "3": 300, "3.5": 60, "4": 120, "5": 120, "6": 90, "6.5": 60, "7": 120, "8": 90},
+    "case_study": {"0.5": 60, "1": 240, "2": 240, "3": 420, "3.5": 120, "4": 240, "5": 180, "6": 150, "6.5": 90, "7": 180, "8": 120},
+    "newsletter": {"0.5": 45, "1": 180, "2": 120, "3": 240, "3.5": 60, "4": 120, "5": 120, "6": 90, "6.5": 60, "7": 120, "8": 90},
 }
 
 TOKENS_PER_WORD = 1.33
@@ -325,7 +328,7 @@ def main():
                              "Omit for the legacy per-brand file.")
     parser.add_argument("--phase", help="Phase number (e.g., 0.5, 1, 2, 3, 3.5, 4, 5, 6, 6.5, 7, 8)")
     parser.add_argument("--content-type",
-                        help="Content type for init (article, blog, whitepaper, faq, research_paper)")
+                        help="Content type for init (article, blog, whitepaper, faq, research_paper, video_script, case_study, newsletter)")
     parser.add_argument("--topic", help="Content topic for init")
     parser.add_argument("--content-words", type=int, help="Word count at end of phase")
     args = parser.parse_args()

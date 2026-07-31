@@ -226,7 +226,7 @@ Format: `[topic-slug]-[YYYY-MM-DD].docx`
 ContentForge/{Brand Name}/{Content Type}/{Year}/{MM-MonthName}/{filename}.docx
 ```
 
-Content type folder mapping: Article -> `Articles`, Blog -> `Blog-Posts`, Whitepaper -> `Whitepapers`, FAQ -> `FAQs`, Research Paper -> `Research-Papers`, Video Script -> `Video-Scripts`
+Content type folder mapping: Article -> `Articles`, Blog -> `Blog-Posts`, Whitepaper -> `Whitepapers`, FAQ -> `FAQs`, Research Paper -> `Research-Papers`, Video Script -> `Video-Scripts`, Case Study -> `Case-Studies`, Newsletter -> `Newsletters`
 
 One folder per shipped content type in `templates/content-types/` — if a template exists there with no mapping here, its output has nowhere to go.
 

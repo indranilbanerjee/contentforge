@@ -28,9 +28,10 @@ Use `/contentforge:cf-style-guide` when:
 2. **Extract Voice Characteristics** — Identify tone (authoritative, conversational, technical, witty), formality level (1-5), personality traits, and writing style patterns
 3. **Identify Terminology** — Parse approved terms, banned/prohibited terms, industry-specific jargon, preferred spellings, and acronym definitions
 4. **Parse Compliance Requirements** — Extract guardrails, required disclaimers, prohibited claims, regulatory requirements, and sensitivity guidelines
-5. **Generate Brand Profile JSON** — Create or update a structured JSON profile following the `brand-registry-template.json` schema
-6. **Save and Validate** — Save profile to Google Drive (via MCP) or local cache using the brand-cache-manager pattern, and validate the profile works with the ContentForge pipeline
-7. **Configure Tracking Backend** — Choose where ContentForge tracks quality scores and delivers output files: Google Sheets + Drive, Airtable, or local filesystem
+5. **Capture Author Profiles (E-E-A-T)** — If the style guide names authors/spokespeople (About/Team sections, byline conventions), extract name, title, credentials, bio, and profile URLs into `author_profiles`; otherwise prompt for at least one default author (or an explicit "authorless" choice, recorded with its SEO/AEO trade-off). Only user-confirmed facts — never invent credentials
+6. **Generate Brand Profile JSON** — Create or update a structured JSON profile following the `brand-registry-template.json` schema
+7. **Save and Validate** — Save profile to Google Drive (via MCP) or local cache using the brand-cache-manager pattern, and validate the profile works with the ContentForge pipeline
+8. **Configure Tracking Backend** — Choose where ContentForge tracks quality scores and delivers output files: Google Sheets + Drive, Airtable, or local filesystem
 
 ## Required Inputs
 
@@ -86,6 +87,7 @@ Use `/contentforge:cf-style-guide` when:
 4. Approved terminology (comma-separated)
 5. Banned terminology (comma-separated)
 6. Guardrails and compliance requirements
+7. Author profiles (name, title, credentials, profile URL — or explicitly skip for authorless output)
 
 ### Update Existing Profile
 ```
@@ -398,7 +400,10 @@ Fill the sections your import scope covers; leave the rest as template defaults.
       "blog": "authoritative + approachable",
       "whitepaper": "authoritative + academic",
       "faq": "clear + helpful",
-      "research_paper": "academic + precise"
+      "research_paper": "academic + precise",
+      "video_script": "energetic + spoken-word",
+      "case_study": "narrative + evidence-led",
+      "newsletter": "conversational + direct"
     }
   },
 
@@ -469,7 +474,7 @@ Fill the sections your import scope covers; leave the rest as template defaults.
     "industry": "Healthcare",
     "sub_industry": "Health Technology / Medical Devices",
     "target_audiences": ["Healthcare Executives", "Clinical Decision Makers", "Health System IT Leaders"],
-    "content_types_supported": ["article", "blog", "whitepaper", "faq", "research_paper", "video_script"],
+    "content_types_supported": ["article", "blog", "whitepaper", "faq", "research_paper", "video_script", "case_study", "newsletter"],
     "import_confidence": 94
   }
 }

@@ -101,7 +101,7 @@ Import and validate the content plan.
 - All required fields present (title, content_type, publish_date)
 - Publish dates are in the future
 - Publish dates fall within the specified time period
-- Content types are valid (article, blog, whitepaper, faq, research_paper, video_script)
+- Content types are valid (article, blog, whitepaper, faq, research_paper, video_script, case_study, newsletter)
 - No duplicate titles
 
 **If publish dates are not provided** (using cadence mode):

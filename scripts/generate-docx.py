@@ -1051,7 +1051,7 @@ def main():
     parser.add_argument("--output", required=True, help="Output .docx path")
     parser.add_argument("--reports", help="Optional reports JSON for appendices")
     parser.add_argument("--brand", default="Brand", help="Brand name for header")
-    parser.add_argument("--content-type", default="article", help="article/blog/whitepaper/faq/research_paper")
+    parser.add_argument("--content-type", default="article", help="article/blog/whitepaper/faq/research_paper/video_script/case_study/newsletter")
     parser.add_argument("--title", help="Override title (else extracts from first H1)")
     parser.add_argument("--no-toc", action="store_true",
                         help="Skip the Table of Contents field after the title page")
