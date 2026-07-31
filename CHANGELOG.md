@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.17.4] — 2026-07-30
+
+### Fixed — Completing the cross-file read (every skill and agent)
+
+Finished reading all 13 agents and all 21 skills end-to-end against the interconnection graph. Four more systemic breaks, each invisible in any single file:
+
+- **`video_script` was a shipped content type the system did not know about.** `templates/content-types/video-script-structure.md` ships, `03-content-drafter` loads it, and `cf-video-script` produces it — but **eight** enumerations listed only five types. `09-batch-orchestrator` rejected a `video_script` row as an invalid content type, `cf-calendar` rejected it in validation, `cf-analytics` could not filter for it, `cf-style-guide` left it out of `content_types_supported`, and the orchestrator's **Content Types & Specifications table had no row for it at all** — so Gate 3 (word count ±10%) and Gate 5 (readability ±0.5 grade) had no target to check video scripts against. Added everywhere, with the duration-driven rule Gate 3 must use instead of the article word-count rule.
+- **Twelve skills advertised batch processing as parallel.** `09-batch-orchestrator` states plainly: *"No concurrency. Do not claim or attempt parallel pipelines."* Yet `cf-analytics`, `cf-brief` (×2), `cf-calendar`, `cf-connect` (×2), `cf-help`, `cf-integrations`, `cf-publish`, `cf-social-adapt`, `cf-variants` and `content-refresh` all promised parallel production. Every one now describes the sequential, checkpointed queue that actually runs.
+- **`cf-video-script` offered a 15-second length with no template profile.** The skill lists `15s` as a supported length and budgets 30-38 words for it, but the template declared only 30s/60s/3min/5min/10min. Added the 15s profile (hook / main point / CTA-loop) so Shorts and Reels scripts have a structure to follow.
+- **`08-output-manager` double-prefixed an absolute path.** It read chart PNGs from `~/.claude-marketing/{brand-slug}/assets/{file_path}` while `file_path` in the visual manifest is already absolute per the ONE PATH RULE — concatenating produced a path that cannot exist, silently dropping every generated chart from the .docx. It also had no Drive folder mapping for Video Script.
+- **`cf-publish`**: a September schedule date rendered as "March 1, 2026"; HTML exports written to a relative `.tmp/` path instead of the brand output directory; and the "do not use" list named `<5.0` when the actual publish gate is `<7.0` (5.0-6.9 is `review_required`, not publishable).
+- `tests/test_pipeline_graph.py` grew guards for the content-type registry (every shipped template must appear in every enumeration and have a spec-table row) and for parallel-batch claims. Tests 158 → **162**.
+
+Verified clean across all 34 files in the same pass: no hardcoded model ids, no claims of active hooks or pre-connected MCP servers, no absolute ranking guarantees, complete frontmatter on every skill, and every relative documentation link resolves.
+
 ## [3.17.3] — 2026-07-30
 
 ### Fixed — Cross-file contract review (the pipeline as a graph, not a pile of files)
