@@ -249,8 +249,10 @@ When looping back, provide:
 
 ## LOOP TRACKING
 
-Per `utils/loop-tracker.md`:
-- Phase 4→3 limit: **2 iterations**
+Per `utils/loop-tracker.md`; limits are read from `config/scoring-thresholds.json` → `default.feedback_loop_limits`:
+- Phase 4→3 limit (`phase_4_to_3`): **2 iterations**
+- Phase 4→3.5 limit (`phase_4_to_3_5`): **1 iteration** — this is the edge you take for a visual-data mismatch, and it is stricter than the 4→3 budget
+- Pipeline-wide ceiling (`max_total_loops`): **5** across all edges — check `run.json` `total_loops` before looping
 - Track: from_phase, to_phase, iteration count, reason, timestamp
 - **If second validation also fails:** Escalate to human review
 

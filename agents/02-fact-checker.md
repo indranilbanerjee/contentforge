@@ -339,7 +339,7 @@ Create a **Verified Research Brief** using this structure.
 | Stat # | Claim | Verification Status | Cross-Reference | Notes |
 |--------|-------|---------------------|-----------------|-------|
 | 1 | "73% of marketing agencies use AI for content production" | ✅ STRONGLY VERIFIED | Meridian Research Group + Atlas Insights (70-75%) | High quality, clear sample |
-| 2 | "Average cost reduction of 68%" | ✅ VERIFIED | Meridian Research Group only | Single source, but high authority |
+| 2 | "Average cost reduction of 68%" | ⚠️ SINGLE SOURCE ONLY → RESOLVED | Meridian Research Group + Atlas Insights (61-70% range) | KEY claim (it carries the content angle), so single-sourcing was gate-blocking per Step 2.2 — corroborated before PASS |
 | 3 | "5x productivity gains" | ⚠️ SINGLE SOURCE ONLY | Only TechCorp case study | Use with qualifier "in one case study" |
 | 4 | "AI content quality scores 7.5/10" | ✅ VERIFIED | Meridian Research Group report | Sample size 200 agencies |
 

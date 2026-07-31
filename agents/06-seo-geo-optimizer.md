@@ -226,8 +226,9 @@ If checks fail: add more links, replace forced placements, or expand placeholder
 **Purpose:** Maximize visibility in Google AI Overviews, Perplexity featured answers, ChatGPT search, Claude search, Bing Copilot, and other AI-generated search results.
 
 **Market reality check** — the world the optimizer is shipping into (each figure carries its own source date; re-verify before quoting any of them in content):
-- Google AI Overviews appear on **~55% of all Google searches** (Seer Interactive, Sept 2025); organic CTR on AIO queries dropped ~61%; **~58% of Google searches are zero-click**
-- ChatGPT search reaches ~883M MAU; AI-referred sessions jumped 527% YoY through mid-2025
+- **~68% of Google searches now end without a click** (Similarweb study reported by Search Engine Land, early 2026 — up from ~58% a year earlier and ~45% a decade ago). On queries that trigger an AI Overview the zero-click rate is ~83%, versus ~60% on queries without one; CTR on AIO queries falls by roughly 60%
+- AI Overview trigger rate depends heavily on the query set measured — 2026 trackers report anywhere from ~20% to ~48% of tracked queries. Quote a range with its source, never a single "% of all searches" figure
+- ChatGPT reached **900M weekly active users** (OpenAI, announced February 2026; no fresher official figure as of mid-2026). Sensor Tower data reported by Reuters put the ChatGPT app past 1B monthly actives in June 2026
 - **Citation source skew varies sharply by engine** — Wikipedia = 47.9% of ChatGPT factual cites; Reddit = 46.7% of Perplexity cites; Google AIO over-indexes on Facebook/Yelp
 - **FAQPage / HowTo schema earn no rich results for almost anyone.** Google **deprecated HowTo rich results in September 2023** (all sites) and **restricted FAQ rich results in August 2023** to authoritative government and health sites. This is settled 2023 policy, not a recent update. Put the effort into entity-rich **Article + Organization** JSON-LD instead (the Phase 7 reviewer rubric scores it that way)
 - **llms.txt** is an unadopted community proposal, not a standard. **Google has publicly said it does not use llms.txt**, and no major AI engine has confirmed it as an eligibility signal. Do not recommend it as an AI-visibility tactic or score content on its presence; mention it, at most, as optional low-cost housekeeping

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.17.2] — 2026-07-30
+
+### Fixed — Agent currency and contract review
+
+Re-read the pipeline agents against their config contracts and against current market data:
+
+- **Stale AI-search market data in `06-seo-geo-optimizer`.** The GEO "market reality check" quoted Seer Interactive (Sept 2025) for AI Overview coverage and a mid-2025 ChatGPT MAU figure. Replaced with verified 2026 figures: **~68% of Google searches now end without a click** (Similarweb via Search Engine Land, early 2026; ~83% on AI-Overview queries vs ~60% without), and **ChatGPT at 900M weekly actives** (OpenAI, February 2026). The AI-Overview trigger rate is now expressed as a sourced range (~20-48% depending on query set) rather than a single "% of all searches" figure, because 2026 trackers disagree sharply on methodology.
+- **`02-fact-checker` worked example contradicted its own rule.** Step 2.2 makes a single-sourced KEY statistic gate-blocking, with a narrow exception only for reliability-9+ primary sources. The sample scorecard nonetheless marked a key claim (the 68% cost reduction carrying the content angle) ✅ VERIFIED on one industry report — teaching the model to do what the rule forbids. The example now shows it corroborated before PASS.
+- **`03.5-visual-asset-annotator` chart script ignored the storage resolver.** The matplotlib block hardcoded `Path.home() / ".claude-marketing"`, while every script resolves storage through `_common.marketing_home()` (`$CLAUDE_MARKETING_HOME` → `$CLAUDE_PLUGIN_DATA` → `~/.claude-marketing`). With either variable set, charts saved outside the run's brand directory and Phase 8 could not embed them. The block now mirrors the resolver exactly.
+- **`04-scientific-validator` had no budget for the 4→3.5 edge.** It documented only `phase_4_to_3: 2` while also being able to loop to Phase 3.5 on a visual-data mismatch, whose limit is `phase_4_to_3_5: 1`. Both edges and the `max_total_loops: 5` ceiling are now stated.
+
+Verified clean in the same pass: no hardcoded model ids anywhere in skills or agents (all resolve through the registry), every `config/` key cited by an agent resolves with the expected value (scoring thresholds, loop limits, industry overrides, the 35-pattern humanizer catalog, all 8 social platform specs with `ai_disclosure`), and every referenced script exists.
+
 ## [3.17.1] — 2026-07-30
 
 ### Fixed — Functional testing pass
