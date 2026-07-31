@@ -118,6 +118,72 @@ class TestBuiltinTemplateCount(unittest.TestCase):
                               f"cf-template never mentions it")
 
 
+class TestContentTypeRegistryIsConsistent(unittest.TestCase):
+    """A content type that ships a template but is missing from a validator's
+    enumeration is silently rejected by that part of the system. video_script
+    shipped for months while batch, calendar, analytics and the brand profile
+    all listed only five types."""
+
+    # files that enumerate the supported content types, and the token form each uses
+    ENUMERATIONS = {
+        "skills/contentforge/SKILL.md": "video_script",
+        "agents/09-batch-orchestrator.md": "video_script",
+        "skills/cf-analytics/SKILL.md": "video_script",
+        "skills/cf-calendar/SKILL.md": "video_script",
+        "skills/cf-style-guide/SKILL.md": "video_script",
+        "skills/cf-template/SKILL.md": "video-script",
+        "skills/cf-brief/SKILL.md": "video-script",
+        "agents/03-content-drafter.md": "video-script",
+        "agents/08-output-manager.md": "Video Script",
+    }
+
+    def test_shipped_templates_match_the_orchestrator_table(self):
+        shipped = {p.stem.replace("-structure", "")
+                   for p in (REPO / "templates" / "content-types").glob("*-structure.md")}
+        self.assertEqual(len(shipped), 6, f"expected 6 shipped templates, found {sorted(shipped)}")
+
+    def test_every_enumeration_includes_video_script(self):
+        for rel, token in self.ENUMERATIONS.items():
+            with self.subTest(file=rel):
+                self.assertIn(token, read(REPO / rel),
+                              f"{rel} enumerates content types but omits {token!r} — "
+                              f"that type ships a template and would be rejected here")
+
+    def test_orchestrator_spec_table_has_a_row_per_shipped_type(self):
+        orch = read(REPO / "skills" / "contentforge" / "SKILL.md")
+        for label in ("Article", "Blog", "Whitepaper", "FAQ", "Research Paper", "Video Script"):
+            with self.subTest(type=label):
+                self.assertIn(f"**{label}**", orch,
+                              f"Content Types & Specifications has no row for {label}, so "
+                              f"Gate 3/Gate 5 have no target to check it against")
+
+
+class TestNoParallelBatchClaims(unittest.TestCase):
+    """batch-process is sequential and checkpointed by design (09-batch-orchestrator:
+    "No concurrency"). Twelve skills advertised it as parallel, which is a promise
+    the system cannot keep."""
+
+    ALLOWED = (
+        "parallel structure", "parallel h2", "parallelism", "parallel construction",
+        "no concurrency", "do not claim or attempt parallel",
+        "does not run them concurrently", '"parallel" batch',
+    )
+
+    def test_no_skill_or_agent_advertises_parallel_batch(self):
+        offenders = []
+        for p in list(SKILLS.glob("*/SKILL.md")) + list(AGENTS.glob("*.md")):
+            for i, line in enumerate(read(p).splitlines(), 1):
+                low = line.lower()
+                if "parallel" not in low and "concurrent" not in low:
+                    continue
+                if any(a in low for a in self.ALLOWED):
+                    continue
+                offenders.append(f"{p.parent.name}/{p.name}:{i}: {line.strip()[:90]}")
+        self.assertEqual(offenders, [],
+                         "batch processing is sequential by design; these claim otherwise:\n"
+                         + "\n".join(offenders))
+
+
 class TestConfigKeysCitedByAgentsExist(unittest.TestCase):
     """Agents defer gate numbers to config; a renamed key silently disables a gate."""
 

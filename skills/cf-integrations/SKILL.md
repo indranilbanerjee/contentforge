@@ -140,7 +140,7 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 - **[/contentforge:cf-connect](../cf-connect/SKILL.md)** — Guided setup for a specific connector
 - **[/contentforge:cf-add-integration](../cf-add-integration/SKILL.md)** — Connect services not in the registry
 - **[/contentforge:create-content](../../commands/create-content.md)** — Main content production pipeline
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Parallel content processing
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Sequential, checkpointed batch processing
 
 ---
 

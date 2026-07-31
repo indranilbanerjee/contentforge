@@ -647,7 +647,7 @@ Major platforms provide AI-content labeling options, and EU AI Act Article 50 (a
 - **[/contentforge:create-content](../../commands/create-content.md)** -- Full content production pipeline
 - **[/contentforge:cf-publish](../cf-publish/SKILL.md)** -- Publish to Webflow/WordPress
 - **[/contentforge:content-refresh](../content-refresh/SKILL.md)** -- Update existing content
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Parallel content production
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Sequential, checkpointed batch production
 
 ---
 

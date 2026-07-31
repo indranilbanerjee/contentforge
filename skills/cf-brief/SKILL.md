@@ -569,7 +569,7 @@ Brief saved to:
 When a `--brief` parameter is provided, ContentForge uses the brief's outline, keyword map, citation targets, and SEO strategy instead of running its own Phase 1 research from scratch. This produces more targeted content and saves 3-5 minutes of processing time.
 
 ### Step 4: Batch Production from Multiple Briefs
-Generate briefs for 10 topics, review them, then feed approved briefs into `/contentforge:batch-process` for parallel production.
+Generate briefs for 10 topics, review them, then feed approved briefs into `/contentforge:batch-process`, which runs them as a sequential, checkpointed queue.
 
 ## MCP Integrations
 
@@ -619,7 +619,7 @@ Results are directionally accurate but less precise. The brief clearly labels es
 ## Related Skills
 
 - **[/contentforge:create-content](../../commands/create-content.md)** — Produce content from a brief (accepts `--brief` parameter)
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple briefs into content in parallel
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple briefs into content as a sequential, checkpointed queue
 - **[/contentforge:cf-audit](../cf-audit/SKILL.md)** — Audit existing content to identify topics needing new briefs
 - **[/contentforge:cf-calendar](../cf-calendar/SKILL.md)** — Schedule brief-to-production timelines
 - **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Update existing content (generates refresh brief automatically)

@@ -227,7 +227,7 @@ The complete setup guide includes:
    -> Follow steps: create service account, download credentials JSON, set env var, add to .mcp.json
 2. Restart Claude Code
 3. /contentforge:batch-process <sheet URL>
-   -> Reads requirements from the sheet, processes in parallel
+   -> Reads requirements from the sheet, processes them one at a time (checkpointed queue)
 ```
 
 ### Workflow 3: Connect SEO Tools for Data-Driven Briefs
@@ -247,7 +247,7 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 - **[/contentforge:cf-integrations](../cf-integrations/SKILL.md)** — Full integration status dashboard
 - **[/contentforge:cf-add-integration](../cf-add-integration/SKILL.md)** — Guided flow for services not in the registry
 - **[/contentforge:create-content](../../commands/create-content.md)** — Main content production pipeline
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Parallel content processing
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Sequential, checkpointed batch processing
 
 ---
 

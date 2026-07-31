@@ -41,7 +41,7 @@ Loads historical production data from the brand's configured tracking backend (G
 **Optional (all have defaults):**
 - **Time Period** — `7` | `30` | `90` days (default: `30`)
 - **Brand Filter** — Filter to specific brand (default: all brands)
-- **Content Type Filter** — `article` | `blog` | `whitepaper` | `faq` | `research_paper` (default: all types)
+- **Content Type Filter** — `article` | `blog` | `whitepaper` | `faq` | `research_paper` | `video_script` (default: all types)
 - **Metric Focus** — `quality` | `timing` | `compliance` | `citations` (default: `quality`)
 
 ## How to Use
@@ -93,7 +93,7 @@ All three backends share the same record schema:
 | requirement_id | string | Unique content ID (REQ-001) |
 | title | string | Content title |
 | brand | string | Brand profile used |
-| content_type | enum | article, blog, whitepaper, faq, research_paper |
+| content_type | enum | article, blog, whitepaper, faq, research_paper, video_script |
 | word_count | integer | Final word count |
 | quality_score | float | Composite score (0-10) |
 | content_quality | float | Dimension score (0-10) |
@@ -511,7 +511,7 @@ See [`config/analytics-config.json`](../../config/analytics-config.json) for ful
 ## Related Skills
 
 - **[/contentforge:create-content](../../commands/create-content.md)** — Full content production pipeline (generates tracking data)
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Parallel content processing (generates batch tracking data)
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Sequential, checkpointed batch processing (generates batch tracking data)
 - **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Content updates (generates refresh tracking data)
 - **[/contentforge:cf-variants](../cf-variants/SKILL.md)** — A/B test variation generation
 - **[/contentforge:cf-switch-backend](../cf-switch-backend/SKILL.md)** — Change where tracking data lives

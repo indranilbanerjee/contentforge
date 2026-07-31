@@ -157,7 +157,7 @@ table below references the user-visible behaviors.
 | Pipeline interrupted, lost work | Use `/contentforge:resume` to pick up from the last completed phase (v3.12.3+) |
 | Google Drive connector ignored at brand-setup | Fixed in v3.12.7. Run `python scripts/detect-drive-mcp.py` to verify the autodetect can see your MCP |
 | Quality score below 5.0 | Content flagged for human review -- check topic complexity, source availability, and brand profile completeness |
-| Pipeline taking too long | Normal: 20-30 min for articles. Use batch-process from a Google Sheet for parallel runs |
+| Pipeline taking too long | Normal: 20-30 min for articles. batch-process queues many pieces unattended (sequential, checkpointed) — it survives interruption, it does not run them concurrently |
 
 ### Documentation references
 

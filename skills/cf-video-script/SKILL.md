@@ -79,7 +79,10 @@ Extracts key points from the article and restructures for video format.
 - **Quality Gate:** Hook identified, word budget calculated, key points mapped to scenes
 
 ### Phase 2: Script Structure (2-3 minutes)
-- Content Drafter builds script following `templates/content-types/video-script-structure.md`
+
+**Dispatch the agents — do not write the script inline.** Each phase below is a `Task` call with a qualified `subagent_type`, exactly as the main orchestrator dispatches its pipeline: Phase 1 → `contentforge:researcher`, Phases 2-3 → `contentforge:content-drafter`, Phase 4 → `contentforge:structurer-proofreader`. Pass file paths plus the platform, length and tone; the agents `Read` what they need.
+
+- Content Drafter builds script following `templates/content-types/video-script-structure.md` (duration profiles: 15s, 30s, 60s, 3min, 5min, 10min)
 - Allocates time to each section:
   - **HOOK:** First 3 seconds (TikTok: 1 second)
   - **INTRO:** 10-15% of total length
@@ -151,7 +154,7 @@ Supplementary Materials:
 - YouTube SEO: Title, description (with timestamps), 15 tags
 
 Output Location (follows the brand's tracking backend):
-<Drive folder / Airtable attachment / ~/Documents/ContentForge/AcmeMed/video/AI-Healthcare-2026_youtube-5min_v1.0.docx>
+<Drive folder / Airtable attachment / ~/Documents/ContentForge/AcmeMed/video_script/AI-Healthcare-2026_youtube-5min_v1.0.docx>
 ```
 
 ## Platform-Specific Guidelines

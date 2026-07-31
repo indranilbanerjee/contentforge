@@ -2,13 +2,23 @@
 
 ## Content Type: Video Script
 **Target Platforms:** YouTube, TikTok, Instagram Reels, Explainer
-**Target Durations:** 30s, 60s, 3min, 5min, 10min
+**Target Durations:** 15s, 30s, 60s, 3min, 5min, 10min
 **Dialogue Pace:** 120-150 words per minute
 **Minimum Elements Per Scene:** Dialogue + On-Screen Text + B-Roll + Music/SFX
 
 ---
 
 ## Duration Profiles
+
+### 15 Seconds
+Shorts/Reels-only. One idea, no intro, loopable ending — the hook doubles as the framing.
+
+| Section | Timestamp | Duration | Word Budget | Purpose |
+|---------|-----------|----------|-------------|---------|
+| HOOK | 0:00-0:02 | 2s | 4-6 words | Stop the scroll |
+| MAIN POINT | 0:02-0:12 | 10s | 20-25 words | Deliver the single idea |
+| CTA / LOOP | 0:12-0:15 | 3s | 6-8 words | Drive action, or flow back into the hook |
+| **Total** | | **15s** | **30-38 words** | |
 
 ### 30 Seconds
 | Section | Timestamp | Duration | Word Budget | Purpose |

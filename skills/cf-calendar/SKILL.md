@@ -101,7 +101,7 @@ Import and validate the content plan.
 - All required fields present (title, content_type, publish_date)
 - Publish dates are in the future
 - Publish dates fall within the specified time period
-- Content types are valid (article, blog, whitepaper, faq, research_paper)
+- Content types are valid (article, blog, whitepaper, faq, research_paper, video_script)
 - No duplicate titles
 
 **If publish dates are not provided** (using cadence mode):
@@ -379,7 +379,7 @@ None. This skill uses deterministic scheduling logic (backward timeline calculat
 - **[/contentforge:cf-audit](../cf-audit/SKILL.md)** — Audit content library to identify what needs refreshing (feeds into calendar)
 - **[/contentforge:cf-brief](../cf-brief/SKILL.md)** — Generate briefs for calendar topics before production
 - **[/contentforge:create-content](../../commands/create-content.md)** — Produce content for scheduled pieces
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple calendar pieces in parallel
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple calendar pieces as a sequential, checkpointed queue
 - **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Refresh content identified in the calendar
 
 ---

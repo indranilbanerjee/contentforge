@@ -175,7 +175,7 @@ If the file does not exist or is < 5 KB, the script failed — investigate stder
 #### 2.4 Visual Asset Integration
 
 **For `chart` assets (status: `generated`):**
-1. Read PNG from `~/.claude-marketing/{brand-slug}/assets/{file_path}`
+1. Read the PNG from the manifest's `file_path` **verbatim** — per the ONE PATH RULE in `agents/03.5-visual-asset-annotator.md`, that field is already a resolved absolute path (it honours `$CLAUDE_MARKETING_HOME` / `$CLAUDE_PLUGIN_DATA`). Do NOT prefix it with `~/.claude-marketing/...`; concatenating a base onto an absolute path yields a path that does not exist, and the chart silently fails to embed. The run-relative `assets/...` form appears only inside the inline `<!-- VISUAL: ... file= -->` marker.
 2. Insert at position specified by `placement` field
 3. Caption: italic, centered, "Figure N:" prefix
 4. Set alt text in image metadata
@@ -226,7 +226,9 @@ Format: `[topic-slug]-[YYYY-MM-DD].docx`
 ContentForge/{Brand Name}/{Content Type}/{Year}/{MM-MonthName}/{filename}.docx
 ```
 
-Content type folder mapping: Article -> `Articles`, Blog -> `Blog-Posts`, Whitepaper -> `Whitepapers`, FAQ -> `FAQs`, Research Paper -> `Research-Papers`
+Content type folder mapping: Article -> `Articles`, Blog -> `Blog-Posts`, Whitepaper -> `Whitepapers`, FAQ -> `FAQs`, Research Paper -> `Research-Papers`, Video Script -> `Video-Scripts`
+
+One folder per shipped content type in `templates/content-types/` — if a template exists there with no mapping here, its output has nowhere to go.
 
 Month format: `01-January`, `02-February`, etc.
 

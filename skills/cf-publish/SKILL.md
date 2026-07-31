@@ -21,7 +21,7 @@ Use `/contentforge:cf-publish` when:
 
 **Do NOT use for:**
 - Content still in pipeline (must be Phase 8 complete)
-- Content flagged for human review (score <5.0)
+- Content that did not reach APPROVED (anything below 7.0 — a 5.0-6.9 piece is `review_required`, not publishable)
 - Platforms other than Webflow/WordPress (use `/contentforge:cf-social-adapt` for social media)
 
 ## What This Command Does
@@ -239,7 +239,7 @@ Live URL: https://acme-corp.webflow.io/blog/ai-in-healthcare-2026-trends
 Scheduling for 2026-09-01 09:00 UTC...
 API call: POST /collections/blog-posts/items (draft=true, scheduled_at=2026-09-01T09:00:00Z)
 Status: 201 Created
-Scheduled Publish: March 1, 2026 at 9:00 AM UTC
+Scheduled Publish: September 1, 2026 at 9:00 AM UTC
 Draft URL: https://acme-corp.webflow.io/blog/ai-in-healthcare-2026-trends (not live yet)
 ```
 
@@ -322,7 +322,7 @@ When no CMS connector is available, generate a standalone HTML file.
 ### What Gets Generated
 
 ```
-Output: .tmp/publish-exports/ai-in-healthcare-2026-trends.html
+Output: ~/.claude-marketing/{brand-slug}/output/publish-exports/ai-in-healthcare-2026-trends.html
 
 HTML Export includes:
 - Full article content in clean, semantic HTML5
@@ -364,7 +364,7 @@ HTML Export includes:
 ```
 HTML Export Complete
 ===================================================
-File: .tmp/publish-exports/ai-in-healthcare-2026-trends.html
+File: ~/.claude-marketing/{brand-slug}/output/publish-exports/ai-in-healthcare-2026-trends.html
 Size: 48 KB
 
 Manual Upload Instructions:
@@ -494,7 +494,7 @@ Fallback: Publish without featured image, flag for manual fix
 ## Related Skills
 
 - **[/contentforge:create-content](../../commands/create-content.md)** -- Full content production pipeline
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Parallel content production
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** -- Sequential, checkpointed batch production
 - **[/contentforge:content-refresh](../content-refresh/SKILL.md)** -- Update existing content
 - **[/contentforge:cf-social-adapt](../cf-social-adapt/SKILL.md)** -- Social media adaptation
 

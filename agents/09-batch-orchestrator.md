@@ -87,7 +87,7 @@ All backends return the same format: `{"pending_count": N, "pending": [records]}
 
 **Required Columns:**
 - `requirement_id` (string, unique)
-- `content_type` (article, blog, whitepaper, faq, research_paper)
+- `content_type` (article, blog, whitepaper, faq, research_paper, video_script)
 - `title` (string — used as the `--title` bypass; batch runs are non-interactive)
 - `target_audience` (string)
 - `brand` (string, must match an existing brand profile)
@@ -97,7 +97,7 @@ All backends return the same format: `{"pending_count": N, "pending": [records]}
 
 **Validation Checks for Each Row:**
 1. All required fields present and non-empty
-2. `content_type` is one of the 5 supported types
+2. `content_type` is one of the 6 supported types
 3. Brand profile exists at `~/.claude-marketing/{brand-slug}/Brand-Guidelines/{BrandName}-brand-profile.json` (or Drive cache in Cowork)
 4. `word_count` is within the canonical range for its content type (see the Content Types table in `skills/contentforge/SKILL.md`)
 5. `priority` is 1-5

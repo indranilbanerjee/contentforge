@@ -408,7 +408,7 @@ This skill uses existing **Humanizer** and **Reviewer** agent patterns — no ad
 
 - **[/contentforge:create-content](../../commands/create-content.md)** — Full content production pipeline
 - **[/contentforge:content-refresh](../content-refresh/SKILL.md)** — Update existing content with fresh data
-- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple content pieces in parallel
+- **[/contentforge:batch-process](../batch-process/SKILL.md)** — Process multiple content pieces as a sequential, checkpointed queue
 - **[/contentforge:cf-analytics](../cf-analytics/SKILL.md)** — Track quality scores and performance over time
 
 ---

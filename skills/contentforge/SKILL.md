@@ -173,7 +173,7 @@ Runs your content through **10 specialized agents**, each behind a quality gate:
 
 **Minimum Required:**
 - **Topic** — What the content is about (e.g., "AI in Healthcare", "remote work productivity")
-- **Content Type** — article, blog, whitepaper, faq, research_paper
+- **Content Type** — article, blog, whitepaper, faq, research_paper, video_script
 - **Brand** — Which brand profile to use (create with `/contentforge:cf-style-guide` if new brand). See No-Brand Mode below if none exists.
 
 **Pre-Flight Validation:** After gathering inputs, validate the brand profile for completeness (voice, guardrails, audience, industry pack). For regulated industries (pharma, BFSI, healthcare, legal), guardrails are required — warn if they're empty and ask whether to proceed or update the profile first.
@@ -314,8 +314,11 @@ Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:transla
 | **Whitepaper** | 2,500-5,000 | Grade 12-14 | 15-25 |
 | **FAQ** | 600-1,200 | Grade 8-10 | 3-5 |
 | **Research Paper** | 4,000-8,000 | Grade 14-16 | 25-50 |
+| **Video Script** | duration-driven (see below) | Grade 6-9 (spoken) | 2-5 |
 
-Readability is gated at ±0.5 grade of the content-type target (verified via `text-metrics.py`).
+Readability is gated at ±0.5 grade of the content-type target (verified via `text-metrics.py`). Where the table gives a range, the target is its midpoint.
+
+**Video Script is duration-driven, not word-count-driven.** Gate 3 checks the total dialogue word budget for the requested duration profile in `templates/content-types/video-script-structure.md` (30s → 60-75 words, 60s → 120-150, 3min → 360-450, at 120-150 words per minute), not a fixed range, and every scene must carry dialogue + on-screen text + B-roll + music/SFX. Do not apply the ±10% article word-count rule to it.
 
 ## Brand Profile Setup
 

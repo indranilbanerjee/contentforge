@@ -379,7 +379,7 @@ The refresh reuses the canonical 10-phase pipeline agents (Reviewer is Phase 7, 
 
 ## Related Skills
 
-- `/contentforge:batch-process` — Create or refresh content in parallel
+- `/contentforge:batch-process` — Create or refresh content as a sequential, checkpointed queue
 - `/contentforge:cf-variants` — A/B test refreshed vs. original elements
 - `/contentforge:cf-audit` — Find refresh candidates across the whole library
 

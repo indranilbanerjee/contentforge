@@ -469,7 +469,7 @@ Fill the sections your import scope covers; leave the rest as template defaults.
     "industry": "Healthcare",
     "sub_industry": "Health Technology / Medical Devices",
     "target_audiences": ["Healthcare Executives", "Clinical Decision Makers", "Health System IT Leaders"],
-    "content_types_supported": ["article", "blog", "whitepaper", "faq", "research_paper"],
+    "content_types_supported": ["article", "blog", "whitepaper", "faq", "research_paper", "video_script"],
     "import_confidence": 94
   }
 }

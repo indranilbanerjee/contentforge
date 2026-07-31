@@ -40,7 +40,7 @@ Use `/contentforge:cf-template` when:
 - **Template Name** — Name for the custom template (e.g., "case-study", "product-comparison", "email-newsletter")
 
 **Optional:**
-- **Base Type** — Start from an existing template and modify: article, blog, whitepaper, faq, research-paper, or `custom` (blank slate)
+- **Base Type** — Start from an existing template and modify: article, blog, whitepaper, faq, research-paper, video-script, or `custom` (blank slate)
 - **Word Count Range** — Minimum and maximum word count (e.g., 1500-2500)
 - **Readability Target** — Flesch-Kincaid grade level target (e.g., 8-10 for general, 12-14 for professional)
 - **Citation Minimum** — Minimum number of citations required (e.g., 5)
@@ -402,7 +402,7 @@ Usage:
     --type=custom:case-study --brand=AcmeMed
 
 Templates Available (Built-In + Custom):
-  Built-in: article, blog, whitepaper, faq, research-paper
+  Built-in: article, blog, whitepaper, faq, research-paper, video-script
   Custom: case-study (new)
 ================================================================
 ```
@@ -462,7 +462,7 @@ Exports the template as JSON for sharing with other ContentForge installations.
 **Solution:** Run `/contentforge:cf-template --list` to see available templates. Names are kebab-case (e.g., `case-study`, not `Case Study`). Custom templates created before mid-2026 may still sit inside the old plugin-directory location — if so, move them to `~/.claude-marketing/_templates/` so plugin updates don't delete them.
 
 ### "Can't modify built-in template"
-**Cause:** Built-in templates (article, blog, whitepaper, faq, research-paper) are read-only.
+**Cause:** Built-in templates (article, blog, whitepaper, faq, research-paper, video-script) are read-only.
 **Solution:** Create a custom template based on the built-in one: `/contentforge:cf-template my-article --base=article`. This creates a copy you can modify freely.
 
 ## Limitations
