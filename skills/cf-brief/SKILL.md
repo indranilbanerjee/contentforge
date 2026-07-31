@@ -30,7 +30,7 @@ Use `/contentforge:cf-brief` when:
 4. **Audience Pain Points & Questions** — Map target audience needs, common questions, forum discussions, and "People Also Ask" patterns
 5. **Recommended Outline** — Generate a structured outline with title options, section descriptions, word count allocations, and citation targets per section
 6. **SEO Strategy** — Keyword placement plan, meta title/description recommendations, internal linking opportunities, featured snippet potential, and schema markup suggestions
-7. **AEO/GEO Strategy** — AI Overview presence check, citation-worthiness checklist, entity consistency, answer-block recommendations, llms.txt awareness
+7. **AEO/GEO Strategy** — AI Overview presence check, citation-worthiness checklist, entity consistency, answer-block recommendations, honest llms.txt note (not a ranking/citation signal)
 8. **Success Metrics** — Define measurable goals: target word count, minimum citations, readability target, quality score goal (8.5+)
 
 ## Required Inputs
@@ -479,9 +479,9 @@ Optimize for AI answer engines (Google AI Overviews, ChatGPT, Perplexity, Gemini
 
 4. **Entity consistency** — List the entities (brand, product, people, concepts) the piece must reference consistently. Names, spellings, and descriptions should match the brand's site, schema markup, and third-party profiles so knowledge graphs and LLMs resolve them to the same entity.
 
-5. **llms.txt awareness** — Note whether the publishing domain has an `llms.txt` file. If yes, recommend adding this piece to it after publication. If no, flag it as a site-level recommendation (the emerging convention for signaling canonical, LLM-friendly content paths).
+5. **llms.txt awareness** — Note whether the publishing domain has an `llms.txt` file, but frame it honestly: it is an **unadopted community proposal, not a standard** — Google has publicly said it does not use llms.txt, and no major AI engine has confirmed it as an eligibility signal (same stance as the Phase 6 optimizer). If the domain already maintains one, adding this piece to it is optional low-cost housekeeping; if it doesn't, do NOT present creating one as an AI-visibility tactic.
 
-**Output for this phase:** an "AEO/GEO" section in the brief listing AI Overview status per target query, the citation-worthiness items the draft must include, the question-to-answer-block map, the entity list, and the llms.txt recommendation.
+**Output for this phase:** an "AEO/GEO" section in the brief listing AI Overview status per target query, the citation-worthiness items the draft must include, the question-to-answer-block map, the entity list, and the honest llms.txt note.
 
 ### Phase 7: Success Metrics Definition (1 minute)
 
@@ -518,7 +518,7 @@ The complete content brief document follows the `content-brief-template.md` form
 | **Audience Insights** | Pain points, questions, knowledge gaps, desired outcomes, language patterns |
 | **Recommended Outline** | Title options, 5-7 sections with descriptions, word count allocations, citation targets |
 | **SEO Strategy** | Keyword placement plan, meta recommendations, featured snippet optimization, schema, internal links |
-| **AEO/GEO Strategy** | AI Overview status per query, citation-worthiness items, answer-block map, entity list, llms.txt recommendation |
+| **AEO/GEO Strategy** | AI Overview status per query, citation-worthiness items, answer-block map, entity list, honest llms.txt note |
 | **Success Metrics** | Word count target, citation minimum, readability target, quality score goal, production time |
 | **Content Brief Checklist** | Pre-production verification items |
 

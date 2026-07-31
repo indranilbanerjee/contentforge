@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.17.5] — 2026-07-30
+
+### Fixed — Quality audit pass (every agent and skill judged on methodology, not just contracts)
+
+- **`cf-brief` contradicted the Phase 6 optimizer on llms.txt.** The optimizer correctly states llms.txt is an unadopted community proposal Google has publicly said it does not use; the brief called it "the emerging convention" and recommended adding pieces to it. A brief and an optimizer giving opposite guidance on the same question is a coin-flip for the model executing them. The brief now carries the same honest stance: optional housekeeping if the domain already maintains one, never an AI-visibility tactic.
+- Quality verdicts recorded for all 13 agents and 21 skills (see release notes): methodology is current — placements-over-density SEO, the 35-pattern humanizer with structural 2026 tells and self-critique pass, measured gates from config, honest connector/parallelism claims. Identified upgrade candidates (author/E-E-A-T byline layer, case-study content type, newsletter content type, post-publication AI-citation check) are product-scope additions awaiting a go decision, not defects.
+
 ## [3.17.4] — 2026-07-30
 
 ### Fixed — Completing the cross-file read (every skill and agent)
