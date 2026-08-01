@@ -1,4 +1,6 @@
-# ContentForge v3.16.1 — Complete User Guide
+# ContentForge v3.18.0 — Complete User Guide
+
+> **New in v3.18.0:** two more built-in content types — **case study** (client data supplied at intake under a strict provenance rule) and **newsletter** (subject-line package, one-CTA rule) — plus an **author/E-E-A-T byline layer** (add `author_profiles` to your brand profile; `/contentforge:cf-style-guide` prompts for it) and **`/contentforge:cf-aeo-check`**, a post-publication check of whether AI engines actually cite your piece.
 
 **From zero to first published article.** This guide walks you through every step of using ContentForge in Claude Cowork or Claude Code, from initial setup to running the full content production pipeline.
 
@@ -319,7 +321,7 @@ Create a Google Sheet with these columns:
 | Column | Required? | Description | Example |
 |--------|-----------|-------------|---------|
 | A: Requirement ID | Yes | Unique identifier | REQ-001 |
-| B: Content Type | Yes | article, blog, whitepaper, faq, research_paper | article |
+| B: Content Type | Yes | article, blog, whitepaper, faq, research_paper, video_script, case_study, newsletter | article |
 | C: Title/Topic | Yes | What the content is about | "AI in Healthcare: 2026 Trends" |
 | D: Target Audience | Recommended | Who reads this | "Healthcare CIOs" |
 | E: Brand | Yes | Brand profile name | AcmeMed |
@@ -523,7 +525,7 @@ ContentForge will:
 
 You'll be prompted for:
 1. **Topic** — The subject area (e.g., "AI in Healthcare") — NOT the final title
-2. **Content Type** — Select: article, blog, whitepaper, faq, research_paper
+2. **Content Type** — Select: article, blog, whitepaper, faq, research_paper, video_script, case_study, newsletter
 3. **Brand** — Select from existing profiles (or "default")
 4. **Target Audience** — e.g., "Healthcare Executives"
 5. **Word Count** — e.g., 1800 (or press Enter for default)
@@ -1330,7 +1332,7 @@ contentforge/
 │   ├── 10-social-adapter.md       # Social media post generation
 │   └── 11-translator.md           # Multilingual translation
 │
-├── skills/                        # 21 skills
+├── skills/                        # 22 skills
 │   ├── contentforge/SKILL.md      # Main pipeline
 │   ├── batch-process/SKILL.md     # Sequential, checkpointed queue
 │   ├── content-refresh/SKILL.md   # Content updates
@@ -1432,4 +1434,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.16.1** — 13 agents, 21 skills, 10 industry knowledge packs, three-layer fact verification.
+**ContentForge v3.18.0** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, three-layer fact verification.

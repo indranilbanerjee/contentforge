@@ -262,18 +262,46 @@ class TestNoParallelBatchClaims(unittest.TestCase):
     )
 
     def test_no_skill_or_agent_advertises_parallel_batch(self):
+        # user-facing docs are scanned too — the README's skills table carried a
+        # "parallel (4-5x faster)" claim long after the skills were cleaned
+        scan = (list(SKILLS.glob("*/SKILL.md")) + list(AGENTS.glob("*.md"))
+                + [REPO / "README.md", REPO / "AGENTS.md",
+                   REPO / "docs" / "USER-GUIDE.md", REPO / "docs" / "COWORK-GUIDE.md"])
         offenders = []
-        for p in list(SKILLS.glob("*/SKILL.md")) + list(AGENTS.glob("*.md")):
+        for p in scan:
+            if not p.exists():
+                continue
+            in_history = False
             for i, line in enumerate(read(p).splitlines(), 1):
+                # the README changelog section quotes historical releases verbatim;
+                # claims inside it describe the past, not the shipped product
+                if line.startswith("**v3.1") or line.startswith("## Version history"):
+                    in_history = True
                 low = line.lower()
                 if "parallel" not in low and "concurrent" not in low:
                     continue
-                if any(a in low for a in self.ALLOWED):
+                if in_history or any(a in low for a in self.ALLOWED):
                     continue
-                offenders.append(f"{p.parent.name}/{p.name}:{i}: {line.strip()[:90]}")
+                offenders.append(f"{p.name}:{i}: {line.strip()[:90]}")
         self.assertEqual(offenders, [],
                          "batch processing is sequential by design; these claim otherwise:\n"
                          + "\n".join(offenders))
+
+    def test_readme_skills_table_lists_every_shipped_skill(self):
+        readme = read(REPO / "README.md")
+        for d in sorted(p.name for p in SKILLS.iterdir() if p.is_dir()):
+            with self.subTest(skill=d):
+                self.assertIn(f"`{d}`", readme,
+                              f"skills/{d} ships but the README skills table omits it")
+
+    def test_user_docs_mention_every_registered_content_type(self):
+        for rel in ("README.md", "AGENTS.md", "docs/USER-GUIDE.md"):
+            text = read(REPO / rel).lower()
+            for token in ("case_study", "newsletter", "video_script"):
+                with self.subTest(doc=rel, type=token):
+                    loose = token.replace("_", "[ _-]")
+                    self.assertRegex(text, loose,
+                                     f"{rel} does not mention content type {token}")
 
 
 class TestConfigKeysCitedByAgentsExist(unittest.TestCase):

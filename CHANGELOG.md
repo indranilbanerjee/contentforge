@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.18.1] — 2026-07-30
+
+### Fixed — Documentation sweep + functional verification of the new types
+
+- **User docs brought current with v3.18.0** — they had drifted badly: the README skills table still listed 19 skills (missing `cf-cowork-setup`, `cf-environment` and the new `cf-aeo-check`), advertised parallel batch in three places (including an FAQ answering "Yes — 4-5× speedup" — the queue is sequential and checkpointed by design), and told users there were 5 built-in content types when 8 ship. AGENTS.md said "19 skills" and its surfaces line was stuck at v3.13.0. USER-GUIDE was titled v3.16.1 with 5-type enumerations. All corrected; USER-GUIDE now opens with a What's-new note and both agent-surface docs route case studies, newsletters and cf-aeo-check.
+- **Two more regex-bump casualties repaired**: the README's version-history entry for the 2026-07-12 self-containment patch had been silently relabeled **v3.18.0** by successive blanket version replaces — restored to **v3.16.1**, with real entries added for v3.17.x (the audit series) and v3.18.0. Release bumps in this repo now never blanket-replace version strings in the README.
+- **New types verified by execution, not just review**: `checkpoint-manager.py init` records `case_study`/`newsletter` runs; `pipeline-tracker.py` benchmarks resolve for both; `generate-docx.py` produced real .docx files for each with the author byline rendered, the type label on the title page, and `{{unsubscribe_link}}` + client-attested qualifiers surviving conversion; `local-tracker.py` round-trips a `case_study` record to completed.
+- Guards extended to user docs: the parallel-claims scan now covers README/AGENTS/guides (it immediately caught the agents-table row and the FAQ), the README skills table must list every shipped skill directory, and README/AGENTS/USER-GUIDE must mention every registered content type. Tests 170 → **172**.
+
 ## [3.18.0] — 2026-07-30
 
 ### Added — Four capabilities, wired the ContentForge way

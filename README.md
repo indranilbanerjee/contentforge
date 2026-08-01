@@ -6,18 +6,18 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 35-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.18.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.18.1-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-170%2F170%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3180)
+[![Tests](https://img.shields.io/badge/tests-172%2F172%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3181)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
-> 🆕 **Just shipped — v3.18.0 (July 30, 2026): four new capabilities.** **Author/E-E-A-T byline layer** (`author_profiles` in the brand profile → Phase 3 byline → Person JSON-LD in Phase 6 — no more authorless content), **Case Study** and **Newsletter** as built-in content types 7 and 8 (case studies enforce a client-data provenance rule: fabricating a client metric halts the pipeline), and **`/contentforge:cf-aeo-check`** — a post-publication AI-citation check that probes your target queries, audits on-page extractability, tracks deltas across re-checks, and routes losses to `content-refresh` with evidence. 22 skills, 170 tests. [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.18.1 (July 30, 2026): four new capabilities, execution-verified.** **Author/E-E-A-T byline layer** (`author_profiles` in the brand profile → Phase 3 byline → Person JSON-LD in Phase 6 — no more authorless content), **Case Study** and **Newsletter** as built-in content types 7 and 8 (case studies enforce a client-data provenance rule: fabricating a client metric halts the pipeline), and **`/contentforge:cf-aeo-check`** — a post-publication AI-citation check that probes your target queries, audits on-page extractability, tracks deltas across re-checks, and routes losses to `content-refresh` with evidence. 22 skills, 172 tests. [Full changelog →](CHANGELOG.md)
 >
 > <sub>Previously — **v3.16.0 (July 7, 2026): the Reliability & Truth release.** The deepest engineering pass since v3.0 — a five-layer audit (orchestration, agents, skills, scripts, configs) followed by a coordinated fix of everything it found. Checkpoint/resume now actually wired into the master skill (every phase saves to a canonical run directory; `/contentforge:resume` works for skill-started runs). File-based phase handoff contract (paths, not pasted drafts). Keyword-density gate retired in favor of placement checks; new Phase 6→6.5 protected-structure manifest stops the humanizer from dismantling GEO structure. EU AI Act Article 50 AI-disclosure step in the publish path (applicable Aug 2, 2026). Humanizer catalog 29→35 patterns with a defined AI-signal score. Social specs add TikTok, Bluesky, YouTube Shorts + per-platform AI-label fields. New `scripts/_common.py` (one slugifier, atomic writes, UTF-8-safe output, real exit codes), `scripts/text-metrics.py` (measured burstiness/FK/placement gates), .docx image embedding + TOC + nested lists. **Tests 53 → 143.** [Full changelog →](CHANGELOG.md)</sub>
 
@@ -57,7 +57,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.18.0)
+## Supported surfaces (v3.18.1)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -273,13 +273,13 @@ These 9 commands are the user-facing entry points:
 | Skill | Purpose |
 |---|---|
 | `contentforge` | Full 10-phase production (the default skill the `/contentforge:create-content` command invokes) |
-| `batch-process` | Process 10–50+ pieces in parallel (4–5× faster) |
+| `batch-process` | Process 10–50+ pieces as a sequential, checkpointed queue — survives interruption, resumes mid-piece |
 | `content-refresh` | Update old content with current data, preserve SEO |
 | `cf-brief` | Research-backed brief with keyword analysis and outline |
 | `cf-audit` | Freshness scoring, decay detection, gap analysis |
 | `cf-calendar` | Production scheduling with deadline tracking |
 | `cf-style-guide` | Import brand voice, generate brand profile JSON |
-| `cf-template` | Create custom content type templates beyond the 5 built-in |
+| `cf-template` | Create custom content type templates beyond the 8 built-in |
 | `cf-variants` | Generate 3–10 headline / hook / CTA variations with scoring |
 | `cf-analytics` | Quality trends, timing breakdown, brand performance |
 | `cf-translate` | Translate preserving brand voice (15+ languages, 3 levels) |
@@ -291,6 +291,9 @@ These 9 commands are the user-facing entry points:
 | `cf-add-integration` | Add a custom MCP connector for any API |
 | `cf-switch-backend` | Switch tracking backend (local / Airtable / Google) with optional data migration |
 | `cf-help` | User guide, pipeline overview, examples, troubleshooting |
+| `cf-aeo-check` | Post-publication AI-citation check — AI Overview presence, own-citation status, extractability audit, deltas over time |
+| `cf-cowork-setup` | One-time Cowork + Google Drive wiring so team runs persist across sessions |
+| `cf-environment` | Detect the runtime environment and show its capability matrix |
 
 ---
 
@@ -310,7 +313,7 @@ These 9 commands are the user-facing entry points:
 | 6.5 | Humanizer | 35-pattern AI-detection catalog + self-critique meta-pass | 5–8 min |
 | 7 | Reviewer | 5-dimension scoring with comparative ranking | 1–4 min |
 | 8 | Output Manager | `.docx` with hyperlinks, charts, scorecards, link map | <1 min |
-| 9 | Batch Orchestrator | Parallel pipeline coordination | post-pipeline |
+| 9 | Batch Orchestrator | Sequential, checkpointed queue coordination | post-pipeline |
 | 10 | Social Adapter | Platform-specific repurposing | post-pipeline |
 | 11 | Translator | Brand voice mapping, cultural adaptation | post-pipeline |
 
@@ -464,10 +467,10 @@ Yes. Three tracking backends: Google Sheets + Drive, Airtable, or local filesyst
 Plugin is MIT-licensed and free. Claude API costs are typically $1–4 per piece depending on length and how many quality-gate loops are needed.
 
 **Q: What content types are supported?**
-5 built-in: articles (1500–2000 words), blog posts (800–1500), whitepapers (2500–5000), FAQs (600–1200), research papers (4000–8000). Use `/contentforge:cf-template` to add custom types.
+8 built-in: articles (1,500–2,000 words), blog posts (800–1,500), whitepapers (2,500–5,000), FAQs (600–1,200), research papers (4,000–8,000), video scripts (duration-driven, 15s–10min), case studies (1,200–2,000, with a client-data provenance rule), and newsletters (500–1,200, subject-line package + one-CTA rule). Use `/contentforge:cf-template` to add custom types.
 
-**Q: Can I run multiple pieces in parallel?**
-Yes — `/batch-process` handles 10–50+ pieces simultaneously with 4–5× speedup over sequential.
+**Q: Can I batch multiple pieces?**
+Yes — `/contentforge:batch-process` queues 10–50+ pieces and runs them one at a time, fully gated and checkpointed per phase. The win is unattended throughput and interruption-proof resume, not concurrency: pieces do NOT run simultaneously (shared per-brand state and API limits make that unsafe).
 
 **Q: How do I add internal links to a brand's own pages?**
 Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_pages, authority_pages}` in the brand profile. The SEO agent uses these to insert commercial and conversion links into the content; the .docx renders them as inline hyperlinks color-coded by category. See the [Internal linking](#internal-linking--the-three-categories-v395) section above.
@@ -548,7 +551,11 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v3.18.0 (2026-07-12)** — **Self-containment patch.** Removed cross-plugin capability references from the skill surface: `content-refresh` routes pre-refresh diagnosis to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit` instead of recommending another plugin's skills. Suite table in this README corrected (sibling stats were stale) and now states each plugin is fully standalone. No runtime change.
+**v3.18.0 (2026-07-30)** — **Four new capabilities.** Author/E-E-A-T byline layer (`author_profiles` → Phase 3 byline → Person JSON-LD in Phase 6; authorless runs are flagged, never silent). Case Study and Newsletter as built-in content types 7–8 — case studies enforce a client-data provenance rule (fabricating a client metric halts the pipeline); newsletters map email fields onto the existing Phase 6 gate so no gate is special-cased. New `/contentforge:cf-aeo-check` closes the loop `cf-brief` opens: post-publication AI-citation probes, on-page extractability audit, delta history, evidence-routed refresh. 22 skills. **Tests 162 → 170.**
+
+**v3.17.x (2026-07-29–30)** — **The audit series.** Line-by-line read of every file, then a functional pass that *executed* every script, then a cross-file contract audit that treated the plugin as a graph. Highlights: three shipped agents were never dispatched (social-adapter, translator, batch-orchestrator — now wired via `Task`/`subagent_type`); `video_script` registered in the 8 enumerations that rejected it; 12 false “parallel batch” claims corrected (the queue is sequential and checkpointed by design); chart-embed path and storage-resolver fixes; stale 2025 AI-search stats replaced with sourced 2026 figures. New `tests/test_pipeline_graph.py` locks the interconnection graph. **Tests 145 → 162.**
+
+**v3.16.1 (2026-07-12)** — **Self-containment patch.** Removed cross-plugin capability references from the skill surface: `content-refresh` routes pre-refresh diagnosis to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit` instead of recommending another plugin's skills. Suite table in this README corrected (sibling stats were stale) and now states each plugin is fully standalone. No runtime change.
 
 **v3.16.0 (2026-07-07)** — **Reliability & Truth release.** Five-layer deep audit implemented end to end. Orchestration: checkpointing wired into the master skill (Step 0 init + per-phase saves + `loop` counters + `pending_rework`), per-phase input/output contract table with loop targets, orchestrator-owned gates verified via new `scripts/text-metrics.py`, no-brand and no-web modes, honest sequential batch orchestrator (success = reviewer-approved ≥7.0). Agents: user interaction hoisted out of subagents (title curation + image approvals now orchestrator-owned), fact-checker paywall/SERP fixes, drafter body-format contract, structure-manifest guard between SEO and humanizer phases, reviewer industry weights fully specified, ~50 dangling slash references fixed. Skills: connector docs now match the shipped empty `.mcp.json`, cf-brief rewritten for AEO/GEO (LSI/density dogma removed), EU AI Act Article 50 disclosure step in cf-publish, YouTube Shorts + TikTok long-form in cf-video-script, command/skill twins collapsed to thin wrappers. Configs: `scoring-thresholds.json` is now the single source of truth (10 gates incl. new Phase 8 gate), humanizer catalog 29→35 patterns + defined AI-signal formula (evasion framing removed), social specs add TikTok/Bluesky/YouTube Shorts + per-platform `ai_disclosure`, all 10 industry packs enriched (FDA CCN, OCR tracking-tech, SEC Marketing Rule) and dated. Scripts: new `_common.py` (single slugifier — fixes the Cowork sync-path bug, atomic JSON writes, UTF-8 console guard, real exit codes), checkpoint-manager meta/loop/pending-rework, pipeline-tracker run_id keying, .docx image embedding + TOC field + page footer + nested lists + underscore emphasis, Airtable formula-injection fix, Drive pagination. **Tests 53 → 143.**
 
