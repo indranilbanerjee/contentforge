@@ -6,18 +6,18 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 35-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.18.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.18.2-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-172%2F172%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3181)
+[![Tests](https://img.shields.io/badge/tests-173%2F173%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3182)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
-> 🆕 **Just shipped — v3.18.1 (July 30, 2026): four new capabilities, execution-verified.** **Author/E-E-A-T byline layer** (`author_profiles` in the brand profile → Phase 3 byline → Person JSON-LD in Phase 6 — no more authorless content), **Case Study** and **Newsletter** as built-in content types 7 and 8 (case studies enforce a client-data provenance rule: fabricating a client metric halts the pipeline), and **`/contentforge:cf-aeo-check`** — a post-publication AI-citation check that probes your target queries, audits on-page extractability, tracks deltas across re-checks, and routes losses to `content-refresh` with evidence. 22 skills, 172 tests. [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.18.2 (July 30, 2026): four new capabilities, execution-verified + the anonymity guard.** **Author/E-E-A-T byline layer** (`author_profiles` in the brand profile → Phase 3 byline → Person JSON-LD in Phase 6 — no more authorless content), **Case Study** and **Newsletter** as built-in content types 7 and 8 (case studies enforce a client-data provenance rule: fabricating a client metric halts the pipeline), and **`/contentforge:cf-aeo-check`** — a post-publication AI-citation check that probes your target queries, audits on-page extractability, tracks deltas across re-checks, and routes losses to `content-refresh` with evidence. 22 skills, 173 tests. [Full changelog →](CHANGELOG.md)
 >
 > <sub>Previously — **v3.16.0 (July 7, 2026): the Reliability & Truth release.** The deepest engineering pass since v3.0 — a five-layer audit (orchestration, agents, skills, scripts, configs) followed by a coordinated fix of everything it found. Checkpoint/resume now actually wired into the master skill (every phase saves to a canonical run directory; `/contentforge:resume` works for skill-started runs). File-based phase handoff contract (paths, not pasted drafts). Keyword-density gate retired in favor of placement checks; new Phase 6→6.5 protected-structure manifest stops the humanizer from dismantling GEO structure. EU AI Act Article 50 AI-disclosure step in the publish path (applicable Aug 2, 2026). Humanizer catalog 29→35 patterns with a defined AI-signal score. Social specs add TikTok, Bluesky, YouTube Shorts + per-platform AI-label fields. New `scripts/_common.py` (one slugifier, atomic writes, UTF-8-safe output, real exit codes), `scripts/text-metrics.py` (measured burstiness/FK/placement gates), .docx image embedding + TOC + nested lists. **Tests 53 → 143.** [Full changelog →](CHANGELOG.md)</sub>
 
@@ -57,7 +57,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.18.1)
+## Supported surfaces (v3.18.2)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|

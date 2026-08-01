@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.18.2] — 2026-07-30
+
+### Fixed
+
+- **Source-anonymity guard test added** (`tests/test_source_anonymity.py`) — the suite-wide rule that the methodology's source organization is never named in the repo is now machine-enforced on every run (forbidden strings assembled at runtime; verified to fire on a planted needle). Tests 172 → **173**.
 ## [3.18.1] — 2026-07-30
 
 ### Fixed — Documentation sweep + functional verification of the new types
