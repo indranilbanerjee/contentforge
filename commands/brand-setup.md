@@ -411,7 +411,18 @@ Generate a complete brand profile following the `config/brand-registry-template.
 - `terminology` — from setup steps + website term extraction
 - `citation_rules` — infer from industry (pharma → APA + PubMed priority, tech → IEEE, general → Chicago)
 - `content_patterns` — from blog post analysis (structure, headings, lists, statistics usage)
-- `seo_preferences` — reasonable defaults for the industry, ask for sitemap URL if available
+- `seo_preferences` — reasonable defaults for the industry, then run the **Site Harvest** (below) whenever a website URL is known. `brand_pages` must never be left silently empty for a brand that has a website.
+
+### Site Harvest (required when the brand has a website)
+
+1. **Crawl.** Run: `python scripts/harvest-brand-pages.py --url {website} --max-pages 75 --output {tmp}/harvest.json`. The script is sitemap-first with homepage-nav fallback, honors robots.txt, and HTTP-verifies every page it returns.
+2. **Extract brand facts.** Fetch the homepage, about page, and top 3 service pages from the harvest (WebFetch). Extract capability facts **verbatim** — copy the site's exact wording with the page URL per fact. NEVER strengthen a claim while extracting ("USFDA-inspected" must not become "USFDA-approved"). Where two pages disagree (different counts, different phrasing of the same capability), record BOTH with an `inconsistency_note` — do not silently pick one.
+3. **Present ONE confirmation to the user** before saving anything:
+   - the page inventory grouped by category (service/product, conversion, authority, informational) with counts,
+   - the extracted facts with their source URLs,
+   - every inconsistency flagged for the user to resolve ("Page A says 19 NCEs, page B says 20 — which should the profile carry?").
+4. **Save on confirmation.** Write confirmed pages into `seo_preferences.brand_pages.{product_or_service_pages, conversion_pages, authority_pages}` (each entry: `url`, `topic` from title/H1, `anchor_text_hints` from topic_keywords, `source: "harvest"`, `verified_live: today`). Write confirmed facts into `brand_facts.facts` with `confirmed_by_user: true`. Write `brand_pages.harvest_status` = `{last_run: today, method, page_count, status: "completed"}`.
+5. **Record every other outcome honestly** in `harvest_status.status`: user declined → `"declined"`; crawl errored → `"crawl_failed"` (keep the error summary); brand genuinely has no site → `"no_website"`. Downstream gates treat `declined`/`crawl_failed` as "brand HAS a site that was not harvested" — a scored deficiency, never an exemption.
 - `target_audience` — from website messaging + user input
 - `quality_thresholds` — use template defaults unless user specifies otherwise
 - `google_integration` — copy from Step D configuration

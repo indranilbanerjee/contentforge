@@ -521,6 +521,8 @@ Status: READY — Profile can be used with /contentforge:create-content --brand=
 ================================================================
 ```
 
+If the imported style guide reveals a brand website that the profile does not yet carry, tell the user to re-run /contentforge:brand-setup so the Site Harvest can populate brand_pages and brand_facts — the SEO and research phases depend on them.
+
 ### Step G: Tracking & Delivery Backend (1-2 minutes)
 
 Choose where ContentForge tracks quality scores and delivers output files. This step configures the `tracking` section of the brand profile.
