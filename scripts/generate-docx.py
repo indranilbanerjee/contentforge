@@ -481,7 +481,11 @@ _INLINE_MD_LINK = re.compile(r"(?<!\!)\[([^\]]+)\]\((https?://[^)\s]+)\)")
 
 def _strip_www(netloc):
     """Lowercase a host and drop a leading 'www.' — Python 3.8-safe
-    (str.removeprefix is 3.9+)."""
+    (str.removeprefix is 3.9+). Tolerates a full URL being passed
+    (e.g. brand_domain="https://www.brand.example") by extracting the
+    netloc first; a bare host/domain string is used as-is."""
+    if "://" in netloc:
+        netloc = urllib.parse.urlparse(netloc).netloc
     netloc = netloc.lower()
     return netloc[4:] if netloc.startswith("www.") else netloc
 
@@ -1096,6 +1100,10 @@ def main():
     parser.add_argument("--output", required=True, help="Output .docx path")
     parser.add_argument("--reports", help="Optional reports JSON for appendices")
     parser.add_argument("--brand", default="Brand", help="Brand name for header")
+    parser.add_argument("--brand-domain", default=None,
+                        help="Brand website domain (e.g. example.com) used to classify "
+                             "inline markdown links as internal vs outbound; when omitted, "
+                             "all inline links count as outbound")
     parser.add_argument("--content-type", default="article", help="article/blog/whitepaper/faq/research_paper/video_script/case_study/newsletter")
     parser.add_argument("--title", help="Override title (else extracts from first H1)")
     parser.add_argument("--no-toc", action="store_true",
@@ -1190,11 +1198,12 @@ def main():
         "score": score,
         "grade": grade,
         "reports_included": list(reports.keys()),
-        # brand_domain=None: this script takes --brand as a display-name string
-        # (no brand-registry JSON / website field is loaded here), so every
-        # inline markdown link is counted as outbound until a domain source
-        # is wired in. INTERNAL-LINK markers are counted regardless.
-        **count_rendered_links(md_text, brand_domain=None),
+        # --brand-domain is optional (this script doesn't load a brand-registry
+        # JSON itself — the caller passes the website domain through when it
+        # has one, e.g. from the loaded brand profile). When omitted, every
+        # inline markdown link counts as outbound; INTERNAL-LINK markers are
+        # always counted regardless.
+        **count_rendered_links(md_text, brand_domain=args.brand_domain),
         "internal_links_by_type": link_summary,
         "links_note": "internal_links_total = INTERNAL-LINK markers + same-domain inline markdown links",
         "toc_included": not args.no_toc,

@@ -128,8 +128,11 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
     --output ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.docx \
     --reports ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json \
     --brand "{Brand Name}" \
+    --brand-domain "{website domain from brand-profile.json}" \
     --content-type {type}
 ```
+
+Pass `--brand-domain` with the brand's `website` field from `brand-profile.json` when the brand profile carries one (so inline markdown links to the brand's own domain get classified as internal, not outbound); omit the flag entirely when the brand has no website on file.
 
 The script returns a JSON status line on stdout — capture it and report the path + size + grade in the completion card.
 

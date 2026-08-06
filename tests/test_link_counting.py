@@ -32,6 +32,14 @@ class TestRenderedLinkCounts(unittest.TestCase):
         self.assertEqual(counts["inline_links_outbound"], 3)
         self.assertEqual(counts["internal_links_total"], 1)
 
+    def test_full_url_brand_domain_accepted(self):
+        # brand_domain may be a bare host ("brand.example") or a full URL
+        # ("https://www.brand.example") — both must normalize identically.
+        counts = gdocx.count_rendered_links(MD, brand_domain="https://www.brand.example")
+        self.assertEqual(counts["inline_links_internal"], 2)
+        self.assertEqual(counts["inline_links_outbound"], 1)
+        self.assertEqual(counts["internal_links_total"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()
