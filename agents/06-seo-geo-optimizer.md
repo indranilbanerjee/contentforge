@@ -123,9 +123,10 @@ For each secondary keyword:
 
 Check brand profile for site structure data (priority order):
 1. **Sitemap URL** — `seo_preferences.internal_linking.sitemap_url` → fetch/parse XML sitemap
-2. **Page Registry** — `seo_preferences.internal_linking.page_registry` → pre-curated linkable pages
-3. **Pillar Pages** — `seo_preferences.internal_linking.pillar_pages` → high-priority always-link pages
-4. **Fallback** — Note in SEO Scorecard: "No site structure provided — topical link anchor recommendations rendered with placeholder URLs for human review."
+2. **Phase 1 Internal-Link Inventory** — the verified deep-page table under `## Client Site Reconnaissance` in phase-1-research.md. Prefer these URLs: they were fetched live this run.
+3. **Page Registry** — `seo_preferences.internal_linking.page_registry` → pre-curated linkable pages
+4. **Pillar Pages** — `seo_preferences.internal_linking.pillar_pages` → high-priority always-link pages
+5. **Fallback** — Note in SEO Scorecard: "No site structure provided — topical link anchor recommendations rendered with placeholder URLs for human review."
 
 ##### 5a.2 Identify Topical Link Opportunities
 
@@ -153,7 +154,12 @@ When `url` is unknown, use `url=TBD` and the marker becomes a placeholder Phase 
 
 ##### 5b.1 Load Brand Product / Service Pages
 
-Read `seo_preferences.brand_pages.product_or_service_pages`. If empty, note in scorecard: "No brand product/service pages configured — commercial link insertion skipped. Add `brand_pages.product_or_service_pages` to `brand-profile.json` to enable."
+Read `seo_preferences.brand_pages.product_or_service_pages`. **Thin-brand_pages guard:** if the array is empty or contains only the site root, do NOT skip — fall back in order:
+1. The Phase 1 Internal-Link Inventory (service/product rows).
+2. Just-in-time: fetch `{website}/sitemap.xml` (or homepage nav), pick topically-matched deep pages, and verify each live before use.
+3. Only when the brand has NO website may commercial linking be skipped — note "Brand has no website — commercial links N/A."
+
+When the guard fired, add to the scorecard: "brand_pages was empty/homepage-only — links sourced from {phase1|just-in-time}. Re-run /contentforge:brand-setup to persist the harvest."
 
 ##### 5b.2 Scan Content for Commercial Anchor Opportunities
 
@@ -218,6 +224,10 @@ Validate:
 - **Distribution:** Topical links span at least 2 different sections
 - **Anchor text variety:** No duplicate anchor text
 - **No forced placements:** every link must read naturally in surrounding prose
+- **Deep-link rule:** when the brand has a website, ≥2 internal links must target DEEP pages (a path beyond the site root). Homepage-only linking is a scorecard deficiency — say so explicitly.
+- **Native-section placement:** place each link in the section whose topic it belongs to (an analytics-services page links from the analytics section, not clustered in the conclusion).
+- **Live-URL rule (HARD):** every non-TBD URL in an emitted marker must have been fetched live — by Phase 1 this run, by the harvest, or by you just now. NEVER emit a constructed/guessed URL.
+- **Scorecard line:** `Deep-link coverage: deep_links=N homepage_links=M inventory_source=<brand_pages|phase1|just-in-time|none>`
 
 If checks fail: add more links, replace forced placements, or expand placeholders.
 
@@ -412,6 +422,8 @@ Component scores, strengths, opportunities for improvement
 - [ ] **Meta title ≤60 chars, meta description ≤155 chars** → PASS/FAIL
 - [ ] **Structure manifest emitted** (`phase-6-structure-manifest.json` written, totals + keyword_placements populated) → PASS/FAIL
 - [ ] **Readability not degraded vs Phase 5** (variance within ±0.5 grade levels) → PASS/FAIL
+- [ ] **All internal-link URLs verified live** (non-TBD markers only; any dead URL = Gate 6 FAIL — hard, publish-blocking)
+- [ ] **≥2 deep brand links when the brand has a website** (failure = scored deficiency flagged loudly in the scorecard and Completion Card, NOT a hard gate — content with a documented no-natural-fit justification passes with the flag)
 
 **OVERALL DECISION:** ✅ PASS | ❌ FAIL
 **Next Step:** Proceed to Phase 6.5 (Humanizer)
