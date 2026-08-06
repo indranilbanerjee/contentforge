@@ -6,20 +6,20 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 41-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.18.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.19.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
 [![Tests](https://img.shields.io/badge/tests-215%2F215%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3182)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3190)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
-> 🆕 **Just shipped — v3.18.2 (July 30, 2026): four new capabilities, execution-verified + the anonymity guard.** **Author/E-E-A-T byline layer** (`author_profiles` in the brand profile → Phase 3 byline → Person JSON-LD in Phase 6 — no more authorless content), **Case Study** and **Newsletter** as built-in content types 7 and 8 (case studies enforce a client-data provenance rule: fabricating a client metric halts the pipeline), and **`/contentforge:cf-aeo-check`** — a post-publication AI-citation check that probes your target queries, audits on-page extractability, tracks deltas across re-checks, and routes losses to `content-refresh` with evidence. 22 skills, 173 tests. [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.19.0 (August 7, 2026): client-site intelligence + an internalized humanizer.** The researcher now recons the brand's own site first — `harvest-brand-pages.py` auto-crawls service/conversion/authority pages and extracts verbatim brand facts (one source URL per fact, inconsistencies flagged for you to resolve), and Phase 6 now guarantees real deep internal links even when `brand_pages` is thin, falling back to the Phase 1 inventory and a just-in-time sitemap fetch. The humanizer's detector knowledge is fully internalized (`references/ai-detection-signals.md`, catalog 35→41 patterns): the old "insert short punchy sentences" trick is gone, replaced by a Human-Expert Grounding Pass and content-derived variation, plus a deterministic, advisory `--ai-tell-scan` (LOW/MODERATE/HIGH) surfaced in the reviewer scorecard and Completion Card — never a publish gate. Also hardened Cowork/sandbox detection (layered signals, new uncertain tier) and fixed rendered-link telemetry. 22 skills, 215 tests. [Full changelog →](CHANGELOG.md)
 >
-> <sub>Previously — **v3.16.0 (July 7, 2026): the Reliability & Truth release.** The deepest engineering pass since v3.0 — a five-layer audit (orchestration, agents, skills, scripts, configs) followed by a coordinated fix of everything it found. Checkpoint/resume now actually wired into the master skill (every phase saves to a canonical run directory; `/contentforge:resume` works for skill-started runs). File-based phase handoff contract (paths, not pasted drafts). Keyword-density gate retired in favor of placement checks; new Phase 6→6.5 protected-structure manifest stops the humanizer from dismantling GEO structure. EU AI Act Article 50 AI-disclosure step in the publish path (applicable Aug 2, 2026). Humanizer catalog 29→35 patterns with a defined AI-signal score. Social specs add TikTok, Bluesky, YouTube Shorts + per-platform AI-label fields. New `scripts/_common.py` (one slugifier, atomic writes, UTF-8-safe output, real exit codes), `scripts/text-metrics.py` (measured burstiness/FK/placement gates), .docx image embedding + TOC + nested lists. **Tests 53 → 143.** [Full changelog →](CHANGELOG.md)</sub>
+> <sub>Previously — **v3.18.0 (July 30, 2026): four new capabilities.** Author/E-E-A-T byline layer (`author_profiles` in the brand profile → Phase 3 byline → Person JSON-LD in Phase 6 — no more authorless content), **Case Study** and **Newsletter** as built-in content types 7 and 8 (case studies enforce a client-data provenance rule: fabricating a client metric halts the pipeline), and **`/contentforge:cf-aeo-check`** — a post-publication AI-citation check that probes your target queries, audits on-page extractability, tracks deltas across re-checks, and routes losses to `content-refresh` with evidence. **Tests 162 → 170.** [Full changelog →](CHANGELOG.md)</sub>
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -57,7 +57,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.18.2)
+## Supported surfaces (v3.19.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -191,6 +191,10 @@ ContentForge is a **marketing system**, not a search-engine pipeline. Informatio
 
 The SEO agent emits typed `<!-- INTERNAL-LINK: type=... | anchor=... | url=... -->` markers; the .docx generator renders each as a real Word hyperlink, **color-coded by type** (topical blue, commercial green, conversion purple, authority slate). Where the brand has not provided a URL, the marker stays as a visibly-distinct red `[anchor] [LINK TBD: type]` placeholder — the human reviewer fills it in before publication, instead of the link opportunity being silently skipped.
 
+**Auto-harvest (v3.19.0):** `/contentforge:brand-setup` now runs `scripts/harvest-brand-pages.py` against the brand's website — a stdlib, robots-respecting crawler that returns an HTTP-verified page inventory (service/conversion/authority pages) plus verbatim `brand_facts` (one source URL per fact; where pages disagree, both versions are kept with an `inconsistency_note` for you to resolve, never silently merged). One confirmation step and it's saved straight into the `brand_pages` block above. If you decline, the crawl fails, or the brand genuinely has no site, `harvest_status` records exactly which — honestly, never as a silent skip.
+
+**Deep-link rule + thin-`brand_pages` guard:** the researcher (Phase 1) also builds a live Internal-Link Inventory of deep brand URLs the piece could naturally reference, HTTP-verified on the day of the run. Phase 6 requires **≥2 deep links** (not just the homepage) whenever the brand's site has them — if `brand_pages` is empty or homepage-only, Phase 6 now falls back to that Phase 1 inventory, then a just-in-time sitemap fetch, instead of silently skipping commercial linking.
+
 **Configure once per brand:**
 
 ```json
@@ -217,7 +221,7 @@ The SEO agent emits typed `<!-- INTERNAL-LINK: type=... | anchor=... | url=... -
 }
 ```
 
-The reviewer (Phase 7) scores 6a Topical / 6b Commercial / 6c Conversion **independently**. Categories the brand has not configured score N/A and don't penalize. There is no "no site structure provided = full credit" free-pass — the agent must produce useful link markers (real URLs or placeholders) to earn credit.
+The reviewer (Phase 7) scores 6a Topical / 6b Commercial / 6c Conversion **independently**. Categories the brand has not configured score N/A and don't penalize — but a brand **with** a website whose `brand_pages` was never harvested is now a scored deficiency, not an N/A free-pass; homepage-only linking caps the 6b sub-score with a mandatory finding; and any dead internal-link URL is a hard publish-blocking FAIL. The agent must produce useful link markers (real URLs or placeholders) to earn credit.
 
 > See `config/brand-registry-template.json` for the full schema.
 
@@ -339,7 +343,11 @@ Single-pass fact-checking misses 15–20% of hallucinations. ContentForge uses t
 
 ### Phase 6.5 Humanizer (the differentiator)
 
-41-pattern AI-detection catalog (7 buckets: content, language/grammar, style, communication, filler/hedging, structure/framing, detector-signal) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, burstiness 0.50 → 0.72, AI signal score ≤3/10, em dashes ≤2 per 500 words.
+41-pattern AI-detection catalog (7 buckets: content, language/grammar, style, communication, filler/hedging, structure/framing, detector-signal) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, AI signal score ≤3/10, em dashes ≤2 per 500 words.
+
+**Grounding-first, not trick-first (v3.19.0).** The old move — inserting short punchy sentences to raise the burstiness number — is gone: it manufactured the exact aphoristic-maxim tell modern detectors flag. In its place, a **Human-Expert Grounding Pass** (patterns 36–38) grounds every standing maxim, impersonal assertion, and flat-confidence claim in a specific from the Phase 2 verified ledger — or removes it; nothing is invented for style. Sentence variety is now **content-derived**: uniform runs get broken by material the content already earns (a caveat standing alone, a source clause folded in), never by content-free filler. Burstiness is reported as advisory context, not a pass/fail gate.
+
+**Advisory `--ai-tell-scan` (v3.19.0).** `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, zero-dependency proxy scan (aphorism density, banned lexemes, connective/participial-opener rate, uniform sentence runs) and reports a **LOW / MODERATE / HIGH** advisory rating — surfaced in the Phase 6.5 report, the reviewer's Readability sub-score, and the Completion Card. It is never a publish gate, and ContentForge never claims to "beat" any specific detector — see the [FAQ](#faq) and `references/ai-detection-signals.md` for the full reasoning. When an MCP-connected external detector is available, at most one optional validation pass may run against it; that pass is advisory too.
 
 ### Model curator (v3.12.2+) — no hardcoded model ids
 
@@ -475,6 +483,9 @@ Yes — `/contentforge:batch-process` queues 10–50+ pieces and runs them one a
 **Q: How do I add internal links to a brand's own pages?**
 Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_pages, authority_pages}` in the brand profile. The SEO agent uses these to insert commercial and conversion links into the content; the .docx renders them as inline hyperlinks color-coded by category. See the [Internal linking](#internal-linking--the-three-categories-v395) section above.
 
+**Q: How does the AI-detectability score work?**
+Honestly: we don't optimize against any detector. ContentForge writes so there's genuinely nothing to detect — the Phase 6.5 Human-Expert Grounding Pass grounds every claim in a specific from the verified research (a real perplexity-raising move, not a trick), and sentence variety comes from the content, not from inserted filler. On top of that, `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, dependency-free proxy scan for known detector-signal patterns (aphorism density, banned lexemes, connective/participial openers, uniform runs) and reports an advisory **LOW / MODERATE / HIGH** rating in the Phase 6.5 report, the reviewer scorecard, and the Completion Card. If an external AI-detector is reachable via a connected MCP, at most one optional validation pass may also run — still advisory. **None of this is ever a publish gate, and we never promise to "beat" any specific detector** — the evidence shows one-shot static tricks do little (and can backfire) while genuine grounding is durable. Full reasoning in `references/ai-detection-signals.md`.
+
 ---
 
 ## Cross-platform compatibility
@@ -550,6 +561,10 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v3.19.0 (2026-08-07)** — **Client-site intelligence + internalized humanizer.** `scripts/harvest-brand-pages.py` (stdlib, robots-respecting) auto-crawls a brand's website for `brand_pages` and verbatim, source-cited `brand_facts` in one confirmation step; the researcher's new Step 0 Client Site Reconnaissance builds a live Internal-Link Inventory and Gate 1 now requires ≥3 verified deep brand URLs when the brand has a site. Phase 6's thin-`brand_pages` guard means an empty or homepage-only page list no longer skips commercial linking — it falls back to the Phase 1 inventory, then a just-in-time sitemap fetch, enforcing a ≥2-deep-link rule. New `references/ai-detection-signals.md` internalizes what detectors actually measure; the humanizer catalog grows 35→41 patterns (aphoristic maxims, impersonal assertion, epistemic flatness, perfect parallelism, participial openers, connective-opener density) with a Human-Expert Grounding Pass replacing the old short-sentence burstiness trick. `text-metrics.py --ai-tell-scan` adds a deterministic, advisory LOW/MODERATE/HIGH detector-signal rating surfaced in the reviewer scorecard and Completion Card — never a publish gate. Reviewer no-free-passes: unharvested `brand_pages` on a brand with a website is now a scored deficiency, homepage-only linking caps the sub-score, dead internal links hard-fail. Also: layered Cowork/sandbox detection (new `linux-sandbox-uncertain` tier) and `generate-docx.py` link telemetry now counts both marker and inline-markdown links. 22 skills. **Tests 173 → 215.**
+
+**v3.18.1–v3.18.2 (2026-07-30)** — **Documentation sweep + anonymity guard.** User docs (README, AGENTS.md, USER-GUIDE) had drifted from the v3.18.0 four-capability release — the README skills table, content-type counts, and stale "parallel batch" claims corrected across all three; USER-GUIDE brought current with a What's-new note. Case study and newsletter verified by execution, not just review (checkpoint records, docx author byline, local-tracker round-trip). `tests/test_source_anonymity.py` added — the suite-wide rule that the methodology's source organization is never named in the repo is now machine-enforced on every run (forbidden strings assembled at runtime, verified to fire on a planted needle). **Tests 170 → 173.**
 
 **v3.18.0 (2026-07-30)** — **Four new capabilities.** Author/E-E-A-T byline layer (`author_profiles` → Phase 3 byline → Person JSON-LD in Phase 6; authorless runs are flagged, never silent). Case Study and Newsletter as built-in content types 7–8 — case studies enforce a client-data provenance rule (fabricating a client metric halts the pipeline); newsletters map email fields onto the existing Phase 6 gate so no gate is special-cased. New `/contentforge:cf-aeo-check` closes the loop `cf-brief` opens: post-publication AI-citation probes, on-page extractability audit, delta history, evidence-routed refresh. 22 skills. **Tests 162 → 170.**
 

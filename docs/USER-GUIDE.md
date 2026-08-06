@@ -1,5 +1,7 @@
-# ContentForge v3.18.0 — Complete User Guide
+# ContentForge v3.19.0 — Complete User Guide
 
+> **New in v3.19.0:** `/contentforge:brand-setup` now auto-harvests your site — a robots-respecting crawler builds your `brand_pages` inventory and pulls verbatim `brand_facts` (one source URL per fact) in a single confirmation step, and the researcher recons your own site first before every piece. The humanizer's detector knowledge is now internalized (41-pattern catalog, a grounding-first rewrite, and an advisory `--ai-tell-scan`) instead of leaning on burstiness tricks. Plus hardened Cowork/sandbox detection. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
+>
 > **New in v3.18.0:** two more built-in content types — **case study** (client data supplied at intake under a strict provenance rule) and **newsletter** (subject-line package, one-CTA rule) — plus an **author/E-E-A-T byline layer** (add `author_profiles` to your brand profile; `/contentforge:cf-style-guide` prompts for it) and **`/contentforge:cf-aeo-check`**, a post-publication check of whether AI engines actually cite your piece.
 
 **From zero to first published article.** This guide walks you through every step of using ContentForge in Claude Cowork or Claude Code, from initial setup to running the full content production pipeline.
@@ -172,7 +174,8 @@ If you already have brand documents (style guide PDFs, voice guidelines, sample 
 1. You provide your brand name, industry, and website
 2. Optionally share existing documents (style guide PDFs, voice guidelines, sample content)
 3. ContentForge extracts: tone, formality, personality traits, terminology, guardrails
-4. Generates a `brand-profile.json` file
+4. **Site Harvest (v3.19.0, when you gave a website):** `scripts/harvest-brand-pages.py` crawls it — stdlib, robots-respecting, sitemap-first with a homepage-nav fallback — and returns an HTTP-verified page inventory (service/conversion/authority pages) plus verbatim `brand_facts` with a source URL per fact. You see ONE confirmation screen (page inventory + extracted facts + any inconsistencies between pages) before anything is saved. Decline, and it's recorded honestly rather than silently skipped — declined/no-website/crawl-failed all show up later as a real (never free-passed) reviewer finding if the brand does have a site.
+5. Generates a `brand-profile.json` file
 
 **You can provide source material in several ways:**
 - **Paste text** directly in the conversation
@@ -581,7 +584,7 @@ Phase 5: Structurer & Proofreader — Polishing grammar and structure...
 Phase 6: SEO/GEO Optimizer — Optimizing for search engines...
 ✓ Phase 6 complete — Keyword placements 5/5 (title, first 100 words, 2 H2s, conclusion, meta), GEO score 8.5
 Phase 6.5: Humanizer — Removing AI patterns...
-✓ Phase 6.5 complete — 14 AI patterns removed, burstiness 0.74
+✓ Phase 6.5 complete — 14 AI patterns removed, AI-detectability (advisory): LOW — 2 signals flagged
 Phase 7: Reviewer — Scoring content quality...
 ✓ Phase 7 complete — Score: 9.0/10 (Grade A) — APPROVED
 Phase 8: Output Manager — Generating deliverables...
@@ -629,6 +632,8 @@ TOTAL TIME: 24 minutes
 ```
 
 Phase 3.5 (Visual Asset Annotator) turns verified statistics into charts and marks every remaining visual that needs human action. It sits between the draft and the validator so that charts are audited alongside the prose they illustrate.
+
+**Phase 6.5's advisory AI-tell scan (v3.19.0).** After the Human-Expert Grounding Pass and content-derived variety pass, `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, dependency-free proxy scan (aphorism density, banned lexemes, connective/participial-opener rate, uniform sentence runs) and reports a **LOW / MODERATE / HIGH** rating. It's surfaced in the Humanization Report, the Phase 7 Readability sub-score, and the Completion Card — it never blocks publication on its own, and no ContentForge output claims to "beat" any specific external detector. If an external AI-detector is reachable via a connected MCP, at most one optional validation pass may run against it, also advisory.
 
 ### Feedback Loops (When Things Fail)
 
@@ -1247,7 +1252,7 @@ Note that silence at session start is **normal** — ContentForge ships zero act
 | Command | Purpose | Time |
 |---------|---------|------|
 | `/contentforge:cf-help` | User guide + live version/asset counts for this install | Instant |
-| `/contentforge:cf-environment` | Detect runtime environment (Cowork sandbox vs local Claude Code) | Instant |
+| `/contentforge:cf-environment` | Detect runtime environment — `cowork-sandbox`, `linux-sandbox-uncertain` (weak signals only, softer warning), or local `claude-code-{windows,mac,linux}` | Instant |
 | `/contentforge:cf-cowork-setup` | One-shot wiring for Anthropic Cowork team usage | 5-10 min |
 | `/contentforge:cf-switch-backend` | Switch tracking backend (local / Airtable / Google Sheets) with optional data migration | 2-10 min |
 
@@ -1434,4 +1439,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.18.0** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, three-layer fact verification.
+**ContentForge v3.19.0** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, 41-pattern AI-detection humanizer, three-layer fact verification.

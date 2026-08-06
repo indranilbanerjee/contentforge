@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.19.0] — 2026-08-07
+
+### Added — Client-Site Intelligence
+- **`scripts/harvest-brand-pages.py`** — stdlib, robots-respecting site crawler; brand-setup now auto-harvests `brand_pages` (service/conversion/authority pages, HTTP-verified) and verbatim `brand_facts` (one source URL per fact, inconsistencies flagged for human confirmation) with a single confirmation step. `harvest_status` records declined/failed/no-website honestly.
+- **Phase 1 Client Site Reconnaissance** — the researcher now researches the client first: brand facts from the brand's own pages + a verified Internal-Link Inventory (topic, deep URL, suggested anchor, live-check date). Gate 1 requires ≥3 verified deep brand URLs when the brand has a website.
+- **Source hierarchy** — primary regulatory > peer-reviewed > government > tier-1 industry > vendor; regulatory claims MUST cite the primary document or carry `NEEDS-PRIMARY-SOURCE`.
+- **Phase 6 thin-brand_pages guard** — empty/homepage-only `brand_pages` no longer skips commercial linking: falls back to the Phase 1 inventory, then just-in-time sitemap fetch. Deep-link rule (≥2 deep links when the site has them) + native-section placement + live-URL hard rule.
+- **`references/ai-detection-signals.md`** — the internalized detector knowledge base: what detectors measure (perplexity, burstiness, stylometrics, watermarking), why grounding beats tricks, and the two hard guardrails (never optimize to a detector; never trade a fact for style).
+- **Patterns 36–41 (catalog 35 → 41)** — aphoristic maxims, impersonal assertion, epistemic flatness, perfect parallelism, participial openers, connective-opener density — plus `human_grounding_techniques`, the positive model (journalistic grounding, technical-broad balance, factual clarity, calibrated expert voice, content-derived variation).
+- **`text-metrics.py --ai-tell-scan`** — deterministic detector-signal proxies (aphorism density, banned lexemes, connective/participial openers, uniform runs) with an advisory LOW/MODERATE/HIGH rating surfaced in the reviewer scorecard, the Completion Card, and the .docx Quality Appendix. Advisory end to end — never a publish gate. Works identically on every platform with zero external dependencies; an external detector reachable via MCP is used for at most one optional validation pass.
+
+### Changed
+- **Humanizer** — "insert short punchy sentences to raise burstiness" is REMOVED (it manufactured the exact aphorism tell modern detectors flag). Replaced by a Human-Expert Grounding Pass (specifics from the verified ledger only) and content-derived variation. Burstiness is now advisory, not a gate.
+- **Reviewer** — internal-link free passes removed: a brand WITH a website but unharvested `brand_pages` is a scored deficiency (was N/A); homepage-only linking caps the sub-score at 4 with a mandatory finding; any dead internal-link URL is a hard publish-blocking FAIL. Sentence-variety rubric now scores manufactured variety BELOW uniformity.
+- **Completion Card** — surfaces internal-link deficiencies, the advisory AI-detectability rating, and visual-element human-review flags.
+
+### Fixed
+- **Cowork misdetection** — layered environment detection (proxy env vars, mitm socket, /sessions root, container markers) with an uncertain-tier warning; the sandbox file-write warning now actually fires in Cowork.
+- **Link telemetry** — `generate-docx.py` now counts BOTH link pathways (markers + inline markdown links, split internal/outbound by brand domain); `internal_links_total: 0` alongside rendered hyperlinks can no longer happen.
+
+Tests 173 → **215**.
+
 ## [3.18.2] — 2026-07-30
 
 ### Fixed
