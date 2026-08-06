@@ -261,26 +261,47 @@ class TestNoParallelBatchClaims(unittest.TestCase):
         "does not run them concurrently", '"parallel" batch',
     )
 
+    # The README's dated per-release history starts at this heading; text at
+    # or after it describes past releases truthfully and is exempt. Mirrors
+    # TestPatternCountBranding's VERSION_HISTORY_HEADING below.
+    VERSION_HISTORY_HEADING = "## Release notes"
+
+    # A bold semantic-version tag ("**v3.16.0" / "**v3.9") anywhere in a line
+    # marks historical prose (e.g. the README's pinned "Just shipped" callout
+    # embeds a "Previously — **vX.Y.Z (date): ..." recap of the prior release
+    # ABOVE the version-history heading). Mirrors TestPatternCountBranding's
+    # DATED_LINE below — not a literal "**v3.1" prefix, which only matched
+    # the current release by the coincidence that "3.19" starts with "3.1".
+    DATED_LINE = re.compile(r"\*\*v\d+\.\d+")
+
     def test_no_skill_or_agent_advertises_parallel_batch(self):
         # user-facing docs are scanned too — the README's skills table carried a
         # "parallel (4-5x faster)" claim long after the skills were cleaned
         scan = (list(SKILLS.glob("*/SKILL.md")) + list(AGENTS.glob("*.md"))
                 + [REPO / "README.md", REPO / "AGENTS.md",
-                   REPO / "docs" / "USER-GUIDE.md", REPO / "docs" / "COWORK-GUIDE.md"])
+                   REPO / "docs" / "USER-GUIDE.md", REPO / "COWORK-GUIDE.md"])
+        readme_text = read(REPO / "README.md")
+        # Fail loudly rather than silently scanning nothing if the heading
+        # is ever renamed.
+        assert self.VERSION_HISTORY_HEADING in readme_text, (
+            f"README.md heading {self.VERSION_HISTORY_HEADING!r} not found — "
+            "it was renamed; update VERSION_HISTORY_HEADING in this test"
+        )
         offenders = []
         for p in scan:
             if not p.exists():
                 continue
             in_history = False
             for i, line in enumerate(read(p).splitlines(), 1):
-                # the README changelog section quotes historical releases verbatim;
-                # claims inside it describe the past, not the shipped product
-                if line.startswith("**v3.1") or line.startswith("## Version history"):
+                # the README release-notes section quotes historical releases
+                # verbatim; claims inside it (and in it) describe the past,
+                # not the shipped product
+                if line.startswith(self.VERSION_HISTORY_HEADING):
                     in_history = True
                 low = line.lower()
                 if "parallel" not in low and "concurrent" not in low:
                     continue
-                if in_history or any(a in low for a in self.ALLOWED):
+                if in_history or self.DATED_LINE.search(line) or any(a in low for a in self.ALLOWED):
                     continue
                 offenders.append(f"{p.name}:{i}: {line.strip()[:90]}")
         self.assertEqual(offenders, [],

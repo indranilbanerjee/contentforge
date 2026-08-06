@@ -476,7 +476,7 @@ The completion card is the user's primary record of what was produced, how it sc
 | Citations | {source_count} sources | ≥{min_citations} | {✅/⚠️} |
 | Keyword Placements | {placements_met}/5 | 5/5 (density {density}% advisory) | {✅/⚠️} |
 | Readability | Grade {grade_level} | Grade {target_range} | {✅/⚠️} |
-| Burstiness | {burstiness} | ≥0.7 | {✅/⚠️} |
+| Burstiness | {burstiness} | advisory — no minimum | n/a |
 | AI Patterns | {patterns_removed} removed | 0 remaining | {✅/⚠️} |
 | Hallucinations | {hallucination_count} | 0 | {✅/⚠️} |
 

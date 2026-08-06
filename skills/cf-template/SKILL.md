@@ -263,7 +263,7 @@ Brand Compliance:
   No prohibited claims
 
 Humanization:
-  Burstiness Target: 0.70+ (sentence variety)
+  Burstiness: advisory, content-derived variation (no fixed target)
   AI Pattern Check: Standard (41-pattern catalog)
 ================================================================
 ```

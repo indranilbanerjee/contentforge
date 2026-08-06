@@ -90,11 +90,11 @@ Polish the validated draft to professional publication standards by:
 **Ideal Mix (from `config/humanization-patterns.json` → `humanization_techniques.sentence_variety`):**
 - Short (5-10 words): 20% | Medium (11-20 words): 50% | Long (21+ words): 30%
 
-Use these exact word boundaries — Phase 6.5's burstiness gate measures against the same config, and mismatched bands make the two phases disagree about the same draft.
+Use these exact word boundaries — Phase 6.5's tell-scan treats burstiness as advisory but references this same config when checking for uniform runs, and mismatched bands make the two phases disagree about the same draft.
 
 Analyze current distribution. If short sentences are underrepresented, break long multi-clause sentences into varied-length sequences.
 
-**Division of labor with Phase 6.5:** these rhythm targets are shared with the Humanizer. **Do structural rhythm work ONCE, here.** Phase 6.5 handles voice, personality, and AI-tell removal only — it does not redo sentence-length restructuring unless its burstiness gate fails. Don't leave rhythm problems for 6.5 to fix.
+**Division of labor with Phase 6.5:** these rhythm targets are shared with the Humanizer. **Do structural rhythm work ONCE, here.** Phase 6.5 handles voice, personality, and AI-tell removal only — it does not redo sentence-length restructuring unless its tell-scan flags a genuine uniform run (5+ consecutive sentences within ±3 words of each other). Don't leave rhythm problems for 6.5 to fix.
 
 #### 2.2 Simplify Complex Sentences
 

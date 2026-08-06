@@ -289,7 +289,7 @@ Quality Score: 9.2/10 (Grade A+)
 Content Stats:
   Words: 1,947 (target 1,500-2,000) ✅ | Citations: 14 sources ✅
   Keyword placements: all critical positions ✅ | Readability: Grade 11.2 ✅
-  Burstiness: 0.78 ✅ | AI Patterns: 0 remaining ✅ | Hallucinations: 0 ✅
+  Burstiness: 0.78 (advisory) | AI Patterns: 0 remaining ✅ | Hallucinations: 0 ✅
 
 SEO Package:
   Meta Title: 58 chars ✅ | Meta Description: 152 chars ✅
@@ -305,13 +305,13 @@ Delivery:
 Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:translate | /contentforge:cf-variants
 ```
 
-**The card also carries three deficiency/advisory lines** (omitted from the synthetic example above because their content is run-specific and often conditional):
+**The orchestrator MUST append three deficiency/advisory lines to every generated Completion Card** (omitted from the synthetic example above only because their content is run-specific and often conditional — they sit immediately adjacent to that fenced example by design; do not skip them):
 
 - **Internal linking:** {deep_links} deep / {homepage_links} homepage links (source: {inventory_source}){IF homepage-only: " — ⚠ HOMEPAGE-ONLY INTERNAL LINKING: deep service pages exist but are not linked"}
 - **AI-detectability (advisory):** {advisory_rating} — {flag_count} signals flagged (details in Quality Appendix; never a publish gate)
 - **Needs human review:** {IF visual manifest has human-review flags: "⚠ {n} visual element(s) need SME sign-off — see visual manifest"}{IF placeholder links: " · ⚠ {n} placeholder link(s) need URLs"}
 
-`{deep_links}`, `{homepage_links}`, and `{inventory_source}` are read from the Phase 6 SEO scorecard's `Deep-link coverage: deep_links=N homepage_links=M inventory_source=...` line (never from the docx JSON — that JSON's `inline_links_internal`/`inline_links_outbound` counters are for the docx appendix, not the card). The AI-detectability line's rating is wired by a later humanizer-intelligence task; until then it reports `advisory_rating: not yet available` and is never a publish gate. The human-review line's visual-element flags already exist in the Phase 3.5 visual manifest; the placeholder-link count comes from Phase 8 output.
+`{deep_links}`, `{homepage_links}`, and `{inventory_source}` are read from the Phase 6 SEO scorecard's `Deep-link coverage: deep_links=N homepage_links=M inventory_source=...` line (never from the docx JSON — that JSON's `inline_links_internal`/`inline_links_outbound` counters are for the docx appendix, not the card). The AI-detectability line's rating comes from the Phase 6.5 Humanization Report §8 (AI-TELL SCAN), produced by `scripts/text-metrics.py --ai-tell-scan`: a deterministic LOW/MODERATE/HIGH rating, advisory only and never a publish gate. The human-review line's visual-element flags already exist in the Phase 3.5 visual manifest; the placeholder-link count comes from Phase 8 output.
 
 ## Content Types & Specifications
 

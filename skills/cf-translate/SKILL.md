@@ -148,7 +148,7 @@ Queues translations for all specified languages and processes them sequentially.
 - Removes AI telltale phrases specific to target language (loaded from `config/multilingual-patterns.json`)
 - Checks sentence variety (burstiness) against target language norms
 - Ensures natural reading flow for native speakers
-- **Quality Gate:** Target language burstiness >= 0.7 and `ai_signal_score` <= 0.3
+- **Quality Gate:** `ai_signal_score` <= 0.3 for the target language (burstiness is measured and reported but advisory — no minimum to hit, matching the Phase 6.5 humanizer)
 
 ### Step 8: Quality Verification
 - Readability check calibrated for target language (grade level equivalents)
