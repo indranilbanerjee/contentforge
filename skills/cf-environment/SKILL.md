@@ -26,13 +26,20 @@ python scripts/plugin-metadata.py --section environment
 ```
 
 This returns JSON with `environment` (one of `cowork-sandbox`,
-`claude-code-windows`, `claude-code-mac`, `claude-code-linux`, `unknown`),
-filesystem indicators, and a `cowork_warning` field that's non-null when
-the Cowork sandbox is detected.
+`claude-code-windows`, `claude-code-mac`, `claude-code-linux`,
+`linux-sandbox-uncertain`, `unknown` — six possible values), filesystem
+indicators, a `cowork_warning` field that's non-null when a sandbox
+(confirmed or suspected) is detected, and a `signals` object (`strong` /
+`weak` lists) showing exactly which detection heuristics fired — useful
+for `--verbose` or when a user disputes the classification.
 
 ### Step 2 — Present the capability matrix for the detected environment
 
-Render one of the three matrices below based on the JSON `environment`.
+Render one of the matrices below based on the JSON `environment`. The six
+values map to three matrices: `cowork-sandbox` AND `linux-sandbox-uncertain`
+both use the Cowork matrix (uncertain gets a one-line caveat first, see
+below); `claude-code-windows` / `-mac` / `-linux` share the local matrix;
+`unknown` gets its own fallback.
 
 #### `cowork-sandbox`
 
@@ -63,6 +70,16 @@ Cowork is **the recommended environment for teams** as of v3.12.9 — it has the
 **If Cowork without Drive:** Connect Drive first. Easiest path: Cowork → **Settings** → **Integrations** → **Google Drive** → Connect (60 seconds). Then run `/contentforge:cf-cowork-setup`. Until that's done, generated files will only exist for the current session and won't be retrievable after you close the chat.
 
 Local Claude Code (CLI or IDE extension) is the alternative if you don't want to use Drive — files land directly in `~/Documents/ContentForge/<brand>/...` on your machine. But for team usage, Cowork+Drive is simpler.
+
+#### `linux-sandbox-uncertain`
+
+Only weak signals fired (e.g., a container marker plus a Docker-style username or a local socks5h proxy) — not a confirmed Cowork session marker. This could be a real cloud sandbox the detector doesn't yet recognize by name, or a local Linux container / WSL setup with no sandbox risk at all. Treat it as a possible sandbox rather than guessing wrong in either direction.
+
+Show this line first, before anything else:
+
+> Detection was uncertain (weak sandbox signals only — see the probe's cowork_warning): treating this environment as a possible cloud sandbox. Verify where your files land before relying on them.
+
+Then render the exact same matrix as `cowork-sandbox` above (including the Drive-MCP scan and the "If Cowork + Drive" / "If Cowork without Drive" branches) — capabilities-wise, an unconfirmed sandbox must still be treated as if writes might not reach the host.
 
 #### `claude-code-windows`, `claude-code-mac`, `claude-code-linux`
 

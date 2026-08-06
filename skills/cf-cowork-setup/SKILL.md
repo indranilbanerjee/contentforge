@@ -23,9 +23,11 @@ v3.12.9 fixed this with environment-aware routing: when Cowork is detected AND a
 python scripts/plugin-metadata.py --section environment
 ```
 
-Parse the JSON. Three branches:
+Parse the JSON. Four branches:
 
 **`environment == "cowork-sandbox"`** — Proceed to Step 2.
+
+**`environment == "linux-sandbox-uncertain"`** — Detection found only weak signals (e.g., a container marker plus a Docker-style username), not a confirmed Cowork session marker. Tell the user: "Sandbox detection was uncertain — proceeding with Cowork setup to be safe. If this isn't actually Cowork, the Drive-MCP check in the next step will make that clear (no Drive MCP will be found) and you can skip the rest." Then proceed to Step 2 exactly as the `cowork-sandbox` branch does.
 
 **`environment == "claude-code-windows"` / `"-mac"` / `"-linux"`** — Tell the user:
 
