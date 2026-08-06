@@ -66,16 +66,22 @@ def is_sitemap_index(xml_text: str) -> bool:
     return "<sitemapindex" in xml_text
 
 
+def _strip_www(netloc: str) -> str:
+    """Remove 'www.' prefix from netloc (Python 3.8+ safe)."""
+    netloc = netloc.lower()
+    return netloc[4:] if netloc.startswith("www.") else netloc
+
+
 def filter_candidates(root: str, urls: list[str]) -> list[str]:
     """Same-host http(s) pages only, fragments stripped, binary/file URLs dropped, deduped in order."""
-    host = urllib.parse.urlparse(root).netloc.lower().removeprefix("www.")
+    host = _strip_www(urllib.parse.urlparse(root).netloc)
     seen, kept = set(), []
     for u in urls:
         if not isinstance(u, str) or not u.startswith(("http://", "https://")):
             continue
         u = u.split("#", 1)[0]
         p = urllib.parse.urlparse(u)
-        if p.netloc.lower().removeprefix("www.") != host:
+        if _strip_www(p.netloc) != host:
             continue
         if p.path.lower().endswith(SKIP_EXTENSIONS):
             continue
