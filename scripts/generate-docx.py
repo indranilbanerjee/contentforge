@@ -73,6 +73,7 @@ import argparse
 import json
 import re
 import sys
+import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
@@ -468,6 +469,50 @@ def collect_internal_link_markers(md_text):
         if fields.get("anchor"):
             found.append(fields)
     return found
+
+
+# Plain markdown links, e.g. [text](https://...) — excludes image links ![alt](url)
+# via the negative lookbehind. These are rendered as real hyperlinks by
+# _render_markdown_segment/add_hyperlink_run just like INTERNAL-LINK markers are,
+# so they must be counted too or internal_links_total undercounts what the .docx
+# actually embeds.
+_INLINE_MD_LINK = re.compile(r"(?<!\!)\[([^\]]+)\]\((https?://[^)\s]+)\)")
+
+
+def _strip_www(netloc):
+    """Lowercase a host and drop a leading 'www.' — Python 3.8-safe
+    (str.removeprefix is 3.9+)."""
+    netloc = netloc.lower()
+    return netloc[4:] if netloc.startswith("www.") else netloc
+
+
+def count_rendered_links(md_text, brand_domain=None):
+    """Count every hyperlink the renderer will actually embed:
+    INTERNAL-LINK markers plus plain markdown links, the latter split
+    internal/outbound by the brand's domain (www-insensitive).
+
+    internal_links_total historically counted markers only; a document
+    relying solely on inline markdown links (no INTERNAL-LINK markers)
+    would report 0 despite the .docx containing real internal hyperlinks.
+    This counts both pathways the renderer embeds (see add_inline_runs /
+    split_text_with_links for markers, _render_markdown_segment for inline
+    markdown links) so the telemetry matches what's actually in the file.
+    """
+    markers = collect_internal_link_markers(md_text)
+    internal = outbound = 0
+    dom = _strip_www(brand_domain) if brand_domain else ""
+    for _, url in _INLINE_MD_LINK.findall(md_text):
+        host = _strip_www(urllib.parse.urlparse(url).netloc)
+        if dom and host == dom:
+            internal += 1
+        else:
+            outbound += 1
+    return {
+        "marker_links_total": len(markers),
+        "inline_links_internal": internal,
+        "inline_links_outbound": outbound,
+        "internal_links_total": len(markers) + internal,
+    }
 
 
 def _list_style(base, level, doc):
@@ -1145,8 +1190,13 @@ def main():
         "score": score,
         "grade": grade,
         "reports_included": list(reports.keys()),
-        "internal_links_total": len(link_markers),
+        # brand_domain=None: this script takes --brand as a display-name string
+        # (no brand-registry JSON / website field is loaded here), so every
+        # inline markdown link is counted as outbound until a domain source
+        # is wired in. INTERNAL-LINK markers are counted regardless.
+        **count_rendered_links(md_text, brand_domain=None),
         "internal_links_by_type": link_summary,
+        "links_note": "internal_links_total = INTERNAL-LINK markers + same-domain inline markdown links",
         "toc_included": not args.no_toc,
     }
     if c2pa_result is not None:
