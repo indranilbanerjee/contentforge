@@ -156,55 +156,105 @@ def probe_commands_list() -> list[dict]:
     return out
 
 
+COWORK_WARNING = (
+    "Cowork sandbox detected. ContentForge file writes (~/Documents/ContentForge/, "
+    "~/.claude-marketing/) target the sandbox filesystem, NOT the user's host. Files "
+    "persist for the session only — export deliverables via a connected Drive MCP or "
+    "download before the session ends, or run in local Claude Code for host writes.")
+UNCERTAIN_WARNING = (
+    "Sandboxed Linux environment suspected but not confirmed. If this is Cowork or "
+    "another cloud sandbox, file writes will NOT reach your local machine — verify "
+    "where deliverables land before relying on them.")
+
+# Exact filesystem paths the gatherer checks for sandbox/container evidence.
+_PROBE_PATHS = ("/var/run/mitm-proxy.sock", "/sessions", "/.dockerenv", "/run/.containerenv")
+
+
+def classify_environment(env, existing_paths, platform_name, cwd, home, username) -> dict:
+    """Pure classifier: layered strong/weak signals → environment + warning.
+
+    Strong signals (any one) => cowork-sandbox, confidently.
+    Weak signals (2+, Linux only) => linux-sandbox-uncertain, softer warning.
+    Otherwise => platform-native claude-code-* (or "unknown").
+
+    No I/O here — every input is a plain value, so this is fully unit-testable
+    without a real sandbox.
+    """
+    strong, weak = [], []
+    if env.get("ANTHROPIC_COWORK_SESSION_ID"):
+        strong.append("cowork_session_env")
+    if env.get("CLAUDE_CODE_HOST_HTTP_PROXY_PORT") or env.get("CLAUDE_CODE_HOST_SOCKS_PROXY_PORT"):
+        strong.append("cowork_host_proxy_env")
+    if "/var/run/mitm-proxy.sock" in existing_paths:
+        strong.append("mitm_proxy_socket")
+    if "/sessions" in existing_paths:
+        strong.append("sessions_root_dir")
+    cwd_s = cwd.replace("\\", "/")
+    if "/sessions/" in cwd_s or "remote-plugins" in cwd_s:
+        strong.append("session_cwd")
+    if "socks5h://localhost" in env.get("ALL_PROXY", ""):
+        weak.append("socks5h_local_proxy")
+    if "/.dockerenv" in existing_paths or "/run/.containerenv" in existing_paths:
+        weak.append("container_marker")
+    if platform_name == "Linux" and re.fullmatch(r"[a-z]+-[a-z]+-[a-z]+", username or ""):
+        weak.append("docker_style_username")
+    if cwd_s.startswith("/mnt"):
+        weak.append("mnt_cwd")
+
+    if strong:
+        return {"environment": "cowork-sandbox", "signals": {"strong": strong, "weak": weak},
+                "cowork_warning": COWORK_WARNING}
+    if platform_name == "Linux" and len(weak) >= 2:
+        return {"environment": "linux-sandbox-uncertain", "signals": {"strong": [], "weak": weak},
+                "cowork_warning": UNCERTAIN_WARNING}
+    env_name = ("claude-code-windows" if platform_name == "Windows"
+                else "claude-code-mac" if platform_name == "Darwin"
+                else "claude-code-linux" if platform_name == "Linux" else "unknown")
+    return {"environment": env_name, "signals": {"strong": [], "weak": weak}, "cowork_warning": None}
+
+
 def probe_environment() -> dict:
-    """Detect runtime environment hints — local Claude Code vs Cowork sandbox."""
+    """Gather real environment/filesystem/OS state and classify it.
+
+    Real-world failure this closes: a Cowork cloud-sandbox run was misdetected
+    as claude-code-linux because the old heuristics only looked at cwd (and
+    mounted host dirs under /sessions/<name>/mnt/ aren't necessarily the cwd),
+    so the sandbox file-write warning never fired. This gatherer collects raw
+    signals (env vars, exact path existence, username) and hands them to the
+    pure classify_environment() for layered strong/weak-signal classification.
+    """
     import os
     import platform
+    import getpass
+
     cwd = Path.cwd()
     cwd_str = str(cwd).replace("\\", "/")
     home = str(Path.home()).replace("\\", "/")
+    platform_name = platform.system()
 
     indicators = {
-        "platform": platform.system(),
+        "platform": platform_name,
         "python": platform.python_version(),
         "cwd": cwd_str,
         "home": home,
         "writable_cwd": _is_writable(cwd),
     }
 
-    # Cowork sandbox heuristics
-    is_cowork = (
-        "/sessions/" in cwd_str
-        or cwd_str.startswith("/mnt")
-        or "remote-plugins" in cwd_str
-        or os.environ.get("ANTHROPIC_COWORK_SESSION_ID")
-    )
-    is_windows_host = platform.system() == "Windows" and home.startswith("C:")
+    existing_paths = {p for p in _PROBE_PATHS if Path(p).exists()}
+    try:
+        username = getpass.getuser()
+    except Exception:
+        username = ""
 
-    environment = (
-        "cowork-sandbox" if is_cowork
-        else "claude-code-windows" if is_windows_host
-        else "claude-code-mac" if platform.system() == "Darwin"
-        else "claude-code-linux" if platform.system() == "Linux"
-        else "unknown"
-    )
-
-    # Cowork file-write limitations
-    cowork_warning = None
-    if is_cowork:
-        cowork_warning = (
-            "Cowork sandbox detected. ContentForge file writes "
-            "(~/Documents/ContentForge/, ~/.claude-marketing/) target the "
-            "Linux sandbox filesystem, NOT the user's Windows/macOS host. "
-            "Files persist for the session only. To get host writes, run "
-            "ContentForge in local Claude Code (CLI or IDE extension) "
-            "instead of Cowork."
-        )
+    classification = classify_environment(
+        env=os.environ, existing_paths=existing_paths, platform_name=platform_name,
+        cwd=cwd_str, home=home, username=username)
 
     return {
-        "environment": environment,
+        "environment": classification["environment"],
         "indicators": indicators,
-        "cowork_warning": cowork_warning,
+        "cowork_warning": classification["cowork_warning"],
+        "signals": classification["signals"],
     }
 
 
@@ -313,6 +363,11 @@ def format_text(data: dict) -> str:
     if env:
         e = env.get("environment", "unknown")
         lines.append(f"Environment: {e}")
+        signals = env.get("signals") or {}
+        strong = signals.get("strong") or []
+        weak = signals.get("weak") or []
+        if strong or weak:
+            lines.append(f"Signals: strong={strong} weak={weak}")
         warn = env.get("cowork_warning")
         if warn:
             lines.append("")
