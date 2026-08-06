@@ -2,9 +2,9 @@
 
 > **You need to ship 30 articles this quarter that pass GPTZero, sound human, cite real sources, and route to the right internal pages. Your team is three people. You have nine weeks. Your last "AI-written" batch got flagged by the editor for hallucinated stats.**
 
-Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 35-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.8. No re-edits for AI voice. No hallucinated citations. No orphan content.
+Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 41-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.8. No re-edits for AI voice. No hallucinated citations. No orphan content.
 
-Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 35-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 41-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
 [![Version](https://img.shields.io/badge/version-3.18.2-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -12,7 +12,7 @@ Open-source enterprise content production pipeline — **22 skills · 13 special
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-205%2F205%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-207%2F207%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3182)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
@@ -49,7 +49,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 | Capability | Why it matters |
 |---|---|
 | **10-phase pipeline with a quality gate after every phase** | Bad output is caught and re-run before it propagates downstream |
-| **35-pattern AI-detection humanizer** + self-critique meta-pass | Output reads human, not AI — measured burstiness gate (`text-metrics.py`) |
+| **41-pattern AI-detection humanizer** + self-critique meta-pass | Output reads human, not AI — measured burstiness gate (`text-metrics.py`) |
 | **Fact-checker subagent** verifies URLs and cross-references claims | Citations work and aren't hallucinated |
 | **Three-category internal linking** (topical / commercial / authority) | Content becomes a funnel, not a stranded page |
 | **Real `.docx` output** with embedded SEO + Quality + Production + Internal-Link appendices | Editor / design team gets a working Word file, not markdown |
@@ -167,7 +167,7 @@ The resumer reloads the saved Phase 1..N outputs and continues from Phase N+1 �
  4   Scientific Validation → hallucination check, domain rules, regulatory
  5   Structuring & Proofread → grammar, readability, brand compliance
  6   SEO/GEO Optimization  → keywords, meta tags, schema, internal links (3 categories)
- 6.5 Humanizer             → 35-pattern AI-detection catalog + self-critique
+ 6.5 Humanizer             → 41-pattern AI-detection catalog + self-critique
  7   Review                → 5-dimension scoring (Content, Citation, Brand, SEO, Readability)
  8   Output Manager        → real .docx with embedded scorecards + link map
 ```
@@ -310,7 +310,7 @@ These 9 commands are the user-facing entry points:
 | 4 | Scientific Validator | Hallucination detection, domain validation | 3–9 min |
 | 5 | Structurer & Proofreader | Grammar, readability, brand compliance | 2–7 min |
 | 6 | SEO/GEO Optimizer | Keywords, meta tags, AI Overview, **3-category internal linking** | 3–8 min |
-| 6.5 | Humanizer | 35-pattern AI-detection catalog + self-critique meta-pass | 5–8 min |
+| 6.5 | Humanizer | 41-pattern AI-detection catalog + self-critique meta-pass | 5–8 min |
 | 7 | Reviewer | 5-dimension scoring with comparative ranking | 1–4 min |
 | 8 | Output Manager | `.docx` with hyperlinks, charts, scorecards, link map | <1 min |
 | 9 | Batch Orchestrator | Sequential, checkpointed queue coordination | post-pipeline |
@@ -339,7 +339,7 @@ Single-pass fact-checking misses 15–20% of hallucinations. ContentForge uses t
 
 ### Phase 6.5 Humanizer (the differentiator)
 
-35-pattern AI-detection catalog (5 buckets: content, language/grammar, style, communication, filler/hedging) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, burstiness 0.50 → 0.72, AI signal score ≤3/10, em dashes ≤2 per 500 words.
+41-pattern AI-detection catalog (7 buckets: content, language/grammar, style, communication, filler/hedging, structure/framing, detector-signal) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, burstiness 0.50 → 0.72, AI signal score ≤3/10, em dashes ≤2 per 500 words.
 
 ### Model curator (v3.12.2+) — no hardcoded model ids
 
@@ -509,7 +509,7 @@ Run `/contentforge:cf-environment` after install to see exactly what's available
 
 ## About the maintainer
 
-ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 10-phase pipeline and 35-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
+ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 10-phase pipeline and 41-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
 
 - 🌐 **Website:** [indranil.in](https://indranil.in)
 - 💼 **LinkedIn:** [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)
@@ -526,7 +526,7 @@ If ContentForge saves your team time, [⭐ star the repo](https://github.com/ind
 
 ## Contributing
 
-PRs welcome — especially on the 35-pattern AI-detection catalog, industry-specific content templates, and platform-specific schema improvements. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) for the PR checklist, and [TESTING-GUIDE.md](TESTING-GUIDE.md) for the per-phase test checklist. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: use [Private Security Advisories](https://github.com/indranilbanerjee/contentforge/security/advisories/new) per [SECURITY.md](SECURITY.md) — do not file public issues for vulnerabilities.
+PRs welcome — especially on the 41-pattern AI-detection catalog, industry-specific content templates, and platform-specific schema improvements. See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow, [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) for the PR checklist, and [TESTING-GUIDE.md](TESTING-GUIDE.md) for the per-phase test checklist. All contributors are expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md). Security issues: use [Private Security Advisories](https://github.com/indranilbanerjee/contentforge/security/advisories/new) per [SECURITY.md](SECURITY.md) — do not file public issues for vulnerabilities.
 
 ---
 
@@ -537,7 +537,7 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 | Plugin | What it does |
 |---|---|
 | [Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro) | End-to-end engagement methodology — 12-Part Strategy Flow, Four Core Documents, 24 agents, 158 skills |
-| **ContentForge** (this plugin) | Publication-ready content via 10-phase pipeline, fact-checker, 35-pattern AI-detection humanizer, `.docx` export with C2PA signing |
+| **ContentForge** (this plugin) | Publication-ready content via 10-phase pipeline, fact-checker, 41-pattern AI-detection humanizer, `.docx` export with C2PA signing |
 | [SocialForge](https://github.com/indranilbanerjee/socialforge) | Social media calendar with AI image (Vertex AI Nano Banana Pro) + video (WaveSpeed Kling v3.0 Pro) generation, C2PA signing |
 
 ```
@@ -608,4 +608,4 @@ Created by [Indranil Banerjee](https://indranil.in). Built for Claude Code and A
 
 <sub>Made with care by [Indranil Banerjee](https://indranil.in) · MIT-licensed · [⭐ Star the repo](https://github.com/indranilbanerjee/contentforge) if it helps you</sub>
 
-Humanizer 35-pattern catalog adapted from [Wikipedia: Signs of AI Writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (CC BY-SA, WikiProject AI Cleanup) with structure influenced by [blader/humanizer](https://github.com/blader/humanizer) (MIT).
+Humanizer 41-pattern catalog adapted from [Wikipedia: Signs of AI Writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) (CC BY-SA, WikiProject AI Cleanup) with structure influenced by [blader/humanizer](https://github.com/blader/humanizer) (MIT).

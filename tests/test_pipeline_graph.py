@@ -367,6 +367,94 @@ class TestHumanizationCatalog(unittest.TestCase):
                          "(it manufactures pattern 36 — see human_grounding_techniques.content_derived_variation)")
 
 
+class TestPatternCountBranding(unittest.TestCase):
+    """The catalog's pattern count and the "N-pattern" branding string used
+    across manifests and live docs must never drift apart again. The
+    2026-08-07 sweep found the catalog had grown to 41 patterns (Task 10)
+    while every manifest and the README hero still advertised "35-pattern" —
+    this guard makes that specific regression fail loudly instead of
+    shipping silently."""
+
+    # The README's dated per-release history starts at this heading; text at
+    # or after it describes past releases truthfully and is exempt.
+    VERSION_HISTORY_HEADING = "## Release notes"
+
+    # The pinned "Just shipped" callout near the top embeds a nested,
+    # explicitly dated "Previously — **vX.Y.Z (date): ..." recap of the
+    # prior release. That recap sits ABOVE the version-history heading but
+    # is still historical prose describing a past release verbatim (the
+    # brief: "leave every word" of the pinned callout) — strip lines
+    # matching this dated-tag pattern before scanning the live half.
+    DATED_LINE = re.compile(r"\*\*v\d+\.\d+(?:\.\d+)?\s*\(")
+
+    MANIFESTS = [
+        REPO / ".claude-plugin" / "plugin.json",
+        REPO / ".codex-plugin" / "plugin.json",
+        REPO / ".cursor-plugin" / "plugin.json",
+        REPO / ".github" / "plugin" / "plugin.json",
+        REPO / "gemini-extension.json",
+        REPO / "plugin.yaml",
+        REPO / "openclaw.plugin.json",
+        REPO / "package.json",
+    ]
+
+    LIVE_DOCS = [
+        REPO / "AGENTS.md",
+        REPO / "docs" / "USER-GUIDE.md",
+        REPO / "COWORK-GUIDE.md",
+    ]
+
+    @staticmethod
+    def _pattern_count() -> int:
+        cfg = json.loads(read(REPO / "config" / "humanization-patterns.json"))
+        catalog = cfg["signs_of_ai_writing_catalog"]
+        total = 0
+        for bucket_name, bucket in catalog.items():
+            if bucket_name.startswith("_") or not isinstance(bucket, dict):
+                continue
+            total += sum(1 for k in bucket if re.match(r"^\d{2}_", k))
+        return total
+
+    @classmethod
+    def _readme_live_half(cls) -> str:
+        text = read(REPO / "README.md")
+        # Fail loudly rather than silently scanning nothing if the heading
+        # is ever renamed.
+        assert cls.VERSION_HISTORY_HEADING in text, (
+            f"README.md heading {cls.VERSION_HISTORY_HEADING!r} not found — "
+            "it was renamed; update VERSION_HISTORY_HEADING in this test"
+        )
+        pre_heading = text.split(cls.VERSION_HISTORY_HEADING, 1)[0]
+        live_lines = [ln for ln in pre_heading.splitlines()
+                      if not cls.DATED_LINE.search(ln)]
+        return "\n".join(live_lines)
+
+    def test_branding_string_matches_catalog_count_in_manifests_and_readme(self):
+        count = self._pattern_count()
+        needle = f"{count}-pattern"
+        for path in (REPO / ".claude-plugin" / "plugin.json", REPO / "package.json"):
+            with self.subTest(file=str(path.relative_to(REPO))):
+                self.assertIn(needle, read(path),
+                              f"{path.relative_to(REPO)} does not advertise {needle!r}")
+        with self.subTest(file="README.md (live half)"):
+            self.assertIn(needle, self._readme_live_half(),
+                          f"README.md live half does not advertise {needle!r}")
+
+    def test_no_stale_35_pattern_branding_in_live_files(self):
+        live_texts = {"README.md (live half)": self._readme_live_half()}
+        for path in self.LIVE_DOCS + self.MANIFESTS:
+            live_texts[str(path.relative_to(REPO))] = read(path)
+        offenders = []
+        for label, text in live_texts.items():
+            for needle in ("35-pattern", "35 patterns"):
+                if needle in text:
+                    offenders.append(f"{label}: contains {needle!r}")
+        self.assertEqual(offenders, [],
+                         "stale '35-pattern' branding survives in live text (the "
+                         "catalog carries 41 numbered patterns as of Task 10):\n"
+                         + "\n".join(offenders))
+
+
 class TestConfigKeysCitedByAgentsExist(unittest.TestCase):
     """Agents defer gate numbers to config; a renamed key silently disables a gate."""
 
