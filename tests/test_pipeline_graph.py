@@ -304,6 +304,69 @@ class TestNoParallelBatchClaims(unittest.TestCase):
                                      f"{rel} does not mention content type {token}")
 
 
+class TestHumanizationCatalog(unittest.TestCase):
+    """v3.19.0 Task 10: pattern catalog 35 -> 41, plus the positive
+    human_grounding_techniques model and the detector_lexicon word list that
+    scripts/text-metrics.py --ai-tell-scan reads. A miscount or renamed key
+    here silently breaks the humanizer agent (Task 12) and the branding sweep
+    (Task 14), which both depend on these exact names."""
+
+    CONFIG_PATH = REPO / "config" / "humanization-patterns.json"
+
+    @classmethod
+    def setUpClass(cls):
+        cls.raw = read(cls.CONFIG_PATH)
+        cls.cfg = json.loads(cls.raw)
+
+    def test_detector_signal_patterns_bucket_has_six_entries_36_to_41(self):
+        catalog = self.cfg["signs_of_ai_writing_catalog"]
+        self.assertIn("detector_signal_patterns", catalog,
+                      "signs_of_ai_writing_catalog is missing the new detector_signal_patterns bucket")
+        bucket = catalog["detector_signal_patterns"]
+        numbered = sorted(k for k in bucket if re.match(r"^\d{2}_", k))
+        self.assertEqual(len(numbered), 6,
+                         f"detector_signal_patterns must carry exactly 6 numbered patterns, found {numbered}")
+        expected_prefixes = {f"{n}_" for n in range(36, 42)}
+        actual_prefixes = {k[:3] for k in numbered}
+        self.assertEqual(actual_prefixes, expected_prefixes,
+                         f"detector_signal_patterns keys must be numbered 36-41, got {numbered}")
+
+    def test_total_numbered_patterns_across_catalog_equals_41(self):
+        catalog = self.cfg["signs_of_ai_writing_catalog"]
+        total = 0
+        for bucket_name, bucket in catalog.items():
+            if bucket_name.startswith("_") or not isinstance(bucket, dict):
+                continue
+            total += sum(1 for k in bucket if re.match(r"^\d{2}_", k))
+        self.assertEqual(total, 41,
+                         f"catalog total numbered patterns must be 41 (35 legacy + 6 new), got {total}")
+
+    def test_human_grounding_techniques_has_five_named_techniques(self):
+        self.assertIn("human_grounding_techniques", self.cfg,
+                      "human_grounding_techniques must be a top-level key")
+        techniques = self.cfg["human_grounding_techniques"]
+        named_keys = {k for k in techniques if not k.startswith("_")}
+        expected = {
+            "journalistic_grounding", "technical_broad_balance", "factual_clarity",
+            "calibrated_expert_voice", "content_derived_variation",
+        }
+        self.assertEqual(named_keys, expected,
+                         f"human_grounding_techniques must define exactly {expected}, got {named_keys}")
+
+    def test_detector_lexicon_llm_favored_words_nonempty_and_contains_delve_and_tapestry(self):
+        self.assertIn("detector_lexicon", self.cfg, "detector_lexicon must be a top-level key")
+        words = self.cfg["detector_lexicon"].get("llm_favored_words")
+        self.assertIsInstance(words, list)
+        self.assertTrue(words, "detector_lexicon.llm_favored_words must be non-empty")
+        self.assertIn("delve", words)
+        self.assertIn("tapestry", words)
+
+    def test_no_add_more_short_sentences_string_in_config(self):
+        self.assertNotIn("add more short sentences", self.raw,
+                         "the pre-v3.19 short-sentence-insertion technique must not appear in config "
+                         "(it manufactures pattern 36 — see human_grounding_techniques.content_derived_variation)")
+
+
 class TestConfigKeysCitedByAgentsExist(unittest.TestCase):
     """Agents defer gate numbers to config; a renamed key silently disables a gate."""
 

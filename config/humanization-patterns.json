@@ -297,13 +297,77 @@
           "after": "Start with last-touch this quarter; it is wrong, but it is measurably wrong — and that gives you a baseline to beat."
         }
       }
+    },
+    "detector_signal_patterns": {
+      "_description": "Patterns 36-41: signals derived from how detectors actually score text (see references/ai-detection-signals.md). These survive lexical cleanup because they live in rhetoric and information density, not word choice.",
+      "36_aphoristic_maxims": {
+        "signal": "Short, polished, content-free 'insight' one-liners — broad over-neutral statements with no number, name, date, or source. The single strongest post-cleanup AI tell.",
+        "example": "Speed wins the shelf. | Strong brands design the data to travel.",
+        "fix_strategy": "Ground it or cut it: attach the specific (number, date, agency, named example) from the verified research that motivated the line — or delete the line. Never leave a maxim standing alone.",
+        "weight": "high"
+      },
+      "37_impersonal_assertion": {
+        "signal": "Claims asserted with no agent and no source: 'is real and well documented', 'is widely recognized', 'has been shown'.",
+        "example": "The capacity shortfall is real and well documented.",
+        "fix_strategy": "Name who documents it and where, from the citation library — or reframe as the brand's stated view."
+      },
+      "38_epistemic_flatness": {
+        "signal": "Uniform confidence across every claim; no calibrated caveats, no acknowledged limits. Experts calibrate; models over-assert.",
+        "example": "This approach eliminates delays and ensures approval.",
+        "fix_strategy": "Add ONE specific, defensible caveat where a domain expert would ('timelines vary with agency workload; the 2024 cohort averaged...'). Vague hedging ('may potentially') is pattern 24 — do not swap one tell for another."
+      },
+      "39_perfect_parallelism": {
+        "signal": "Enumerations whose items share identical grammatical rhythm and length, reading as machine-generated symmetry.",
+        "example": "Method development, method validation, method transfer, and method lifecycle management complete the package.",
+        "fix_strategy": "Break the symmetry: uneven item lengths, an embedded aside on one item, a mid-list qualification. Does NOT apply inside protected structured elements (numbered steps, comparison tables)."
+      },
+      "40_participial_openers": {
+        "signal": "Sentences opening with a present participle: 'Building on this,', 'Leveraging the platform,'. Appears at 2-5x human rate.",
+        "example": "Building on this foundation, the team expanded capacity.",
+        "fix_strategy": "Subject-first with specifics: 'The team expanded capacity in 2025, building on...' or simply start with the actor."
+      },
+      "41_connective_opener_density": {
+        "signal": "High share of sentences opening with formulaic connectives: So, Because, Moreover, Furthermore, Additionally, Indeed, Ultimately, 'The reason is that'.",
+        "example": "Moreover, the data shows... Furthermore, the agency requires...",
+        "fix_strategy": "Open with subjects, specifics, or data. Target: <10% of sentences open with a formulaic connective."
+      }
     }
+  },
+  "human_grounding_techniques": {
+    "_description": "The POSITIVE model — what human-expert prose does. The humanizer's primary toolset; removal patterns 01-41 are secondary. See references/ai-detection-signals.md.",
+    "journalistic_grounding": {
+      "rule": "Ground claims in specifics inline: event + date + named source/agency/molecule. Specificity is the single most effective humanizing move (it raises perplexity because no model predicts those exact tokens).",
+      "example": "In June 2024 the agency finalized its clinical-pharmacology guidance for this class (Agency, 2024).",
+      "hard_limit": "Specifics come ONLY from the verified research ledger. No grounding available -> calibrated caveat or leave the sentence. Never invent."
+    },
+    "technical_broad_balance": {
+      "rule": "Pair a technical detail with a plain-language explanation in the same sentence.",
+      "example": "Chain-length distribution analysis — essentially a census of how many building blocks each strand actually carries — is now a release requirement."
+    },
+    "factual_clarity": {
+      "rule": "State requirements plainly and specifically. No literary devices, no metaphor, no drama.",
+      "example": "Sponsors must submit stability data covering at least six months at the proposed storage condition."
+    },
+    "calibrated_expert_voice": {
+      "rule": "Add specific, defensible caveats where a domain expert would. One qualifier, concrete scope.",
+      "example": "Timelines vary with agency workload; the 2024 cohort averaged nine months from submission to decision."
+    },
+    "content_derived_variation": {
+      "rule": "Vary sentence length by varying CONTENT — a caveat, an embedded example, a source clause, a mid-sentence qualification — never by inserting content-free short sentences. A run of uniformly short polished lines is as machine-flagged as a run of uniformly long ones.",
+      "replaces": "The pre-v3.19 'add short punchy sentences to raise burstiness' technique, removed because it manufactures pattern 36."
+    }
+  },
+  "detector_lexicon": {
+    "_description": "Flat machine-readable list consumed by scripts/text-metrics.py --ai-tell-scan. Superset of pattern 07 examples.",
+    "llm_favored_words": ["delve", "delves", "delving", "underscore", "underscores", "underscored", "harness", "harnessing", "illuminate", "illuminates", "facilitate", "facilitates", "bolster", "bolsters", "intricate", "seamless", "seamlessly", "showcase", "showcasing", "leverage", "leverages", "leveraging", "tapestry", "realm", "beacon", "cacophony", "testament", "pivotal", "landscape", "navigate", "navigating"],
+    "connective_openers": ["so", "because", "moreover", "furthermore", "additionally", "however", "indeed", "ultimately", "in fact", "the reason is"],
+    "_note": "'landscape'/'navigate' count only as advisory signals (literal uses exist); the scan is advisory end to end."
   },
   "ai_signal_scoring": {
     "_description": "Aggregate AI-signal score computed by the Phase 6.5 humanizer after the pattern sweep. This is the number the phase_6_5_humanizer gate in config/scoring-thresholds.json (max_ai_signal_score: 0.3) consumes.",
     "formula": "ai_signal_score = sum(weight_i for each pattern i DETECTED in the draft) / sum(weight_i for ALL patterns checked), normalized to 0-1.",
     "weights": {
-      "high_signal_x2": ["01_significance_inflation", "07_ai_vocabulary", "09_negative_parallelisms", "14_em_dash_overuse", "30_colon_subtitle_headlines"],
+      "high_signal_x2": ["01_significance_inflation", "07_ai_vocabulary", "09_negative_parallelisms", "14_em_dash_overuse", "30_colon_subtitle_headlines", "36_aphoristic_maxims"],
       "standard_x1": "All other catalog patterns (02-06, 08, 10-13, 15-29, 31-35)"
     },
     "computation_notes": [
@@ -362,7 +426,7 @@
       "sentence_fragments": {
         "appropriate": true,
         "frequency": "Sparingly (1-2 per 1000 words)",
-        "example": "Just for emphasis.",
+        "example": "Allowed only when the brand's own writing_sample uses fragments; otherwise skip — inserted fragments are pattern 36.",
         "placement": "After a complete thought. For punch."
       },
       "dashes_and_parentheticals": {
@@ -426,7 +490,7 @@
     "burstiness": {
       "description": "Burstiness (sentence length variety) is a core naturalness signal — uniform sentence lengths read as machine output",
       "target_burstiness_score": 0.7,
-      "technique": "Intentionally vary sentence length dramatically"
+      "technique": "Derive variation from content (caveat, example, source clause, qualification). Never insert content-free short sentences to move this number — see human_grounding_techniques.content_derived_variation."
     },
     "personal_touches": {
       "first_person": {
