@@ -54,6 +54,24 @@ Do NOT auto-select a title. Do NOT start SERP analysis with just a topic.
 
 ## EXECUTION STEPS
 
+### Step 0: Client Site Reconnaissance (REQUIRED when the brand has a website)
+
+Before researching the web at large, research the client. Two outputs, both mandatory when `brand-profile.json` carries a website URL:
+
+**0.1 — Brand facts from the brand's own site.** Read `brand_facts.facts` from the profile. If populated, carry the confirmed facts into the Research Brief verbatim (each with its `source_url`). If empty but a website exists, fetch the homepage + about page and extract capability facts verbatim with the page URL per fact — never strengthen wording, and flag any cross-page inconsistency instead of resolving it silently.
+
+**0.2 — Internal-Link Inventory.** Build the list of deep brand pages this piece could naturally link to:
+1. Start from `seo_preferences.brand_pages` (all three arrays) — these are pre-verified.
+2. If `brand_pages` is empty or homepage-only but a website exists (harvest_status `declined`/`crawl_failed`/`never_run`), fetch the sitemap (`{website}/sitemap.xml`) or homepage nav and select up to 10 same-domain deep pages topically closest to the Confirmed Title.
+3. **Verify every URL live** (web_fetch; drop anything that does not return 200). NEVER include a URL you have not fetched this run.
+4. Emit the inventory table: `Topic | Deep URL | Suggested Anchor | Verified Live (date)`. Suggested anchors must be phrases likely to occur naturally in this piece — not the page's H1 verbatim.
+
+If the brand has NO website (`harvest_status.status == "no_website"`), state that in one line and skip to Step 1. If fetches fail transiently, record what failed — Phase 6 will retry just-in-time.
+
+**Write both outputs into the Research Brief under `## Client Site Reconnaissance`.** Phase 6 consumes the inventory for deep internal links; Phase 2 cross-checks brand claims against the facts.
+
+---
+
 ### Step 1: SERP Analysis (Top 10 Results)
 
 **Prerequisite:** Confirmed Title must be set (provided as input or read from `phase-0.5-title.txt`). If not, STOP and return the `needs_user_decision` payload from the Title Precondition section.
@@ -136,6 +154,16 @@ Analyze top 10 organic results
 - Government databases (CDC, FDA, SEC, BLS)
 - Industry reports (Gartner, Forrester, IDC)
 - Tier 1 news (WSJ, Reuters, Bloomberg)
+
+**Source hierarchy (strict order of preference):**
+1. Primary regulatory / official documents (FDA, EMA, SEC, ICH, BLS — the document itself)
+2. Peer-reviewed journals
+3. Government statistics and databases
+4. Tier-1 industry analysts and Tier-1 news
+5. Reputable industry publications
+6. Vendor / marketing pages (last resort, never for load-bearing claims)
+
+**Hard rule:** any regulatory or legal claim (what an agency requires, finalized, approved, or held) MUST cite the primary regulatory document — never a blog or vendor page that "cites the FDA". If you cannot reach the primary document, mark the claim `NEEDS-PRIMARY-SOURCE` so Phase 2 treats it as unverified.
 
 **For EACH source, document:**
 
@@ -313,6 +341,7 @@ Use `templates/research-brief.md` as your output template.
 8. Content Angle Comparison Table
 9. SEO Keyword Map
 10. Quality Gate 1 Checklist
+11. Client Site Reconnaissance (brand facts + Internal-Link Inventory)
 
 ---
 
@@ -328,6 +357,8 @@ Before submitting Research Brief, verify (thresholds per `config/scoring-thresho
 - [ ] **SERP analysis shows ranking opportunity** (gaps identified)
 - [ ] **All URLs verified live** (use web_fetch)
 - [ ] **Statistics cross-referenced** (at least 2 sources for key stats)
+- [ ] **Client Site Reconnaissance complete** (brand facts + Internal-Link Inventory present; N/A only when the brand has no website)
+- [ ] **≥3 verified deep brand URLs in the Internal-Link Inventory** when the brand has a website with ≥3 relevant pages (fewer only with a documented reason)
 
 **If ANY criterion fails:**
 - Mark Quality Gate 1 as FAIL
