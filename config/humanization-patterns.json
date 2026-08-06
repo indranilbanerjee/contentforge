@@ -71,7 +71,7 @@
     ]
   },
   "signs_of_ai_writing_catalog": {
-    "_description": "Comprehensive AI writing detection catalog — the core 29-pattern set organized into 5 buckets (Content, Language & Grammar, Style, Communication, Filler & Hedging) plus 6 additional 2026-era patterns (30-35) in the Structure & Framing bucket. Used by Phase 6.5 humanizer Step 1. Expands the legacy ai_telltale_phrases lists above with patterns LLMs exhibit beyond mere word choice. Aggregate scoring: see ai_signal_scoring below.",
+    "_description": "Comprehensive AI writing detection catalog — the core 29-pattern set organized into 5 buckets (Content, Language & Grammar, Style, Communication, Filler & Hedging) plus 6 additional 2026-era patterns (30-35) in the Structure & Framing bucket, plus 6 detector-signal patterns (36-41) derived from how AI-text detectors score prose (see references/ai-detection-signals.md). Used by Phase 6.5 humanizer Step 1. Expands the legacy ai_telltale_phrases lists above with patterns LLMs exhibit beyond mere word choice. Aggregate scoring: see ai_signal_scoring below.",
     "_attribution": "Pattern catalog adapted from Wikipedia: Signs of AI writing (https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) maintained by WikiProject AI Cleanup (CC BY-SA), with structure influenced by blader/humanizer (MIT). Integrated into ContentForge v3.9.0.",
     "content_patterns": {
       "01_significance_inflation": {
@@ -382,7 +382,7 @@
     "too_uniform": {
       "description": "AI often creates sentences of similar length. Human writing varies.",
       "detection_threshold": 0.7,
-      "fix": "Mix short punchy sentences with longer flowing ones. Vary rhythm."
+      "fix": "Vary length from real content — split at a natural qualification, fold in a source clause or dated example; never insert content-free short sentences (pattern 36)."
     },
     "too_balanced": {
       "description": "AI loves perfectly balanced clauses. Humans don't.",
@@ -490,6 +490,7 @@
     "burstiness": {
       "description": "Burstiness (sentence length variety) is a core naturalness signal — uniform sentence lengths read as machine output",
       "target_burstiness_score": 0.7,
+      "_note": "Advisory reference value only since v3.19.0 — burstiness is no longer a gate (scoring-thresholds: burstiness_advisory).",
       "technique": "Derive variation from content (caveat, example, source clause, qualification). Never insert content-free short sentences to move this number — see human_grounding_techniques.content_derived_variation."
     },
     "personal_touches": {
