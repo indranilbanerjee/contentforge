@@ -379,13 +379,17 @@ class TestPatternCountBranding(unittest.TestCase):
     # or after it describes past releases truthfully and is exempt.
     VERSION_HISTORY_HEADING = "## Release notes"
 
-    # The pinned "Just shipped" callout near the top embeds a nested,
-    # explicitly dated "Previously — **vX.Y.Z (date): ..." recap of the
-    # prior release. That recap sits ABOVE the version-history heading but
-    # is still historical prose describing a past release verbatim (the
-    # brief: "leave every word" of the pinned callout) — strip lines
-    # matching this dated-tag pattern before scanning the live half.
-    DATED_LINE = re.compile(r"\*\*v\d+\.\d+(?:\.\d+)?\s*\(")
+    # A bold semantic-version tag ("**v3.16.0" / "**v3.9") marks a sentence
+    # that narrates what a specific past release shipped — historical prose
+    # even when it sits outside a dedicated version-history section. Two
+    # places rely on this: the README's pinned "Just shipped" callout embeds
+    # a nested "Previously — **vX.Y.Z (date): ..." recap of the prior release
+    # ABOVE the version-history heading (brief: "leave every word" of that
+    # callout); SUBMISSION.md interleaves dated "**vX.Y.Z** shipped ..."
+    # sentences directly into its long-description prose with no separating
+    # heading at all. Strip lines matching this pattern before scanning
+    # either file's "live" text.
+    DATED_LINE = re.compile(r"\*\*v\d+\.\d+(?:\.\d+)?")
 
     MANIFESTS = [
         REPO / ".claude-plugin" / "plugin.json",
@@ -402,6 +406,8 @@ class TestPatternCountBranding(unittest.TestCase):
         REPO / "AGENTS.md",
         REPO / "docs" / "USER-GUIDE.md",
         REPO / "COWORK-GUIDE.md",
+        REPO / "skills" / "contentforge" / "SKILL.md",
+        REPO / "skills" / "cf-template" / "SKILL.md",
     ]
 
     @staticmethod
@@ -416,6 +422,11 @@ class TestPatternCountBranding(unittest.TestCase):
         return total
 
     @classmethod
+    def _strip_dated_lines(cls, text: str) -> str:
+        return "\n".join(ln for ln in text.splitlines()
+                          if not cls.DATED_LINE.search(ln))
+
+    @classmethod
     def _readme_live_half(cls) -> str:
         text = read(REPO / "README.md")
         # Fail loudly rather than silently scanning nothing if the heading
@@ -425,9 +436,17 @@ class TestPatternCountBranding(unittest.TestCase):
             "it was renamed; update VERSION_HISTORY_HEADING in this test"
         )
         pre_heading = text.split(cls.VERSION_HISTORY_HEADING, 1)[0]
-        live_lines = [ln for ln in pre_heading.splitlines()
-                      if not cls.DATED_LINE.search(ln)]
-        return "\n".join(live_lines)
+        return cls._strip_dated_lines(pre_heading)
+
+    @classmethod
+    def _submission_live_text(cls) -> str:
+        # SUBMISSION.md has no separate version-history section — its "Long
+        # description" interleaves dated "**vX.Y.Z** shipped ..." sentences
+        # (e.g. line 24's "**v3.9** rebuilt ... 35-pattern AI-detection
+        # catalog") directly into otherwise-live capability prose. Strip only
+        # the dated lines rather than excluding the whole file.
+        text = read(REPO / "SUBMISSION.md")
+        return cls._strip_dated_lines(text)
 
     def test_branding_string_matches_catalog_count_in_manifests_and_readme(self):
         count = self._pattern_count()
@@ -441,7 +460,10 @@ class TestPatternCountBranding(unittest.TestCase):
                           f"README.md live half does not advertise {needle!r}")
 
     def test_no_stale_35_pattern_branding_in_live_files(self):
-        live_texts = {"README.md (live half)": self._readme_live_half()}
+        live_texts = {
+            "README.md (live half)": self._readme_live_half(),
+            "SUBMISSION.md (dated lines stripped)": self._submission_live_text(),
+        }
         for path in self.LIVE_DOCS + self.MANIFESTS:
             live_texts[str(path.relative_to(REPO))] = read(path)
         offenders = []
