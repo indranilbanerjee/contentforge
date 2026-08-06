@@ -238,6 +238,14 @@ The complete setup guide includes:
    -> Brief now includes real keyword data from Ahrefs
 ```
 
+## Optional Connectors (Tier-2 External Validators)
+
+The following connectors are optional and enable enhanced validation passes during specific pipeline phases. They are auto-detected if available (via MCP discovery) and never required — the built-in validators run everywhere without them.
+
+| Connector | Service Type | Use Case |
+|-----------|--------------|----------|
+| AI-detection (optional) | any MCP-served detector (e.g. a Hugging Face Space) | Phase 6.5 external validation pass — advisory only; the built-in tell-scan runs everywhere without it |
+
 ## Agent Used
 
 None. This skill is entirely script-driven using `scripts/connector-status.py`.

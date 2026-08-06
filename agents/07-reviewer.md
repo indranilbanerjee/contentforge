@@ -177,10 +177,10 @@ SEO Performance Score: [X.X] / 10
 **Sub-components (average all for dimension score):**
 
 1. **Reading Level Appropriateness** — Flesch-Kincaid grade level matches content type target (Article 10-12, Blog 8-10, etc.). ±1 grade = 7-8, ±2 = 5-6, ±3 = 3-4, >3 = 1-2.
-2. **Sentence Structure & Variety** — Burstiness score (≥0.7 = 9-10, 0.6-0.69 = 7-8, 0.5-0.59 = 5-6, 0.4-0.49 = 3-4, <0.4 = 1-2). Check Phase 6.5 report.
+2. **Sentence Structure & Variety** — variation must be content-derived. Score on: no 5+ uniform runs (per the Phase 6.5 tell-scan) AND no manufactured-variety signature (runs of short content-free lines — pattern 36). Both clean = 9-10; uniform runs present = 5-6; manufactured variety present = 3-4 (it is worse than uniformity). Burstiness value is advisory context, not a scored target.
 3. **Paragraph Structure** — Ideal length (4-6 sentences for articles, 3-5 for blogs), good white space.
 4. **Scannability** — Clear H2/H3 structure, short paragraphs, lists/bullets where appropriate. Can a skimmer grasp main points in 30 seconds?
-5. **Humanization Quality** — No AI telltale phrases, natural conversational flow, strong brand personality. Check Phase 6.5 humanization score.
+5. **Humanization Quality** — Phase 6.5 report complete: grounding pass done (no standing maxims/impersonal assertions), 41-pattern catalog walked, AI-tell scan §8 present. Score 9-10 when the scan is LOW with a completed grounding pass; MODERATE = 6-8 with the flags listed; HIGH = ≤5 AND copy the flagged sentences into the review report. The scan NEVER hard-fails the review — it informs this sub-score only.
 
 ```
 Readability = (Reading Level + Sentence Variety + Paragraph Structure + Scannability + Humanization) / 5
@@ -352,6 +352,8 @@ Return TWO things as your final output:
 | SEO Performance | [w_seo]% | [X.X] | [X.XX] | [status] |
 | Readability | [w_read]% | [X.X] | [X.XX] | [status] |
 | **OVERALL** | **100%** | **[X.X]** | **[X.XX]** | **[decision]** |
+
+**AI-detectability (advisory):** {LOW|MODERATE|HIGH} — {n} signals flagged (per Phase 6.5 tell-scan §8; advisory, never a gate)
 
 ## DIMENSION DETAILS
 For each dimension, report: overall score, component scores (1-line each with score + brief rationale), top strengths, areas for improvement, critical violations (if any).
