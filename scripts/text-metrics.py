@@ -10,6 +10,7 @@ structure checks are measured, not guessed.
 Usage:
     python text-metrics.py --file draft.md
     python text-metrics.py --file draft.md --keyword "ai in healthcare"
+    python text-metrics.py --file draft.md --ai-tell-scan
 
 Output (JSON):
     word_count, sentence_count, avg_sentence_len, sentence_len_stdev,
@@ -23,6 +24,16 @@ Output (JSON):
                             tables, definition_patterns}
                            (consumed by the Phase 6 → 6.5 structure-manifest
                             preservation check)
+    ai_tell_scan          — with --ai-tell-scan: deterministic Tier-1
+                           detector-signal proxy (banned lexemes, aphorism
+                           candidates, em-dashes per 1000 words, connective/
+                           participial opener rates, uniform-run detection,
+                           flagged sentences, an advisory_rating of
+                           LOW/MODERATE/HIGH). Reads config/humanization-
+                           patterns.json (detector_lexicon) and config/
+                           scoring-thresholds.json (ai_tell_scan gate).
+                           Advisory only — never a publish gate. See
+                           references/ai-detection-signals.md.
 
 Robust to markdown: frontmatter, code fences, tables, images, links, and
 emphasis markers are stripped/normalised before prose analysis.
@@ -30,6 +41,7 @@ emphasis markers are stripped/normalised before prose analysis.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import statistics
 import sys
@@ -82,6 +94,15 @@ def _syllables(word: str) -> int:
     if w.endswith("e") and count > 1 and not w.endswith(("le", "ee", "ye")):
         count -= 1
     return max(count, 1)
+
+
+def split_sentences(text: str) -> list[str]:
+    """Split prose into sentences on terminal punctuation. The single
+    sentence-splitting implementation for this module — reused by both
+    analyze() (over stripped markdown prose) and ai_tell_scan() (over raw
+    text) so metrics never drift between the two callers."""
+    raw = re.split(r"(?<=[.!?])\s+", text)
+    return [s for s in (x.strip() for x in raw) if len(s.split()) >= 1]
 
 
 def analyze(md_text: str, keyword: str | None = None) -> dict:
@@ -166,8 +187,7 @@ def analyze(md_text: str, keyword: str | None = None) -> dict:
     heading_words = sum(len(h[1].split()) for h in headings)
 
     # Sentences: split prose on terminal punctuation.
-    raw_sentences = re.split(r"(?<=[.!?])\s+", prose)
-    sentences = [s for s in (x.strip() for x in raw_sentences) if len(s.split()) >= 1]
+    sentences = split_sentences(prose)
     sent_lens = [len(s.split()) for s in sentences]
 
     words = prose.split()
@@ -234,10 +254,100 @@ def analyze(md_text: str, keyword: str | None = None) -> dict:
     return result
 
 
+def _load_detector_config():
+    """Load the detector lexicon (Task 10, humanization-patterns.json) and
+    the ai_tell_scan thresholds (Task 10, scoring-thresholds.json). Both
+    ship under config/ relative to the plugin root (one level up from
+    scripts/) — the same layout every other ContentForge config consumer
+    expects."""
+    cfg_dir = Path(__file__).resolve().parent.parent / "config"
+    with open(cfg_dir / "humanization-patterns.json", encoding="utf-8") as f:
+        lex = json.load(f)["detector_lexicon"]
+    with open(cfg_dir / "scoring-thresholds.json", encoding="utf-8") as f:
+        thr = json.load(f)["default"]["quality_gates"]["phase_6_5_humanizer"]["ai_tell_scan"]
+    return lex, thr
+
+
+def is_aphorism_candidate(sentence: str) -> bool:
+    """Short declarative one-liner with zero grounding: <=9 words, no digit,
+    no citation marker, no question, no mid-sentence capitalized entity."""
+    s = sentence.strip()
+    words = s.split()
+    if not s or len(words) > 9 or s.endswith("?"):
+        return False
+    if any(ch.isdigit() for ch in s):
+        return False
+    if re.search(r"\((?:[A-Z][\w.]*,?\s*\d{4}|\d+)\)|\[\d+\]", s):
+        return False
+    if any(w[:1].isupper() for w in words[1:]):
+        return False
+    return s.endswith(".")
+
+
+def ai_tell_scan(text: str) -> dict:
+    """Deterministic Tier-1 detector-signal proxy scan. Advisory only, never
+    a publish gate — see references/ai-detection-signals.md. Consumed by the
+    humanizer (Step 7.5), reviewer (5.5), and the Completion Card."""
+    lex, thr = _load_detector_config()
+    sentences = split_sentences(text)
+    words_total = max(1, len(re.findall(r"[\w'-]+", text)))
+    per_k = 1000.0 / words_total
+
+    lset = set(lex["llm_favored_words"])
+    banned = sum(1 for w in re.findall(r"[A-Za-z'-]+", text) if w.lower() in lset)
+    connectives = tuple(lex["connective_openers"])
+    conn = sum(1 for s in sentences if s.strip().lower().startswith(connectives))
+    part = sum(1 for s in sentences
+               if (s.strip().split() or [""])[0].lower().endswith("ing"))
+    em_dashes = text.count("—") + text.count(" -- ")
+
+    flagged, aph = [], 0
+    for i, s in enumerate(sentences):
+        if is_aphorism_candidate(s):
+            aph += 1
+            flagged.append({"index": i, "text": s.strip(), "tell": "aphorism_candidate"})
+
+    runs, i = [], 0
+    lens = [len(s.split()) for s in sentences]
+    while i < len(lens):
+        j = i
+        while j + 1 < len(lens) and abs(lens[j + 1] - lens[i]) <= 3:
+            j += 1
+        if j - i + 1 >= 5:
+            runs.append({"start_sentence": i, "length": j - i + 1,
+                         "mean_words": round(sum(lens[i:j + 1]) / (j - i + 1), 1)})
+        i = j + 1
+
+    n = max(1, len(sentences))
+    metrics = {
+        "aphorism_candidates": round(aph * per_k, 2),
+        "banned_lexemes": round(banned * per_k, 2),
+        "em_dashes": round(em_dashes * per_k, 2),
+    }
+    conn_pct = round(100.0 * conn / n, 1)
+    highs = {"aphorism_candidates": thr["aphorism_per_1000_high"],
+             "banned_lexemes": thr["banned_lexemes_per_1000_high"]}
+    over_high = any(metrics[k] > v for k, v in highs.items()) or conn_pct > thr["connective_openers_pct_high"]
+    over_mod = any(metrics[k] > v * thr["moderate_fraction"] for k, v in highs.items()) \
+        or conn_pct > thr["connective_openers_pct_high"] * thr["moderate_fraction"]
+    rating = "HIGH" if over_high else ("MODERATE" if over_mod else "LOW")
+
+    return {"words_analyzed": words_total,
+            "per_1000_words": metrics,
+            "connective_openers_pct": conn_pct,
+            "participial_openers_pct": round(100.0 * part / n, 1),
+            "uniform_runs": runs,
+            "flagged_sentences": flagged[:25],
+            "advisory_rating": rating,
+            "advisory_note": "Deterministic proxy scan — advisory only, never a publish gate. See references/ai-detection-signals.md."}
+
+
 def main():
     parser = argparse.ArgumentParser(description="ContentForge text metrics (burstiness, FK grade, keyword placement, structure)")
     parser.add_argument("--file", required=True, help="Markdown (or plain text) file to analyze")
     parser.add_argument("--keyword", default=None, help="Primary keyword for placement/density checks")
+    parser.add_argument("--ai-tell-scan", action="store_true",
+                         help="Add the deterministic AI-tell detector-signal proxy scan (advisory only)")
     args = parser.parse_args()
 
     path = Path(args.file).expanduser()
@@ -250,6 +360,8 @@ def main():
         _common.finish({"error": f"could not read {path}: {exc}"})
 
     result = analyze(text, keyword=args.keyword)
+    if args.ai_tell_scan:
+        result["ai_tell_scan"] = ai_tell_scan(text)
     result["file"] = str(path)
     _common.finish(result)
 
