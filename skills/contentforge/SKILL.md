@@ -15,7 +15,7 @@ Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.j
 
 ## Execution Protocol (CRITICAL — read first)
 
-This skill orchestrates 10 phases plus Step 0.5 (Title Curation). **Each numbered phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 35-pattern catalog, and reviewer scoring that define ContentForge.
+This skill orchestrates 10 phases plus Step 0.5 (Title Curation). **Each numbered phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 41-pattern catalog (29 core + 6 structure/framing + 6 detector-signal), and reviewer scoring that define ContentForge.
 
 The one exception is Step 0.5: title curation is performed **inline by the orchestrator** (no subagent), because it requires user interaction and subagents must never wait on the user. Any subagent that needs a user decision returns a `{"status": "needs_user_decision", ...}` payload to the orchestrator, which owns all user interaction (including image-generation opt-in/approval).
 
@@ -139,7 +139,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize --brand <slu
 
 ### Why This Matters
 
-Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (35-pattern AI removal won't fire), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`run.json`, the per-phase checkpoint artifacts, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
+Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (41-pattern AI removal won't fire, including detector-signal patterns 36-41), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`run.json`, the per-phase checkpoint artifacts, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
 
 ## When to Use
 
@@ -163,7 +163,7 @@ Runs your content through **10 specialized agents**, each behind a quality gate:
 5. **Scientific Validator** — Hallucination detection, domain-specific validation, logic validation
 6. **Structurer & Proofreader** — Grammar/spelling correction, readability optimization, brand compliance
 7. **SEO/GEO Optimizer** — Keyword placements, meta tag generation, internal linking markers
-8. **Humanizer** — AI pattern removal, sentence variety (burstiness), brand personality
+8. **Humanizer** — AI pattern removal (41-pattern catalog), content-derived sentence variation (burstiness advisory), brand personality
 9. **Reviewer** — 5-dimension quality scoring (weights per `config/scoring-thresholds.json`)
 10. **Output Manager** — .docx with embedded charts and internal links, dual-copy save, optional Drive upload
 
@@ -263,7 +263,7 @@ Gate criteria and loop targets for every phase are defined once, in the **Pipeli
 - **Phase 4: Scientific Validation** — hallucination scan, claim traceability, logic validation. *Gate 4; failures loop to Phase 3.*
 - **Phase 5: Structure & Proofread** — grammar/spelling, readability to the content-type target (±0.5 grade), brand terminology and style. *Gate 5.*
 - **Phase 6: SEO/GEO** — keyword placements (title, first 100 words, ≥2 H2s, conclusion, meta description), meta tags, URL slug, AI-answer-engine readiness, structure manifest. Density is advisory (~1–2%), not a gate. *Gate 6.*
-- **Phase 6.5: Humanizer** — 35-pattern AI-telltale removal, burstiness ≥0.7, brand personality, SEO-placement preservation validated against the structure manifest. *Gate 6.5.*
+- **Phase 6.5: Humanizer** — human-expert grounding pass, 41-pattern AI-telltale removal (incl. detector-signal patterns 36-41), content-derived variation (burstiness advisory), brand personality, SEO-placement preservation validated against the structure manifest. *Gate 6.5.*
 - **Phase 7: Reviewer** — 5-dimension weighted scoring per `config/scoring-thresholds.json`; approve ≥7.0 (industry-adjusted), loop 5.0–6.9, human review <5.0. *Gate 7.*
 - **Phase 8: Output** — .docx generation with appendices, dual-copy save, optional Drive upload, tracking update. *Gate 8.*
 
