@@ -95,15 +95,15 @@ All artifacts live in the canonical run directory `~/.claude-marketing/{brand-sl
 | Phase | subagent_type | Reads (paths) | Writes (artifact) | Quality gate (orchestrator-verified) | Gate-FAIL loop target |
 |-------|---------------|---------------|-------------------|--------------------------------------|-----------------------|
 | 0.5 | — inline (orchestrator) | brand profile, requirements | `phase-0.5-title.txt` | User-confirmed title (or `--title` bypass) — user checkpoint, not a numbered quality gate | Regenerate title options |
-| 1 | `contentforge:researcher` | `phase-0.5-title.txt`, requirements, brand profile | `phase-1-research.md` | **Gate 1:** 12–15 sources collected; ≥10 citable; ≥5 with reliability ≥8; differentiated angle documented | Re-run Phase 1 with broader search |
+| 1 | `contentforge:researcher` | `phase-0.5-title.txt`, requirements, brand profile | `phase-1-research.md` | **Gate 1:** 12–15 sources collected; ≥10 citable; ≥5 with reliability ≥8; differentiated angle documented; Client Site Reconnaissance complete; ≥3 verified deep brand URLs when the brand has a website | Re-run Phase 1 with broader search |
 | 2 | `contentforge:fact-checker` | `phase-1-research.md` | `phase-2-factcheck.md` | **Gate 2:** ≥80% of claims verified; zero UNRESOLVED flags (flagged claims must be removed or re-sourced); ≤3 unverified tolerated; all cited URLs live | Phase 1 (find alternative sources) |
 | 3 | `contentforge:content-drafter` | `phase-1-research.md`, `phase-2-factcheck.md`, brand profile, requirements | `phase-3-draft.md` | **Gate 3:** word count ±10% of target; all outline sections covered; ≥1 citation per 300 words | Re-run Phase 3 |
 | 3.5 | `contentforge:visual-asset-annotator` | `phase-3-draft.md`, `phase-2-factcheck.md` | `phase-3.5-visuals.md` + `phase-3.5-visual-manifest.json` | **Gate 3.5:** every chart traceable to a verified statistic; manifest complete (placement, alt text, data source); human-action TODOs marked | Re-run Phase 3.5 |
 | 4 | `contentforge:scientific-validator` | `phase-3-draft.md`, `phase-3.5-visual-manifest.json`, `phase-2-factcheck.md` | `phase-4-validation.md` | **Gate 4:** zero hallucinations; every claim traceable to a cited source; logic consistent | Phase 3 (with the specific claims to fix) |
 | 5 | `contentforge:structurer-proofreader` | `phase-3-draft.md`, `phase-4-validation.md`, brand profile | `phase-5-structured.md` | **Gate 5:** zero grammar/spelling errors on re-scan; readability within ±0.5 grade of the content-type target (`text-metrics.py`); brand terminology compliance | Re-run Phase 5 |
-| 6 | `contentforge:seo-geo-optimizer` | `phase-5-structured.md`, brand profile, requirements (keyword) | `phase-6-seo.md` + `phase-6-structure-manifest.json` | **Gate 6:** keyword PLACEMENTS present — title, first 100 words, ≥2 H2s, conclusion, meta description (density is advisory, ~1–2%); meta title + description generated | Re-run Phase 6 |
+| 6 | `contentforge:seo-geo-optimizer` | `phase-5-structured.md`, brand profile, requirements (keyword) | `phase-6-seo.md` + `phase-6-structure-manifest.json` | **Gate 6:** keyword PLACEMENTS present — title, first 100 words, ≥2 H2s, conclusion, meta description (density is advisory, ~1–2%); meta title + description generated; all internal-link URLs verified live (HARD); ≥2 deep brand links when site known (scored+flag) | Re-run Phase 6 |
 | 6.5 | `contentforge:humanizer` | `phase-6-seo.md`, `phase-6-structure-manifest.json`, brand profile | `phase-6.5-humanized.md` | **Gate 6.5:** AI patterns removed; burstiness ≥0.7 (`text-metrics.py`); keyword placements preserved per structure manifest | Re-run Phase 6.5 with the violated constraint stated (incl. structure-manifest mismatch) |
-| 7 | `contentforge:reviewer` | ALL prior artifact paths, brand profile, requirements, `config/scoring-thresholds.json` | `phase-7-review.json` | **Gate 7:** reviewer decision tree per `config/scoring-thresholds.json` — approve ≥7.0 (industry-adjusted); all dimension minimums met | 5.0–6.9 → loop to responsible phase (recorded as `pending_rework`); <5.0 → human review, halt |
+| 7 | `contentforge:reviewer` | ALL prior artifact paths, brand profile, requirements, `config/scoring-thresholds.json` | `phase-7-review.json` | **Gate 7:** reviewer decision tree per `config/scoring-thresholds.json` — approve ≥7.0 (industry-adjusted); all dimension minimums met; dead internal link = hard FAIL; homepage-only linking caps the sub-score and surfaces on the Completion Card | 5.0–6.9 → loop to responsible phase (recorded as `pending_rework`); <5.0 → human review, halt |
 | 8 | `contentforge:output-manager` | `phase-6.5-humanized.md`, `phase-7-review.json`, `phase-3.5-visual-manifest.json`, `run.json` | `phase-8-output.json` + `.docx` | **Gate 8:** .docx generated; Appendices A/B/C present; delivery location verified | Re-run Phase 8; if generation still fails, save markdown + reports locally and report the failure |
 
 That is **10 quality gates** — one for each of phases 1, 2, 3, 3.5, 4, 5, 6, 6.5, 7, and 8.
@@ -304,6 +304,14 @@ Delivery:
 
 Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:translate | /contentforge:cf-variants
 ```
+
+**The card also carries three deficiency/advisory lines** (omitted from the synthetic example above because their content is run-specific and often conditional):
+
+- **Internal linking:** {deep_links} deep / {homepage_links} homepage links (source: {inventory_source}){IF homepage-only: " — ⚠ HOMEPAGE-ONLY INTERNAL LINKING: deep service pages exist but are not linked"}
+- **AI-detectability (advisory):** {advisory_rating} — {flag_count} signals flagged (details in Quality Appendix; never a publish gate)
+- **Needs human review:** {IF visual manifest has human-review flags: "⚠ {n} visual element(s) need SME sign-off — see visual manifest"}{IF placeholder links: " · ⚠ {n} placeholder link(s) need URLs"}
+
+`{deep_links}`, `{homepage_links}`, and `{inventory_source}` are read from the Phase 6 SEO scorecard's `Deep-link coverage: deep_links=N homepage_links=M inventory_source=...` line (never from the docx JSON — that JSON's `inline_links_internal`/`inline_links_outbound` counters are for the docx appendix, not the card). The AI-detectability line's rating is wired by a later humanizer-intelligence task; until then it reports `advisory_rating: not yet available` and is never a publish gate. The human-review line's visual-element flags already exist in the Phase 3.5 visual manifest; the placeholder-link count comes from Phase 8 output.
 
 ## Content Types & Specifications
 
