@@ -413,7 +413,7 @@ Generate a complete brand profile following the `config/brand-registry-template.
 - `content_patterns` — from blog post analysis (structure, headings, lists, statistics usage)
 - `seo_preferences` — reasonable defaults for the industry, then run the **Site Harvest** (below) whenever a website URL is known. `brand_pages` must never be left silently empty for a brand that has a website.
 
-### Site Harvest (required when the brand has a website)
+**Site Harvest (required when the brand has a website):**
 
 1. **Crawl.** Run: `python scripts/harvest-brand-pages.py --url {website} --max-pages 75 --output {tmp}/harvest.json`. The script is sitemap-first with homepage-nav fallback, honors robots.txt, and HTTP-verifies every page it returns.
 2. **Extract brand facts.** Fetch the homepage, about page, and top 3 service pages from the harvest (WebFetch). Extract capability facts **verbatim** — copy the site's exact wording with the page URL per fact. NEVER strengthen a claim while extracting ("USFDA-inspected" must not become "USFDA-approved"). Where two pages disagree (different counts, different phrasing of the same capability), record BOTH with an `inconsistency_note` — do not silently pick one.
