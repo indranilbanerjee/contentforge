@@ -163,13 +163,13 @@ When the guard fired, add to the scorecard: "brand_pages was empty/homepage-only
 
 ##### 5b.2 Scan Content for Commercial Anchor Opportunities
 
-For each configured product/service page:
+For each product/service page in the working set — the configured `brand_pages` entries, plus guard-sourced pages from 5b.1's fallback when the array was empty or homepage-only:
 - Search content for natural anchor opportunities matching the page's `topic` or `anchor_text_hints`
 - Insert ONE link per product/service page max — overcommercializing a thought-leadership piece reads as promotional
 - Place the link in the body of the relevant section (not in the intro, not buried in the conclusion)
 - Anchor text must read naturally in context — never reword the surrounding sentence to fit a forced anchor
 
-**Target:** 1 commercial link per configured product/service page that has a natural fit, max 3 total across the document. If no natural fit exists for a page, skip it and note "no natural anchor opportunity found in this content."
+**Target:** 1 commercial link per working-set page that has a natural fit, max 3 total across the document. If no natural fit exists for a page, skip it and note "no natural anchor opportunity found in this content."
 
 ##### 5b.3 Generate Commercial Link Markers
 
