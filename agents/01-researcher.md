@@ -41,7 +41,7 @@ Build a comprehensive Research Brief that provides everything the Content Drafte
 
 Title Curation (Step 0.5) is performed **by the orchestrator, inline, BEFORE this agent is invoked**. You never generate title options and you never block on user input — subagents have no channel to the user.
 
-- If `Confirmed Title` is provided (input or `phase-0.5-title.txt`): use it verbatim and proceed to Step 1.
+- If `Confirmed Title` is provided (input or `phase-0.5-title.txt`): use it verbatim and proceed to Step 0 (Client Site Reconnaissance).
 - If NO confirmed title is available: **STOP immediately** and return this exact payload as your final output so the orchestrator can run title curation and re-invoke you:
 
 ```json

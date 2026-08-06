@@ -234,6 +234,20 @@
 
 ---
 
+## Client Site Reconnaissance
+
+### Brand Facts (from the brand's own site)
+
+[List confirmed brand facts from `brand_facts.facts`, each with its source_url; if facts are empty, document homepage + about page facts verbatim with source URLs and flag any inconsistencies]
+
+### Internal-Link Inventory
+
+| Topic | Deep URL | Suggested Anchor | Verified Live (date) |
+|-------|----------|-----------------|---------------------|
+| [Topic 1] | [URL] | [Natural phrase] | [YYYY-MM-DD] |
+
+---
+
 ## Notes for Content Drafter (Phase 3)
 
 **Writing Priorities:**
@@ -253,17 +267,3 @@
 
 **Research Brief Complete**
 **Ready for Phase 2: Fact Checking**
-
----
-
-## Client Site Reconnaissance
-
-### Brand Facts (from the brand's own site)
-
-[List confirmed brand facts from `brand_facts.facts`, each with its source_url; if facts are empty, document homepage + about page facts verbatim with source URLs and flag any inconsistencies]
-
-### Internal-Link Inventory
-
-| Topic | Deep URL | Suggested Anchor | Verified Live (date) |
-|-------|----------|-----------------|---------------------|
-| [Topic 1] | [URL] | [Natural phrase] | [YYYY-MM-DD] |
