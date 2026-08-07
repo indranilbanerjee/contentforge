@@ -121,6 +121,15 @@ If local-mode (no Cowork config), skip — the profile is fine where it is on th
 - Provide examples and presets for each field
 - Allow free-text input for complex requirements
 
+**Prompts you for:**
+1. Voice & Tone (select from presets or describe)
+2. Formality level (1-5)
+3. Personality traits (3-5 adjectives)
+4. Approved terminology (comma-separated)
+5. Banned terminology (comma-separated)
+6. Guardrails and compliance requirements
+7. Author profiles (name, title, credentials, profile URL — or explicitly skip for authorless output)
+
 **For a sample "Style Guide Loaded" console transcript, read `references/extraction-example-transcripts.md` (in this skill's directory), section "Step 1 — Load Style Guide Source".**
 
 ### Step 2: Extract Voice Characteristics (1-2 minutes)
