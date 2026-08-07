@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.19.1] — 2026-08-07
+
+### Changed
+- **Advisory-era coherence sweep** — `utilities/translation-manager.md`'s `burstiness_score` field comment and `utilities/analytics-tracker.md`'s synthetic insight/recommendation no longer imply a 0.7 burstiness target; both now describe burstiness as advisory-only, matching the v3.19.0 humanizer contract.
+- **Context-efficiency refactor** — the five largest SKILL.md bodies (`cf-style-guide` 840, `cf-social-adapt` 650, `cf-brief` 625, `contentforge` 554, `cf-analytics` 516 lines) slimmed to ≤500 lines per Agent Skills guidance; verbatim example transcripts, JSON templates, CLI usage examples, and troubleshooting prose moved into 10 new per-skill `references/` files with 24 section-scoped "read this before doing that" pointers at each excision point. Step sequences, quality-gate criteria, Task/subagent_type dispatch instructions, and the Completion Card block stay in the body verbatim — zero content loss, verified byte-level in both directions; orchestrator gates/contract/Card untouched.
+
+### Fixed
+- **Dead config key removed** — `min_sentence_variety_score` in `config/scoring-thresholds.json`'s `phase_6_5_humanizer` block was orphaned since burstiness went advisory-only in v3.19.0; removed.
+- **Test regex hardening** — the `DATED_LINE` guard in `tests/test_pipeline_graph.py` (exempts historical "**vX.Y.Z" prose from live-claim scans) now matches patch versions (`\d+\.\d+(?:\.\d+)?`), not just `major.minor`.
+- **Two new guard tests** — `test_link_counting.py` pins that markdown image syntax (`![alt](url)`) is excluded from internal-link counting; `test_client_site_graph.py` pins that the AI-detectability advisory rating stays wired end to end (reviewer scorecard → Completion Card → Phase 6.5 tell-scan).
+
+Tests 215 → **217**.
+
 ## [3.19.0] — 2026-08-07
 
 ### Added — Client-Site Intelligence
