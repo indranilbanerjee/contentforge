@@ -272,7 +272,7 @@ class TestNoParallelBatchClaims(unittest.TestCase):
     # ABOVE the version-history heading). Mirrors TestPatternCountBranding's
     # DATED_LINE below — not a literal "**v3.1" prefix, which only matched
     # the current release by the coincidence that "3.19" starts with "3.1".
-    DATED_LINE = re.compile(r"\*\*v\d+\.\d+")
+    DATED_LINE = re.compile(r"\*\*v\d+\.\d+(?:\.\d+)?")
 
     def test_no_skill_or_agent_advertises_parallel_batch(self):
         # user-facing docs are scanned too — the README's skills table carried a

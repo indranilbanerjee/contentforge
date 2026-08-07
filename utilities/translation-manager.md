@@ -91,7 +91,7 @@ class TranslationResponse:
     brand_voice_rating: float        # Brand voice consistency (1-10)
     readability_score: float         # Target language readability metric value
     readability_grade_equivalent: str  # Grade level equivalent description
-    burstiness_score: float          # Sentence variety (target: >= 0.7)
+    burstiness_score: float          # Sentence variety (advisory metric since v3.19.0 — no target)
     ai_patterns_detected: int        # Target language AI patterns found (target: 0)
 
     # Citation Integrity

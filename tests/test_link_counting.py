@@ -40,6 +40,16 @@ class TestRenderedLinkCounts(unittest.TestCase):
         self.assertEqual(counts["inline_links_outbound"], 1)
         self.assertEqual(counts["internal_links_total"], 3)
 
+    def test_image_links_not_counted(self):
+        # Markdown image syntax ![alt](url) must not be miscounted as a link —
+        # the (?<!\!) lookbehind in _INLINE_MD_LINK excludes it.
+        md = """# Title
+![chart](https://brand.example/img.png)
+Body text with a real link [a](https://brand.example/x).
+"""
+        counts = gdocx.count_rendered_links(md, brand_domain="brand.example")
+        self.assertEqual(counts["inline_links_internal"], 1)
+
 
 if __name__ == "__main__":
     unittest.main()

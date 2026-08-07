@@ -44,6 +44,16 @@ class TestHarvestChain(unittest.TestCase):
     def test_research_brief_template_has_recon_section(self):
         self.assertIn("Client Site Reconnaissance", read("templates/research-brief.md"))
 
+    def test_ai_detectability_surfacing_pinned(self):
+        # v3.19.0's AI-detectability advisory rating must stay wired end to
+        # end: reviewer scorecard -> Completion Card directive -> Phase 6.5
+        # tell-scan that produces it.
+        self.assertIn("AI-detectability (advisory)", read("agents/07-reviewer.md"))
+        skill_text = read("skills/contentforge/SKILL.md")
+        self.assertIn("AI-detectability", skill_text)
+        self.assertIn("MUST append", skill_text)
+        self.assertIn("AI-TELL SCAN", read("agents/06.5-humanizer.md"))
+
 
 if __name__ == "__main__":
     unittest.main()

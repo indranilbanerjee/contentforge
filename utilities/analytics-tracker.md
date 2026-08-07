@@ -510,13 +510,15 @@ the standard 25-30 minute estimate.
 
 ### Pattern: Humanizer Improves Reader Engagement Proxy
 ```
-Insight: Pieces with burstiness scores above 0.75 (Phase 6.5)
+Insight: Pieces whose AI-tell scan (Phase 6.5) rated LOW
 consistently score higher on readability dimension (+0.6 pts
-avg) compared to pieces at minimum threshold (0.7).
+avg) compared to pieces rated MODERATE or HIGH.
 
-Recommendation: Consider raising burstiness target from 0.7
-to 0.75 in config/scoring-thresholds.json for content types
-where readability is high priority (blogs, FAQs).
+Recommendation: Prioritize the grounding pass and review any
+sentences flagged by the AI-tell scan before publishing,
+especially for content types where readability is high
+priority (blogs, FAQs). Burstiness is advisory only (no
+target) as of v3.19.0.
 ```
 
 ---
