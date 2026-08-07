@@ -51,49 +51,9 @@ Use `/contentforge:cf-style-guide` when:
 
 ## How to Use
 
-### Import from URL
-```
-/contentforge:cf-style-guide AcmeMed --source=https://acmemed.com/brand-guidelines
-```
+Basic invocation: `/contentforge:cf-style-guide AcmeMed --source=<url-or-path-or-manual> [--scope=voice|terminology|guardrails|all] [--update]`
 
-### Import from Document
-```
-/contentforge:cf-style-guide AcmeMed --source=./AcmeMed-Style-Guide.docx
-```
-
-### Import from Notion Page
-```
-/contentforge:cf-style-guide AcmeMed --source=https://www.notion.so/acme/Brand-Guidelines-abc123
-```
-
-### Import Only Terminology
-```
-/contentforge:cf-style-guide AcmeMed --source=https://acmemed.com/terminology --scope=terminology
-```
-
-### Import Only Guardrails (Compliance)
-```
-/contentforge:cf-style-guide AcmeMed --source=./compliance-requirements.pdf --scope=guardrails
-```
-
-### Manual Input (No Document)
-```
-/contentforge:cf-style-guide AcmeMed --source=manual
-```
-**Prompts you for:**
-1. Voice & Tone (select from presets or describe)
-2. Formality level (1-5)
-3. Personality traits (3-5 adjectives)
-4. Approved terminology (comma-separated)
-5. Banned terminology (comma-separated)
-6. Guardrails and compliance requirements
-7. Author profiles (name, title, credentials, profile URL — or explicitly skip for authorless output)
-
-### Update Existing Profile
-```
-/contentforge:cf-style-guide AcmeMed --source=https://acmemed.com/updated-guidelines --update
-```
-Merges new information into the existing profile without overwriting unchanged fields.
+**Before running this skill, read `references/cli-usage-examples.md` (in this skill's directory)** for the full set of worked examples — URL import, document import, Notion import, scope-limited imports, manual-input mode (with its 7-item prompt list), and profile-update mode.
 
 ## What Happens
 
@@ -161,27 +121,7 @@ If local-mode (no Cowork config), skip — the profile is fine where it is on th
 - Provide examples and presets for each field
 - Allow free-text input for complex requirements
 
-**Example:**
-```
-Style Guide Loaded
-================================================================
-
-Source: https://acmemed.com/brand-guidelines
-Page Title: "AcmeMed Brand Voice & Content Guidelines"
-Sections Found: 8
-  1. Brand Overview
-  2. Voice & Tone
-  3. Writing Style
-  4. Approved Terminology
-  5. Banned Terms & Phrases
-  6. Regulatory Compliance
-  7. Visual Identity (skipped — not relevant to content)
-  8. Social Media Guidelines
-
-Content Length: 4,200 words
-Parsing: Complete
-================================================================
-```
+**For a sample "Style Guide Loaded" console transcript, read `references/extraction-example-transcripts.md` (in this skill's directory), section "Step 1 — Load Style Guide Source".**
 
 ### Step 2: Extract Voice Characteristics (1-2 minutes)
 
@@ -216,37 +156,7 @@ Analyze the style guide to identify voice and tone patterns.
 - Use of statistics and data
 - Storytelling style
 
-**Example Output:**
-```
-Voice Characteristics Extracted
-================================================================
-
-Tone:
-  Primary: Authoritative
-  Secondary: Empathetic
-  By Content Type:
-    Article: Authoritative + data-driven
-    Blog: Authoritative + approachable
-    Whitepaper: Authoritative + academic
-
-Formality: 4 (Formal)
-  No contractions in articles/whitepapers
-  Contractions OK in blog posts only
-
-Personality Traits: data-driven, trustworthy, innovative, empathetic, precise
-
-Writing Style:
-  Sentence Length: Medium (15-25 words average)
-  Paragraphs: 3-5 sentences
-  Voice: Active (90%+)
-  Person: Third person for articles, second person for blogs
-  Rhetorical Questions: Sparingly (1-2 per piece max)
-  Statistics: Heavy use, always cited
-  Storytelling: Patient stories as examples (anonymized)
-
-Confidence: 92% (style guide was explicit about most elements)
-================================================================
-```
+**For a sample extracted-voice transcript, read `references/extraction-example-transcripts.md` (in this skill's directory), section "Step 2 — Extract Voice Characteristics".**
 
 ### Step 3: Identify Terminology (1-2 minutes)
 
@@ -271,44 +181,7 @@ Parse approved and banned terminology from the style guide.
 - Terms allowed in some contexts but not others
 - Terms requiring disclaimers or qualifiers
 
-**Example Output:**
-```
-Terminology Extracted
-================================================================
-
-Approved Terms (47 total):
-  Brand Terms:
-    "AcmeMed" (never "Acme Med" or "ACMEMED")
-    "AcmeDiagnostics" (product name, always capitalized)
-    "AcmeCare Platform" (full name on first use, "the Platform" after)
-
-  Industry Terms:
-    "healthcare" (one word, not "health care")
-    "precision medicine" (preferred over "personalized medicine")
-    "clinical decision support" (preferred over "clinical AI")
-    "value-based care" (preferred over "value-driven care")
-
-  Acronyms:
-    "AI" — Artificial Intelligence (expand on first use)
-    "EMR" — Electronic Medical Record (expand on first use)
-    "HIPAA" — never expand (universally known in target audience)
-
-Banned Terms (23 total):
-  "revolutionary" — overpromising, use "innovative" instead
-  "breakthrough" — overpromising, use "advancement" instead
-  "cure" — regulatory risk, use "treatment" or "therapy"
-  "guaranteed" — compliance violation in healthcare
-  "CompetitorX", "CompetitorY" — no competitor mentions
-  "patients love it" — unsubstantiated claim
-  "cutting-edge" — cliche, use specific technology descriptions
-  ... (16 more)
-
-Conditional Terms (8 total):
-  "FDA-cleared" — only for products with actual FDA clearance
-  "clinically validated" — only with citation to clinical trial
-  "reduces costs" — only with specific percentage and source
-================================================================
-```
+**For a sample extracted-terminology transcript, read `references/extraction-example-transcripts.md` (in this skill's directory), section "Step 3 — Identify Terminology".**
 
 ### Step 4: Parse Compliance Requirements (1-2 minutes)
 
@@ -339,42 +212,7 @@ Extract guardrails, disclaimers, and regulatory requirements.
 - Disability-inclusive language
 - Age-appropriate content guidelines
 
-**Example Output:**
-```
-Compliance Requirements Extracted
-================================================================
-
-Required Disclaimers (4):
-  1. All articles: "This content is for informational purposes only
-     and does not constitute medical advice."
-  2. Product mentions: "AcmeDiagnostics is pending FDA clearance
-     for [specific use case]." (update status quarterly)
-  3. Patient stories: "Patient names and identifying details have
-     been changed to protect privacy."
-  4. Clinical data: "Results may vary. Clinical outcomes depend
-     on individual patient factors."
-
-Prohibited Claims (6):
-  1. No efficacy claims without peer-reviewed citation
-  2. No "FDA-approved" (use "FDA-cleared" for 510(k) devices)
-  3. No cost savings claims without specific study reference
-  4. No comparison claims vs competitors
-  5. No absolute claims ("best", "only", "first") without qualification
-  6. No patient testimonials as efficacy evidence
-
-Compliance Rules:
-  HIPAA: Never include PHI (Protected Health Information)
-  FDA: Follow 510(k) promotional guidelines for device content
-  FTC: Disclose any sponsored or partnership content
-
-Sensitivity Guidelines:
-  Language: Person-first (e.g., "patients with diabetes" not "diabetics")
-  Imagery descriptions: Diverse, inclusive, respectful
-  Avoid: Military metaphors for disease ("battle cancer", "fight disease")
-
-Confidence: 96% (compliance section was highly structured)
-================================================================
-```
+**For a sample extracted-compliance transcript, read `references/extraction-example-transcripts.md` (in this skill's directory), section "Step 4 — Parse Compliance Requirements".**
 
 ### Step 5: Generate Brand Profile JSON (1 minute)
 
@@ -382,103 +220,9 @@ Create the structured JSON profile.
 
 **Schema — follow `config/brand-registry-template.json` exactly.** Its top-level sections are:
 `brand_name`, `industry`, `company_info`, `voice`, `terminology`, `citation_rules`, `guardrails`, `content_patterns`, `seo_preferences`, `target_audience`, `quality_thresholds`, `tracking`, `google_integration`, `knowledge_vault_config`, `data_sources`, `output_preferences`, `visual_identity`, `content_pillars`, `competitor_analysis`, `notification_preferences`, `metadata`.
-Fill the sections your import scope covers; leave the rest as template defaults. The excerpt below shows only the sections this skill populates — it is not the full schema.
+Fill the sections your import scope covers; leave the rest as template defaults.
 
-**SYNTHETIC EXAMPLE (excerpt):**
-```json
-{
-  "brand_name": "AcmeMed",
-  "industry": "Healthcare",
-
-  "voice": {
-    "primary_tone": "authoritative",
-    "secondary_tone": "empathetic",
-    "formality_level": 4,
-    "personality_traits": ["data-driven", "trustworthy", "innovative", "empathetic", "precise"],
-    "tone_by_content_type": {
-      "article": "authoritative + data-driven",
-      "blog": "authoritative + approachable",
-      "whitepaper": "authoritative + academic",
-      "faq": "clear + helpful",
-      "research_paper": "academic + precise",
-      "video_script": "energetic + spoken-word",
-      "case_study": "narrative + evidence-led",
-      "newsletter": "conversational + direct"
-    }
-  },
-
-  "content_patterns": {
-    "sentence_length": "medium",
-    "paragraph_length": "3-5 sentences",
-    "active_voice_target": 90,
-    "person": {
-      "article": "third",
-      "blog": "second",
-      "whitepaper": "third"
-    },
-    "contractions": {
-      "article": false,
-      "blog": true,
-      "whitepaper": false
-    },
-    "rhetorical_questions": "sparingly",
-    "statistics_usage": "heavy",
-    "storytelling": "patient stories, anonymized"
-  },
-
-  "terminology": {
-    "approved": [
-      {"term": "AcmeMed", "note": "Never 'Acme Med' or 'ACMEMED'"},
-      {"term": "healthcare", "note": "One word, not 'health care'"},
-      {"term": "precision medicine", "note": "Preferred over 'personalized medicine'"}
-    ],
-    "banned": [
-      {"term": "revolutionary", "replacement": "innovative"},
-      {"term": "breakthrough", "replacement": "advancement"},
-      {"term": "cure", "replacement": "treatment or therapy"},
-      {"term": "guaranteed", "note": "Compliance violation in healthcare"}
-    ],
-    "conditional": [
-      {"term": "FDA-cleared", "condition": "Only for products with actual FDA clearance"},
-      {"term": "clinically validated", "condition": "Only with citation to clinical trial"}
-    ],
-    "acronyms": [
-      {"acronym": "AI", "expansion": "Artificial Intelligence", "expand_on_first_use": true},
-      {"acronym": "HIPAA", "expansion": "Health Insurance Portability and Accountability Act", "expand_on_first_use": false}
-    ]
-  },
-
-  "guardrails": {
-    "required_disclaimers": [
-      {"context": "all_articles", "text": "This content is for informational purposes only and does not constitute medical advice."},
-      {"context": "product_mentions", "text": "AcmeDiagnostics is pending FDA clearance for [specific use case]."}
-    ],
-    "prohibited_claims": [
-      "No efficacy claims without peer-reviewed citation",
-      "No 'FDA-approved' — use 'FDA-cleared' for 510(k) devices",
-      "No cost savings claims without specific study reference"
-    ],
-    "compliance": {
-      "hipaa": "Never include PHI",
-      "fda": "Follow 510(k) promotional guidelines",
-      "ftc": "Disclose sponsored or partnership content"
-    },
-    "sensitivity": {
-      "language": "person-first",
-      "avoid_metaphors": ["military metaphors for disease"],
-      "inclusivity": "diverse, respectful, representative"
-    }
-  },
-
-  "metadata": {
-    "industry": "Healthcare",
-    "sub_industry": "Health Technology / Medical Devices",
-    "target_audiences": ["Healthcare Executives", "Clinical Decision Makers", "Health System IT Leaders"],
-    "content_types_supported": ["article", "blog", "whitepaper", "faq", "research_paper", "video_script", "case_study", "newsletter"],
-    "import_confidence": 94
-  }
-}
-```
+**Before generating the brand profile JSON, read `references/brand-profile-json-example.md` (in this skill's directory) for a full synthetic excerpt (voice, content_patterns, terminology, guardrails, metadata) — it is not the full schema, and covers all 8 registered content types (article, blog, whitepaper, faq, research_paper, video_script, case_study, newsletter).**
 
 ### Step 6: Save and Validate (1 minute)
 
@@ -493,33 +237,7 @@ Fill the sections your import scope covers; leave the rest as template defaults.
 - Terminology lists are non-empty
 - Pipeline compatibility test: run a mock Phase 5 (brand compliance check) with a test paragraph
 
-**Example Validation:**
-```
-Brand Profile Validation
-================================================================
-
-Profile: AcmeMed v1.0.0
-  JSON Valid: Yes
-  Required Fields: 12/12 present
-  Voice Complete: Yes (tone, formality, personality, style)
-  Terminology: 47 approved, 23 banned, 8 conditional
-  Guardrails: 4 disclaimers, 6 prohibited claims, 3 compliance rules
-  Acronyms: 12 defined
-
-Pipeline Compatibility Test:
-  Phase 3 (Drafting): Can apply voice settings — PASS
-  Phase 5 (Brand Compliance): Can check terminology — PASS
-  Phase 6 (SEO): No conflicts with SEO settings — PASS
-  Phase 6.5 (Humanizer): Can apply personality — PASS
-
-Profile Saved:
-  Local: ~/.claude-marketing/acmemed/Brand-Guidelines/AcmeMed-brand-profile.json
-  Drive (Cowork mode): <drive_root>/_brands/acmemed/profile.json
-  Cache Hash: SHA256:a3f2c1... (for fast cache lookup)
-
-Status: READY — Profile can be used with /contentforge:create-content --brand=AcmeMed
-================================================================
-```
+**For a sample validation transcript, read `references/extraction-example-transcripts.md` (in this skill's directory), section "Step 6 — Save and Validate".**
 
 If the imported style guide reveals a brand website that the profile does not yet carry, tell the user to re-run /contentforge:brand-setup so the Site Harvest can populate brand_pages and brand_facts — the SEO and research phases depend on them.
 
@@ -540,32 +258,7 @@ python scripts/detect-drive-mcp.py
 - **If `detect-drive-mcp.py` returns `recommended_path: "mcp"`:** confirm the detected connector and go straight to the MCP-based Drive route — skip the service-account flow.
 - **If it returns `recommended_path: "service_account"`:** confirm the found credentials (`client_email`) and use the service-account route.
 - **If both are present:** ask which to use; default to MCP (simpler auth, Cowork-compatible).
-- **If `recommended_path: "none"` in local Claude Code:** show the three-option menu below (Local is a fine default on a real host filesystem).
-
-**Present the user with three options (only when G.0 found nothing):**
-
-```
-Step G: Tracking & Delivery Backend
-================================================================
-
-Choose where ContentForge tracks quality scores and delivers
-output files for this brand:
-
-  1. Google Sheets + Drive (Recommended if you have Google Workspace)
-     Tracks in Google Sheets, delivers .docx to Google Drive
-     Requires: Service account credentials (~5 min setup)
-
-  2. Airtable (Recommended for simplicity)
-     Tracks in Airtable, delivers .docx as record attachments
-     Requires: Personal Access Token (~2 min setup)
-
-  3. Local (No setup required)
-     Tracks in local JSON, delivers .docx to local filesystem
-     No auth needed, but no cloud access or collaboration
-
-Your choice: ___
-================================================================
-```
+- **If `recommended_path: "none"` in local Claude Code:** show the three-option menu (Local is a fine default on a real host filesystem) — **read `references/tracking-backend-examples.md` (in this skill's directory), section "Three-option menu presentation", for the exact menu text to present (only when G.0 found nothing).**
 
 **If user picks Google Sheets + Drive:**
 
@@ -637,26 +330,7 @@ Your choice: ___
   Airtable anytime by running /contentforge:cf-switch-backend.
   ```
 
-**Example Output:**
-```
-Tracking Backend Configured
-================================================================
-
-Backend: Airtable
-Base ID: appXXXXXXXXXXXXXX
-Table: ContentForge Tracking (created with 20-column schema)
-Token: AIRTABLE_TOKEN detected
-
-Tracking table initialized with columns:
-  requirement_id, brand, content_type, title, target_audience,
-  word_count_target, priority, status, created_at, started_at,
-  completed_at, quality_score, content_quality, citation_integrity,
-  brand_compliance, seo_performance, readability, actual_word_count,
-  output_file (Attachment), notes
-
-To switch backends later: /contentforge:cf-switch-backend
-================================================================
-```
+**For a sample "Tracking Backend Configured" transcript, read `references/tracking-backend-examples.md` (in this skill's directory), section "Example Output (backend configured)".**
 
 ### Step 7: Audience Personas
 
@@ -754,35 +428,7 @@ The style guide import produces:
 
 ## Output Example
 
-```
-Style Guide Import Complete
-================================================================
-
-Brand: AcmeMed
-Source: https://acmemed.com/brand-guidelines
-Import Scope: All (voice + terminology + guardrails)
-Processing Time: 6 minutes
-
-Results:
-  Voice: Authoritative + Empathetic, Formality 4/5
-  Personality: data-driven, trustworthy, innovative, empathetic, precise
-  Terminology: 47 approved, 23 banned, 8 conditional, 12 acronyms
-  Guardrails: 4 disclaimers, 6 prohibited claims, 3 compliance rules
-  Audience: {persona_title} at {company_size} ({reading_level})
-  Competitors: {count} competitors analyzed
-  Content Pillars: {count} pillars defined
-  Visual Identity: {primary_color} / {secondary_color} | Style: {image_style}
-  Import Confidence: 94%
-
-Validation: PASS (all pipeline phases compatible)
-
-Saved to:
-  Local: ~/.claude-marketing/acmemed/Brand-Guidelines/AcmeMed-brand-profile.json
-  Drive (Cowork mode): <drive_root>/_brands/acmemed/profile.json
-
-Use with: /contentforge:create-content --brand=AcmeMed
-================================================================
-```
+**Before presenting the final completion summary to the user, read `references/extraction-example-transcripts.md` (in this skill's directory), section "Final pipeline completion transcript (Output Example)" — reproduce its shape with this run's actual values.**
 
 ## MCP Integrations
 
@@ -795,25 +441,7 @@ Without MCP connections, profiles are saved to the canonical local path `~/.clau
 
 ## Troubleshooting
 
-### "Could not extract voice characteristics"
-**Cause:** Style guide doesn't have explicit voice/tone section, or the page structure is too unstructured.
-**Solution:** Use `--source=manual` to provide voice characteristics interactively, then import terminology and guardrails from the document separately.
-
-### "0 approved terms found"
-**Cause:** Terminology is embedded in prose rather than structured lists.
-**Solution:** Check if the style guide has a terminology table or glossary section. If not, use `--source=manual --scope=terminology` to add terms interactively.
-
-### "URL fetch failed"
-**Cause:** Page requires authentication (private Notion, Google Doc not published, login-required page).
-**Solution:** If the page is in Notion, use the Notion MCP to access it instead of URL fetch. For Google Docs, use the published web link (File > Share > Publish to Web). For login-required pages, download the page as .docx or .pdf and use the document source.
-
-### "Profile validation failed — Phase 5 incompatible"
-**Cause:** Terminology lists contain conflicts (same term in approved and banned lists) or the profile JSON is malformed.
-**Solution:** Review the profile JSON for conflicts. Use `--update` mode to fix specific fields without reimporting the entire guide.
-
-### "Import confidence below 70%"
-**Cause:** Style guide was vague, lacked structure, or covered primarily visual identity (not content voice).
-**Solution:** Supplement with manual input for low-confidence sections. The profile will flag which sections have low confidence so you know what to manually verify.
+**Hitting an error during import? Read `references/troubleshooting.md` (in this skill's directory)** for the five documented failure modes (voice extraction, zero terms found, URL fetch failure, Phase 5 validation failure, low import confidence) and their causes/solutions.
 
 ## Limitations
 
