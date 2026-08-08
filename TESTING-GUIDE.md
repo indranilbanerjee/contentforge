@@ -1,4 +1,4 @@
-# ContentForge Testing Guide — v3.8.0
+# ContentForge Testing Guide — v3.19.3
 
 Complete testing guide for the ContentForge enterprise content production plugin.
 
@@ -71,8 +71,8 @@ rm -rf ~/.claude-marketing/
 
 **Expected Results:**
 - [ ] Marketplace loads without errors
-- [ ] ContentForge listed with version 3.8.0
-- [ ] Description mentions "13 agents, 19 skills, 10 industry knowledge packs"
+- [ ] ContentForge listed with the version in `.claude-plugin/plugin.json`
+- [ ] Description mentions "13 agents, 22 skills, 10 industry knowledge packs"
 - [ ] Installation completes without rollback
 - [ ] No "Host key verification failed" error (uses HTTPS, not SSH)
 
@@ -90,29 +90,27 @@ rm -rf ~/.claude-marketing/
 
 **Expected:** Same results as marketplace installation
 
-### 2.3 Session Start Verification
+### 2.3 Post-Install Verification
 
-**Test:** Start a new session after installation
+ContentForge ships **zero active hooks** (since v3.9.0), so nothing runs and no banner
+appears when a session starts. That silence is the correct result — verify the install
+explicitly instead.
+
+**Test:** Run `/contentforge:cf-help` in a new session.
 
 **Expected Results:**
-- [ ] SessionStart hook fires — setup.py runs without errors
-- [ ] Version banner displays:
-  ```
-  ✓ ContentForge v3.8 loaded
-
-  Quick Start:
-    1. /contentforge:cf-style-guide — Set up brand profile (do this first, 5 min)
-    2. /contentforge  — Create content (20-30 min per piece)
-    3. /contentforge:cf-help        — Full guide, examples, troubleshooting
-
-  Already have a brand? Jump straight to /contentforge [topic]
-
-  Commands: /batch-process | /content-refresh | /contentforge:social-adapt | /contentforge:publish
-  Status:   /contentforge:cf-integrations | /contentforge:cf-analytics
-  ```
-- [ ] 7 commands visible in Customize panel (create-content, content-brief, social-adapt, publish, translate, brand-setup, audit-content)
-- [ ] 19 skills visible in Skills section
+- [ ] Nothing ran automatically on session start (no banner, no script output)
+- [ ] `cf-help` prints live version, agent, skill and command counts read off disk
+- [ ] Version shown matches `.claude-plugin/plugin.json`
+- [ ] 9 commands visible in Customize panel (create-content, content-brief, social-adapt, publish, translate, brand-setup, audit-content, resume, output-folder)
+- [ ] 22 skills visible in Skills section
 - [ ] 13 agents registered (check for no frontmatter errors in logs)
+
+For a raw report to paste into a bug ticket:
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py --section all-with-environment --format text
+```
 
 ### 2.4 Plugin Structure Verification
 
@@ -120,14 +118,14 @@ rm -rf ~/.claude-marketing/
 
 **Expected file counts:**
 - [ ] `agents/` — 13 files (01 through 11 + 03.5 + 06.5)
-- [ ] `commands/` — 7 files
-- [ ] `skills/` — 19 skill directories, each with SKILL.md
-- [ ] `scripts/` — 8 files (setup.py, connector-status.py, sheets-tracker.py, drive-uploader.py, pipeline-tracker.py, airtable-tracker.py, local-tracker.py, backend-migrator.py)
+- [ ] `commands/` — 9 files
+- [ ] `skills/` — 22 skill directories, each with SKILL.md
+- [ ] `scripts/` — 18 Python files (no `setup.py`; it was removed with the hooks in v3.9.0)
 - [ ] `config/` — 7 config files + `industries/` subdirectory with 10 JSON packs
-- [ ] `templates/` — 10 template files
+- [ ] `templates/` — 14 template files
 - [ ] `utilities/` — 6 utility files
-- [ ] `.mcp.json` — 9 HTTP connectors
-- [ ] `hooks/hooks.json` — 2 hook events (SessionStart, PreToolUse)
+- [ ] `.mcp.json` — ships **empty** on purpose (zero auto-connecting servers); the opt-in catalog is `.mcp.json.connectors-reference`
+- [ ] `hooks/hooks.json` — `"hooks": {}` (zero active hooks by design)
 
 ---
 
@@ -238,7 +236,7 @@ The 10-phase pipeline is the core product. Test with different content types and
 
 ## 4. Command Tests
 
-Test all 7 commands visible in the Customize panel.
+Test all 9 commands visible in the Customize panel.
 
 ### 4.1 `/brand-setup`
 
@@ -328,7 +326,7 @@ Test all 7 commands visible in the Customize panel.
 
 ## 5. Skill Tests
 
-Test each of the 19 skills individually.
+Test each of the 22 skills individually.
 
 ### Core Pipeline Skills
 
@@ -372,14 +370,14 @@ Test each of the 19 skills individually.
 | 16 | `/contentforge:cf-style-guide` | "Import style guide from [URL]" | Extracts voice, terminology, guardrails |
 | 17 | `/contentforge:cf-template` | "Create a case study template" | Custom content type beyond built-in 5 |
 | 18 | `/contentforge:cf-switch-backend` | `/contentforge:cf-switch-backend airtable` | Validates target, offers migration, updates brand profile |
-| 19 | `/contentforge:cf-help` | (no argument) | Shows v3.8.0, 13 agents, 19 skills, 9 connectors, 10-phase pipeline |
+| 19 | `/contentforge:cf-help` | (no argument) | Shows v3.19.2, 13 agents, 22 skills, 9 connectors, 10-phase pipeline |
 
 **`/contentforge:cf-help` Argument Tests:**
 
 | Argument | Expected Output |
 |----------|----------------|
 | `--pipeline` | 10-phase pipeline with timing and quality gates |
-| `--skills` | All 19 skills listed with descriptions |
+| `--skills` | All 22 skills listed with descriptions |
 | `--brand` | Brand profile setup methods |
 | `--examples` | Example workflows from brief to publish |
 | `--troubleshoot` | Common issues and solutions |
@@ -568,42 +566,53 @@ Verify `config/brand-registry-template.json`:
 |-------------|------|
 | `social-platform-specs.json` | Verify character limits match current platform specs |
 | `multilingual-patterns.json` | Verify language codes and brand voice patterns |
-| `content-type-defaults.json` | Verify word count ranges per content type |
+| `scoring-thresholds.json` (`default.word_counts`) | Verify word count ranges per content type |
 
 ---
 
 ## 8. Hook Tests
 
-### 8.1 SessionStart Hook
+> **What changed in v3.9.0:** ContentForge ships **no active hooks**. Earlier versions registered
+> SessionStart, PreToolUse, SubagentStart and Stop hooks that fired on *every* Claude Code operation
+> in *every* project, including unrelated ones. That work now lives where it belongs — hallucination
+> and citation checks in the Phase 2.5 scientific-validator and Phase 7 reviewer, brand-voice rules
+> in the agent files, and pass/fail thresholds in the Quality Gate criteria.
+>
+> These tests therefore verify that nothing fires globally, which is the intended behaviour.
 
-**Test:** Start a new session
+### 8.1 No global hooks are registered
+
+**Test:** Install the plugin, then work in an unrelated project (not content production).
 
 **Expected:**
-- [ ] setup.py runs without errors
-- [ ] Version banner shows "v3.4"
-- [ ] All 6 skill shortcuts listed in banner
-- [ ] No Python errors or tracebacks
+- [ ] `hooks/hooks.json` contains an empty `"hooks": {}` object
+- [ ] No ContentForge output appears on session start
+- [ ] Nothing from ContentForge runs on Write/Edit in an unrelated repo
+- [ ] No added latency or token cost outside ContentForge workflows
 
-### 8.2 PreToolUse — Hallucination Detection (Write/Edit)
+### 8.2 The prior hook set is documented, not active
 
-**Test:** Generate content and watch for the hallucination check during Write/Edit operations
+**Test:** Read `hooks/hooks-reference.example.json`.
 
-**Expected behavior:**
-- [ ] Hook fires on Write/Edit of content deliverables
-- [ ] Hook SKIPs for non-content files (plugin config, scripts, etc.)
+**Expected:**
+- [ ] Documents the pre-v3.9.0 hooks with a rationale note for each
+- [ ] Is **not** loaded by the plugin — copying an entry into `hooks/hooks.json` is an explicit opt-in
+- [ ] Re-enabling one entry does not re-enable the others
 
-**Test with intentionally bad content — the hook should catch all three:**
+### 8.3 Hallucination detection still happens — inside the pipeline
 
-| Bad Content | Expected Detection |
-|-------------|-------------------|
-| "Studies show 87% of companies..." (no source) | CRITICAL — unattributed statistic |
-| "Visit https://example.com/dashboard" | CRITICAL — placeholder URL |
-| "The #1 leading solution in the market" | WARNING — unsubstantiated superlative |
+The checks the old PreToolUse hook performed now run where they can see the verified research
+ledger, so test them through a pipeline run rather than at the tool boundary.
+
+| Bad content in the draft | Caught by | Expected |
+|---|---|---|
+| "Studies show 87% of companies..." (no source) | Phase 2.5 scientific-validator | Flagged — claim absent from the verified ledger |
+| "Visit https://example.com/dashboard" | Phase 7 reviewer, Gate 7 | Hard FAIL — dead or placeholder URL |
+| "The #1 leading solution in the market" | Phase 7 reviewer | Flagged — unsubstantiated superlative |
 
 **Additional checks:**
-- [ ] Fix suggestions provided for each flag
-- [ ] Severity levels correct (CRITICAL for stats/URLs in headlines, WARNING for body text)
-- [ ] Doesn't over-flag — legitimate cited statistics pass through
+- [ ] Legitimate cited statistics pass through without flags
+- [ ] Each flag names the phase and gate that raised it
 
 ---
 
@@ -855,8 +864,8 @@ Run this after any changes to verify nothing is broken.
 
 ### Skills & Commands
 
-- [ ] All 19 skills respond to invocation
-- [ ] All 7 commands appear in Customize panel
+- [ ] All 22 skills respond to invocation
+- [ ] All 9 commands appear in Customize panel
 - [ ] `/contentforge:cf-help` shows complete, accurate information
 - [ ] `/contentforge:cf-integrations` shows 9 HTTP connectors with correct status
 - [ ] Argument hints show in Skills UI when typing `/contentforge:` (spot check 3-5 skills)
@@ -884,8 +893,8 @@ Run this after any changes to verify nothing is broken.
 - [ ] `README.md` version = 3.8.0
 - [ ] Marketplace entry version = 3.8.0
 - [ ] `13 agents` in all descriptions (not 12)
-- [ ] `19 skills` in all descriptions (not 18)
-- [ ] `7 commands` in all descriptions
+- [ ] `22 skills` in all descriptions
+- [ ] `9 commands` in all descriptions
 - [ ] `9 HTTP connectors` in all descriptions (not 7)
 - [ ] `8 scripts` in all descriptions (not 4)
 - [ ] `10 industry knowledge packs` mentioned
@@ -904,7 +913,7 @@ If time is limited, test in this order:
 | 2 | Full pipeline — blog/technology | 3.1 | Validates core product |
 | 3 | Brand setup (all steps A-G) | 4.1 | Validates v3.8.0 Steps F + G |
 | 4 | Pipeline — pharma whitepaper | 3.2 | Validates industry knowledge packs |
-| 5 | All 19 skills invocation | 5 | Validates skill registration |
+| 5 | All 22 skills invocation | 5 | Validates skill registration |
 | 6 | `/contentforge:cf-help` with all arguments | 5 (#19) | Validates help accuracy |
 | 7 | Hook tests | 8 | Validates compliance guardrails |
 | 8 | Google integration | 10 | Validates Sheets/Drive scripts |

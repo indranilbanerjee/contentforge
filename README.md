@@ -6,22 +6,23 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 41-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.19.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.19.3-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-222%2F222%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3192)
+[![Tests](https://img.shields.io/badge/tests-224%2F224%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3193)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
+[![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v3.19.2 (August 8, 2026): the `references/` contract is now machine-enforced.** v3.19.1 moved worked examples and troubleshooting into 10 per-skill `references/` files, which made 24 section-scoped pointers the only route to that content — and nothing verified they still led anywhere. `tests/test_skill_references.py` adds five guards: every pointer resolves to a real file, every cited section matches a real heading, no reference file goes uncited, every pointer carries the `(in this skill's directory)` disambiguator that separates a skill's own `references/` from the plugin root's, and no content is duplicated between a skill body and its own reference. Each guard was verified to fire against a planted defect rather than assumed to work — and the duplication guard caught the one instance already shipped, `cf-style-guide`'s manual-input prompt list, now deduped with the skill body as canonical. 22 skills, 222 tests. [Full changelog →](CHANGELOG.md)
+> 🆕 **Just shipped — v3.19.3 (August 9, 2026): the documentation caught up with the repo.** `TESTING-GUIDE.md` had drifted to roughly the v3.8.0 state — it told reviewers to expect the skill and command counts from eleven releases ago, so a correct install "failed" the checklist, and it still tested a `SessionStart` hook and a `setup.py` removed back in v3.9.0. That guide is now accurate, section 8 verifies the intended zero-hook silence instead of a hook set that no longer exists, and `SUBMISSION.md` / `COWORK-GUIDE.md` counts are corrected. To stop this recurring, `tests/test_doc_counts.py` derives skill/agent/command counts from the filesystem and fails the build if any live doc disagrees — while leaving dated release entries at their ship-time numbers. 22 skills, 224 tests. [Full changelog →](CHANGELOG.md)
+>
+> <sub>Previously — **v3.19.2 (August 8, 2026): the `references/` contract is now machine-enforced.** v3.19.1 moved worked examples and troubleshooting into 10 per-skill `references/` files, which made 24 section-scoped pointers the only route to that content — and nothing verified they still led anywhere. `tests/test_skill_references.py` adds five guards: every pointer resolves to a real file, every cited section matches a real heading, no reference file goes uncited, every pointer carries the `(in this skill's directory)` disambiguator that separates a skill's own `references/` from the plugin root's, and no content is duplicated between a skill body and its own reference. Each guard was verified to fire against a planted defect rather than assumed to work — and the duplication guard caught the one instance already shipped, `cf-style-guide`'s manual-input prompt list, now deduped with the skill body as canonical. 22 skills, 222 tests. [Full changelog →](CHANGELOG.md)</sub>
 >
 > <sub>Previously — **v3.19.1 (August 7, 2026): advisory-era coherence + a context-efficiency refactor.** A follow-up sweep closed out the last references to the retired 0.7 burstiness target in `utilities/` and removed a dead scoring-config key, plus two new guard tests pin markdown-image exclusion in link counting and the AI-detectability rating's end-to-end wiring. The five largest SKILL.md bodies (`cf-style-guide`, `cf-social-adapt`, `cf-brief`, `contentforge`, `cf-analytics`) are slimmed to ≤500 lines per Agent Skills guidance — worked examples, templates, and troubleshooting moved into 10 new `references/` files with zero content loss, so every Agent Skills platform loads less context per skill. **Tests 215 → 217.** [Full changelog →](CHANGELOG.md)</sub>
->
-> <sub>Previously — **v3.19.0 (August 7, 2026): client-site intelligence + an internalized humanizer.** The researcher now recons the brand's own site first — `harvest-brand-pages.py` auto-crawls service/conversion/authority pages and extracts verbatim brand facts (one source URL per fact, inconsistencies flagged for you to resolve), and Phase 6 now guarantees real deep internal links even when `brand_pages` is thin, falling back to the Phase 1 inventory and a just-in-time sitemap fetch. The humanizer's detector knowledge is fully internalized (`references/ai-detection-signals.md`, catalog 35→41 patterns): the old "insert short punchy sentences" trick is gone, replaced by a Human-Expert Grounding Pass and content-derived variation, plus a deterministic, advisory `--ai-tell-scan` (LOW/MODERATE/HIGH) surfaced in the reviewer scorecard and Completion Card — never a publish gate. Also hardened Cowork/sandbox detection (layered signals, new uncertain tier) and fixed rendered-link telemetry. **Tests 173 → 215.** [Full changelog →](CHANGELOG.md)</sub>
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -59,7 +60,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ---
 
-## Supported surfaces (v3.19.2)
+## Supported surfaces (v3.19.3)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -564,6 +565,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
+**v3.19.3 (2026-08-09)** — **Documentation caught up with the repo.** `TESTING-GUIDE.md` had drifted to roughly the v3.8.0 state: it expected 19 skills and 7 commands (actual: 22 and 9), so a correct install "failed" its checklist; section 2.3 tested a `SessionStart` hook and a `setup.py` both removed in v3.9.0; section 2.4's file counts matched no directory; and section 8 tested a hook set that ships empty by design — it now verifies that intended silence and points at the Phase 2.5 validator and Phase 7 reviewer where those checks actually run. `SUBMISSION.md` corrected (19→22 skills, 7→9 commands, 16→10 industry knowledge packs). `COWORK-GUIDE.md` skill total corrected. New `tests/test_doc_counts.py` derives counts from the filesystem and fails the build if any live doc disagrees, while leaving dated release entries at their ship-time numbers (plant-check verified, mirrored into DMP and SocialForge). Sponsorship wiring added: `.github/FUNDING.yml`, README sponsor section, `SPONSORS.md`. No runtime behaviour change. **Tests 222 → 224.**
+
 **v3.19.2 (2026-08-08)** — **The `references/` contract is machine-enforced.** v3.19.1's refactor made 24 section-scoped pointers the only route to the relocated examples, transcripts, and troubleshooting, with nothing verifying they still resolved — a renamed heading or moved file would have failed silently at runtime. New `tests/test_skill_references.py` adds five guards: pointers resolve to real files, cited `section "…"` names match real headings, no reference file goes uncited, every pointer carries the `(in this skill's directory)` disambiguator, and no run of content lines is duplicated between a skill body and its own reference. Every guard was plant-check verified against a deliberately broken copy. The duplication guard caught the one instance v3.19.1 shipped — `cf-style-guide`'s 7-item manual-input prompt list existed verbatim in both the body and `references/cli-usage-examples.md`; the body copy is canonical (it carries the E-E-A-T authorless opt-out Step 5 depends on) and the reference now points at it. No runtime behaviour change. 22 skills. **Tests 217 → 222.**
 
 **v3.19.1 (2026-08-07)** — **Advisory-era coherence + context-efficiency refactor.** `utilities/translation-manager.md` and `utilities/analytics-tracker.md` no longer reference the retired 0.7 burstiness target (burstiness has been advisory-only since v3.19.0); the orphaned `min_sentence_variety_score` key removed from `config/scoring-thresholds.json`. Two new guard tests: markdown image syntax is confirmed excluded from internal-link counting, and the AI-detectability advisory rating's reviewer → Completion Card → Phase 6.5 wiring is pinned end to end. Context-efficiency refactor: the five largest SKILL.md bodies (`cf-style-guide`, `cf-social-adapt`, `cf-brief`, `contentforge`, `cf-analytics`) slimmed to ≤500 lines per Agent Skills guidance — verbatim example transcripts, templates, and troubleshooting moved into 10 new per-skill `references/` files with 24 read-when pointers; zero content loss, gates/contract/Completion Card untouched. 22 skills. **Tests 215 → 217.**
@@ -615,6 +618,20 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+## Sponsor this project
+
+This plugin is MIT-licensed, free to use commercially, and collects no telemetry. What
+sponsorship pays for is the unglamorous half of keeping it accurate: platform-API updates
+when a vendor ships a breaking version, model-registry refreshes when a model is retired,
+compliance passes when regulatory guidance moves, and issue triage.
+
+If it saves your team time, you can [sponsor the work](https://github.com/sponsors/indranilbanerjee).
+Sponsors from $25/mo are listed in [SPONSORS.md](SPONSORS.md).
+
+[![Sponsor](https://img.shields.io/badge/sponsor%20on%20GitHub-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
+
+---
 
 ## Support
 

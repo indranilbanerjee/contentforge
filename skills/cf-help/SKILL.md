@@ -184,7 +184,7 @@ table below references the user-visible behaviors.
 ## What this skill explicitly avoids
 
 - Quoting version numbers from this file body
-- Quoting count strings ("13 agents", "19 skills") from this file body
+- Quoting count strings (agent, skill or command counts) from this file body
 - Listing slash commands manually -- always derived from the JSON
 - Personalized advice for any specific user (this skill is for everyone)
 - Stale references to deprecated skill names (always use the names from JSON)

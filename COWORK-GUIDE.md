@@ -82,7 +82,7 @@ Back in Cowork chat, type `/` and start typing `contentforge`. The skill list sh
 /contentforge:cf-variants      — Generate A/B variations of headlines, hooks, CTAs
 /contentforge:cf-analytics     — Quality score trends and brand performance
 /contentforge:publish          — Publish to Webflow/WordPress, or export HTML
-  ... (21 skills total)
+  ... (22 skills total)
 ```
 
 **✅ Installation Complete!** Now set up your integrations.

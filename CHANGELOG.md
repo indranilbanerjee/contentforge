@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.19.3] — 2026-08-09
+
+### Fixed
+- **Documentation caught up with the repo.** `TESTING-GUIDE.md` had drifted to roughly the v3.8.0 state: it told reviewers to expect 19 skills and 7 commands (actual: 22 and 9), so a correct install "failed" the checklist. Section 2.3 tested a `SessionStart` hook and a `setup.py` that were both removed in v3.9.0, section 2.4 listed file counts that no longer matched any directory, and section 8 tested a hook set that ships empty by design — that section now verifies the intended silence instead, and points at the Phase 2.5 validator and Phase 7 reviewer where those checks actually run. `SUBMISSION.md` corrected (19→22 skills, 7→9 commands, and 16→10 industry knowledge packs — there are 10 packs in `config/industries/`). `COWORK-GUIDE.md` skill total corrected. One dead config reference in the testing guide repointed at `scoring-thresholds.json` (`default.word_counts`), which is where per-content-type word counts actually live.
+- **`cf-help` anti-pattern list no longer cites stale numbers** — its "do not quote counts from this file body" example used literal figures that had themselves gone out of date; now phrased generically.
+
+### Added
+- **`tests/test_doc_counts.py`** — live documentation may not advertise stale skill / agent / command counts. Ground truth is derived from the filesystem, so the only way to pass is to fix the prose. Historical release entries keep their ship-time numbers: a bold dated version tag opens a historical block that runs to the next `##` heading, and files banner-marked `HISTORICAL DOCUMENT` are skipped entirely, as are ranges (`3-5 skills`) and sentences about a sibling plugin. Plant-check verified. Mirrored into Digital Marketing Pro and SocialForge.
+- **Sponsorship wiring** — `.github/FUNDING.yml` (so the Sponsor button renders), a sponsor section and badge in the README, and `SPONSORS.md`.
+
+---
+
 ## [3.19.2] — 2026-08-08
 
 ### Added

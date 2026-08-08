@@ -23,7 +23,7 @@ ContentForge is an enterprise-grade content production system for marketing team
 
 **v3.9.4** fixed pipeline orchestration so every phase actually invokes its subagent via the Task tool rather than single-pass generating. **v3.9** rebuilt the Phase 6.5 humanizer around a 35-pattern AI-detection catalog (adapted from Wikipedia: Signs of AI Writing + blader/humanizer) with a self-critique meta-pass and optional voice calibration from a brand `writing_sample` field.
 
-13 agents, 19 skills, 7 commands, 16 opt-in HTTP MCP connectors. Multi-plugin coexistence by design (zero global hooks, zero auto-connecting MCP servers). Full Cowork compatibility — all connectors are HTTP, all Python scripts run natively in the Anthropic Desktop computer-use environment.
+13 agents, 22 skills, 9 commands, 16 opt-in HTTP MCP connectors. Multi-plugin coexistence by design (zero global hooks, zero auto-connecting MCP servers). Full Cowork compatibility — all connectors are HTTP, all Python scripts run natively in the Anthropic Desktop computer-use environment.
 
 ## 3. Category
 
@@ -81,7 +81,7 @@ Processes 10–50+ pieces in parallel across multiple brands with queue manageme
 
 ## 6. Testing account / sample data
 
-**Testing account:** Reviewers install from the public marketplace at `indranilbanerjee/neels-plugins` and use `config/brand-registry-template.json` as sample brand input. Knowledge-only mode (default) runs all 19 skills + 13 agents + 16 industry knowledge packs with zero external API keys beyond Claude. Optional Python deps: `python-docx` (auto-installed on first .docx generation), `c2pa-python` + `cryptography` (auto-installed on first `--c2pa-sign` invocation).
+**Testing account:** Reviewers install from the public marketplace at `indranilbanerjee/neels-plugins` and use `config/brand-registry-template.json` as sample brand input. Knowledge-only mode (default) runs all 22 skills + 13 agents + 10 industry knowledge packs with zero external API keys beyond Claude. Optional Python deps: `python-docx` (auto-installed on first .docx generation), `c2pa-python` + `cryptography` (auto-installed on first `--c2pa-sign` invocation).
 
 **Sample worked output:** the pharma whitepaper described in Use Case 1 above demonstrates the full pipeline output shape (humanized.md + reports.json + .docx with 4 appendices). Reviewers can reproduce by running `/contentforge:create-content` with the same topic.
 
