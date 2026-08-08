@@ -53,7 +53,7 @@ Use `/contentforge:cf-style-guide` when:
 
 Basic invocation: `/contentforge:cf-style-guide AcmeMed --source=<url-or-path-or-manual> [--scope=voice|terminology|guardrails|all] [--update]`
 
-**Before running this skill, read `references/cli-usage-examples.md` (in this skill's directory)** for the full set of worked examples — URL import, document import, Notion import, scope-limited imports, manual-input mode (with its 7-item prompt list), and profile-update mode.
+**Before running this skill, read `references/cli-usage-examples.md` (in this skill's directory)** for the full set of worked examples — URL import, document import, Notion import, scope-limited imports, manual-input mode, and profile-update mode.
 
 ## What Happens
 

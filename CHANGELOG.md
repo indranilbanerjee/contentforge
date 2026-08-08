@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- **`tests/test_skill_references.py` — the per-skill `references/` contract is now machine-enforced.** The v3.19.1 refactor made 24 section-scoped pointers the only route to the relocated examples, transcripts, and troubleshooting, and nothing verified they still led anywhere. Five guards: every `references/*.md` pointer resolves to a real file; every cited `section "…"` matches a real heading in that file; no reference file goes uncited; every pointer carries the `(in this skill's directory)` disambiguator that separates a skill's own `references/` from the plugin root's; and no run of content lines is duplicated between a skill body and its own reference. Each guard was verified to fire against a planted defect.
+
+### Fixed
+- **De-duplicated the manual-input prompt list** in `cf-style-guide`. v3.19.1 inlined the 7-item sequence back into the skill body (it carries the E-E-A-T authorless opt-out that Step 5 depends on) but left a verbatim copy in `references/cli-usage-examples.md` — two sources of truth, identical at ship time and free to drift on the next edit. The body copy is canonical; the reference now points at it. The new duplication guard keeps the pair from re-forming.
+
+---
+
 ## [3.19.1] — 2026-08-07
 
 ### Changed

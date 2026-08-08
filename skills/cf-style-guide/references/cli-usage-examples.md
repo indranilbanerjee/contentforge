@@ -32,14 +32,9 @@ skill body within the ~500-line Agent Skills guidance.
 ```
 /contentforge:cf-style-guide AcmeMed --source=manual
 ```
-**Prompts you for:**
-1. Voice & Tone (select from presets or describe)
-2. Formality level (1-5)
-3. Personality traits (3-5 adjectives)
-4. Approved terminology (comma-separated)
-5. Banned terminology (comma-separated)
-6. Guardrails and compliance requirements
-7. Author profiles (name, title, credentials, profile URL — or explicitly skip for authorless output)
+The prompt sequence this mode walks through is listed in the skill body under **"From Manual Input"**.
+That list is canonical — it carries the authorless opt-out that Step 5 (E-E-A-T) depends on — so it is
+deliberately not duplicated here.
 
 ### Update Existing Profile
 ```
