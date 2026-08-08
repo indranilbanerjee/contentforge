@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [3.19.2] — 2026-08-08
 
 ### Added
 - **`tests/test_skill_references.py` — the per-skill `references/` contract is now machine-enforced.** The v3.19.1 refactor made 24 section-scoped pointers the only route to the relocated examples, transcripts, and troubleshooting, and nothing verified they still led anywhere. Five guards: every `references/*.md` pointer resolves to a real file; every cited `section "…"` matches a real heading in that file; no reference file goes uncited; every pointer carries the `(in this skill's directory)` disambiguator that separates a skill's own `references/` from the plugin root's; and no run of content lines is duplicated between a skill body and its own reference. Each guard was verified to fire against a planted defect.

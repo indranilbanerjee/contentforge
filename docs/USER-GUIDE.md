@@ -1,6 +1,6 @@
-# ContentForge v3.19.1 — Complete User Guide
+# ContentForge v3.19.2 — Complete User Guide
 
-> **New in v3.19.1:** the five largest SKILL.md bodies (`cf-style-guide`, `cf-social-adapt`, `cf-brief`, `contentforge`, `cf-analytics`) are slimmed to ≤500 lines with worked examples and troubleshooting moved into new `references/` files — same content, leaner context load — plus an advisory-era coherence sweep finishes retiring the old 0.7 burstiness target from `utilities/`. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
+> **New in v3.19.2:** the per-skill `references/` files introduced in v3.19.1 are now covered by a test contract — every "read this before that step" pointer is verified to resolve to a real file and a real heading, no reference file is left uncited, and no content is allowed to live in both a skill body and its own reference. Nothing changes in how you run ContentForge; this keeps a future edit from quietly cutting a skill off from its own examples. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
 >
 > **New in v3.19.0:** `/contentforge:brand-setup` now auto-harvests your site — a robots-respecting crawler builds your `brand_pages` inventory and pulls verbatim `brand_facts` (one source URL per fact) in a single confirmation step, and the researcher recons your own site first before every piece. The humanizer's detector knowledge is now internalized (41-pattern catalog, a grounding-first rewrite, and an advisory `--ai-tell-scan`) instead of leaning on burstiness tricks. Plus hardened Cowork/sandbox detection. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
 >
@@ -1441,4 +1441,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.19.1** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, 41-pattern AI-detection humanizer, three-layer fact verification.
+**ContentForge v3.19.2** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, 41-pattern AI-detection humanizer, three-layer fact verification.
