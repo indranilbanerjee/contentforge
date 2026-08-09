@@ -523,7 +523,7 @@ Run `/contentforge:cf-environment` after install to see exactly what's available
 
 ## About the maintainer
 
-ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.in)** — a digital marketing practitioner shipping content production methodology as code. The 10-phase pipeline and 41-pattern AI-detection humanizer come from real client work producing long-form content at agency scale across regulated industries.
+ContentForge is built and maintained by **[Indranil “Neel” Banerjee](https://indranil.in)** — a builder and systems thinker with roots in information security and a second act across growth marketing, enterprise digital operations, and AI transformation. This repository is one public implementation of a broader focus on trustworthy AI execution: preserve context, make evidence inspectable, and keep people at consequential decision points.
 
 - 🌐 **Website:** [indranil.in](https://indranil.in)
 - 💼 **LinkedIn:** [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)
@@ -534,7 +534,7 @@ ContentForge is built and maintained by **[Indranil Banerjee](https://indranil.i
 - 🐛 **Bug reports:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
 - 🔒 **Security:** [Private Security Advisory](https://github.com/indranilbanerjee/contentforge/security/advisories/new) (see [SECURITY.md](SECURITY.md))
 
-If ContentForge saves your team time, [⭐ star the repo](https://github.com/indranilbanerjee/contentforge/stargazers). Sharing on **LinkedIn** ([linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)) or **X** ([@askneelnow](https://x.com/askneelnow)) helps too — tag me, I'll re-share.
+If ContentForge saves your team time, [⭐ star the repo](https://github.com/indranilbanerjee/contentforge/stargazers). Sharing it on **LinkedIn** or **X** helps people discover the work too.
 
 ---
 
