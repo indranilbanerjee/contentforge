@@ -104,12 +104,33 @@ where w_* are the applicable row's weights ÷ 100
 
 **Sub-components (average all for dimension score):**
 
-1. **Depth of Analysis** — Expert insights, synthesized sources, actionable frameworks, anticipates reader questions. Cross-reference Phase 1 research depth.
+1. **Depth of Analysis** — Expert insights, synthesized sources, actionable frameworks, anticipates reader questions. Cross-reference Phase 1 research depth. **Run the unanswered-questions check (below) as part of this sub-component.**
 2. **Originality & Differentiation** — Unique perspective vs top SERP competitors (from Phase 1 analysis). Did content deliver on the differentiation strategy from Research Brief?
 3. **Value to Target Audience** — Actionable, solves pain points, delivers on title promise. Check: intro promise vs content delivery, practical takeaways, target persona fit.
 4. **Structure & Coherence** — Logical flow, smooth transitions, outline adherence. Verified in Phase 5 but double-check outline execution.
 5. **Completeness** — All topics from outline covered comprehensively, no gaps.
 6. **Visual Asset Quality** — Check Phase 3.5 report: chart data verified by Phase 4, human-action markers complete with alt text, visual density meets content type target. If content type is FAQ or has minimal data, score as 8 (neutral).
+
+**The unanswered-questions check (feeds Depth of Analysis):**
+
+Read the piece as its target persona and write down the **top 3 questions the
+reader is left silently asking** — the objection the argument skips, the "but
+how much does it cost", the "does this apply to my case". A piece can be
+accurate, well-structured, and still leave its reader hanging; nothing else in
+this rubric catches that, because every other check looks at what the content
+*says* rather than what it *omits*.
+
+For each question, assign one disposition:
+
+| Disposition | When | Action recorded in the report |
+|---|---|---|
+| PATCH | The answer fits in a sentence or two | Quote the question + where to patch it |
+| FAQ | Real question, answer is self-contained | Add to the FAQ block — this is AEO material: questions readers are left asking are questions searchers type, and `cf-aeo-check` measures exactly that coverage |
+| FOLLOW-UP | Deserves its own piece | Log as a content-calendar candidate with the validated angle |
+
+A piece whose top-3 are all PATCH-grade scores Depth ≤ 6 until patched. Zero
+identifiable questions is not a pass — it usually means the review was not
+done from the persona's seat. Find the three.
 
 ```
 Content Quality = (Depth + Originality + Value + Structure + Completeness + Visual Assets) / 6

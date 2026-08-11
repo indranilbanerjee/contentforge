@@ -137,7 +137,29 @@ Regulatory Constraints: {count} | Audience Depth: {level}
 - **Articles/Blogs (150-250 words):** Hook (stat/question/problem) → Context (why now) → Value proposition (what reader learns) → Transition to body
 - **Whitepapers (400-600 words):** Executive summary → Problem statement → Current state → Purpose → Methodology note
 
-**Hook strategies:** Compelling statistic, provocative question, problem statement, or case study anecdote — choose based on content angle.
+**Open with the climax, not with setup.** Before writing the intro, find the
+single most surprising, valuable, or counter-intuitive **verified** finding in
+the Phase 2 research brief — the thing a reader would quote to a colleague.
+That is the opening. Context comes second, as a bridge back from it.
+
+Most drafts bury their best finding in section three and open with throat-
+clearing ("In today's fast-moving landscape..."). The reader decides whether to
+stay during the first two sentences; spending them on setup wastes the piece's
+strongest asset. The Phase 2 brief makes this mechanical rather than mystical:
+scan the verified-claims ledger, pick the claim with the biggest gap between
+what readers assume and what the evidence says, and lead with it.
+
+**Hook forms** (the climax expressed as): the bare finding stated plainly, the
+stat with its consequence attached, the case moment where it showed up, or the
+question ONLY if the piece genuinely answers it in full — never a rhetorical
+question as decoration.
+
+**Never open with:** manufactured urgency ("Now more than ever"), scene-setting
+generalities ("The world of X is changing fast"), a dictionary definition, or a
+promise of what the piece will cover ("In this article, we'll explore..." —
+that is a table of contents wearing a sentence's clothes). The climax must be a
+**verified claim from Phase 2** — an unverified but exciting opener is exactly
+the hallucination path Phase 4 exists to catch.
 
 **Requirements:**
 - Apply brand voice (formal/conversational/authoritative per profile)

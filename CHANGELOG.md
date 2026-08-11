@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.19.4] — 2026-08-12
+
+Three craft upgrades to the writing agents, extracted from a study of 17
+third-party creator skills — patterns taken as reference and reimplemented
+fresh against ContentForge's own pipeline, nothing copied.
+
+### Changed
+
+- **Humanizer (6.5): the Deletion Ledger.** Deletion is now first-class, not a
+  fallback — when a sentence carries no information, it is deleted rather than
+  rewritten into different filler of the same length. The Humanization Report
+  gains an editor-facing cut list: every phrase removed outright, quoted
+  verbatim with its pattern id and the reason. A rewrite can only be judged by
+  re-reading the whole piece; a cut list can be audited in seconds, and it
+  teaches the client's own writers what to stop typing.
+- **Drafter (3): open with the climax.** The intro no longer starts from a
+  menu of generic hook types. The drafter scans the Phase 2 verified-claims
+  ledger for the single most surprising finding — the thing a reader would
+  quote to a colleague — and leads with it, bridging back to context second.
+  Manufactured urgency, scene-setting generalities, dictionary definitions and
+  "in this article we'll explore" are named as banned openers. The climax must
+  be a verified Phase 2 claim, so the strongest opener and the hallucination
+  guard are the same rule.
+- **Reviewer (7): the unanswered-questions check.** Every review now reads the
+  piece from the persona's seat and names the top 3 questions the reader is
+  left silently asking — the one omission every other rubric dimension misses,
+  because they all look at what the content says rather than what it skips.
+  Each question gets a disposition: PATCH (fix in place — all-PATCH caps Depth
+  at 6 until fixed), FAQ (feeds the FAQ block), or FOLLOW-UP (a logged
+  calendar candidate with a validated angle).
+- **cf-aeo-check** folds the reviewer's FAQ-disposition questions into its
+  probe queries — the questions readers are left asking are the closest thing
+  to real query data the pipeline produces, and exactly what answer engines
+  get asked.
+
+---
+
 ## [3.19.3] — 2026-08-09
 
 ### Fixed

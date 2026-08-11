@@ -32,7 +32,7 @@ Use `/contentforge:cf-aeo-check` when:
 
 **Optional:**
 - **Brand** — brand profile (auto-detected from the tracking record when using REQ-ID)
-- **Queries** — comma-separated override of the queries to probe. Default: primary keyword + top 3 question keywords, recovered from the run's `phase-6-seo.md` (preferred) or the brief; if neither exists, derive 3-5 natural queries from the page's H1/H2s and say so
+- **Queries** — comma-separated override of the queries to probe. Default: primary keyword + top 3 question keywords, recovered from the run's `phase-6-seo.md` (preferred) or the brief; if neither exists, derive 3-5 natural queries from the page's H1/H2s and say so. **Also fold in any FAQ-disposition questions from the Phase 7 review report** — the questions the reviewer found readers silently asking are the closest thing to real query data the pipeline produces, and they are exactly what answer engines get asked
 - **`--compare`** — show deltas vs the previous check (default when history exists)
 
 ## How to Use
