@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.20.0] — 2026-08-12
+
+Video scripts pass the same quality machinery as articles. cf-video-script ran
+its own mini-pipeline — research, draft, structure — but stopped there: no
+fact-check, no humanization, no review score. A statistic spoken in a voiceover
+is the same liability as one printed in an article; worse, a published article
+can be corrected in place and a rendered, posted video cannot.
+
+### Added
+
+- **Phase 3.5 — Claim Verification.** `contentforge:fact-checker` runs on the
+  drafted script's narration and on-screen text; every claim is checked against
+  the Phase 1 research, unverifiable numbers are rewritten to what the evidence
+  supports or cut, and "studies show" with no study is removed, not softened.
+  Quality gate: zero unverified claims. This gate is why cf-video-script is a
+  ContentForge skill and not a prompt.
+- **Spoken-language pass in Phase 4.** Voiceover is read aloud, so narration is
+  humanized for the ear: contractions, short sentences, no written-prose
+  constructions, and the humanizer catalog's filler/hedging and signposting
+  patterns applied to dialogue — "Let's dive in" dies here too.
+- **Phase 4.5 — Review Scorecard.** Five dimensions scored 1-10 (hook, claim
+  integrity, payoff density, retention risk, CTA), pass at ≥7.0 average with no
+  dimension below 6 — the same discipline as the main pipeline's reviewer. A
+  failing script goes back to the failing phase, not out the door, and the
+  scorecard ships in the output document: an unscored script is an unreviewed
+  script.
+
+---
+
 ## [3.19.5] — 2026-08-12
 
 ### Changed

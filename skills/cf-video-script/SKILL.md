@@ -107,16 +107,54 @@ Extracts key points from the article and restructures for video format.
   - Explainer: Clear, measured pace, professional graphics focus
 - **Quality Gate:** Every scene has all 4 elements, dialogue word count matches timestamps
 
+### Phase 3.5: Claim Verification (1-2 minutes) — the gate articles get, scripts get too
+
+**Dispatch `contentforge:fact-checker`** on the drafted script's narration and
+on-screen text. A statistic spoken in a voiceover is the same liability as one
+printed in an article — worse, actually: a published article can be corrected
+in place, a rendered and posted video cannot.
+
+- Every claim, number, and named source in narration or overlays is checked
+  against the Phase 1 research; anything unverifiable is rewritten to what the
+  evidence supports or cut
+- Spoken attribution follows the same rules as written: "studies show" with no
+  study is removed, not softened
+- **Quality Gate:** zero unverified claims in narration or on-screen text.
+  This gate is why cf-video-script is a ContentForge skill and not a prompt —
+  skipping it produces fluent scripts with confident numbers nobody checked.
+
 ### Phase 4: Structuring & Optimization (1-2 minutes)
 - Structurer Agent reviews flow, pacing, and transitions between scenes
 - Verifies hook strength (would you stop scrolling for this?)
 - Checks CTA clarity and placement
+- **Spoken-language pass on all narration**: voiceover is read aloud, so it is
+  humanized for the ear, not the eye — contractions, short sentences, no
+  written-prose constructions ("furthermore", "as previously mentioned"), no
+  AI-pattern tells. Apply the humanizer catalog's filler/hedging and signposting
+  patterns to dialogue; "Let's dive in" dies here too.
 - Platform-specific optimization:
   - YouTube: End screen directions, mid-roll break points (for 8+ min), chapter timestamps
   - TikTok: Ensures hook in first 1 second, audio sync points, loop potential
   - Instagram: Caption overlay timing, visual consistency
   - Explainer: Pacing check (not too fast for complex topics)
 - **Quality Gate:** Pacing feels natural when read aloud, transitions smooth, CTA actionable
+
+### Phase 4.5: Review Scorecard (1 minute)
+
+Score the script on five dimensions, 1-10 each, same discipline as the main
+pipeline's reviewer — a script below threshold goes back to the failing phase,
+not out the door:
+
+| Dimension | What it checks |
+|---|---|
+| Hook | Would a cold viewer stay past the first beat? |
+| Claim integrity | Phase 3.5 clean — no unverified numbers survived |
+| Payoff density | Every scene delivers; no scene ends on setup |
+| Retention risk | Drop points named with holds (3min+ profiles) |
+| CTA | One specific ask, platform-mechanism aware |
+
+**Pass threshold: ≥7.0 average, no dimension below 6.** Record the scorecard in
+the output document — an unscored script is an unreviewed script.
 
 ### Phase 5: Output Assembly (1 minute)
 - Compiles final script document
