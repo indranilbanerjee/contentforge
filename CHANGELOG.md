@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.19.5] — 2026-08-12
+
+### Changed
+
+- **cf-video-script: the payoff rule and retention notes** (3min+ profiles),
+  extracted from the same reference study as 3.19.4. Time allocation already
+  said how long each scene runs; the payoff rule says what it must have
+  delivered by the time it ends — no scene ends on setup, because a scene that
+  only sets up the next one is where viewers leave. Scripts now ship with
+  retention notes naming the 2-3 likely drop points (the setup stretch, the
+  mid-video sag, the pre-CTA fade) and the specific hold at each. Both are
+  enforced in the Phase 2 quality gate: a script with no identified risk
+  points has not been read as a viewer.
+
+---
+
 ## [3.19.4] — 2026-08-12
 
 Three craft upgrades to the writing agents, extracted from a study of 17

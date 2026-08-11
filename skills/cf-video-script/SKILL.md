@@ -90,7 +90,9 @@ Extracts key points from the article and restructures for video format.
   - **CTA:** 10-15% of total length
   - **OUTRO:** 5-10% (YouTube only)
 - Creates scene breakdown with timestamps
-- **Quality Gate:** All sections allocated, timestamps continuous, word count within budget
+- **Payoff rule (3min+ profiles):** every MAIN CONTENT scene delivers a point, not just a promise of one. No scene ends on setup — a scene that only sets up the next one is where viewers leave, so it either gets its own payoff or is folded into the scene that has one. Time allocation says how long a scene runs; the payoff rule says what it must have delivered by the time it ends.
+- **Retention notes (3min+ profiles):** the script ships with the 2-3 likely drop points named (the setup stretch, the mid-video sag, the pre-CTA fade) and the hold at each — a re-hook, an open loop paid off later, a pattern interrupt. A script with no identified risk points has not been read as a viewer.
+- **Quality Gate:** All sections allocated, timestamps continuous, word count within budget; for 3min+ profiles, every scene has a stated payoff and retention notes are present
 
 ### Phase 3: Scene Writing (3-5 minutes)
 - Writes each scene with:
