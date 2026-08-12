@@ -431,7 +431,7 @@ Loop history JSON + current counts vs limits + status
 
 ## EXPRESS RUNS
 
-Read `run.json` first. When it carries `"mode": "express"`, the lane intentionally skipped the phases listed in `skipped_phases` (by default: 3.5 visuals, 5 structure/proofread, 6 SEO, 6.5 humanizer). The absence of those artifacts is a CHOICE, not a failure — the missing-report cap in ERROR HANDLING does NOT apply to them:
+Read `run.json` first. When it carries `"mode": "express"`, the lane intentionally skipped the phases listed in `skipped_phases` (by default only 3.5 visuals and 6 SEO — structure/proofread and the humanizer run in express unless the user explicitly opted out with `--skip-structure` / `--skip-humanizer`). The absence of a listed artifact is a CHOICE, not a failure — the missing-report cap in ERROR HANDLING does NOT apply to them:
 
 - **SEO Performance**: N/A when Phase 6 was skipped — remove it and renormalize the remaining dimension weights proportionally (or use `express_weights` from `config/scoring-thresholds.json` when present). If Phase 6 ran (`--with-seo`), score it in full.
 - **Readability / structure aspects normally evidenced by Phase 5/6.5 reports**: score them from the piece itself — read the content and judge grammar, flow, and AI-tell presence directly instead of holding sub-scores to a cap for a report that legitimately does not exist.

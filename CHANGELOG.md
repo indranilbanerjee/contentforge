@@ -7,7 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [3.21.0] — 2026-08-12
+## [3.21.1] — 2026-08-12
+
+Express keeps the craft. User review of the v3.21.0 express design surfaced the
+right objection: the humanizer is not polish — nobody wants AI-sounding prose,
+express or not — and the structure/proofread pass carries content-type
+structure and zero-typo guarantees that are equally not ceremony. Express's
+speed comes from intake replacing Phase 1's deep research hunt, which
+dominates full-pipeline wall-clock, so the craft passes cost little and the
+default now keeps them.
+
+### Changed
+
+- **Express default phase set** (`skills/contentforge/SKILL.md`): now
+  0.5 → 1-INTAKE → 2 → 3 → 4 → **5 Structure (Gate 5 in full)** →
+  **6.5 Humanizer (Gate 6.5 in full)** → 7 → 8. Default skips are only
+  Phase 3.5 visuals and Phase 6 SEO — the two phases whose value depends on
+  surfaces outside the prose — each re-addable via `--with-visuals` /
+  `--with-seo` with their full gates. The craft passes drop only on explicit
+  `--skip-structure` / `--skip-humanizer`, recorded in `skipped_phases` like
+  any other chosen skip.
+- In express without Phase 6, the humanizer reads the latest artifact
+  (`phase-5-structured.md`, or `phase-3-draft.md` if structure was skipped);
+  its GEO-structure- and keyword-preservation checks apply only when SEO ran.
+- **Reviewer EXPRESS RUNS** (`agents/07-reviewer.md`): default-skip list
+  updated to "only 3.5 visuals and 6 SEO"; the chosen-skip exemption and
+  lane-independent hard fails are unchanged.
+
+### Added
+
+- `tests/test_express_lane.py::test_craft_passes_run_by_default`: pins both
+  craft agents in the express phase set, the "Runs by default — Gate N in
+  full" contract lines, both opt-out flags, and orchestrator/reviewer
+  agreement on the default-skip list. A future edit that quietly drops the
+  humanizer from express fails the build. **Tests 247 → 248.**
+
+
 
 The Express Lane, battle-tested — plus the routing layer, the rename kit, and
 the vendor pin. The heaviest pipeline in the suite gains a calibrated second

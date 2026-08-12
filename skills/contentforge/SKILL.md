@@ -154,7 +154,7 @@ Use `/contentforge` when you need:
 
 ## Express Lane (bring your own research)
 
-When the user already has the research — pasted sources, internal notes with URLs, an existing source dossier — and asks for speed (**"express"**, **"I have my own sources"**, **"quick article from my notes"**, or `--express`), run the EXPRESS phase set instead of the full pipeline. Verification is the product; ceremony is optional. Express keeps every verification gate and drops the production polish phases:
+When the user already has the research — pasted sources, internal notes with URLs, an existing source dossier — and asks for speed (**"express"**, **"I have my own sources"**, **"quick article from my notes"**, or `--express`), run the EXPRESS phase set instead of the full pipeline. Verification is the product; ceremony is optional. Express is fast because the intake replaces Phase 1's deep research hunt — which dominates full-pipeline wall-clock — not because it skips craft. It keeps every verification gate AND the craft passes that make the piece read human, and drops only the phases whose value depends on surfaces outside the prose:
 
 | Express phase | Agent | Contract change vs full pipeline |
 |---|---|---|
@@ -163,14 +163,16 @@ When the user already has the research — pasted sources, internal notes with U
 | 2 Fact-Check | `contentforge:fact-checker` | **UNCHANGED — Gate 2 in full.** The user's sources get the same verification as found sources; user affection for a claim is not evidence. |
 | 3 Draft | `contentforge:content-drafter` | unchanged (Gate 3 in full) |
 | 4 Validation | `contentforge:scientific-validator` | **UNCHANGED — Gate 4 in full.** The draft-vs-ledger hallucination diff is part of the verification thesis, not polish. |
+| 5 Structure | `contentforge:structurer-proofreader` | **Runs by default — Gate 5 in full.** Proofreading and content-type structure are craft, not ceremony; a fast piece with typos is not a deliverable. Skippable only by explicit `--skip-structure`. |
+| 6.5 Humanizer | `contentforge:humanizer` | **Runs by default — Gate 6.5 in full.** Nobody orders express robot prose: the 41-pattern de-AI pass and brand-personality layer ship in every lane unless the user explicitly opts out with `--skip-humanizer`. Reads the latest artifact (`phase-5-structured.md`, or `phase-3-draft.md` if structure was skipped); the GEO-structure-preservation and keyword-preservation checks apply only when Phase 6 ran. |
 | 7 Review | `contentforge:reviewer` | Gate 7 with the **express review contract** (see the reviewer agent's Express runs section): skipped-phase artifacts are legitimately absent — score those dimensions from the piece itself instead of capping them; SEO dimension is N/A unless Phase 6 ran; the dead-link hard fail applies ALWAYS. |
 | 8 Output | `contentforge:output-manager` | unchanged; Appendix A (SEO Scorecard) is replaced by an "Express run — SEO not performed" note |
 
-**Skipped by default, each re-addable by flag:** Phase 3.5 visuals (`--with-visuals`), Phase 5 structure/proofread (`--with-structure`), Phase 6 SEO/GEO (`--with-seo`), Phase 6.5 humanizer (`--with-humanizer`). When a flag re-adds a phase, its full gate comes with it — there is no gate-less phase in any lane.
+**Skipped by default, each re-addable by flag:** Phase 3.5 visuals (`--with-visuals`) and Phase 6 SEO/GEO (`--with-seo`) — the two phases whose value depends on production surfaces outside the prose (asset creation, search targeting). When a flag re-adds a phase, its full gate comes with it — there is no gate-less phase in any lane. The craft passes may be dropped only by explicit request (`--skip-structure` / `--skip-humanizer`); a chosen skip is recorded in `skipped_phases` like any other, and the reviewer then scores those qualities from the piece itself.
 
 **Record the lane**: write `"mode": "express"` and the `skipped_phases` list into `run.json` at run start — the reviewer and output-manager read it to apply the express contracts. A run without `mode` is a full run.
 
-**What express is NOT**: it is not a lower quality bar — Gates 2, 4, and 7 are identical. It produces a verified, validated, reviewed piece WITHOUT keyword optimization, humanization, or visuals. Say this plainly to the user when they choose express, and offer the flags if they hesitate.
+**What express is NOT**: it is not a lower quality bar — Gates 2, 4, and 7 are identical, and the piece is still proofread (Gate 5) and humanized (Gate 6.5) unless the user explicitly opted out. It produces a verified, validated, proofread, humanized, reviewed piece WITHOUT keyword optimization or visuals. Say this plainly to the user when they choose express, and offer `--with-seo` / `--with-visuals` if they hesitate.
 
 ## What This Command Does
 

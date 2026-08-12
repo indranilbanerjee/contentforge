@@ -1,11 +1,14 @@
-"""The express lane may drop ceremony, never verification.
+"""The express lane may drop ceremony, never verification — and never craft.
 
 Express exists so users with their own research get speed — but the lane's
-whole legitimacy rests on three invariants: fact-check (Gate 2) and
-validation (Gate 4) and review (Gate 7) run in EVERY lane, the reviewer
-treats chosen skips as choices rather than defects, and hard fails are
-lane-independent. These tests pin those invariants into the orchestrator and
-reviewer contracts so no future edit can quietly produce a gate-less lane.
+whole legitimacy rests on four invariants: fact-check (Gate 2) and
+validation (Gate 4) and review (Gate 7) run in EVERY lane, the craft passes
+(structure/proofread, humanizer) run by default and are dropped only by
+explicit user opt-out, the reviewer treats chosen skips as choices rather
+than defects, and hard fails are lane-independent. These tests pin those
+invariants into the orchestrator and reviewer contracts so no future edit
+can quietly produce a gate-less lane — or a lane that ships robot prose by
+default.
 """
 from __future__ import annotations
 
@@ -51,9 +54,25 @@ class TestExpressLaneContract(unittest.TestCase):
 
     def test_skipped_phases_are_readdable_by_flag(self):
         sec = express_section()
-        for flag in ("--with-visuals", "--with-structure", "--with-seo",
-                     "--with-humanizer"):
+        for flag in ("--with-visuals", "--with-seo"):
             self.assertIn(flag, sec, f"{flag} missing — skips must be re-addable")
+
+    def test_craft_passes_run_by_default(self):
+        """Humanizer and structure/proofread are craft, not ceremony — express
+        must run them by default. Nobody orders express robot prose; dropping
+        them requires an explicit user opt-out flag, never a lane default."""
+        sec = express_section()
+        for agent in ("contentforge:structurer-proofreader",
+                      "contentforge:humanizer"):
+            self.assertIn(agent, sec,
+                          f"{agent} left the express phase set — the craft "
+                          "passes run by default in every lane")
+        for phrase in ("Runs by default — Gate 5 in full",
+                       "Runs by default — Gate 6.5 in full",
+                       "--skip-structure", "--skip-humanizer"):
+            self.assertIn(phrase, sec)
+        # The reviewer's default-skip list must agree with the orchestrator's.
+        self.assertIn("by default only 3.5 visuals and 6 SEO", REVIEWER)
 
     def test_reviewer_has_the_express_contract(self):
         self.assertIn("## EXPRESS RUNS", REVIEWER)
