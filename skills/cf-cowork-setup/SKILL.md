@@ -1,6 +1,6 @@
 ---
 name: cf-cowork-setup
-description: "One-shot setup that wires ContentForge for team usage in Anthropic Cowork. Verifies Cowork environment, checks for a Google Drive integration, creates the canonical Drive folder layout, and confirms the team-ready output routing. Use this the first time a Cowork user installs ContentForge OR when files aren't landing in Drive."
+description: "One-shot setup that wires ContentForge for team usage in Anthropic Cowork — verifies the Cowork sandbox environment, checks a Google Drive MCP is connected, creates the canonical Drive folder layout (_brands/, _runs/), and persists the team's routing config so .docx outputs, brand profiles, and checkpoints land in shared Drive instead of the ephemeral sandbox. Triggers on \"/contentforge:cf-cowork-setup\", \"set up ContentForge in Cowork\", \"our files aren't landing in Drive\", \"wire outputs to our shared Drive\", \"first-time Cowork install\". Runs scripts/plugin-metadata.py for environment detection, writes config via scripts/drive-sync-state.py, and can chain into /contentforge:brand-setup with --brand. Setup only — it does not migrate existing local brands and changes nothing in local Claude Code."
 argument-hint: "[--brand <name>] [--drive-root <folder-name>]"
 effort: low
 ---

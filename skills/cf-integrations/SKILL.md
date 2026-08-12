@@ -1,6 +1,6 @@
 ---
 name: cf-integrations
-description: "Show active and available MCP connectors with workflow impact. Integration status dashboard."
+description: "Render a live integration status dashboard for ContentForge — configured vs available MCP connectors grouped by category, coverage totals, and the top 3 quick-win connectors to add next, all taken from scripts/connector-status.py output. Triggers on \"/contentforge:cf-integrations\", \"what integrations are connected\", \"show connector status\", \"why can't a skill reach my CMS\", \"which connectors should I set up next\". Reads .mcp.json and environment variables only — no network calls, no agent; it reports status but does not configure anything. Pairs with /contentforge:cf-connect for guided setup and /contentforge:cf-add-integration for services outside the registry."
 effort: low
 argument-hint: "[--category <name>]"
 ---

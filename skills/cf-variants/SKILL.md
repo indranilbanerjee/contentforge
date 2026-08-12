@@ -1,6 +1,6 @@
 ---
 name: cf-variants
-description: Generate scored A/B test variations of headlines, hooks, CTAs, and intros ranked by optimization goal.
+description: "Generate 3-10 scored A/B test variations of a single content element — headline, hook, CTA, intro, or conclusion — each rated across 6 quality dimensions and ranked by your optimization goal (clicks, engagement, conversions, or readability), with top-3 recommendations and A/B test setup guidance (sample size, duration, success metric). Triggers on \"/contentforge:cf-variants\", \"give me headline alternatives\", \"A/B test options for this CTA\", \"which hook is stronger\", \"write 5 versions of this intro\". Applies Humanizer phrasing patterns and Reviewer scoring logic, and reads the brand profile for voice fit. Scores are predictive, not live-traffic data; it varies single elements only — use /contentforge:create-content for full pieces."
 argument-hint: "[content-element]"
 effort: medium
 ---

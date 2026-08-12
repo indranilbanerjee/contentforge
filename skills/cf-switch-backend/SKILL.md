@@ -1,6 +1,6 @@
 ---
 name: cf-switch-backend
-description: Switch tracking backend (local/airtable/google_sheets) with optional data migration
+description: "Switch ContentForge's tracking and delivery backend between Google Sheets + Drive, Airtable, and local filesystem — guiding credential setup, verifying access, optionally migrating existing tracking records and output files (migration is additive and never deletes source data), and updating tracking.backend in the brand profile so the next run uses it immediately. Triggers on \"/contentforge:cf-switch-backend\", \"switch tracking to Airtable\", \"move tracking to Google Sheets\", \"which backend am I using\", \"migrate my tracking data\". Runs backend-migrator.py, sheets-tracker.py, airtable-tracker.py, or local-tracker.py; --status reports current backend health. Pairs with /contentforge:cf-cowork-setup for the Cowork Drive route and /contentforge:cf-style-guide, whose Step G sets the initial backend."
 disable-model-invocation: true
 argument-hint: "[local | airtable | google_sheets] [--status]"
 effort: high

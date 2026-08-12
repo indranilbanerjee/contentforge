@@ -1,6 +1,6 @@
 ---
 name: cf-brief
-description: Generate research-backed content briefs with keywords, competitors, intent, and SEO strategy from a topic.
+description: "Generate a research-backed content brief from a keyword or topic — keyword data with volume and difficulty, top-5 competitor and E-E-A-T analysis, search-intent classification, audience pain points, a section-by-section outline with word counts and citation targets, plus SEO and AEO/GEO strategy (AI Overview status, answer-block map, entity list). Triggers on \"/contentforge:cf-brief\", \"write a content brief\", \"keyword research for this topic\", \"what should this article cover\", \"analyze competitors before we write\". Uses the researcher agent with Ahrefs/Similarweb MCPs when connected (labeled heuristic estimates otherwise) and aligns terminology to a brand profile when --brand is given. Produces a plan, not the article — feed it to /contentforge:create-content via --brief."
 argument-hint: "[topic]"
 effort: high
 ---
@@ -277,8 +277,8 @@ Generate briefs for 10 topics, review them, then feed approved briefs into `/con
 ## MCP Integrations
 
 ### Connected (HTTP) — Optional
-- **Ahrefs** — Real keyword data: search volume, keyword difficulty, related keywords, SERP features, backlink data for competitors. Significantly improves keyword research accuracy.
-- **Similarweb** — Traffic estimates for competitor URLs, category benchmarks, traffic sources. Improves competitor analysis depth.
+- **Ahrefs** (optional connector) — Real keyword data when connected: search volume, keyword difficulty, related keywords, SERP features, backlink data for competitors. Significantly improves keyword research accuracy.
+- **Similarweb** (optional connector) — Traffic estimates for competitor URLs when connected: category benchmarks, traffic sources. Improves competitor analysis depth.
 
 ### Fallback (No MCP)
 Without Ahrefs or Similarweb connected, the brief uses:

@@ -424,10 +424,20 @@ Loop history JSON + current counts vs limits + status
 
 ## ERROR HANDLING
 
-- **Missing phase reports:** Score affected dimensions conservatively (cap at 6.0) and note which report was missing
+- **Missing phase reports:** Score affected dimensions conservatively (cap at 6.0) and note which report was missing — UNLESS the phase was intentionally skipped by the lane (see EXPRESS RUNS below); a chosen skip is not a defect
 - **Contradictory phase reports:** Flag the contradiction, use the more conservative assessment, recommend human review
 - **Brand profile incomplete:** Score Brand Compliance with available data, note gaps, recommend `/contentforge:brand-setup` update
 - **Config file missing:** Use default weights and thresholds, note "Using defaults — config/scoring-thresholds.json not found"
+
+## EXPRESS RUNS
+
+Read `run.json` first. When it carries `"mode": "express"`, the lane intentionally skipped the phases listed in `skipped_phases` (by default: 3.5 visuals, 5 structure/proofread, 6 SEO, 6.5 humanizer). The absence of those artifacts is a CHOICE, not a failure — the missing-report cap in ERROR HANDLING does NOT apply to them:
+
+- **SEO Performance**: N/A when Phase 6 was skipped — remove it and renormalize the remaining dimension weights proportionally (or use `express_weights` from `config/scoring-thresholds.json` when present). If Phase 6 ran (`--with-seo`), score it in full.
+- **Readability / structure aspects normally evidenced by Phase 5/6.5 reports**: score them from the piece itself — read the content and judge grammar, flow, and AI-tell presence directly instead of holding sub-scores to a cap for a report that legitimately does not exist.
+- **Citation Integrity and Content Quality**: unchanged — express always runs Phases 2 and 4, so their artifacts MUST exist; if they are missing in an express run, that IS a defect (cap and flag as usual).
+- **Hard fails are lane-independent**: a dead internal link, a hallucination, or a prohibited claim blocks publication in every lane. Express lowers ceremony, never the floor.
+- Record `"lane": "express"` in your phase-7-review.json so the Completion Card and trend tracking never compare express scores against full-pipeline baselines unlabeled.
 
 ---
 

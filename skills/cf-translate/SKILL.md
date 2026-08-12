@@ -1,6 +1,6 @@
 ---
 name: cf-translate
-description: Translate content into 15 languages preserving brand voice, citations, and SEO. Three localization levels.
+description: "Translate publication-ready ContentForge content into any of 15 languages at three localization levels (literal, adapted, transcreated) — preserving brand voice, keeping citation URLs and DOIs untouched, and adapting SEO keyword placements for the target market — delivered as a translated .docx plus a quality report via the brand's tracking backend. Triggers on \"/contentforge:cf-translate\", \"translate this article to Spanish\", \"localize this for the German market\", \"make a French version of this post\", \"transcreate this for Japan\". Dispatches the contentforge:translator agent, maps voice via config/multilingual-patterns.json, and runs a target-language humanizer pass. Requires pipeline output scoring >=7.0 and a brand profile; pairs with /contentforge:create-content upstream."
 disable-model-invocation: true
 argument-hint: "[target-language]"
 effort: high
@@ -240,7 +240,7 @@ Literal is the fastest level; adapted adds cultural-adaptation passes; transcrea
 - **RTL languages (Arabic)** require downstream layout adjustments in CMS/publishing tool
 - **Transcreation** may change content structure significantly -- review recommended
 - **Regional variants** (es-latam vs es-es) affect vocabulary but not pipeline structure
-- **DeepL free tier** has character limits -- monitor usage for high-volume batches
+- **Free tiers of translation connectors** (e.g., DeepL) have character limits -- monitor usage for high-volume batches
 
 ## Troubleshooting
 

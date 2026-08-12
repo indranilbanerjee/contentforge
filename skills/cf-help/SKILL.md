@@ -1,6 +1,6 @@
 ---
 name: cf-help
-description: "Show the ContentForge user guide, available skills, pipeline overview, examples, and troubleshooting"
+description: "Show the ContentForge user guide with live plugin state — version, agent/skill/command counts, connector availability, and runtime environment read from scripts/plugin-metadata.py, never hardcoded — plus pipeline overview, per-skill listings, worked examples, brand-setup methods, and a troubleshooting matrix. Triggers on \"/contentforge:cf-help\", \"how do I use ContentForge\", \"list the ContentForge skills\", \"explain the content pipeline\", \"ContentForge isn't working\". Flags route to sections (--pipeline, --skills, --examples, --troubleshoot, --brand), and a Cowork sandbox warning is surfaced automatically when detected. Documentation only — it renders guidance from live metadata and runs no production pipeline."
 argument-hint: "[--pipeline | --skills | --commands | --examples | --connectors | --troubleshoot | --brand]"
 effort: low
 ---

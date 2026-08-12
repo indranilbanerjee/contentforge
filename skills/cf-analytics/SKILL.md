@@ -1,6 +1,6 @@
 ---
 name: cf-analytics
-description: Track content quality scores, pipeline timing, and compliance trends with insights and alerts.
+description: "Render an ASCII analytics dashboard of ContentForge production history — quality score trends, phase-by-phase pipeline timing, brand and content-type comparisons, compliance and citation metrics, outlier detection, and triggered alerts over a 7/30/90-day window. Triggers on \"/contentforge:cf-analytics\", \"are our quality scores improving\", \"which pipeline phase is slowest\", \"show content production stats\", \"compare brands by quality\". Reads tracking records written by Phase 8 to the brand's tracking backend (local JSON, Google Sheets, or Airtable) and alert rules from config/analytics-config.json; needs 10+ tracked pieces for meaningful trends. Analysis only — invokes no agents and never reads or stores content text."
 effort: low
 argument-hint: "[--period 7|30|90] [--brand <name>] [--type <content-type>] [--focus quality|timing|compliance|citations]"
 ---

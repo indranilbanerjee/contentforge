@@ -1,6 +1,6 @@
 ---
 name: cf-publish
-description: Publish finished content to Webflow or WordPress via MCP connectors with preview, verification, and HTML export fallback
+description: "Execute CMS publishing: push a finished, reviewed piece (Phase 8 complete, quality score >=7.0) to Webflow or WordPress via MCP connectors as draft, scheduled, or live — always showing a full publish preview and waiting for your explicit yes/no/edit confirmation before anything is pushed. Runs the EU AI Act Article 50 disclosure check, verifies the live URL, meta tags, and images post-publish, and falls back to a standalone HTML export when no CMS connector is configured. Triggers on \"/contentforge:cf-publish\", \"publish this article to WordPress\", \"push this to Webflow\", \"schedule this post for next week\", \"export the article as HTML\". Refuses unreviewed content; pairs with /contentforge:cf-social-adapt for post-publish promotion."
 disable-model-invocation: true
 argument-hint: "[platform]"
 effort: low

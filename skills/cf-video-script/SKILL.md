@@ -1,6 +1,6 @@
 ---
 name: cf-video-script
-description: Produce video scripts with hooks, scenes, and B-roll for YouTube, TikTok, Reels, and explainers.
+description: "Produce a production-ready video script for YouTube, YouTube Shorts, TikTok, Instagram Reels, or explainers — timestamps, scene dialogue, B-roll shot list, on-screen text, and music notes. Every script passes the Phase 3.5 claim-verification gate (contentforge:fact-checker checks each statistic in narration and on-screen overlays; zero unverified claims survive), a spoken-language humanizer pass so narration reads for the ear, and a 5-dimension review scorecard (hook, claim integrity, payoff density, retention risk, CTA — >=7.0 average to ship). Triggers on \"/contentforge:cf-video-script\", \"write a YouTube script about this\", \"turn this article into a TikTok\", \"script a 60-second reel\", \"make an explainer video script\". Dispatches researcher, content-drafter, and structurer agents, reads the brand profile, delivers via the tracking backend. Scripts only — no finished video."
 argument-hint: "[topic or article]"
 effort: high
 ---

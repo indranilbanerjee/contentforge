@@ -1,6 +1,6 @@
 ---
 name: cf-calendar
-description: Plan content calendars with scheduling, deadlines, team assignments, and Google Calendar sync.
+description: "Plan a 30/60/90-day content production calendar — works backward from publish dates to schedule production windows, balances team assignments, detects deadline conflicts, renders a text Gantt-chart timeline, and optionally creates Google Calendar milestone events when that MCP is connected. Triggers on \"/contentforge:cf-calendar\", \"plan next quarter's content schedule\", \"build an editorial calendar\", \"when should production start for these pieces\", \"schedule content deadlines for the team\". Imports topics from manual input, Google Sheets, or the latest /contentforge:cf-audit recommendations; pairs with /contentforge:cf-brief and /contentforge:batch-process for execution. Deterministic scheduling only — it plans dates, produces no content, and does not auto-reschedule delays."
 argument-hint: "[month or quarter]"
 effort: low
 ---

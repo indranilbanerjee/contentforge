@@ -1,6 +1,6 @@
 ---
 name: cf-template
-description: Create custom content type templates beyond the 8 built-in types with structure and quality standards.
+description: "Create and manage custom content-type templates beyond the 8 built-ins (article, blog, whitepaper, faq, research-paper, video-script, case-study, newsletter) — defining section structure, word-count allocations, readability targets, citation minimums, and quality standards, then validating the template against every pipeline phase. Saves to ~/.claude-marketing/_templates/ so plugin updates never wipe it. Triggers on \"/contentforge:cf-template\", \"create a template for press releases\", \"add a custom content type\", \"list available templates\", \"import a structure from this example doc\". Deterministic, no agent; produces the template file consumed by /contentforge:create-content --type=custom:name, and /contentforge:cf-brief can target its section structure."
 argument-hint: "[content-type]"
 effort: high
 ---

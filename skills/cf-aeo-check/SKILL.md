@@ -1,6 +1,6 @@
 ---
 name: cf-aeo-check
-description: "Post-publication AI-visibility check: re-probe target queries, record whether the published piece is cited in AI answers, and track deltas over time."
+description: "Post-publication AI-visibility check — re-probes target queries via web search, records whether the published piece is cited in Google AI Overviews, audits on-page extractability (definition block, dates, schema, structures) via web fetch, and appends every check to per-brand history so deltas are tracked over time. Triggers on \"/contentforge:cf-aeo-check\", \"is our article cited in AI Overviews\", \"did we earn AI citations\", \"check AEO for this URL\", \"why is a competitor cited instead of us\". Measures Google-observable signals only (no ChatGPT/Perplexity probing unless an AEO-tracking connector is present, and then labeled); closes the loop /contentforge:cf-brief opens and routes absent verdicts to /contentforge:content-refresh with evidence. Reports and records — it does not edit or republish the page."
 argument-hint: "[published URL or REQ-ID]"
 effort: medium
 ---

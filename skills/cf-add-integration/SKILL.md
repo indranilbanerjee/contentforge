@@ -1,6 +1,6 @@
 ---
 name: cf-add-integration
-description: "Add a custom MCP connector — connect any API or service to ContentForge via .mcp.json configuration."
+description: "Connect any external API or service to ContentForge as a custom MCP connector — walks non-technical users from finding a verified MCP package or HTTP endpoint to a ready-to-paste .mcp.json entry, credential setup instructions, and a post-restart verification check. Triggers on \"/contentforge:cf-add-integration\", \"connect our internal CMS\", \"add a custom integration\", \"hook up Google Analytics to ContentForge\", \"there is no connector for this service\". Reads .mcp.json.connectors-reference for verified endpoints and checks the registry via scripts/connector-status.py first; for connectors already in the registry, /contentforge:cf-connect is the shorter path. Configuration guidance only — never asks for secrets in chat and does not call the connected service itself."
 disable-model-invocation: true
 argument-hint: "[service-name]"
 effort: medium

@@ -1,6 +1,6 @@
 ---
 name: cf-connect
-description: "Set up an MCP connector with step-by-step instructions. Use to connect Notion, Canva, Webflow, etc."
+description: "Set up a specific MCP connector from the ContentForge registry with step-by-step instructions tailored to its transport — verified endpoint URL for HTTP connectors, env vars plus a ready-to-paste .mcp.json entry for npx connectors, credential acquisition guidance, and post-setup verification. Triggers on \"/contentforge:cf-connect\", \"connect WordPress\", \"set up the Notion connector\", \"how do I add Google Sheets\", \"a skill says a connector is missing\". Status always comes from scripts/connector-status.py (never memory) and endpoints from .mcp.json.connectors-reference; fuzzy-matches names like wp or gsheets. Setup guidance only — for services not in the registry it hands off to /contentforge:cf-add-integration, and /contentforge:cf-integrations shows the full status dashboard."
 argument-hint: "[connector-name]"
 effort: low
 ---

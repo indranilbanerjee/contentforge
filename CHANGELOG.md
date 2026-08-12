@@ -7,6 +7,76 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.21.0] — 2026-08-12
+
+The Express Lane, battle-tested — plus the routing layer, the rename kit, and
+the vendor pin. The heaviest pipeline in the suite gains a calibrated second
+lane, and the machinery that justifies both lanes was proven by execution, not
+by reading.
+
+### Added
+
+- **Express Lane** (`skills/contentforge/SKILL.md`): for users who bring their
+  own research ("express", "I have my own sources", `--express`). Phase 1
+  becomes source INTAKE — the researcher catalogs and reliability-rates ONLY
+  what was provided (Gate 1-E: every source carries a URL or is labeled
+  user-provided/unverifiable). Gates 2 (fact-check) and 4 (draft-vs-ledger
+  validation) run UNCHANGED — the user's sources get the same verification as
+  found sources. Polish phases (3.5 visuals, 5 structure, 6 SEO, 6.5
+  humanizer) are skipped by default and individually re-addable
+  (`--with-visuals` / `--with-structure` / `--with-seo` / `--with-humanizer`);
+  a re-added phase brings its full gate — there is no gate-less phase in any
+  lane. `run.json` records `"mode": "express"` + `skipped_phases`.
+- **Reviewer express contract** (`agents/07-reviewer.md` § EXPRESS RUNS):
+  chosen skips are not defects — no missing-report caps for intentionally
+  skipped phases (the battle-test showed the caps would otherwise HALT every
+  express run); SEO dimension N/A with weight renormalization unless Phase 6
+  ran; skipped-phase qualities scored from the piece itself; missing Phase 2/4
+  artifacts remain defects in EVERY lane; hard fails (dead links,
+  hallucinations, prohibited claims) are lane-independent.
+- **Execution battle-test of the quality machinery** — three probes run
+  against the INSTALLED plugin's agents with planted defects, all passed:
+  fact-checker caught a fabricated enforcement date, traced a garbled "94%"
+  statistic to the real TrustRadius study it was mangled from, and corrected a
+  misquoted vendor figure; reviewer fired the dead-internal-link hard fail
+  (HALT), refused to loop with `run.json` absent, and capped honestly for
+  missing artifacts; humanizer delivered a 24-cut Deletion Ledger with pattern
+  ids, machine-verified metric drops (banned lexemes 38.9→0/1000), and
+  invented nothing in cut-don't-ground mode. Two probes independently caught
+  the same LIVE source drift (a cited vendor page now claims 5-10% where the
+  research recorded 5-15%) — the verification thesis working on real-world
+  rot, unprompted.
+- **All 22 skill descriptions rewritten trigger-dense** (median ~770 chars;
+  20 of 22 were one-liners under 161 chars): does/produces → "Triggers on"
+  with ≥4 real user phrases (`/contentforge:<name>` alias first) →
+  reads/pairs-with, each written against the full SKILL.md with capabilities
+  not delivered deliberately unclaimed. Guarded by
+  `tests/test_description_density.py` (floors + median).
+- **Rename-readiness kit** (`scripts/rename_readiness.py` +
+  `tests/test_rename_readiness.py`): the plugin's ~1,500 name occurrences
+  classified by ROLE (manifest identity, namespace refs, skill-prefix refs,
+  repo URLs, prose), invariants that keep a rename mechanical (no variant
+  spellings — needle assembled at runtime; manifests parseable and canonical),
+  and `--plan --new-name X` emits the ordered 7-step rename plan (manifests →
+  namespaces → dirs → URLs → prose → marketplace/cache-purge → full-suite
+  verify). Read-only by test-enforced contract, and it suggests no names.
+- **Vendor-neutrality guard** (`tests/test_vendor_neutrality.py`): the 2026-08
+  audit found the instruction surface already clean — these tests pin it: no
+  sign-up/install instructions for commercial products, vendor mentions must
+  carry conditional/connected framing (catalog skills exempt by name), no bare
+  model ids outside the resolver. Three bare-vendor lines found by the scanner
+  were reframed (cf-audit, cf-brief, cf-translate).
+
+### Fixed
+
+- **README release-notes label**: the 2026-08-09 documentation release was
+  narrated as "v3.20.0" — it was v3.19.3; history restored, and the real
+  v3.19.4–v3.20.0 releases added to the notes.
+
+Suite: **224 → 247**.
+
+---
+
 ## [3.20.0] — 2026-08-12
 
 Video scripts pass the same quality machinery as articles. cf-video-script ran

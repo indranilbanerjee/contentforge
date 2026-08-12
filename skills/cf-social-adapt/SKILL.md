@@ -1,6 +1,6 @@
 ---
 name: cf-social-adapt
-description: Repurpose finished articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, and YouTube Shorts
+description: "Repurpose a finished article into ready-to-publish, platform-native social posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, and YouTube Shorts — each with hook, hashtags, CTA, character count, image spec, and posting time, typically 24-40 posts per article. Triggers on \"/contentforge:cf-social-adapt\", \"turn this article into LinkedIn posts\", \"make social posts from this blog\", \"repurpose this for social media\", \"promote the published article\". Dispatches the contentforge:social-adapter agent, takes all platform limits from config/social-platform-specs.json, reads the brand profile for voice, and requires pipeline-approved content (score >=7.0). Pairs with /contentforge:cf-publish for the live article URL."
 disable-model-invocation: true
 argument-hint: "[article-path]"
 effort: medium

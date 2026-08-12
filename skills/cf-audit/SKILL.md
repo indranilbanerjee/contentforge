@@ -1,6 +1,6 @@
 ---
 name: cf-audit
-description: Audit content library for freshness decay, coverage gaps, and optimization opportunities.
+description: "Audit an existing content library for freshness decay and coverage gaps — scores every piece 0-100 on age, statistic currency, link health, and citation recency, maps covered topics against target keywords, and produces a prioritized report: top refresh candidates, gap topics, retire candidates, and the exact follow-up commands. Triggers on \"/contentforge:cf-audit\", \"which content needs refreshing\", \"content health check\", \"what topics are we missing\", \"audit our blog library\". Reads inventory from a Google Drive folder, WordPress REST API, or CSV; pulls performance data only if Google Analytics/Search Console MCPs are connected. Audit only — refreshing happens via /contentforge:content-refresh and new pieces start at /contentforge:cf-brief."
 argument-hint: "[content-path or URL]"
 effort: medium
 ---
@@ -239,7 +239,7 @@ Compare your content topics against keyword opportunities to find missing covera
 
 **Process:**
 1. Extract topics and keywords from existing content inventory
-2. Identify target keyword universe (from provided keywords CSV, Ahrefs data, or SERP analysis)
+2. Identify target keyword universe (from provided keywords CSV, connected SEO-tool data — e.g., Ahrefs — or SERP analysis)
 3. Map existing content to keywords (which keywords are already covered?)
 4. Identify gaps (high-value keywords with no matching content)
 5. Rank gaps by search volume and keyword difficulty

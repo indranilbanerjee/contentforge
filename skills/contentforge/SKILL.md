@@ -1,6 +1,6 @@
 ---
 name: contentforge
-description: Produce publication-ready, fact-checked, brand-aligned content via 10-phase autonomous pipeline. Use for any content need.
+description: "Produce a publication-ready, fact-checked, brand-compliant, SEO-optimized content piece through the full 10-phase pipeline: every phase dispatched to a dedicated subagent (researcher, fact-checker, drafter, visual annotator, scientific validator, structurer, SEO/GEO optimizer, humanizer, reviewer, output manager) behind 10 orchestrator-verified quality gates — three-layer fact verification, the 41-pattern humanizer pass, and 5-dimension reviewer scoring (approve >=7.0) — ending in a .docx with scorecard appendices. Triggers on \"/contentforge:contentforge\", \"write an article about\", \"create a blog post\", \"produce a whitepaper\", \"I need a fact-checked, publication-ready piece\", \"run the content pipeline\". This is ContentForge's front door: reads the brand profile, then routes onward to /contentforge:publish, /contentforge:social-adapt, and /contentforge:translate."
 argument-hint: "[topic]"
 effort: max
 ---
@@ -151,6 +151,26 @@ Use `/contentforge` when you need:
 - **Natural-sounding content** with AI patterns removed (Phase 6.5 Humanizer)
 
 **For multiple pieces**, use [`/contentforge:batch-process`](../batch-process/SKILL.md) — a prioritized, checkpointed queue that runs the same pipeline per piece.
+
+## Express Lane (bring your own research)
+
+When the user already has the research — pasted sources, internal notes with URLs, an existing source dossier — and asks for speed (**"express"**, **"I have my own sources"**, **"quick article from my notes"**, or `--express`), run the EXPRESS phase set instead of the full pipeline. Verification is the product; ceremony is optional. Express keeps every verification gate and drops the production polish phases:
+
+| Express phase | Agent | Contract change vs full pipeline |
+|---|---|---|
+| 0.5 Title | — inline | unchanged |
+| 1-INTAKE | `contentforge:researcher` | **Intake mode, not research mode**: catalog ONLY the user-provided sources into the standard `phase-1-research.md` shape — no new source hunting. **Gate 1-E:** every source carries a URL (or is labeled `user-provided, unverifiable`), a reliability rating, and the differentiated angle is documented from the user's own framing. Tell the researcher explicitly: "intake mode — structure and rate what was provided; do not expand the source set." |
+| 2 Fact-Check | `contentforge:fact-checker` | **UNCHANGED — Gate 2 in full.** The user's sources get the same verification as found sources; user affection for a claim is not evidence. |
+| 3 Draft | `contentforge:content-drafter` | unchanged (Gate 3 in full) |
+| 4 Validation | `contentforge:scientific-validator` | **UNCHANGED — Gate 4 in full.** The draft-vs-ledger hallucination diff is part of the verification thesis, not polish. |
+| 7 Review | `contentforge:reviewer` | Gate 7 with the **express review contract** (see the reviewer agent's Express runs section): skipped-phase artifacts are legitimately absent — score those dimensions from the piece itself instead of capping them; SEO dimension is N/A unless Phase 6 ran; the dead-link hard fail applies ALWAYS. |
+| 8 Output | `contentforge:output-manager` | unchanged; Appendix A (SEO Scorecard) is replaced by an "Express run — SEO not performed" note |
+
+**Skipped by default, each re-addable by flag:** Phase 3.5 visuals (`--with-visuals`), Phase 5 structure/proofread (`--with-structure`), Phase 6 SEO/GEO (`--with-seo`), Phase 6.5 humanizer (`--with-humanizer`). When a flag re-adds a phase, its full gate comes with it — there is no gate-less phase in any lane.
+
+**Record the lane**: write `"mode": "express"` and the `skipped_phases` list into `run.json` at run start — the reviewer and output-manager read it to apply the express contracts. A run without `mode` is a full run.
+
+**What express is NOT**: it is not a lower quality bar — Gates 2, 4, and 7 are identical. It produces a verified, validated, reviewed piece WITHOUT keyword optimization, humanization, or visuals. Say this plainly to the user when they choose express, and offer the flags if they hesitate.
 
 ## What This Command Does
 

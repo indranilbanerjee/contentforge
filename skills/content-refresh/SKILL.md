@@ -1,6 +1,6 @@
 ---
 name: content-refresh
-description: Refresh existing content with updated data, sources, and SEO while preserving rankings and brand compliance.
+description: "Re-optimize an existing content piece with current statistics, new sources, and fixed citations at light (~20%), medium (~50%), or heavy (~80%) rewrite scope — preserving evergreen sections, SEO keyword placements, the URL slug, and internal links, then re-running the pipeline's quality gates (fact-check, validation, humanizer, reviewer) and saving as a new version with a before/after comparison report; the original file is never overwritten. Triggers on \"/contentforge:content-refresh\", \"update this old article\", \"rankings dropped, refresh this post\", \"this content has outdated stats\", \"refresh it with current data\". Reuses the 10-phase pipeline agents and loads the original .docx from the brand's tracking backend; pairs with /contentforge:cf-audit to find candidates and /contentforge:publish to push the update."
 argument-hint: "[content-path or URL]"
 effort: high
 ---

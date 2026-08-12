@@ -1,6 +1,6 @@
 ---
 name: cf-environment
-description: "Detect the runtime environment (Cowork sandbox vs local Claude Code) and report which ContentForge capabilities work in it. Use this when the user asks 'will this work in Cowork', sees unexpected file-path behavior, or wants a capability matrix before running a long pipeline."
+description: "Detect where ContentForge is running (Cowork sandbox, local Claude Code on Windows/Mac/Linux, uncertain sandbox, or unknown) and report a capability matrix for that surface — which connector transports work, where files actually land, and whether /contentforge:resume survives sessions. Triggers on \"/contentforge:cf-environment\", \"will this work in Cowork\", \"where did my files save\", \"why is my Documents folder empty after a run\", \"check capabilities before a long pipeline\". Runs scripts/plugin-metadata.py --section environment and scans the session for Drive MCPs; pairs with /contentforge:cf-cowork-setup when Cowork+Drive wiring is missing. Diagnostic only — it reports the environment's limits and changes nothing."
 argument-hint: "[--verbose]"
 effort: low
 ---
