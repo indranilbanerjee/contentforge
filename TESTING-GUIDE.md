@@ -1,4 +1,4 @@
-# ContentForge Testing Guide — v3.21.1
+# ContentForge Testing Guide — v3.22.0
 
 Complete testing guide for the ContentForge enterprise content production plugin.
 

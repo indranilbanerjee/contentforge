@@ -331,6 +331,7 @@ Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:transla
 
 - **Internal linking:** {deep_links} deep / {homepage_links} homepage links (source: {inventory_source}){IF homepage-only: " — ⚠ HOMEPAGE-ONLY INTERNAL LINKING: deep service pages exist but are not linked"}
 - **AI-detectability (advisory):** {advisory_rating} — {flag_count} signals flagged (details in Quality Appendix; never a publish gate)
+- **Structural tells (advisory):** {structure_overall} — review sheet at {phase-6.5-review-sheet.html}; Tier-2 structure scan (StoryScope-derived), advisory and never a publish gate
 - **Needs human review:** {IF visual manifest has human-review flags: "⚠ {n} visual element(s) need SME sign-off — see visual manifest"}{IF placeholder links: " · ⚠ {n} placeholder link(s) need URLs"}
 
 `{deep_links}`, `{homepage_links}`, and `{inventory_source}` are read from the Phase 6 SEO scorecard's `Deep-link coverage: deep_links=N homepage_links=M inventory_source=...` line (never from the docx JSON — that JSON's `inline_links_internal`/`inline_links_outbound` counters are for the docx appendix, not the card). The AI-detectability line's rating comes from the Phase 6.5 Humanization Report §8 (AI-TELL SCAN), produced by `scripts/text-metrics.py --ai-tell-scan`: a deterministic LOW/MODERATE/HIGH rating, advisory only and never a publish gate. The human-review line's visual-element flags already exist in the Phase 3.5 visual manifest; the placeholder-link count comes from Phase 8 output.

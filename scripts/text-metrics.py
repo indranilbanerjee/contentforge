@@ -303,9 +303,14 @@ def ai_tell_scan(text: str) -> dict:
 
     flagged, aph = [], 0
     for i, s in enumerate(sentences):
+        st = s.strip()
         if is_aphorism_candidate(s):
             aph += 1
-            flagged.append({"index": i, "text": s.strip(), "tell": "aphorism_candidate"})
+            flagged.append({"index": i, "text": st, "tell": "aphorism_candidate"})
+        elif st.lower().startswith(connectives):
+            flagged.append({"index": i, "text": st, "tell": "connective_opener"})
+        elif sum(1 for w in re.findall(r"[A-Za-z'-]+", st) if w.lower() in lset) >= 2:
+            flagged.append({"index": i, "text": st, "tell": "banned_lexeme_cluster"})
 
     runs, i = [], 0
     lens = [len(s.split()) for s in sentences]
@@ -342,12 +347,204 @@ def ai_tell_scan(text: str) -> dict:
             "advisory_note": "Deterministic proxy scan — advisory only, never a publish gate. See references/ai-detection-signals.md."}
 
 
+# ---------------------------------------------------------------------------
+# Tier-2 structural scan — deterministic proxies for the narrative-structure
+# tells identified in StoryScope (arXiv 2604.03136): AI text stays detectable
+# on STRUCTURE even after surface-style editing (93.9% F1 after stylistic
+# stripping, only -1.6 points). Surface humanization is necessary, not
+# sufficient — these proxies show the human reviewer WHERE the piece is still
+# structurally machine-shaped. Advisory only, never a publish gate; thresholds
+# live HERE, deliberately never in scoring-thresholds.json.
+# ---------------------------------------------------------------------------
+
+_MORALIZING_PHRASES = (
+    "in conclusion", "ultimately", "the key takeaway", "the bottom line",
+    "it's important to remember", "it is important to remember",
+    "this matters because", "at the end of the day", "in short", "simply put",
+    "what this means for you", "the lesson here", "in today's world",
+    "it's crucial to", "it is crucial to", "remember that", "the takeaway is",
+)
+_HEDGING_WORDS = frozenset((
+    "may", "might", "can", "could", "often", "typically", "generally",
+    "usually", "tends", "potentially", "possibly", "somewhat", "relatively",
+))
+_STANCE_RE = re.compile(r"\b(?:I|we|our|my|us)\b|\bin my experience\b", re.I)
+_CITATION_RE = re.compile(r"\[\d+\]|\((?:[A-Z][\w.]*,?\s*)?\d{4}\)|https?://")
+_QUOTE_RE = re.compile(r"[\"“][^\"”]{6,}[\"”]")
+
+# Advisory bands (value thresholds). Order: (attention, note) unless noted.
+_BANDS = {
+    "moralizing_per_1000": (6.0, 3.0),          # higher is worse
+    "section_symmetry_cv": (0.20, 0.35),        # LOWER is worse (too uniform)
+    "parallel_heading_share": (0.75, 0.55),     # higher is worse
+    "specificity_per_1000": (5.0, 10.0),        # LOWER is worse (generic)
+    "hedging_per_1000": (18.0, 12.0),           # higher is worse
+    "paragraph_evenness_cv": (0.25, 0.40),      # LOWER is worse (uniform voice)
+}
+
+
+def _band(metric, value):
+    att, note = _BANDS[metric]
+    lower_is_worse = metric in ("section_symmetry_cv", "specificity_per_1000",
+                                "paragraph_evenness_cv")
+    if lower_is_worse:
+        return "ATTENTION" if value <= att else ("NOTE" if value <= note else "OK")
+    return "ATTENTION" if value >= att else ("NOTE" if value >= note else "OK")
+
+
+def _cv(values):
+    if len(values) < 2:
+        return None
+    mean = sum(values) / len(values)
+    if mean == 0:
+        return None
+    return round(statistics.pstdev(values) / mean, 3)
+
+
+def structure_scan(md_text: str) -> dict:
+    """Deterministic Tier-2 structural-tell proxies. Each finding carries the
+    spans (sections / sentences) that drove it, so the review sheet can show
+    the human editor exactly where to work. This scan has no relationship to
+    any statistical watermark — it measures visible structure only."""
+    md_text, _ = _strip_frontmatter(md_text)
+
+    # --- sectioning by H2 ---------------------------------------------------
+    sections = []  # (title, [prose lines])
+    current = ["(before first heading)", []]
+    in_code = False
+    paragraphs, para = [], []
+    for raw in md_text.split("\n"):
+        line = raw.rstrip()
+        if line.strip().startswith("```"):
+            in_code = not in_code
+            continue
+        if in_code:
+            continue
+        m = _HEADING_RE.match(line.strip())
+        if m and len(m.group(1)) == 2:
+            sections.append(current)
+            current = [_inline_to_plain(m.group(2)).strip(), []]
+            if para:
+                paragraphs.append(" ".join(para)); para = []
+            continue
+        if m or line.strip().startswith("|"):
+            continue
+        if not line.strip():
+            if para:
+                paragraphs.append(" ".join(para)); para = []
+            continue
+        cleaned = _inline_to_plain(re.sub(r"^\s*(?:[-*+]|\d+[.)])\s+", "", line)).strip()
+        if cleaned:
+            current[1].append(cleaned)
+            para.append(cleaned)
+    sections.append(current)
+    if para:
+        paragraphs.append(" ".join(para))
+    sections = [(t, " ".join(ls)) for t, ls in sections if ls]
+
+    prose = " ".join(text for _, text in sections)
+    words_total = max(1, len(re.findall(r"[\w'-]+", prose)))
+    per_k = 1000.0 / words_total
+    sentences = split_sentences(prose)
+
+    findings = {}
+
+    # 1. Over-explanation / moralizing
+    moral_hits = []
+    for i, s in enumerate(sentences):
+        low = s.lower()
+        for ph in _MORALIZING_PHRASES:
+            if ph in low:
+                moral_hits.append({"index": i, "text": s.strip()[:160], "phrase": ph})
+                break
+    val = round(len(moral_hits) * per_k, 2)
+    findings["moralizing"] = {
+        "per_1000_words": val, "band": _band("moralizing_per_1000", val),
+        "spans": moral_hits[:15],
+        "meaning": "Spelling the takeaway out instead of trusting the reader — AI states the theme far more often than human writers do.",
+    }
+
+    # 2. Template symmetry (H2 section word counts too uniform)
+    counts = [len(re.findall(r"[\w'-]+", text)) for _, text in sections]
+    cv = _cv(counts) if len(counts) >= 4 else None
+    findings["section_symmetry"] = {
+        "section_word_counts": {t[:60]: c for (t, _), c in zip(sections, counts)},
+        "coefficient_of_variation": cv,
+        "band": _band("section_symmetry_cv", cv) if cv is not None else "OK",
+        "meaning": "Near-identical section lengths read as a filled template; human structure is asymmetric — sections take the length their content earns.",
+    }
+
+    # 3. Parallel heading syntax
+    h2s = [t for t, _ in sections if t != "(before first heading)"]
+    share = None
+    if len(h2s) >= 4:
+        first_words = [t.split()[0].lower() for t in h2s if t.split()]
+        gerund_share = sum(1 for w in first_words if w.endswith("ing")) / len(first_words)
+        top_share = max(first_words.count(w) for w in set(first_words)) / len(first_words)
+        share = round(max(gerund_share, top_share), 2)
+    findings["parallel_headings"] = {
+        "headings": h2s, "max_identical_pattern_share": share,
+        "band": _band("parallel_heading_share", share) if share is not None else "OK",
+        "meaning": "Every heading cut to the same grammatical shape is a template tell; vary the syntax where the content allows.",
+    }
+
+    # 4. Specificity density (numbers, proper nouns, quotes, citations)
+    numbers = len(re.findall(r"\b\d[\d,.%]*\b", prose))
+    proper = sum(1 for s in sentences
+                 for w in s.split()[1:] if w[:1].isupper() and w[1:2].islower())
+    cites = len(_CITATION_RE.findall(prose))
+    quotes = len(_QUOTE_RE.findall(prose))
+    val = round((numbers + proper + cites + quotes) * per_k, 2)
+    findings["specificity"] = {
+        "per_1000_words": val, "band": _band("specificity_per_1000", val),
+        "components_per_1000": {"numbers": round(numbers * per_k, 2),
+                                "proper_nouns": round(proper * per_k, 2),
+                                "citations_urls": round(cites * per_k, 2),
+                                "quoted_strings": round(quotes * per_k, 2)},
+        "meaning": "Generic prose is the AI center-of-mass; human expert writing names specific, checkable things — sources, numbers, products, people.",
+    }
+
+    # 5. Stance absence (hedging up, first-person/stance down)
+    hedges = sum(1 for w in re.findall(r"[A-Za-z'-]+", prose) if w.lower() in _HEDGING_WORDS)
+    stance = len(_STANCE_RE.findall(prose))
+    hval = round(hedges * per_k, 2)
+    findings["stance"] = {
+        "hedging_per_1000_words": hval,
+        "stance_markers_per_1000_words": round(stance * per_k, 2),
+        "band": _band("hedging_per_1000", hval),
+        "meaning": "Hedged, positionless prose reads machine-made; a human expert takes a stance and owns a judgment somewhere in the piece.",
+    }
+
+    # 6. Structural evenness (paragraph lengths too uniform)
+    plens = [len(p.split()) for p in paragraphs if len(p.split()) >= 10]
+    pcv = _cv(plens) if len(plens) >= 6 else None
+    findings["paragraph_evenness"] = {
+        "paragraphs_measured": len(plens), "coefficient_of_variation": pcv,
+        "band": _band("paragraph_evenness_cv", pcv) if pcv is not None else "OK",
+        "meaning": "Uniform paragraph rhythm is a machine fingerprint; human writing has short punches and long developments.",
+    }
+
+    order = {"OK": 0, "NOTE": 1, "ATTENTION": 2}
+    overall = max((f["band"] for f in findings.values()), key=order.get, default="OK")
+    return {
+        "words_analyzed": words_total,
+        "sections": len(sections),
+        "findings": findings,
+        "overall": overall,
+        "advisory_note": ("Structural-tell proxies (StoryScope-derived) — advisory only, never a "
+                          "publish gate. These measure visible structure; they cannot see and have "
+                          "no relationship to any statistical watermark."),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description="ContentForge text metrics (burstiness, FK grade, keyword placement, structure)")
     parser.add_argument("--file", required=True, help="Markdown (or plain text) file to analyze")
     parser.add_argument("--keyword", default=None, help="Primary keyword for placement/density checks")
     parser.add_argument("--ai-tell-scan", action="store_true",
                          help="Add the deterministic AI-tell detector-signal proxy scan (advisory only)")
+    parser.add_argument("--structure-scan", action="store_true",
+                         help="Add the Tier-2 structural-tell proxy scan (StoryScope-derived; advisory only)")
     args = parser.parse_args()
 
     path = Path(args.file).expanduser()
@@ -362,6 +559,8 @@ def main():
     result = analyze(text, keyword=args.keyword)
     if args.ai_tell_scan:
         result["ai_tell_scan"] = ai_tell_scan(text)
+    if args.structure_scan:
+        result["structure_scan"] = structure_scan(text)
     result["file"] = str(path)
     _common.finish(result)
 

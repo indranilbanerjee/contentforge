@@ -58,6 +58,21 @@ Deliver the finished content to the client by:
 
 ---
 
+### Step 1.5: Apply the AI-Assistance Disclosure
+
+Before generating the .docx, decide whether the brand's disclosure block attaches — and record the decision either way.
+
+1. Read `ai_disclosure` from the brand profile: `{"mode": "claude-surfaces"|"always"|"off", "text": null|string, "author": null|string}`. A missing block means the default: `{"mode": "claude-surfaces", "text": null, "author": null}`.
+2. Run `python ${CLAUDE_PLUGIN_ROOT}/scripts/detect_surface.py --mode {mode}` — its `disclosure_applies` field IS the decision. The fail-safe is deliberate: an `uncertain` surface applies the disclosure in claude-surfaces mode, because over-disclosure is harmless and under-disclosure is the compliance risk. Never override the script's answer by guessing the surface yourself.
+3. When it applies, append the disclosure as the final content block of the deliverable BODY (inside the article markdown, before the appendices) so it survives `/contentforge:publish` to Webflow/WordPress and the .docx export:
+   - No custom text, no author: `*Created with AI assistance and reviewed by our editorial team.*`
+   - No custom text, author set: `*Created with AI assistance; researched, fact-checked, and edited by {author}.*`
+   - Custom `text` set: use it verbatim (the brand's words are the brand's choice).
+   The default wording is deliberately vendor-neutral (no model or vendor names) and claims only the review this pipeline actually performs. An empty author is fully supported — never invent a name, and never block on the field being blank.
+4. Record the decision in `run.json`: `"disclosure": {"applied": true|false, "mode": ..., "surface": ..., "author_named": true|false}` — an unapplied disclosure must be a recorded choice, not an omission.
+
+---
+
 ### Step 2: Generate .docx File
 
 #### 2.0 PRIMARY METHOD — invoke generate-docx.py (REQUIRED)

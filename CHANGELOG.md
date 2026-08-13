@@ -7,6 +7,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.22.0] — 2026-08-13
+
+Honest provenance + the structural tier. Two 2026 realities landed the same
+week: Anthropic began statistically watermarking Claude text output (models
+launched ≥ 2026-08-02, all surfaces, no opt-out — a mark proves *processed
+by*, not *authored by*), and the StoryScope paper (arXiv 2604.03136) showed
+AI text stays detectable on document STRUCTURE even after a perfect
+surface-style pass (93.9% F1 after stylistic stripping — structure is
+"largely orthogonal to surface prose artifacts"). ContentForge's answer to
+both is transparency and genuine human shaping, never evasion: no watermark
+detection or removal exists in this plugin, permanently.
+
+### Added
+
+- **AI-assistance disclosure layer** (`agents/08-output-manager.md` Step 1.5,
+  `scripts/detect_surface.py`, `skills/cf-style-guide` Step 6): brand
+  profile gains `ai_disclosure` — `{"mode": "claude-surfaces"|"always"|"off",
+  "text": null|custom, "author": null|name}`. Default wording is
+  author-optional ("reviewed by our editorial team"), vendor-neutral
+  (guard-tested: no model or vendor names), and claims only the review the
+  pipeline actually performs. `detect_surface.py` classifies the harness
+  from affirmative env fingerprints with the fail-safe pinned in tests:
+  **uncertain ⇒ disclose** — skipping requires an affirmative non-Claude
+  fingerprint, never mere absence of a Claude one. The block is applied
+  inside the deliverable body (survives `/contentforge:publish` and the
+  .docx export) and the decision is recorded in `run.json` either way.
+- **Tier-2 structural scan** (`text-metrics.py --structure-scan`):
+  deterministic proxies for the StoryScope structural tells, adapted to
+  non-fiction — moralizing/over-explained takeaways, template section
+  symmetry, parallel heading syntax, specificity density (numbers, proper
+  nouns, citations, quotes per 1000 words), stance absence (hedging vs
+  first-person markers), paragraph-rhythm evenness. Every finding carries
+  its spans and an OK/NOTE/ATTENTION band; thresholds live in the script,
+  deliberately never in scoring-thresholds.json (advisory-not-gate is
+  guard-tested). Tier-1 `--ai-tell-scan` also gains span coverage for
+  connective openers and banned-lexeme clusters.
+- **Two-tier review sheet** (`scripts/build_review_sheet.py` →
+  `phase-6.5-review-sheet.html`): self-contained HTML with Tier-1 sentence
+  highlights inline in the draft and Tier-2 structural cards with evidence
+  and edit direction. The humanizer emits it (new Step 7.5.4b); the reviewer
+  guarantees it exists in every lane (generating it itself when a lane
+  skipped Phase 6.5); the Completion Card carries a structural-tells line.
+  The sheet's header states the contract: advisory, never a publish gate,
+  and it cannot see and has no relationship to any statistical watermark.
+- **Structural-edit guidance in the humanizer**: where the scan reports
+  NOTE/ATTENTION, apply structural edits grounded in the Phase 2 ledger —
+  cut spelled-out takeaways, break template symmetry the content doesn't
+  earn, add specific named/numbered facts (never invented), let the brand
+  take a research-supported stance.
+- `references/ai-detection-signals.md` gains "The structural tier — style is
+  not enough" documenting the StoryScope findings and the four transferable
+  structural tells. Design spec committed at
+  `research/2026-08-13-disclosure-provenance-design.md`.
+- `tests/test_disclosure_layer.py` (12 tests) + `tests/test_structural_tells.py`
+  (13 tests): the mode×surface decision matrix incl. the uncertain⇒disclose
+  pin, default-wording vendor-neutrality, author-optionality, run.json
+  recording, AI-shaped fixture fires ATTENTION on all five core tells /
+  human-shaped fixture stays OK (plant-checked both directions), review-sheet
+  escaping + both-tier content, and the full pipeline wiring. **Tests 248 → 273.**
+
 ## [3.21.1] — 2026-08-12
 
 Express keeps the craft. User review of the v3.21.0 express design surfaced the

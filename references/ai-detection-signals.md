@@ -45,6 +45,34 @@ from genuine quality that raises perplexity — which is what this pipeline opti
 Detectors also have real false positives (uniform *human* text gets flagged). Therefore:
 **a detector score is advisory, never a publish gate.**
 
+## The structural tier — style is not enough (StoryScope, arXiv 2604.03136)
+
+The strongest 2026 evidence moved detection UP a level: AI text is separable from human
+text on **narrative/document structure alone** at 93.2% macro-F1 — and after surface-style
+stripping (the LAMP framework, i.e. the layer the 41-pattern catalog works on), structural
+detection held at 93.9%. Structure is "largely orthogonal to surface prose artifacts": a
+perfect surface pass leaves a piece structurally machine-shaped. The structural tells that
+transfer from that fiction corpus to marketing prose:
+
+1. **Over-explained takeaways** — AI states the theme (77% vs 52% human): "in conclusion,
+   the key takeaway…" closers on every section. Humans trust the reader to infer.
+2. **Template symmetry** — near-identical section lengths, parallel heading syntax,
+   single-track tidy resolution. Human structure is asymmetric; sections take the length
+   their content earns.
+3. **Generic center** — low density of specific, checkable, outside-world references.
+   Humans cite specific sources at ~2× the AI rate; human pieces occupy a rarer, more
+   dispersed structural region. Specificity IS the human signal.
+4. **Stance absence** — hedged, positionless evenness (also the measured Claude
+   fingerprint: "restraint, uniform voice, quiet endings"). A human expert takes a
+   defensible stance somewhere.
+
+`scripts/text-metrics.py --structure-scan` measures deterministic proxies for all four
+(plus paragraph-rhythm evenness) with spans, and `scripts/build_review_sheet.py` renders
+them for the human editor. Same rule as every detector signal here: **advisory, never a
+publish gate** — and the right response is a genuine structural edit grounded in the
+Phase 2 ledger, never invented specifics. These scans measure visible text only; they
+cannot see and have no relationship to any statistical watermark.
+
 ## The positive model — what human-expert prose does (emulate)
 1. **Journalistic grounding:** event + date + named source, inline.
 2. **Technical–broad balance:** a technical detail paired with a plain-language explanation

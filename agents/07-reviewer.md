@@ -375,6 +375,7 @@ Return TWO things as your final output:
 | **OVERALL** | **100%** | **[X.X]** | **[X.XX]** | **[decision]** |
 
 **AI-detectability (advisory):** {LOW|MODERATE|HIGH} — {n} signals flagged (per Phase 6.5 tell-scan §8; advisory, never a gate)
+**Structural tells (advisory):** {OK|NOTE|ATTENTION} — {m} structural findings; review sheet: {phase-6.5-review-sheet.html path} (Tier-2 structure scan; advisory, never a gate. If the lane skipped Phase 6.5, generate the sheet yourself from the latest draft artifact: `python ${CLAUDE_PLUGIN_ROOT}/scripts/build_review_sheet.py --draft {latest artifact} --out {run_dir}/phase-6.5-review-sheet.html` — the sheet must exist in every lane)
 
 ## DIMENSION DETAILS
 For each dimension, report: overall score, component scores (1-line each with score + brief rationale), top strengths, areas for improvement, critical violations (if any).
