@@ -90,6 +90,19 @@ def _ratio(a: str, b: str) -> float:
     return difflib.SequenceMatcher(None, a, b).ratio()
 
 
+def _best_ratio(matcher: difflib.SequenceMatcher, candidate: str) -> float:
+    """Similarity via difflib's documented cheap-to-expensive escalation.
+
+    real_quick_ratio and quick_ratio are upper bounds on ratio, so a candidate
+    that cannot clear NEAR_MATCH on the cheap bound cannot clear it on the real
+    one. On a long piece this skips the overwhelming majority of pairs.
+    """
+    matcher.set_seq1(candidate)
+    if matcher.real_quick_ratio() < NEAR_MATCH or matcher.quick_ratio() < NEAR_MATCH:
+        return 0.0
+    return matcher.ratio()
+
+
 def classify(source_text: str, draft_text: str) -> dict:
     """Match every draft sentence against the author's source draft.
 
@@ -104,10 +117,13 @@ def classify(source_text: str, draft_text: str) -> dict:
     for si, _, sn in src:
         if not sn:
             continue
+        # seq2 is the fixed side difflib caches internals for; hold the author
+        # sentence there and stream the draft sentences past it.
+        matcher = difflib.SequenceMatcher(None, "", sn)
         for di, _, dn in dra:
             if not dn:
                 continue
-            r = _ratio(sn, dn)
+            r = _best_ratio(matcher, dn)
             if r >= NEAR_MATCH:
                 scored.append((r, si, di))
     scored.sort(key=lambda t: (-t[0], t[1], t[2]))
