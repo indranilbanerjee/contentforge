@@ -105,6 +105,28 @@ def split_sentences(text: str) -> list[str]:
     return [s for s in (x.strip() for x in raw) if len(s.split()) >= 1]
 
 
+# Trailing sections that belong to the deliverable but are not the article.
+# Gate 3 measures the ARTICLE against the word-count target; a reference list is
+# not prose the reader reads. A live run drafted a 1,779-word body under a
+# 1,200-word target and `word_count` reported 2,887 — the orchestrator checking
+# the documented number could not see either figure it needed. This is the same
+# shape as the Humanization Report landing in the file authorship.py measures:
+# the file contained more than the thing being measured.
+_APPENDIX_RE = re.compile(
+    r"^#{1,3}\s+(references|bibliography|works cited|sources|appendix\b|"
+    r"citations|further reading|footnotes|endnotes)\b",
+    re.I | re.M)
+
+
+def _body_word_count(md_text: str) -> int:
+    """Words in the article itself, excluding trailing reference/appendix
+    sections. Reported alongside `word_count` rather than replacing it, so no
+    caller has to know a flag exists to get the number the gate actually wants."""
+    m = _APPENDIX_RE.search(md_text)
+    body = md_text[:m.start()] if m else md_text
+    return len(body.split())
+
+
 def analyze(md_text: str, keyword: str | None = None) -> dict:
     md_text, fm_title = _strip_frontmatter(md_text)
     lines = md_text.split("\n")
@@ -213,6 +235,7 @@ def analyze(md_text: str, keyword: str | None = None) -> dict:
 
     result = {
         "word_count": word_count,
+        "body_word_count": _body_word_count(md_text),
         "sentence_count": sentence_count,
         "avg_sentence_len": round(avg_len, 2),
         "sentence_len_stdev": round(stdev, 2),

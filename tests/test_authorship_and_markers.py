@@ -554,3 +554,50 @@ class TestTheReportMustNotLiveInTheMeasuredFile(unittest.TestCase):
         self.assertIn("phase-6.5-report.md", text,
                       "Pipeline Contract must declare the report artifact so the "
                       "orchestrator saves it somewhere other than the draft")
+
+
+class TestTheGateMeasuresTheArticleNotTheFile(unittest.TestCase):
+    """Third instance of one root cause, found during a live pipeline run.
+
+    Gate 3 checks the article against a word-count target, but `word_count`
+    counted the reference list too. A real draft came in at 1,779 body words
+    against a 1,200-word target while the documented command reported 2,887 --
+    so an orchestrator following the contract saw neither the number it needed
+    nor the fact that the gate had failed.
+
+    Same shape as the Humanization Report landing inside the file authorship.py
+    measures: the file contained more than the thing being measured. Reported as
+    an extra key rather than a flag, because a fix nobody has to know about is
+    the only kind that holds.
+    """
+
+    def test_reference_section_is_excluded_from_body_count(self):
+        article = "# T\n\n" + ("A sentence of real article prose here. " * 40)
+        refs = "\n\n## References\n\n" + ("Author, A. (2020). A long paper title. Journal. " * 40)
+        whole = tm.analyze(article + refs)
+        self.assertGreater(whole["word_count"], whole["body_word_count"])
+        body_only = tm.analyze(article)
+        self.assertEqual(whole["body_word_count"], body_only["body_word_count"],
+                         "appending references must not move the body count")
+
+    def test_body_count_matches_word_count_when_there_is_no_appendix(self):
+        article = "# T\n\n" + ("A sentence of real article prose here. " * 30)
+        r = tm.analyze(article)
+        self.assertAlmostEqual(r["body_word_count"], r["word_count"], delta=6,
+                               msg="with no appendix the two counts should agree")
+
+    def test_common_appendix_headings_are_all_recognised(self):
+        article = "# T\n\n" + ("A sentence of real article prose here. " * 30)
+        tail = ("Author, A. (2020). A paper. " * 30)
+        for heading in ("## References", "## Bibliography", "### Sources",
+                        "## Works Cited", "## Appendix A", "## Further Reading"):
+            with self.subTest(heading=heading):
+                r = tm.analyze(f"{article}\n\n{heading}\n\n{tail}")
+                self.assertLess(r["body_word_count"], r["word_count"],
+                                f"{heading!r} was not treated as an appendix")
+
+    def test_gate_3_contract_names_the_body_count(self):
+        skill = (Path(__file__).resolve().parent.parent
+                 / "skills" / "contentforge" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("body_word_count", skill,
+                      "Gate 3 must tell the orchestrator which number to check")
