@@ -47,7 +47,7 @@ Auditing for pattern 42 surfaced a genuine self-contradiction: three files instr
 ### Notes
 
 - **No watermark detection or removal exists anywhere in ContentForge, and none will be added.** These scans measure visible text only. A guard now fails the suite if evasion vocabulary (zero-width characters, homoglyphs, watermark stripping, "pass as human") appears in any of the files this release touched.
-- 273 → **308 tests**. New: `tests/test_authorship_and_markers.py` (35).
+- 273 → **310 tests**. New: `tests/test_authorship_and_markers.py` (37).
 
 ---
 

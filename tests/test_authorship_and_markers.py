@@ -124,6 +124,28 @@ class TestSignificanceMarkers(unittest.TestCase):
                 "Reviewers confirmed the figure against payroll records from 2024.")
         self.assertEqual(tm.ai_tell_scan(text)["significance_marker_count"], 0)
 
+    def test_literal_uses_of_marker_words_are_not_flagged(self):
+        """Precision guard. 'that's the part' and 'the thing is' have ordinary
+        literal senses; the phrase list is scoped so those survive. A scan that
+        cries wolf on plain prose gets ignored, which costs more than it saves."""
+        legitimate = [
+            "Section 4 covers reviewer staffing. That's the part of the regulation that changed in June.",
+            "The instrument arrived damaged. The thing is broken beyond any economical repair.",
+        ]
+        for text in legitimate:
+            with self.subTest(text=text[:45]):
+                self.assertEqual(tm.ai_tell_scan(text)["significance_marker_count"], 0,
+                                 "literal prose must not be flagged as a significance marker")
+
+    def test_marker_senses_still_fire(self):
+        for text, phrase in (
+            ("The median rose to 31 days. Here's the thing, that is the part that matters.", "here's the thing"),
+            ("Approvals slipped badly. The thing is, nobody checked the benchmark for years.", "the thing is,"),
+        ):
+            with self.subTest(phrase=phrase):
+                scan = tm.ai_tell_scan(text)
+                self.assertEqual(scan["significance_marker_count"], 1)
+
 
 class TestSoftAdverbTags(unittest.TestCase):
     """Pattern 43 — clusters are the tell; one earned use is not."""
