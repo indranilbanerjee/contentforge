@@ -90,12 +90,14 @@
       },
       "phase_6_5_humanizer": {
         "max_ai_signal_score": 0.3,
-        "_formula": "ai_signal_score = weighted patterns detected / total weighted checks, normalized 0-1. High-signal patterns (01, 07, 09, 14, 30, 36) weight x2; all other catalog patterns weight x1. See config/humanization-patterns.json ai_signal_scoring for the full computation.",
+        "_formula": "ai_signal_score = weighted patterns detected / total weighted checks, normalized 0-1. High-signal patterns (01, 07, 09, 14, 30, 36, 42) weight x2; all other catalog patterns weight x1. See config/humanization-patterns.json ai_signal_scoring for the full computation.",
         "burstiness_advisory": true,
         "ai_tell_scan": {
           "aphorism_per_1000_high": 3.0,
           "banned_lexemes_per_1000_high": 4.0,
           "connective_openers_pct_high": 15,
+          "significance_markers_per_1000_high": 1.5,
+          "soft_adverb_tags_per_1000_high": 4.0,
           "moderate_fraction": 0.5
         },
         "require_brand_personality": true,

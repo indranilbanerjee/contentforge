@@ -2,7 +2,7 @@
 
 > **New in v3.19.2:** the per-skill `references/` files introduced in v3.19.1 are now covered by a test contract — every "read this before that step" pointer is verified to resolve to a real file and a real heading, no reference file is left uncited, and no content is allowed to live in both a skill body and its own reference. Nothing changes in how you run ContentForge; this keeps a future edit from quietly cutting a skill off from its own examples. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
 >
-> **New in v3.19.0:** `/contentforge:brand-setup` now auto-harvests your site — a robots-respecting crawler builds your `brand_pages` inventory and pulls verbatim `brand_facts` (one source URL per fact) in a single confirmation step, and the researcher recons your own site first before every piece. The humanizer's detector knowledge is now internalized (41-pattern catalog, a grounding-first rewrite, and an advisory `--ai-tell-scan`) instead of leaning on burstiness tricks. Plus hardened Cowork/sandbox detection. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
+> **New in v3.19.0:** `/contentforge:brand-setup` now auto-harvests your site — a robots-respecting crawler builds your `brand_pages` inventory and pulls verbatim `brand_facts` (one source URL per fact) in a single confirmation step, and the researcher recons your own site first before every piece. The humanizer's detector knowledge is now internalized (43-pattern catalog, a grounding-first rewrite, and an advisory `--ai-tell-scan`) instead of leaning on burstiness tricks. Plus hardened Cowork/sandbox detection. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
 >
 > **New in v3.18.0:** two more built-in content types — **case study** (client data supplied at intake under a strict provenance rule) and **newsletter** (subject-line package, one-CTA rule) — plus an **author/E-E-A-T byline layer** (add `author_profiles` to your brand profile; `/contentforge:cf-style-guide` prompts for it) and **`/contentforge:cf-aeo-check`**, a post-publication check of whether AI engines actually cite your piece.
 
@@ -1441,4 +1441,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.22.0** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, 41-pattern AI-detection humanizer, three-layer fact verification.
+**ContentForge v3.22.0** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, 43-pattern AI-detection humanizer, three-layer fact verification.

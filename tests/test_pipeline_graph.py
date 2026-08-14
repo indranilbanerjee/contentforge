@@ -339,28 +339,28 @@ class TestHumanizationCatalog(unittest.TestCase):
         cls.raw = read(cls.CONFIG_PATH)
         cls.cfg = json.loads(cls.raw)
 
-    def test_detector_signal_patterns_bucket_has_six_entries_36_to_41(self):
+    def test_detector_signal_patterns_bucket_has_eight_entries_36_to_43(self):
         catalog = self.cfg["signs_of_ai_writing_catalog"]
         self.assertIn("detector_signal_patterns", catalog,
                       "signs_of_ai_writing_catalog is missing the new detector_signal_patterns bucket")
         bucket = catalog["detector_signal_patterns"]
         numbered = sorted(k for k in bucket if re.match(r"^\d{2}_", k))
-        self.assertEqual(len(numbered), 6,
-                         f"detector_signal_patterns must carry exactly 6 numbered patterns, found {numbered}")
-        expected_prefixes = {f"{n}_" for n in range(36, 42)}
+        self.assertEqual(len(numbered), 8,
+                         f"detector_signal_patterns must carry exactly 8 numbered patterns, found {numbered}")
+        expected_prefixes = {f"{n}_" for n in range(36, 44)}
         actual_prefixes = {k[:3] for k in numbered}
         self.assertEqual(actual_prefixes, expected_prefixes,
-                         f"detector_signal_patterns keys must be numbered 36-41, got {numbered}")
+                         f"detector_signal_patterns keys must be numbered 36-43, got {numbered}")
 
-    def test_total_numbered_patterns_across_catalog_equals_41(self):
+    def test_total_numbered_patterns_across_catalog_equals_43(self):
         catalog = self.cfg["signs_of_ai_writing_catalog"]
         total = 0
         for bucket_name, bucket in catalog.items():
             if bucket_name.startswith("_") or not isinstance(bucket, dict):
                 continue
             total += sum(1 for k in bucket if re.match(r"^\d{2}_", k))
-        self.assertEqual(total, 41,
-                         f"catalog total numbered patterns must be 41 (35 legacy + 6 new), got {total}")
+        self.assertEqual(total, 43,
+                         f"catalog total numbered patterns must be 43 (35 legacy + 8 detector-signal), got {total}")
 
     def test_human_grounding_techniques_has_five_named_techniques(self):
         self.assertIn("human_grounding_techniques", self.cfg,

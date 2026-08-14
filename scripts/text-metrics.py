@@ -301,16 +301,33 @@ def ai_tell_scan(text: str) -> dict:
                if (s.strip().split() or [""])[0].lower().endswith("ing"))
     em_dashes = text.count("—") + text.count(" -- ")
 
-    flagged, aph = [], 0
+    # Patterns 42/43. Markers are matched on a normalized sentence so that a
+    # curly apostrophe ("here’s") counts the same as a straight one.
+    markers = tuple(m.lower() for m in lex.get("significance_markers", ()))
+    soft_set = set(w.lower() for w in lex.get("soft_adverb_tags", ()))
+
+    flagged, aph, sig, soft_total, soft_cluster = [], 0, 0, 0, 0
     for i, s in enumerate(sentences):
         st = s.strip()
-        if is_aphorism_candidate(s):
+        norm = st.lower().replace("’", "'")
+        hit_marker = next((m for m in markers if m in norm), None)
+        soft_here = sum(1 for w in re.findall(r"[a-z']+", norm) if w in soft_set)
+        soft_total += soft_here
+        if soft_here >= 2:
+            soft_cluster += 1
+        if hit_marker:
+            sig += 1
+            flagged.append({"index": i, "text": st, "tell": "significance_marker",
+                            "phrase": hit_marker})
+        elif is_aphorism_candidate(s):
             aph += 1
             flagged.append({"index": i, "text": st, "tell": "aphorism_candidate"})
         elif st.lower().startswith(connectives):
             flagged.append({"index": i, "text": st, "tell": "connective_opener"})
         elif sum(1 for w in re.findall(r"[A-Za-z'-]+", st) if w.lower() in lset) >= 2:
             flagged.append({"index": i, "text": st, "tell": "banned_lexeme_cluster"})
+        elif soft_here >= 2:
+            flagged.append({"index": i, "text": st, "tell": "soft_adverb_cluster"})
 
     runs, i = [], 0
     lens = [len(s.split()) for s in sentences]
@@ -328,12 +345,27 @@ def ai_tell_scan(text: str) -> dict:
         "aphorism_candidates": round(aph * per_k, 2),
         "banned_lexemes": round(banned * per_k, 2),
         "em_dashes": round(em_dashes * per_k, 2),
+        "significance_markers": round(sig * per_k, 2),
+        "soft_adverb_tags": round(soft_total * per_k, 2),
     }
     conn_pct = round(100.0 * conn / n, 1)
     highs = {"aphorism_candidates": thr["aphorism_per_1000_high"],
-             "banned_lexemes": thr["banned_lexemes_per_1000_high"]}
-    over_high = any(metrics[k] > v for k, v in highs.items()) or conn_pct > thr["connective_openers_pct_high"]
-    over_mod = any(metrics[k] > v * thr["moderate_fraction"] for k, v in highs.items()) \
+             "banned_lexemes": thr["banned_lexemes_per_1000_high"],
+             "significance_markers": thr["significance_markers_per_1000_high"],
+             "soft_adverb_tags": thr["soft_adverb_tags_per_1000_high"]}
+    # Absolute floors for patterns 42/43: in a short piece a single legitimate
+    # "actually" normalizes to a large per-1000 figure. One earned use is not a
+    # tell, and the scan must not manufacture one out of arithmetic.
+    floors = {"significance_markers": 2, "soft_adverb_tags": 3}
+    counts = {"significance_markers": sig, "soft_adverb_tags": soft_total}
+
+    def _fires(key, threshold):
+        if counts.get(key, floors.get(key, 0)) < floors.get(key, 0):
+            return False
+        return metrics[key] > threshold
+
+    over_high = any(_fires(k, v) for k, v in highs.items()) or conn_pct > thr["connective_openers_pct_high"]
+    over_mod = any(_fires(k, v * thr["moderate_fraction"]) for k, v in highs.items()) \
         or conn_pct > thr["connective_openers_pct_high"] * thr["moderate_fraction"]
     rating = "HIGH" if over_high else ("MODERATE" if over_mod else "LOW")
 
@@ -341,6 +373,8 @@ def ai_tell_scan(text: str) -> dict:
             "per_1000_words": metrics,
             "connective_openers_pct": conn_pct,
             "participial_openers_pct": round(100.0 * part / n, 1),
+            "significance_marker_count": sig,
+            "soft_adverb_cluster_sentences": soft_cluster,
             "uniform_runs": runs,
             "flagged_sentences": flagged[:25],
             "advisory_rating": rating,
@@ -380,16 +414,71 @@ _BANDS = {
     "specificity_per_1000": (5.0, 10.0),        # LOWER is worse (generic)
     "hedging_per_1000": (18.0, 12.0),           # higher is worse
     "paragraph_evenness_cv": (0.25, 0.40),      # LOWER is worse (uniform voice)
+    "mentions_per_entity": (1.25, 1.60),        # LOWER is worse (churn, not dwell)
 }
+
+# Metrics where a SMALLER value is the tell.
+_LOWER_IS_WORSE = frozenset((
+    "section_symmetry_cv", "specificity_per_1000", "paragraph_evenness_cv",
+    "mentions_per_entity",
+))
+
+# Entity extraction for the development proxy. Capitalized runs are merged so
+# "European Medicines Agency" counts as one entity, not three.
+_ENTITY_TOKEN_RE = re.compile(r"^[A-Z][\w'’.&-]*$")
+_NUMERIC_RE = re.compile(r"^[$€£¥]?\d[\d,.]*%?$")
+# Capitalized words that routinely open a clause without naming anything.
+_ENTITY_STOPWORDS = frozenset((
+    "the", "a", "an", "this", "that", "these", "those", "it", "its", "they",
+    "their", "there", "and", "but", "or", "if", "when", "while", "however",
+    "moreover", "furthermore", "additionally", "because", "so", "then",
+    "in", "on", "at", "for", "with", "by", "from", "to", "of", "as", "after",
+    "before", "during", "since", "until", "each", "every", "both", "most",
+    "many", "some", "no", "not", "we", "our", "you", "your", "he", "she",
+    "his", "her", "i", "my", "one", "two", "three", "first", "second", "third",
+))
 
 
 def _band(metric, value):
     att, note = _BANDS[metric]
-    lower_is_worse = metric in ("section_symmetry_cv", "specificity_per_1000",
-                                "paragraph_evenness_cv")
-    if lower_is_worse:
+    if metric in _LOWER_IS_WORSE:
         return "ATTENTION" if value <= att else ("NOTE" if value <= note else "OK")
     return "ATTENTION" if value >= att else ("NOTE" if value >= note else "OK")
+
+
+def _extract_entities(sentences):
+    """Distinct named/numeric specifics and how often each recurs.
+
+    Returns {normalized_entity: mention_count}. The first token of a sentence
+    is skipped because English capitalizes it regardless of whether it names
+    anything — the same simplification the specificity proxy makes.
+    """
+    counts = {}
+    for s in sentences:
+        tokens = s.split()
+        run = []
+        for tok in tokens[1:]:
+            bare = tok.strip("([{\"'“”’,;:.!?)]}")
+            if not bare:
+                continue
+            if _NUMERIC_RE.match(bare):
+                counts[bare.lower()] = counts.get(bare.lower(), 0) + 1
+                if run:
+                    key = " ".join(run).lower()
+                    counts[key] = counts.get(key, 0) + 1
+                    run = []
+                continue
+            if _ENTITY_TOKEN_RE.match(bare) and bare.lower() not in _ENTITY_STOPWORDS:
+                run.append(bare)
+                continue
+            if run:
+                key = " ".join(run).lower()
+                counts[key] = counts.get(key, 0) + 1
+                run = []
+        if run:
+            key = " ".join(run).lower()
+            counts[key] = counts.get(key, 0) + 1
+    return counts
 
 
 def _cv(values):
@@ -522,6 +611,37 @@ def structure_scan(md_text: str) -> dict:
         "paragraphs_measured": len(plens), "coefficient_of_variation": pcv,
         "band": _band("paragraph_evenness_cv", pcv) if pcv is not None else "OK",
         "meaning": "Uniform paragraph rhythm is a machine fingerprint; human writing has short punches and long developments.",
+    }
+
+    # 7. Entity development — are specifics developed, or name-dropped once?
+    ents = _extract_entities(sentences)
+    distinct = len(ents)
+    mentions = sum(ents.values())
+    depth = round(mentions / distinct, 2) if distinct else None
+    singletons = sum(1 for c in ents.values() if c == 1)
+    top = sorted(ents.items(), key=lambda kv: (-kv[1], kv[0]))[:10]
+    # A short piece names things once because it has no room to develop them —
+    # that is brevity, not churn. Only speak where development was possible:
+    # enough words for a second mention to have fit, and enough entities that
+    # the pattern could be a pattern.
+    measurable = words_total >= 600 and distinct >= 12
+    band = _band("mentions_per_entity", depth) if measurable else "OK"
+    findings["entity_development"] = {
+        "distinct_entities": distinct,
+        "distinct_per_1000_words": round(distinct * per_k, 2),
+        "mentions_per_entity": depth,
+        "single_mention_share": round(singletons / distinct, 2) if distinct else None,
+        "most_developed": [{"entity": e, "mentions": c} for e, c in top if c > 1],
+        "band": band,
+        "measurable": measurable,
+        "measurable_note": ("Banded only at >=600 words and >=12 distinct entities; below that a "
+                            "single mention each is brevity, not churn."),
+        "meaning": ("A new name or number in almost every sentence, each mentioned once, reads as a "
+                    "machine establishing a setting; human experts return to the few specifics that "
+                    "carry the argument. FIX BY DEVELOPING, NEVER BY DELETING: give an existing "
+                    "specific a second, substantive mention from the verified ledger. Cutting "
+                    "specifics to raise this number would lower the specificity finding above and is "
+                    "the wrong move — and inventing a mention is forbidden outright."),
     }
 
     order = {"OK": 0, "NOTE": 1, "ATTENTION": 2}

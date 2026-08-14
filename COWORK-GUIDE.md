@@ -305,7 +305,7 @@ Phase 6/10: SEO/GEO Optimizer (2-3 min)
 ✓ Phase 6 complete (2m 29s)
 
 Phase 6.5/10: Humanizer (1-2 min)
-  → Walking the 41-pattern catalog across all 7 buckets...
+  → Walking the 43-pattern catalog across all 7 buckets...
   → Removed: 12 instances of "delve", "leverage", "robust"
   → Burstiness score: 0.78 (content-derived variation, advisory)
   → SEO preserved: keyword placement unchanged ✓
@@ -865,7 +865,7 @@ Input: "AI in Healthcare: 2026 Trends" (article, 2000 words, brand: AcmeCorp)
   ↓
 ┌─────────────────────────────────────────────────────────────┐
 │ Phase 6.5: Humanizer ⭐ (1-2 min)                            │
-│ → Remove AI telltale phrases (41-pattern catalog)           │
+│ → Remove AI telltale phrases (43-pattern catalog)           │
 │ → Content-derived variation (burstiness advisory)           │
 │ → Inject brand personality                                  │
 │ → Verify SEO preserved (keyword placement unchanged)        │

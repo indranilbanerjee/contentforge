@@ -45,6 +45,8 @@ TELL_LABELS = {
     "aphorism_candidate": "Aphorism — short ungrounded maxim",
     "connective_opener": "Connective opener (However/Moreover/...)",
     "banned_lexeme_cluster": "LLM-favored word cluster",
+    "significance_marker": "Significance marker — delete it, do not reword it (pattern 42)",
+    "soft_adverb_cluster": "Soft-adverb feeling tags (pattern 43)",
 }
 
 
@@ -78,6 +80,17 @@ def build_sheet(draft_text: str, tier1: dict, tier2: dict, title: str) -> str:
             evidence = f"<ul>{items}</ul>"
         elif f.get("headings"):
             evidence = "<ul>" + "".join(f"<li>{esc(h)}</li>" for h in f["headings"]) + "</ul>"
+        elif key == "entity_development":
+            if f.get("measurable") is False:
+                evidence = ("<ul><li>Not banded: the piece is too short or carries too few named "
+                            "specifics for development to be measurable.</li></ul>")
+            elif f.get("most_developed"):
+                items = "".join(f"<li>{esc(d['entity'])} — {d['mentions']} mentions</li>"
+                                for d in f["most_developed"][:8])
+                evidence = f"<ul>{items}</ul>"
+            else:
+                evidence = ("<ul><li>No specific is mentioned more than once — every name and "
+                            "number is introduced and dropped.</li></ul>")
         cards += f"""
         <div class="card" style="border-left:4px solid {BAND_COLORS[band]}">
           <div class="card-head"><b>{esc(key.replace('_', ' ').title())}</b>

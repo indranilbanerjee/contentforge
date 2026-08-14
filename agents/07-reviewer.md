@@ -201,7 +201,9 @@ SEO Performance Score: [X.X] / 10
 2. **Sentence Structure & Variety** — variation must be content-derived. Score on: no 5+ uniform runs (per the Phase 6.5 tell-scan) AND no manufactured-variety signature (runs of short content-free lines — pattern 36). Both clean = 9-10; uniform runs present = 5-6; manufactured variety present = 3-4 (it is worse than uniformity). Burstiness value is advisory context, not a scored target.
 3. **Paragraph Structure** — Ideal length (4-6 sentences for articles, 3-5 for blogs), good white space.
 4. **Scannability** — Clear H2/H3 structure, short paragraphs, lists/bullets where appropriate. Can a skimmer grasp main points in 30 seconds?
-5. **Humanization Quality** — Phase 6.5 report complete: grounding pass done (no standing maxims/impersonal assertions), 41-pattern catalog walked, AI-tell scan §8 present. Score 9-10 when the scan is LOW with a completed grounding pass; MODERATE = 6-8 with the flags listed; HIGH = ≤5 AND copy the flagged sentences into the review report. The scan NEVER hard-fails the review — it informs this sub-score only.
+5. **Humanization Quality** — Phase 6.5 report complete: grounding pass done (no standing maxims/impersonal assertions), 43-pattern catalog walked, AI-tell scan §8 present. Score 9-10 when the scan is LOW with a completed grounding pass; MODERATE = 6-8 with the flags listed; HIGH = ≤5 AND copy the flagged sentences into the review report. The scan NEVER hard-fails the review — it informs this sub-score only.
+
+   **Author-sentence protection (only when `source-draft.md` exists in the run directory).** This one is not a sub-score and not advisory. Read `phase-6.5-authorship.json`; if it is missing, run `scripts/authorship.py` yourself against `source-draft.md` and the latest draft. Any non-zero `violations.author_sentences_rewritten` or `violations.author_sentences_dropped` is a **BLOCKING finding**: return the piece to Phase 6.5 to restore those sentences verbatim, and never resolve it by editing the author's words further. A detector signal is a probabilistic opinion and stays advisory; the author's sentence going missing is a checkable fact about a promise the pipeline made.
 
 ```
 Readability = (Reading Level + Sentence Variety + Paragraph Structure + Scannability + Humanization) / 5
@@ -376,6 +378,8 @@ Return TWO things as your final output:
 
 **AI-detectability (advisory):** {LOW|MODERATE|HIGH} — {n} signals flagged (per Phase 6.5 tell-scan §8; advisory, never a gate)
 **Structural tells (advisory):** {OK|NOTE|ATTENTION} — {m} structural findings; review sheet: {phase-6.5-review-sheet.html path} (Tier-2 structure scan; advisory, never a gate. If the lane skipped Phase 6.5, generate the sheet yourself from the latest draft artifact: `python ${CLAUDE_PLUGIN_ROOT}/scripts/build_review_sheet.py --draft {latest artifact} --out {run_dir}/phase-6.5-review-sheet.html` — the sheet must exist in every lane)
+
+**Author sentences (NOT advisory; omit this line when the run has no `source-draft.md`):** {k} kept verbatim, {r} rewritten, {d} dropped — author word share {X.XXX}. Any rewritten or dropped sentence BLOCKS approval until Phase 6.5 restores it verbatim.
 
 ## DIMENSION DETAILS
 For each dimension, report: overall score, component scores (1-line each with score + brief rationale), top strengths, areas for improvement, critical violations (if any).

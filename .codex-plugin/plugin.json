@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.22.0",
-  "description": "Open-source enterprise content pipeline — 22 skills, 13 agents, 41-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
+  "version": "3.23.0",
+  "description": "Open-source enterprise content pipeline — 22 skills, 13 agents, 43-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"
@@ -26,8 +26,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ContentForge",
-    "shortDescription": "Open-source enterprise content pipeline — 22 skills, 13 agents, 41-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
-    "longDescription": "22 skills + 13 specialist agents + 10 quality gates + 41-pattern AI-detection humanizer + fact-checker subagent + three-category internal linking. Produces real .docx with embedded SEO/Quality/Production/Internal-Link appendices. EU AI Act Article 50 ready via C2PA .docx signing. Zero global hooks. 16 opt-in HTTP MCP connectors. Per-phase checkpoint resume. Portable across Claude Code, Codex, Cursor, and Antigravity via the Agent Skills open standard.",
+    "shortDescription": "Open-source enterprise content pipeline — 22 skills, 13 agents, 43-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
+    "longDescription": "22 skills + 13 specialist agents + 10 quality gates + 43-pattern AI-detection humanizer + fact-checker subagent + three-category internal linking. Produces real .docx with embedded SEO/Quality/Production/Internal-Link appendices. EU AI Act Article 50 ready via C2PA .docx signing. Zero global hooks. 16 opt-in HTTP MCP connectors. Per-phase checkpoint resume. Portable across Claude Code, Codex, Cursor, and Antigravity via the Agent Skills open standard.",
     "developerName": "Indranil Banerjee",
     "category": "Productivity",
     "capabilities": [
@@ -37,7 +37,7 @@
     "websiteURL": "https://indranil.in",
     "defaultPrompt": [
       "Run the ContentForge 10-phase pipeline for an article on EU AI Act compliance.",
-      "Humanize this draft against the 41-pattern AI-detection catalog.",
+      "Humanize this draft against the 43-pattern AI-detection catalog.",
       "Fact-check the claims in this draft against authoritative sources.",
       "Generate a .docx of this article with C2PA provenance for EU distribution."
     ]

@@ -264,7 +264,7 @@ Brand Compliance:
 
 Humanization:
   Burstiness: advisory, content-derived variation (no fixed target)
-  AI Pattern Check: Standard (41-pattern catalog)
+  AI Pattern Check: Standard (43-pattern catalog)
 ================================================================
 ```
 

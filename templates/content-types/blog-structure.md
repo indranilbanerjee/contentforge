@@ -59,14 +59,14 @@
   - "The One Thing That Changed Everything"
 
 **Content (150-250 words per section):**
-1. **Lead-In** — Conversational opening, often uses "Here's the thing..." or "So..."
+1. **Lead-In** — Open on the concrete thing the section is about: the number, the name, the moment. Never a warm-up phrase. "Here's the thing", "the thing is", "So," and "Here's the kicker" are humanizer patterns 42 and 41 — the humanizer deletes them, so do not write them.
 2. **Main Point** — The core idea explained simply
 3. **Evidence/Story** — Data, personal experience, or quick example (with citation if factual claim)
-4. **Takeaway** — "What this means for you..." or "Bottom line:"
+4. **Takeaway** — Land it on the specific rather than a label. Do NOT open with "What this means for you..." or "Bottom line:" (patterns 35 and 42, and the `moralizing` proxy in `--structure-scan` counts both). Say the consequence in the reader's terms — "Budget two extra weeks for agency review" beats "Bottom line: plan ahead."
 
 **H3 Subheadings (Use Sparingly):**
 - Only if section is complex
-- Keep casual: "But Wait, There's More" or "Here's Why This Matters"
+- Keep casual but specific — name what the subsection covers ("Where the two-week estimate comes from"). Avoid tease headings like "But Wait, There's More" or "Here's Why This Matters": they promise significance instead of delivering content, which is pattern 42.
 
 **Content Elements to Include:**
 - [ ] Personal voice ("I", "we", "you")

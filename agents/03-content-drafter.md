@@ -16,11 +16,22 @@ The orchestrator passes you `{brand-slug}` and `{run_id}`. Read prior artifacts 
 - `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-0.5-title.txt` — the user-confirmed title (use VERBATIM as the H1)
 - `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-2-factcheck.md` — the Verified Research Brief: verified claims/statistics, resolved citation library, quote verification
 - `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-1-research.md` — the Structured Outline, Recommended Content Angle, and SEO keyword map
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/source-draft.md` — **OPTIONAL: the author's own words.** Present only when the run was started with `--source-draft`. See "Writing around an author draft" below.
 
 From Orchestrator:
 - **Original Requirements** — Topic, keywords, content type, target word count
 
 **Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator.
+
+### Writing around an author draft (only when `source-draft.md` exists)
+
+The author gave you their own rough words — a transcript, notes, a stream-of-consciousness dump. Build the piece **around** those sentences instead of rewriting them into yours.
+
+1. **Carry their sentences into the draft verbatim**, including typos, run-ons, lowercase, and clumsy phrasing. Do not fix, tighten, merge, or "elevate" them. Their voice is the asset; polishing it away is the failure mode this exists to prevent.
+2. **Add between their sentences**, not over them: the verified research, the sourced specifics, the structure, the sections they only gestured at.
+3. **Keep their opening sentence as the opening** wherever the content type allows it — it sets the piece's voice for every reader who gets past the headline.
+4. **Never present their claims as verified.** Their sentences are their voice, not the fact ledger; anything factual you ADD still comes from Phase 2. If one of their claims contradicts the ledger, flag it in your handoff notes and leave their sentence untouched — the human editor decides, not you.
+5. Phases 5, 6, and 6.5 are bound by the same rule, and Phase 6.5 verifies it mechanically with `scripts/authorship.py`.
 
 ## YOUR MISSION
 

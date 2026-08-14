@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.22.0",
-  "description": "Open-source enterprise content pipeline — 22 skills, 13 agents, 41-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
+  "version": "3.23.0",
+  "description": "Open-source enterprise content pipeline — 22 skills, 13 agents, 43-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
   "contextFileName": "AGENTS.md",
   "excludeTools": []
 }

@@ -202,19 +202,19 @@ Example: "Section 2: Multi-Agent Architecture for Content Generation"
 
 **Components:**
 1. **Summary of Findings** (150-200 words)
-   - Recap the most important insights
-   - Restate key data points
-   - Emphasize significance
+   - Name the findings, each with the figure and source that established it
+   - State which finding changed the authors' prior view, and which remains contested
+   - Do NOT restate significance in the abstract ("underscores the importance of…") — humanizer pattern 01, and the `moralizing` proxy in `--structure-scan` counts it
 
 2. **Implications** (100-150 words)
-   - What these findings mean for the industry
-   - Strategic importance
-   - Broader impact
+   - What these findings mean for the industry, tied to a named decision a reader has to make
+   - Where the evidence stops: the population, period, or condition these findings do not cover
+   - Avoid "broader impact" filler; an implication a reader cannot act on is not an implication
 
-3. **Final Thoughts** (50-100 words)
-   - Forward-looking statement
-   - Call to awareness or action
-   - Lasting message
+3. **Conclusion** (50-100 words)
+   - A dated, falsifiable forward statement (what the authors expect by when, and what would prove them wrong) or a specific next step
+   - Head this section "Conclusion" or a descriptive title — never "Final Thoughts", "The Bottom Line", or "Key Takeaways", which humanizer pattern 35 strips
+   - No uplift close ("the future is bright"): pattern 25
 
 ---
 

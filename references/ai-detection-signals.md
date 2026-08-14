@@ -49,7 +49,7 @@ Detectors also have real false positives (uniform *human* text gets flagged). Th
 
 The strongest 2026 evidence moved detection UP a level: AI text is separable from human
 text on **narrative/document structure alone** at 93.2% macro-F1 — and after surface-style
-stripping (the LAMP framework, i.e. the layer the 41-pattern catalog works on), structural
+stripping (the LAMP framework, i.e. the layer the 43-pattern catalog works on), structural
 detection held at 93.9%. Structure is "largely orthogonal to surface prose artifacts": a
 perfect surface pass leaves a piece structurally machine-shaped. The structural tells that
 transfer from that fiction corpus to marketing prose:
@@ -67,11 +67,47 @@ transfer from that fiction corpus to marketing prose:
    defensible stance somewhere.
 
 `scripts/text-metrics.py --structure-scan` measures deterministic proxies for all four
-(plus paragraph-rhythm evenness) with spans, and `scripts/build_review_sheet.py` renders
-them for the human editor. Same rule as every detector signal here: **advisory, never a
-publish gate** — and the right response is a genuine structural edit grounded in the
-Phase 2 ledger, never invented specifics. These scans measure visible text only; they
-cannot see and have no relationship to any statistical watermark.
+(plus paragraph-rhythm evenness and entity development) with spans, and
+`scripts/build_review_sheet.py` renders them for the human editor. Same rule as every
+detector signal here: **advisory, never a publish gate** — and the right response is a
+genuine structural edit grounded in the Phase 2 ledger, never invented specifics. These
+scans measure visible text only; they cannot see and have no relationship to any
+statistical watermark.
+
+### Entity development — the specificity metric's other half
+
+A fifth structural tell rides alongside specificity and is easy to confuse with it. Text
+that introduces a fresh name or number in nearly every sentence, each mentioned once and
+abandoned, reads as a machine *establishing a setting*; an expert making a case returns to
+the few specifics the argument rests on. Human writing dwells, models parade.
+
+The two proxies pull in opposite directions on purpose, and the resolution matters:
+`specificity` asks whether there are checkable facts at all, `entity_development` asks
+whether they were developed. **Raise development by developing, never by deleting.** Give
+an existing specific a second substantive mention from the verified ledger — what it
+implies, who disputes it, what it cost. Cutting specifics to move the number would lower
+the more important metric and inverts what this pipeline is for; inventing a mention is
+forbidden outright. The proxy stays silent below 600 words or 12 distinct entities,
+because a short piece names things once for lack of room, which is brevity, not a tell.
+
+## Authorship — the one signal that is not a signal
+
+There is a mode where none of the above is the interesting question: the author brought
+their own draft. `scripts/authorship.py` measures which sentences of the finished piece are
+theirs, verbatim, and reports any that the pipeline rewrote or dropped.
+
+This is deliberately held to a different standard from everything else in this file. A
+detector proxy is a probabilistic opinion about text and therefore stays advisory forever.
+"The author wrote this sentence and it is no longer here" is a checkable fact about a
+promise the pipeline made, so it blocks. The remedy is equally unusual: restore the
+sentence *verbatim*, including its typos and run-ons. Their clumsiness is the authorship.
+
+`author_word_share` exists so Phase 8's disclosure can be accurate, and for no other
+reason. There is no ratio at which text becomes "human enough", nothing here is aimed at a
+detector, and the authored disclosure wording is read off the record rather than requested
+— it requires both a 25% floor and zero outstanding violations. Overclaiming human
+authorship is the one version of that statement a reader cannot verify, which is exactly
+why the pipeline may only ever understate it.
 
 ## The positive model — what human-expert prose does (emulate)
 1. **Journalistic grounding:** event + date + named source, inline.

@@ -69,7 +69,12 @@ Before generating the .docx, decide whether the brand's disclosure block attache
    - No custom text, author set: `*Created with AI assistance; researched, fact-checked, and edited by {author}.*`
    - Custom `text` set: use it verbatim (the brand's words are the brand's choice).
    The default wording is deliberately vendor-neutral (no model or vendor names) and claims only the review this pipeline actually performs. An empty author is fully supported — never invent a name, and never block on the field being blank.
-4. Record the decision in `run.json`: `"disclosure": {"applied": true|false, "mode": ..., "surface": ..., "author_named": true|false}` — an unapplied disclosure must be a recorded choice, not an omission.
+4. **Provenance-accurate wording when the author supplied their own draft.** Read `phase-6.5-authorship.json` if it exists. Use the authored wording ONLY when that record has `may_claim_authored: true` — which requires both that the author's own words carry at least 25% of the finished piece AND that none of their sentences were rewritten or dropped:
+   - Author named: `*Written by {author} with AI assistance for research, structure, and fact-checking.*`
+   - No author named: `*Written from the author's own draft, developed with AI assistance and reviewed before publication.*`
+
+   If the file is absent, or `may_claim_authored` is false, or the record shows any outstanding violation, fall back to the standard wording in step 3. This direction is one-way by design: an authorship record can only ever make a disclosure MORE specific about human involvement that demonstrably happened, and never less disclosing. **Never infer authorship from anything but this record** — not from the brand profile, not from a byline, not from the run having felt collaborative. A disclosure that overstates human authorship is worse than no disclosure at all, because it is the one form of this statement a reader cannot check.
+5. Record the decision in `run.json`: `"disclosure": {"applied": true|false, "mode": ..., "surface": ..., "author_named": true|false, "authorship_record": true|false, "authored_claim": true|false}` — an unapplied disclosure must be a recorded choice, not an omission.
 
 ---
 

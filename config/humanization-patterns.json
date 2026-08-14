@@ -71,7 +71,7 @@
     ]
   },
   "signs_of_ai_writing_catalog": {
-    "_description": "Comprehensive AI writing detection catalog — the core 29-pattern set organized into 5 buckets (Content, Language & Grammar, Style, Communication, Filler & Hedging) plus 6 additional 2026-era patterns (30-35) in the Structure & Framing bucket, plus 6 detector-signal patterns (36-41) derived from how AI-text detectors score prose (see references/ai-detection-signals.md). Used by Phase 6.5 humanizer Step 1. Expands the legacy ai_telltale_phrases lists above with patterns LLMs exhibit beyond mere word choice. Aggregate scoring: see ai_signal_scoring below.",
+    "_description": "Comprehensive AI writing detection catalog — the core 29-pattern set organized into 5 buckets (Content, Language & Grammar, Style, Communication, Filler & Hedging) plus 6 additional 2026-era patterns (30-35) in the Structure & Framing bucket, plus 8 detector-signal patterns (36-43) derived from how AI-text detectors score prose (see references/ai-detection-signals.md). 43 patterns total. Used by Phase 6.5 humanizer Step 1. Expands the legacy ai_telltale_phrases lists above with patterns LLMs exhibit beyond mere word choice. Aggregate scoring: see ai_signal_scoring below.",
     "_attribution": "Pattern catalog adapted from Wikipedia: Signs of AI writing (https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing) maintained by WikiProject AI Cleanup (CC BY-SA), with structure influenced by blader/humanizer (MIT). Integrated into ContentForge v3.9.0.",
     "content_patterns": {
       "01_significance_inflation": {
@@ -299,7 +299,7 @@
       }
     },
     "detector_signal_patterns": {
-      "_description": "Patterns 36-41: signals derived from how detectors actually score text (see references/ai-detection-signals.md). These survive lexical cleanup because they live in rhetoric and information density, not word choice.",
+      "_description": "Patterns 36-43: signals derived from how detectors actually score text (see references/ai-detection-signals.md). These survive lexical cleanup because they live in rhetoric and information density, not word choice. Patterns 42-43 are the significance-marking family — sentences and adverbs whose only job is to grade the piece's own meaning.",
       "36_aphoristic_maxims": {
         "signal": "Short, polished, content-free 'insight' one-liners — broad over-neutral statements with no number, name, date, or source. The single strongest post-cleanup AI tell.",
         "example": "Speed wins the shelf. | Strong brands design the data to travel.",
@@ -330,11 +330,56 @@
         "signal": "High share of sentences opening with formulaic connectives: So, Because, Moreover, Furthermore, Additionally, Indeed, Ultimately, 'The reason is that'.",
         "example": "Moreover, the data shows... Furthermore, the agency requires...",
         "fix_strategy": "Open with subjects, specifics, or data. Target: <10% of sentences open with a formulaic connective."
+      },
+      "42_significance_markers": {
+        "signal": "A sentence whose ONLY job is to tell the reader what a neighbouring sentence means or which part matters — the narrator stepping outside the piece to label its own significance. Distinct from pattern 27 (persuasive authority tropes), which dresses up an ordinary point; this one adds no point at all. Distinct from pattern 28 (signposting), which announces what comes next rather than grading what came before.",
+        "phrases_to_watch": [
+          "here's the thing",
+          "here is the thing",
+          "the thing is",
+          "here's the kicker",
+          "here's where it gets interesting",
+          "here's what's interesting",
+          "that's the part",
+          "that's the part that got me",
+          "what got me was",
+          "what struck me was",
+          "and that's the point",
+          "that's the whole point",
+          "which is exactly the problem",
+          "let that sink in",
+          "that's what kills me",
+          "the best part?",
+          "and here's why that matters",
+          "read that again"
+        ],
+        "example": "Approvals slipped from 14 days to 31. Here's the thing — that's the part that really matters.",
+        "fix_strategy": "DELETE the labelling sentence; do not reword it. The specific it points at is already doing the work, and deleting is what the evidence shows actually changes the read. If the moment genuinely matters, earn it by returning to the specific (a second, developed mention) rather than announcing it. Never replace one marker with a softer marker.",
+        "weight": "high",
+        "why_it_matters": "It is a reader-facing tell (a knowing reader hears the ceremony) AND it correlates with machine planning, because labelling significance requires standing outside a plan you already have. Field evidence: deleting exactly two such sentences from an otherwise unchanged piece flipped a detector verdict end to end — the cleanest single-variable result in the public evidence base. ContentForge removes it because it is filler, not to move any detector score."
+      },
+      "43_soft_adverb_feeling_tags": {
+        "signal": "Framing adverbs used to attach feeling to a sentence rather than meaning to a verb — especially in final position. The polite ghost of pattern 42: same job (grading the sentence), smaller costume.",
+        "phrases_to_watch": [
+          "honestly",
+          "genuinely",
+          "truly",
+          "literally",
+          "actually",
+          "basically",
+          "quietly",
+          "frankly",
+          "remarkably",
+          "interestingly"
+        ],
+        "example": "The backlog doubled in eleven months, honestly. It was genuinely a quietly remarkable shift.",
+        "fix_strategy": "Delete the adverb. Keep at most ONE in the whole piece, and only where it does literal work ('literally' meaning literally; 'actually' marking a genuine correction) — never as a sentence-final feeling tag, and never two in one sentence. If the sentence needs force, it needs a specific, not an adverb.",
+        "scope_note": "Two or more in one sentence, or more than one per 1000 words, counts as the cluster this pattern targets. A single load-bearing use is not a hit."
       }
     }
   },
   "human_grounding_techniques": {
-    "_description": "The POSITIVE model — what human-expert prose does. The humanizer's primary toolset; removal patterns 01-41 are secondary. See references/ai-detection-signals.md.",
+    "_description": "The POSITIVE model — what human-expert prose does. The humanizer's primary toolset; removal patterns 01-43 are secondary. See references/ai-detection-signals.md.",
     "journalistic_grounding": {
       "rule": "Ground claims in specifics inline: event + date + named source/agency/molecule. Specificity is the single most effective humanizing move (it raises perplexity because no model predicts those exact tokens).",
       "example": "In June 2024 the agency finalized its clinical-pharmacology guidance for this class (Agency, 2024).",
@@ -361,19 +406,21 @@
     "_description": "Flat machine-readable list consumed by scripts/text-metrics.py --ai-tell-scan. Superset of pattern 07 examples.",
     "llm_favored_words": ["delve", "delves", "delving", "underscore", "underscores", "underscored", "harness", "harnessing", "illuminate", "illuminates", "facilitate", "facilitates", "bolster", "bolsters", "intricate", "seamless", "seamlessly", "showcase", "showcasing", "leverage", "leverages", "leveraging", "tapestry", "realm", "beacon", "cacophony", "testament", "pivotal", "landscape", "navigate", "navigating"],
     "connective_openers": ["so", "because", "moreover", "furthermore", "additionally", "however", "indeed", "ultimately", "in fact", "the reason is"],
-    "_note": "'landscape'/'navigate' count only as advisory signals (literal uses exist); the scan is advisory end to end."
+    "significance_markers": ["here's the thing", "here is the thing", "the thing is", "here's the kicker", "here is the kicker", "here's where it gets interesting", "here is where it gets interesting", "here's what's interesting", "that's the part", "that is the part", "what got me was", "what struck me was", "and that's the point", "and that is the point", "that's the whole point", "that is the whole point", "which is exactly the problem", "let that sink in", "that's what kills me", "that is what kills me", "the best part?", "and here's why that matters", "and here is why that matters", "read that again"],
+    "soft_adverb_tags": ["honestly", "genuinely", "truly", "literally", "actually", "basically", "quietly", "frankly", "remarkably", "interestingly"],
+    "_note": "'landscape'/'navigate' count only as advisory signals (literal uses exist); the scan is advisory end to end. significance_markers (pattern 42) are matched as substrings on the lowercased sentence; soft_adverb_tags (pattern 43) are counted per sentence and only flagged in clusters, because a single load-bearing use is legitimate."
   },
   "ai_signal_scoring": {
     "_description": "Aggregate AI-signal score computed by the Phase 6.5 humanizer after the pattern sweep. This is the number the phase_6_5_humanizer gate in config/scoring-thresholds.json (max_ai_signal_score: 0.3) consumes.",
     "formula": "ai_signal_score = sum(weight_i for each pattern i DETECTED in the draft) / sum(weight_i for ALL patterns checked), normalized to 0-1.",
     "weights": {
-      "high_signal_x2": ["01_significance_inflation", "07_ai_vocabulary", "09_negative_parallelisms", "14_em_dash_overuse", "30_colon_subtitle_headlines", "36_aphoristic_maxims"],
-      "standard_x1": "All other catalog patterns (02-06, 08, 10-13, 15-29, 31-35, 37-41)"
+      "high_signal_x2": ["01_significance_inflation", "07_ai_vocabulary", "09_negative_parallelisms", "14_em_dash_overuse", "30_colon_subtitle_headlines", "36_aphoristic_maxims", "42_significance_markers"],
+      "standard_x1": "All other catalog patterns (02-06, 08, 10-13, 15-29, 31-35, 37-41, 43)"
     },
     "computation_notes": [
-      "Total weighted checks = 6 patterns x 2 + 35 patterns x 1 = 47.",
+      "Total weighted checks = 7 patterns x 2 + 36 patterns x 1 = 50.",
       "A pattern counts as DETECTED when it appears at or above its detection threshold (where one is defined) or at least once (where no threshold is defined).",
-      "Example: a draft triggering patterns 07 (x2), 14 (x2), 10, 28, and 35 scores (2+2+1+1+1)/47 = 0.149 — passes the 0.3 gate.",
+      "Example: a draft triggering patterns 07 (x2), 14 (x2), 10, 28, and 35 scores (2+2+1+1+1)/50 = 0.14 — passes the 0.3 gate.",
       "Score > 0.3 fails the phase 6.5 gate: run another humanization pass targeting the detected patterns, highest weight first."
     ],
     "threshold_reference": "config/scoring-thresholds.json → default.quality_gates.phase_6_5_humanizer.max_ai_signal_score (0.3)"
@@ -438,7 +485,8 @@
       "starting_with_and_or_but": {
         "appropriate_in": ["blog", "article"],
         "avoid_in": ["research_paper", "whitepaper"],
-        "example": "But here's the thing. And that's not all."
+        "example": "But the agency never published the revised timetable. And reviewers kept quoting the old one.",
+        "_warning": "Start with And/But to carry a real clause forward, never to stage a reveal. 'But here's the thing' / 'And that's not all' are pattern 42 significance markers, not sentence variety."
       }
     },
     "brand_personality_injection": {
@@ -579,8 +627,8 @@
         "Use short sentences for punch. Then longer ones for explanation."
       ],
       "techniques": [
-        "Open sections with a question: 'Ever wondered why...?'",
-        "Use 'Here's the thing:' and 'But here's where it gets interesting'",
+        "Open sections with a question the reader is actually asking, phrased in their words: 'How long does agency review actually take?' — never a rhetorical warm-up ('Ever wondered why...?'), which is pattern 28 signposting",
+        "Earn emphasis with a specific, not a label: return to the number that matters instead of announcing it. 'Here's the thing', 'here's where it gets interesting', and 'the thing is' are pattern 42 significance markers — the drafter must not write them and the humanizer deletes them on sight",
         "Include reader-directed asides: 'Sound familiar?', 'You've seen this before.'",
         "Break formality with occasional sentence fragments. Like this.",
         "Use an occasional dash for a mid-thought addition — at most 1-2 per 500 words (see pattern 14)"

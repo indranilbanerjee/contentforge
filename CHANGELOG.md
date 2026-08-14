@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.23.0] - 2026-08-14
+
+**The author stays in the piece.** Three capabilities, all built as craft rather than evasion.
+
+### Added — bring your own words (`--source-draft`)
+
+A second intake mode. The author hands over their own rough draft — a voice-note transcript, a wall of bullets, three angry paragraphs typed at midnight — and the pipeline builds the article **around** their sentences instead of over them.
+
+- **`scripts/authorship.py`** — sentence-level provenance between the author's draft and the finished piece. Reports which sentences are theirs verbatim, which were **rewritten**, and which were **dropped**. Matching is greedy best-first and one-to-one, so echoing an author's line cannot inflate their share.
+- **Author sentences are protected material.** Phase 3 carries them through verbatim (typos, run-ons, lowercase and all); Phase 6.5 exempts them from the entire 43-pattern catalog — if the author wrote "here's the thing", it stays, because a pattern describes what a model writes unprompted, not what a person chose to say. Grammar-fixing them is forbidden: their clumsiness is the authorship.
+- **This check blocks; it does not advise.** Every AI-tell scan in this pipeline stays advisory because a detector score is a probabilistic opinion. "The author wrote this sentence and it is no longer here" is a checkable fact about a promise the pipeline made, so `authorship.py` exits 3 and the reviewer treats it as a BLOCKING finding until the sentence is restored *verbatim* — never resolved by editing their words further.
+- **Author claims are not verified facts.** Anything factual the pipeline *adds* still comes from the Phase 2 ledger. A claim of theirs that contradicts the research is flagged for the human editor, never silently corrected.
+- **Provenance-accurate disclosure.** When the record earns it, the deliverable's disclosure becomes *"Written by {author} with AI assistance for research, structure, and fact-checking."* It is read off `phase-6.5-authorship.json` and can never be requested: it requires both a 25% author-word floor and zero outstanding violations. The direction is one-way by design — an authorship record may only ever make a disclosure MORE specific about human involvement that demonstrably happened. Overclaiming human authorship is the one form of this statement a reader cannot check.
+- No target ratio, and nothing here is aimed at a detector. `author_word_share` exists so the disclosure can be accurate; there is no number at which text becomes "human enough".
+
+### Added — patterns 42 and 43 (catalog: 41 → 43)
+
+- **42 Significance markers (high-signal ×2)** — a sentence whose only job is to tell the reader what a neighbouring sentence means: "here's the thing", "the thing is", "that's the part that got me", "which is exactly the problem", "let that sink in". **Deleted, never reworded** — softening a marker into a gentler marker is not a fix. Distinct from pattern 27 (dresses up an ordinary point) and pattern 28 (announces what comes next rather than grading what came before).
+- **43 Soft-adverb feeling tags** — "honestly", "genuinely", "truly", "literally", "actually", "basically", "quietly" attaching feeling instead of meaning, especially sentence-final. Clusters are the tell; one earned use is not, and an absolute floor keeps a single legitimate "actually" in a short piece from normalizing into a false positive.
+- Both are machine-detectable via `text-metrics.py --ai-tell-scan` (`significance_marker` / `soft_adverb_cluster` flags, curly apostrophes normalized) and surfaced in the review sheet.
+
+### Fixed — ContentForge was recommending what its humanizer removes
+
+Auditing for pattern 42 surfaced a genuine self-contradiction: three files instructed the drafter to write the exact phrasing Phase 6.5 is supposed to strip.
+
+- `config/humanization-patterns.json` — the `conversational` personality profile told the drafter to "Use 'Here's the thing:' and 'But here's where it gets interesting'", and recommended the rhetorical warm-up "Ever wondered why…?" (pattern 28). The `starting_with_and_or_but` example was "But here's the thing. And that's not all."
+- `templates/content-types/blog-structure.md` — the section lead-in "often uses 'Here's the thing…'", the takeaway opener "What this means for you…" / "Bottom line:" (patterns 35 and 42, both counted by the `moralizing` proxy), and tease subheadings "But Wait, There's More" / "Here's Why This Matters".
+- `templates/content-types/whitepaper-structure.md` — a "Final Thoughts" conclusion (pattern 35) whose instructions were "Emphasize significance" and "Lasting message", i.e. a direct instruction to write the thing the structural scan measures. The section keeps its genre-appropriate conclusion but now asks for a dated, falsifiable forward statement and the limits of the evidence.
+- A new guard fails the suite if any writing-guidance section or content-type template recommends a phrase the catalog removes.
+
+### Added — entity development (structural scan)
+
+- A seventh proxy in `--structure-scan`: text that introduces a fresh name or number in nearly every sentence, each mentioned once and abandoned, reads as a machine *establishing a setting*; an expert returns to the few specifics the argument rests on.
+- **Fixed by developing, never by deleting.** The remedy is a second substantive mention of an existing specific from the verified ledger. Cutting specifics to move this number would lower the more important `specificity` finding and inverts the pipeline's purpose; inventing a mention is forbidden outright. Both the script's `meaning` field and the humanizer step say so explicitly.
+- Stays silent below 600 words or 12 distinct entities (`measurable: false`) — a short piece names things once for lack of room, which is brevity, not a tell. Calibrated against real fixtures: 1.0 mentions-per-entity on churning text, 2.64 on well-developed prose, with bands at 1.25 / 1.60.
+- Thresholds live in-script, deliberately never in `scoring-thresholds.json` — guard-tested, same rule as the rest of the structural tier.
+
+### Notes
+
+- **No watermark detection or removal exists anywhere in ContentForge, and none will be added.** These scans measure visible text only. A guard now fails the suite if evasion vocabulary (zero-width characters, homoglyphs, watermark stripping, "pass as human") appears in any of the files this release touched.
+- 273 → **308 tests**. New: `tests/test_authorship_and_markers.py` (35).
+
+---
+
 ## [3.22.0] — 2026-08-13
 
 Honest provenance + the structural tier. Two 2026 realities landed the same

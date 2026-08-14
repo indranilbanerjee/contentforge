@@ -1,6 +1,6 @@
 ---
 name: contentforge
-description: "Produce a publication-ready, fact-checked, brand-compliant, SEO-optimized content piece through the full 10-phase pipeline: every phase dispatched to a dedicated subagent (researcher, fact-checker, drafter, visual annotator, scientific validator, structurer, SEO/GEO optimizer, humanizer, reviewer, output manager) behind 10 orchestrator-verified quality gates — three-layer fact verification, the 41-pattern humanizer pass, and 5-dimension reviewer scoring (approve >=7.0) — ending in a .docx with scorecard appendices. Triggers on \"/contentforge:contentforge\", \"write an article about\", \"create a blog post\", \"produce a whitepaper\", \"I need a fact-checked, publication-ready piece\", \"run the content pipeline\". This is ContentForge's front door: reads the brand profile, then routes onward to /contentforge:publish, /contentforge:social-adapt, and /contentforge:translate."
+description: "Produce a publication-ready, fact-checked, brand-compliant, SEO-optimized content piece through the full 10-phase pipeline: every phase dispatched to a dedicated subagent (researcher, fact-checker, drafter, visual annotator, scientific validator, structurer, SEO/GEO optimizer, humanizer, reviewer, output manager) behind 10 orchestrator-verified quality gates — three-layer fact verification, the 43-pattern humanizer pass, and 5-dimension reviewer scoring (approve >=7.0) — ending in a .docx with scorecard appendices. Triggers on \"/contentforge:contentforge\", \"write an article about\", \"create a blog post\", \"produce a whitepaper\", \"I need a fact-checked, publication-ready piece\", \"run the content pipeline\". This is ContentForge's front door: reads the brand profile, then routes onward to /contentforge:publish, /contentforge:social-adapt, and /contentforge:translate."
 argument-hint: "[topic]"
 effort: max
 ---
@@ -15,7 +15,7 @@ Pipeline phase. **Grep before Read** for `references/`, `humanization-patterns.j
 
 ## Execution Protocol (CRITICAL — read first)
 
-This skill orchestrates 10 phases plus Step 0.5 (Title Curation). **Each numbered phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 41-pattern catalog (29 core + 6 structure/framing + 6 detector-signal), and reviewer scoring that define ContentForge.
+This skill orchestrates 10 phases plus Step 0.5 (Title Curation). **Each numbered phase MUST be executed by invoking its dedicated subagent via the `Task` tool — DO NOT generate the deliverable yourself in a single inference pass.** A single-pass generation skips the quality gates, fact-checking layers, humanizer 43-pattern catalog (29 core + 6 structure/framing + 8 detector-signal), and reviewer scoring that define ContentForge.
 
 The one exception is Step 0.5: title curation is performed **inline by the orchestrator** (no subagent), because it requires user interaction and subagents must never wait on the user. Any subagent that needs a user decision returns a `{"status": "needs_user_decision", ...}` payload to the orchestrator, which owns all user interaction (including image-generation opt-in/approval).
 
@@ -40,6 +40,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action init \
 Rules:
 - `pipeline-tracker.py` is called by the **orchestrator only** — subagents never call it.
 - Step 0.5 is **exempt** from tracker calls (no `phase-start`/`phase-end` for 0.5). After the title is confirmed, checkpoint it directly (see contract table).
+- **If the user supplied their own draft** (`--source-draft <path>`, or they paste/dictate their own rough words), copy it verbatim to `{run_dir}/source-draft.md` here in Step 0 and set `"source_draft": true` in `run.json`. Do not clean it up on the way in — the mess is the signal. See "Bring your own words" below.
 
 ### Required Per-Phase Workflow (Phases 1–8)
 
@@ -102,7 +103,7 @@ All artifacts live in the canonical run directory `~/.claude-marketing/{brand-sl
 | 4 | `contentforge:scientific-validator` | `phase-3-draft.md`, `phase-3.5-visual-manifest.json`, `phase-2-factcheck.md` | `phase-4-validation.md` | **Gate 4:** zero hallucinations; every claim traceable to a cited source; logic consistent | Phase 3 (with the specific claims to fix) |
 | 5 | `contentforge:structurer-proofreader` | `phase-3-draft.md`, `phase-4-validation.md`, brand profile | `phase-5-structured.md` | **Gate 5:** zero grammar/spelling errors on re-scan; readability within ±0.5 grade of the content-type target (`text-metrics.py`); brand terminology compliance | Re-run Phase 5 |
 | 6 | `contentforge:seo-geo-optimizer` | `phase-5-structured.md`, brand profile, requirements (keyword) | `phase-6-seo.md` + `phase-6-structure-manifest.json` | **Gate 6:** keyword PLACEMENTS present — title, first 100 words, ≥2 H2s, conclusion, meta description (density is advisory, ~1–2%); meta title + description generated; all internal-link URLs verified live (HARD); ≥2 deep brand links when site known (scored+flag) | Re-run Phase 6 |
-| 6.5 | `contentforge:humanizer` | `phase-6-seo.md`, `phase-6-structure-manifest.json`, brand profile | `phase-6.5-humanized.md` | **Gate 6.5:** grounding pass complete; 41-pattern catalog; GEO structure preserved; keywords preserved; AI-tell scan reported (advisory); burstiness advisory | Re-run Phase 6.5 with the violated constraint stated (incl. structure-manifest mismatch) |
+| 6.5 | `contentforge:humanizer` | `phase-6-seo.md`, `phase-6-structure-manifest.json`, brand profile, `source-draft.md` (when present) | `phase-6.5-humanized.md` + `phase-6.5-review-sheet.html` + `phase-6.5-authorship.json` (only when `source-draft.md` exists) | **Gate 6.5:** grounding pass complete; 43-pattern catalog; GEO structure preserved; keywords preserved; AI-tell scan reported (advisory); burstiness advisory; **with an author draft: `authorship.py` exits 0 — zero author sentences rewritten or dropped (NOT advisory)** | Re-run Phase 6.5 with the violated constraint stated (incl. structure-manifest mismatch or authorship violations) |
 | 7 | `contentforge:reviewer` | ALL prior artifact paths, brand profile, requirements, `config/scoring-thresholds.json` | `phase-7-review.json` | **Gate 7:** reviewer decision tree per `config/scoring-thresholds.json` — approve ≥7.0 (industry-adjusted); all dimension minimums met; dead internal link = hard FAIL; homepage-only linking caps the sub-score and surfaces on the Completion Card | 5.0–6.9 → loop to responsible phase (recorded as `pending_rework`); <5.0 → human review, halt |
 | 8 | `contentforge:output-manager` | `phase-6.5-humanized.md`, `phase-7-review.json`, `phase-3.5-visual-manifest.json`, `run.json` | `phase-8-output.json` + `.docx` | **Gate 8:** .docx generated; Appendices A/B/C present; delivery location verified | Re-run Phase 8; if generation still fails, save markdown + reports locally and report the failure |
 
@@ -139,7 +140,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize --brand <slu
 
 ### Why This Matters
 
-Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (41-pattern AI removal won't fire, including detector-signal patterns 36-41), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`run.json`, the per-phase checkpoint artifacts, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
+Skipping the Task-tool orchestration means: no real fact-checking, no real humanizer (43-pattern AI removal won't fire, including detector-signal patterns 36-43), no real reviewer scoring — the pipeline becomes single-pass content generation labeled with fake phase names. The audit trail (`run.json`, the per-phase checkpoint artifacts, `[PHASE-AUDIT]` lines, real reviewer score) is the proof of execution. If those artifacts don't exist after a run, the pipeline didn't actually run.
 
 ## When to Use
 
@@ -164,7 +165,7 @@ When the user already has the research — pasted sources, internal notes with U
 | 3 Draft | `contentforge:content-drafter` | unchanged (Gate 3 in full) |
 | 4 Validation | `contentforge:scientific-validator` | **UNCHANGED — Gate 4 in full.** The draft-vs-ledger hallucination diff is part of the verification thesis, not polish. |
 | 5 Structure | `contentforge:structurer-proofreader` | **Runs by default — Gate 5 in full.** Proofreading and content-type structure are craft, not ceremony; a fast piece with typos is not a deliverable. Skippable only by explicit `--skip-structure`. |
-| 6.5 Humanizer | `contentforge:humanizer` | **Runs by default — Gate 6.5 in full.** Nobody orders express robot prose: the 41-pattern de-AI pass and brand-personality layer ship in every lane unless the user explicitly opts out with `--skip-humanizer`. Reads the latest artifact (`phase-5-structured.md`, or `phase-3-draft.md` if structure was skipped); the GEO-structure-preservation and keyword-preservation checks apply only when Phase 6 ran. |
+| 6.5 Humanizer | `contentforge:humanizer` | **Runs by default — Gate 6.5 in full.** Nobody orders express robot prose: the 43-pattern de-AI pass and brand-personality layer ship in every lane unless the user explicitly opts out with `--skip-humanizer`. Reads the latest artifact (`phase-5-structured.md`, or `phase-3-draft.md` if structure was skipped); the GEO-structure-preservation and keyword-preservation checks apply only when Phase 6 ran. |
 | 7 Review | `contentforge:reviewer` | Gate 7 with the **express review contract** (see the reviewer agent's Express runs section): skipped-phase artifacts are legitimately absent — score those dimensions from the piece itself instead of capping them; SEO dimension is N/A unless Phase 6 ran; the dead-link hard fail applies ALWAYS. |
 | 8 Output | `contentforge:output-manager` | unchanged; Appendix A (SEO Scorecard) is replaced by an "Express run — SEO not performed" note |
 
@@ -173,6 +174,33 @@ When the user already has the research — pasted sources, internal notes with U
 **Record the lane**: write `"mode": "express"` and the `skipped_phases` list into `run.json` at run start — the reviewer and output-manager read it to apply the express contracts. A run without `mode` is a full run.
 
 **What express is NOT**: it is not a lower quality bar — Gates 2, 4, and 7 are identical, and the piece is still proofread (Gate 5) and humanized (Gate 6.5) unless the user explicitly opted out. It produces a verified, validated, proofread, humanized, reviewed piece WITHOUT keyword optimization or visuals. Say this plainly to the user when they choose express, and offer `--with-seo` / `--with-visuals` if they hesitate.
+
+## Bring your own words (`--source-draft`)
+
+The pipeline's default mode writes from research. This mode keeps the author in the piece.
+
+Give it your own rough draft — a voice-note transcript, a wall of bullets, three angry paragraphs typed at midnight — and ContentForge builds the article **around your sentences instead of over them**. Quality of the input is irrelevant; authorship is the whole point.
+
+```bash
+/contentforge:contentforge "why our review estimates were wrong" --source-draft ./notes.md
+```
+
+What changes:
+
+| Phase | Behaviour with an author draft |
+|---|---|
+| 0 Init | Your draft is copied verbatim to `{run_dir}/source-draft.md`; `run.json` records `source_draft: true` |
+| 3 Draft | Your sentences are carried into the draft **verbatim** — typos, run-ons, lowercase and all. Research and structure are added *between* them |
+| 5, 6 | Structure and SEO work around your sentences; they are never rewritten to fit a keyword |
+| 6.5 Humanizer | **The 43-pattern catalog does not apply to your sentences.** If you wrote "here's the thing", it stays. Then `scripts/authorship.py` verifies nothing of yours was paraphrased or lost |
+| 7 Review | A rewritten or dropped author sentence **blocks approval** until it is restored verbatim |
+| 8 Output | The disclosure becomes provenance-accurate: *"Written by {you} with AI assistance for research, structure, and fact-checking"* — but only if the record proves it |
+
+Three honest limits, stated plainly:
+
+- **Your sentences are your voice, not verified facts.** Anything factual the pipeline *adds* still comes from the Phase 2 ledger. If one of your claims contradicts the research, it gets flagged for you, not silently corrected — you decide.
+- **The authored disclosure has to be earned.** It appears only when at least 25% of the finished words are yours verbatim AND none of your sentences were rewritten or dropped. It can never be turned on by asking; it is read off the record. A disclosure that overstates human authorship is the one kind a reader cannot check, so this direction is one-way by design.
+- **There is no target ratio and nothing here is aimed at a detector.** `author_word_share` exists so the disclosure can be accurate. Writing more of the piece yourself makes it more yours; it is not a score, and no number turns text "human enough".
 
 ## What This Command Does
 
@@ -185,7 +213,7 @@ Runs your content through **10 specialized agents**, each behind a quality gate:
 5. **Scientific Validator** — Hallucination detection, domain-specific validation, logic validation
 6. **Structurer & Proofreader** — Grammar/spelling correction, readability optimization, brand compliance
 7. **SEO/GEO Optimizer** — Keyword placements, meta tag generation, internal linking markers
-8. **Humanizer** — AI pattern removal (41-pattern catalog), content-derived sentence variation (burstiness advisory), brand personality
+8. **Humanizer** — AI pattern removal (43-pattern catalog), content-derived sentence variation (burstiness advisory), brand personality
 9. **Reviewer** — 5-dimension quality scoring (weights per `config/scoring-thresholds.json`)
 10. **Output Manager** — .docx with embedded charts and internal links, dual-copy save, optional Drive upload
 
@@ -285,7 +313,7 @@ Gate criteria and loop targets for every phase are defined once, in the **Pipeli
 - **Phase 4: Scientific Validation** — hallucination scan, claim traceability, logic validation. *Gate 4; failures loop to Phase 3.*
 - **Phase 5: Structure & Proofread** — grammar/spelling, readability to the content-type target (±0.5 grade), brand terminology and style. *Gate 5.*
 - **Phase 6: SEO/GEO** — keyword placements (title, first 100 words, ≥2 H2s, conclusion, meta description), meta tags, URL slug, AI-answer-engine readiness, structure manifest. Density is advisory (~1–2%), not a gate. *Gate 6.*
-- **Phase 6.5: Humanizer** — human-expert grounding pass, 41-pattern AI-telltale removal (incl. detector-signal patterns 36-41), content-derived variation (burstiness advisory), brand personality, SEO-placement preservation validated against the structure manifest. *Gate 6.5.*
+- **Phase 6.5: Humanizer** — human-expert grounding pass, 43-pattern AI-telltale removal (incl. detector-signal patterns 36-43), content-derived variation (burstiness advisory), brand personality, SEO-placement preservation validated against the structure manifest. *Gate 6.5.*
 - **Phase 7: Reviewer** — 5-dimension weighted scoring per `config/scoring-thresholds.json`; approve ≥7.0 (industry-adjusted), loop 5.0–6.9, human review <5.0. *Gate 7.*
 - **Phase 8: Output** — .docx generation with appendices, dual-copy save, optional Drive upload, tracking update. *Gate 8.*
 
