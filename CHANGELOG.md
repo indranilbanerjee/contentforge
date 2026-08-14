@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.23.1] - 2026-08-14
+
+Completes the v3.23.0 self-contradiction fix. Three more places in the
+`conversational` personality profile were advising exactly what the humanizer
+removes, and shipped a few minutes after the release commit:
+
+- `sentence_patterns` said "Ask rhetorical questions to create dialogue" — the
+  rhetorical-Q&A drumroll ("The result? Devastating.") is a reader-facing tell.
+  Now: ask the question the reader is genuinely asking, and answer it.
+- `techniques` said "Break formality with occasional sentence fragments. Like
+  this." — contradicting `sentence_structure_patterns.sentence_fragments` in the
+  same file, which allows fragments only where the brand's own `writing_sample`
+  uses them (an inserted fragment is pattern 36). Now aligned.
+- `example_transforms.after` ended on "Here's how to fix that." — pattern 28
+  signposting, in the example held up as the good version. Replaced with a line
+  that delivers the point instead of announcing it.
+
+No runtime change; 310 tests unchanged.
+
 ## [3.23.0] - 2026-08-14
 
 **The author stays in the piece.** Three capabilities, all built as craft rather than evasion.

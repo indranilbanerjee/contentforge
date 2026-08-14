@@ -623,14 +623,14 @@
       "sentence_patterns": [
         "Address the reader directly with 'you' and 'your'",
         "Use contractions naturally: 'you're', 'it's', 'don't', 'won't'",
-        "Ask rhetorical questions to create dialogue",
+        "Ask questions the reader is genuinely asking, and then answer them — not rhetorical questions used as a drumroll ('The result? Devastating.'), which is the rhetorical-Q&A tell",
         "Use short sentences for punch. Then longer ones for explanation."
       ],
       "techniques": [
         "Open sections with a question the reader is actually asking, phrased in their words: 'How long does agency review actually take?' — never a rhetorical warm-up ('Ever wondered why...?'), which is pattern 28 signposting",
         "Earn emphasis with a specific, not a label: return to the number that matters instead of announcing it. 'Here's the thing', 'here's where it gets interesting', and 'the thing is' are pattern 42 significance markers — the drafter must not write them and the humanizer deletes them on sight",
         "Include reader-directed asides: 'Sound familiar?', 'You've seen this before.'",
-        "Break formality with occasional sentence fragments. Like this.",
+        "Break formality with a sentence fragment ONLY where the brand's own writing_sample uses them — an inserted fragment the brand would not write is pattern 36 (see sentence_structure_patterns.sentence_fragments)",
         "Use an occasional dash for a mid-thought addition — at most 1-2 per 500 words (see pattern 14)"
       ],
       "avoid": [
@@ -641,7 +641,7 @@
       ],
       "example_transforms": {
         "before": "Organizations should consider implementing AI content tools to improve their production efficiency.",
-        "after": "You're spending 6 hours on a blog post that should take 2. Here's how to fix that."
+        "after": "You're spending 6 hours on a blog post that should take 2. The gap is almost always research you already did and cannot find."
       },
       "best_for": ["blogs", "articles", "newsletters", "social_content"]
     },
