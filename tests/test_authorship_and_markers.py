@@ -37,6 +37,7 @@ def _load(name, filename):
 
 tm = _load("tm_markers", "text-metrics.py")
 auth = _load("authorship_mod", "authorship.py")
+sheet = _load("review_sheet_mod", "build_review_sheet.py")
 
 CATALOG = json.loads((REPO / "config" / "humanization-patterns.json").read_text(encoding="utf-8"))
 HUMANIZER = (REPO / "agents" / "06.5-humanizer.md").read_text(encoding="utf-8")
@@ -435,3 +436,65 @@ class TestAphorismProxyIsCalibrated(unittest.TestCase):
                          "aphorism density alone must not raise the rating")
         self.assertIn("aphorism_candidates", r["per_1000_words"],
                       "the metric must still be reported for the editor")
+
+
+class TestRobustnessAndPerformance(unittest.TestCase):
+    """Found by adversarial load testing, 2026-08-14.
+
+    The original all-pairs matcher was quadratic: 0.47s at 100 sentences,
+    11.43s at 500, and its difflib prefilter pruned nothing in exactly the case
+    that matters — when the draft really does contain the author's sentences,
+    every pair looks promising. A long whitepaper would have hung the phase.
+    """
+
+    ADVERSARIAL = {
+        "empty": "", "whitespace": "   \n\n\t ", "single_char": "x",
+        "no_punctuation": "this never ends",
+        "unicode": "# 🎯 Résumé\n\nLe café naïve 日本語 Ελληνικά مرحبا\n",
+        "rtl": "# שלום\n\nזהו טקסט עם 31 ו-14.\n",
+        "cjk": "# 標題\n\n這是一段中文文字。第二句話。\n",
+        "malformed_frontmatter": "---\ntitle: unterminated\n\n# H\n\nBody.\n",
+        "unclosed_fence": "# D\n\n```py\nprint(1)\n\nAfter.\n",
+        "null_bytes": "# D\x00\n\nText \x00 here.\n",
+        "html": "# <script>alert(1)</script>\n\n<img src=x onerror=y>\n",
+        "windows_newlines": "# D\r\n\r\nA line.\r\nAnother.\r\n",
+        "only_punctuation": "... !!! ??? ---\n",
+    }
+
+    def test_scans_never_crash_on_adversarial_input(self):
+        for name, text in self.ADVERSARIAL.items():
+            with self.subTest(case=name):
+                a = tm.ai_tell_scan(text)
+                s = tm.structure_scan(text)
+                self.assertIn(a["advisory_rating"], ("LOW", "MODERATE", "HIGH"))
+                self.assertIn(s["overall"], ("OK", "NOTE", "ATTENTION"))
+                for f in s["findings"].values():
+                    self.assertIn(f["band"], ("OK", "NOTE", "ATTENTION"))
+
+    def test_authorship_never_crashes_on_adversarial_input(self):
+        for name, text in self.ADVERSARIAL.items():
+            with self.subTest(case=name):
+                r = auth.classify(text, text)
+                self.assertEqual(r["violations"]["author_sentences_rewritten"], 0,
+                                 "identical text must never report a rewrite")
+                auth.classify(text, "")
+                auth.classify("", text)
+
+    def test_authorship_is_not_quadratic(self):
+        """A 5000-sentence match must stay far under a second. The pre-fix
+        implementation took 11.4s at 500 and would have been minutes here."""
+        import time
+        big = "The Fraunhofer report tracked review delays across Bavaria in 2024. " * 5000
+        start = time.time()
+        r = auth.classify(big, big)
+        elapsed = time.time() - start
+        self.assertEqual(r["counts"]["author_verbatim"], 5000)
+        self.assertLess(elapsed, 5.0,
+                        f"authorship matching took {elapsed:.1f}s on 5000 sentences — "
+                        "the quadratic all-pairs behaviour has returned")
+
+    def test_review_sheet_escapes_injected_html(self):
+        text = "# <script>alert(1)</script>\n\nBody with <img src=x onerror=y>.\n"
+        html = sheet.build_sheet(text, tm.ai_tell_scan(text), tm.structure_scan(text), "t")
+        self.assertNotIn("<script>alert(1)</script>", html)
+        self.assertIn("&lt;script&gt;", html)

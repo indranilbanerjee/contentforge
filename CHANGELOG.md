@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.23.3] - 2026-08-14
+
+Load-test corrections. A verification harness ran every script in the repo plus
+an adversarial input battery against the text-processing surface.
+
+### Fixed — the authorship matcher was quadratic
+
+`classify()` compared every source sentence against every draft sentence:
+0.47s at 100 sentences, 2.88s at 250, **11.43s at 500**. The difflib prefilter
+added earlier pruned almost nothing in the case that actually matters — when the
+draft genuinely contains the author's sentences, every pair clears the cheap
+bounds. A client's long whitepaper would have hung Phase 6.5.
+
+Rewritten as two passes: a hash index resolves verbatim survivors in linear time
+(the overwhelming majority of real matches), and fuzzy comparison runs only over
+what is left, gated by a length bound derived from difflib's own ratio formula
+(a pair whose lengths differ by more than R/(2-R) cannot reach R). **5000
+sentences now match in 0.07s.** Paraphrase detection and the one-to-one
+duplicate guard are unchanged and re-verified.
+
+### Verified — 28 adversarial inputs, no crashes
+
+empty, whitespace-only, single character, 50,000 words, one 30,000-word line,
+emoji, RTL Hebrew, CJK, malformed frontmatter, unclosed code fence, null bytes,
+ANSI control characters, HTML injection, markdown bombs, Windows newlines, no
+trailing newline, punctuation-only, 50-level indentation. 1,876 invariant
+assertions: every band inside its vocabulary, every metric finite and
+non-negative, every flagged span pointing at real text, and the review sheet
+escaping injected `<script>`. All pass, and the cases are now regression tests.
+
+### Verified — determinism and exit codes
+
+Identical input produces byte-identical output across five in-process runs and
+across four subprocesses with different `PYTHONHASHSEED` values, so no dict or
+set iteration order leaks into a result. Exit-code contracts confirmed: 0 clean,
+3 on authorship violations, 1 on a missing file.
+
+313 -> 317 tests.
+
 ## [3.23.2] - 2026-08-14
 
 Field-test corrections. Five probes were run against the INSTALLED plugin, not

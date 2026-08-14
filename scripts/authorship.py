@@ -103,32 +103,73 @@ def _best_ratio(matcher: difflib.SequenceMatcher, candidate: str) -> float:
     return matcher.ratio()
 
 
+def _length_compatible(a: str, b: str) -> bool:
+    """Can these two strings possibly reach NEAR_MATCH?
+
+    difflib's ratio is 2*M/T where M is the matched-character count and T the
+    combined length. Since M <= min(len(a), len(b)), a ratio of R requires
+    min/max >= R / (2 - R). Below that the pair is mathematically incapable of
+    matching, so it never needs comparing.
+    """
+    la, lb = len(a), len(b)
+    if not la or not lb:
+        return False
+    lo, hi = (la, lb) if la < lb else (lb, la)
+    return lo / hi >= NEAR_MATCH / (2.0 - NEAR_MATCH)
+
+
 def classify(source_text: str, draft_text: str) -> dict:
     """Match every draft sentence against the author's source draft.
 
     Matching is greedy best-first and one-to-one: an author sentence can account
     for at most one draft sentence, so repeating their line does not inflate the
     author's share.
+
+    Two-pass by necessity, not elegance. The all-pairs version was quadratic and
+    measured 11.4s at 500 sentences — and its cheap difflib bounds pruned nothing
+    in exactly the case that matters, because when the draft really does contain
+    the author's sentences every pair looks promising. Pass 1 resolves verbatim
+    survivors through a hash index in linear time, which is the overwhelming
+    majority of real matches; pass 2 runs fuzzy comparison only over what is left
+    over, and only where the lengths make a match arithmetically possible.
     """
     src = [(i, s, normalize(s)) for i, s in enumerate(split_sentences(source_text))]
     dra = [(i, s, normalize(s)) for i, s in enumerate(split_sentences(draft_text))]
 
-    scored = []
+    used_src, used_draft, link = set(), set(), {}
+
+    # Pass 1 — verbatim survivors, resolved by hash. Duplicate sentences map to
+    # a queue of positions so one author line still claims at most one draft line.
+    exact: dict[str, list[int]] = {}
+    for di, _, dn in dra:
+        if dn:
+            exact.setdefault(dn, []).append(di)
     for si, _, sn in src:
         if not sn:
             continue
-        # seq2 is the fixed side difflib caches internals for; hold the author
-        # sentence there and stream the draft sentences past it.
+        bucket = exact.get(sn)
+        if bucket:
+            di = bucket.pop(0)
+            used_src.add(si)
+            used_draft.add(di)
+            link[di] = (si, 1.0)
+
+    # Pass 2 — fuzzy, over the remainder only.
+    remaining_draft = [(di, dn) for di, _, dn in dra
+                       if dn and di not in used_draft]
+    scored = []
+    for si, _, sn in src:
+        if si in used_src or not sn:
+            continue
         matcher = difflib.SequenceMatcher(None, "", sn)
-        for di, _, dn in dra:
-            if not dn:
+        for di, dn in remaining_draft:
+            if not _length_compatible(sn, dn):
                 continue
             r = _best_ratio(matcher, dn)
             if r >= NEAR_MATCH:
                 scored.append((r, si, di))
     scored.sort(key=lambda t: (-t[0], t[1], t[2]))
 
-    used_src, used_draft, link = set(), set(), {}
     for r, si, di in scored:
         if si in used_src or di in used_draft:
             continue
