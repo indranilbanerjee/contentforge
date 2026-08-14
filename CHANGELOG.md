@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.23.2] - 2026-08-14
+
+Field-test corrections. Five probes were run against the INSTALLED plugin, not
+the repo: the humanizer on a planted draft, and both scans against a published
+human essay.
+
+### Fixed — the aphorism proxy was marking down good writing
+
+Measured against a published human essay and a real generated article, the
+<=9-word aphorism heuristic fired at ~13 per 1000 words on both and drove them
+to a HIGH advisory rating — which `agents/07-reviewer.md` maps to a Readability
+sub-score of <=5. Good prose was being penalised by a proxy that cannot tell a
+maxim from a short factual sentence.
+
+- The heuristic now excludes sentences carrying a personal or anaphoric pronoun,
+  or opening with a coordinating conjunction. A maxim generalizes; "The next
+  step is to notice them." and "But pick something and get going." depend on
+  the sentence before them and are not self-contained claims. Real maxims
+  ("Speed wins the shelf.") still flag.
+- `aphorism_candidates` no longer contributes to `advisory_rating` at all. A
+  signal too imprecise to gate on is too imprecise to drive a rating that feeds
+  a score. The count and the flagged sentences are still reported, and pattern
+  36 is still enforced by the humanizer's judgment in Step 1.5, where a reading
+  can tell the two apart. Result: the human essay dropped HIGH -> MODERATE, the
+  AI fixture stayed HIGH.
+
+### Fixed — humanizer turn budget
+
+`maxTurns` 15 -> 22. The field-test humanizer completed the draft and the
+authorship record but exhausted its budget before emitting the review sheet;
+Step 0.0 and the authorship verification added tool calls the old limit did not
+account for. The step now also carries a note on what to drop first if short.
+
+### Field-test result (no change needed)
+
+The author-exemption behaviour passed 10/10 planted traps on the installed
+plugin: the author's own "heres the thing" survived verbatim while an AI-added
+"Here's the thing - that's the part that really matters" and "Let that sink in"
+were deleted; banned lexemes, the soft-adverb cluster and 12 churned entities
+were removed; the author's explicitly-unverified claim was left untouched; and
+nothing was fabricated. All 5 author sentences verbatim, 0 rewritten, 0 dropped.
+
+310 -> 313 tests.
+
 ## [3.23.1] - 2026-08-14
 
 Completes the v3.23.0 self-contradiction fix. Three more places in the

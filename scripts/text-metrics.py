@@ -268,9 +268,25 @@ def _load_detector_config():
     return lex, thr
 
 
+# Personal and anaphoric pronouns. A sentence carrying one is context-dependent
+# — it points at a speaker, a reader, or an earlier sentence — so it cannot be
+# the self-contained general claim pattern 36 targets.
+_PRONOUN_RE = re.compile(
+    r"\b(?:i|me|my|mine|we|us|our|ours|you|your|yours|he|him|his|she|her|hers|"
+    r"they|them|their|theirs|it|its|this|that|these|those)\b", re.I)
+
+
 def is_aphorism_candidate(sentence: str) -> bool:
-    """Short declarative one-liner with zero grounding: <=9 words, no digit,
-    no citation marker, no question, no mid-sentence capitalized entity."""
+    """A short, self-contained, ungrounded general claim — "Speed wins the shelf."
+
+    Pattern 36 targets broad over-neutral one-liners with no number, name, date
+    or source. The <=9-word test alone is not enough: measured against published
+    human essays it flagged ordinary short prose ("But pick something and get
+    going.", "The next step is to notice them.") at ~13 per 1000 words, which
+    in turn dragged the reviewer's Readability sub-score on genuinely good
+    writing. A maxim generalizes; a sentence that refers to you, me, or the
+    sentence before it does not.
+    """
     s = sentence.strip()
     words = s.split()
     if not s or len(words) > 9 or s.endswith("?"):
@@ -280,6 +296,12 @@ def is_aphorism_candidate(sentence: str) -> bool:
     if re.search(r"\((?:[A-Z][\w.]*,?\s*\d{4}|\d+)\)|\[\d+\]", s):
         return False
     if any(w[:1].isupper() for w in words[1:]):
+        return False
+    if _PRONOUN_RE.search(s):
+        return False
+    # Opening with a coordinating conjunction continues the previous sentence,
+    # which is the same context-dependence the pronoun test rules out.
+    if words[0].lower().strip(",") in ("but", "and", "so", "or", "yet", "nor"):
         return False
     return s.endswith(".")
 
@@ -349,8 +371,16 @@ def ai_tell_scan(text: str) -> dict:
         "soft_adverb_tags": round(soft_total * per_k, 2),
     }
     conn_pct = round(100.0 * conn / n, 1)
-    highs = {"aphorism_candidates": thr["aphorism_per_1000_high"],
-             "banned_lexemes": thr["banned_lexemes_per_1000_high"],
+    # `aphorism_candidates` is deliberately NOT in this dict. The proxy cannot
+    # separate a content-free maxim ("Speed wins the shelf.") from a short
+    # factual sentence ("The neighbouring region barely moved."), and measured
+    # against a published human essay and a real generated article it drove both
+    # to HIGH — which the reviewer maps to a Readability sub-score of <=5. A
+    # signal too imprecise to gate on is too imprecise to drive a rating that
+    # feeds a score. The count and the flagged sentences are still reported, and
+    # pattern 36 is still enforced by the humanizer's judgment in Step 1.5,
+    # where a human-shaped reading can tell the two apart.
+    highs = {"banned_lexemes": thr["banned_lexemes_per_1000_high"],
              "significance_markers": thr["significance_markers_per_1000_high"],
              "soft_adverb_tags": thr["soft_adverb_tags_per_1000_high"]}
     # Absolute floors for patterns 42/43: in a short piece a single legitimate

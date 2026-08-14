@@ -398,3 +398,40 @@ class TestNoEvasionSurfaceAnywhere(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestAphorismProxyIsCalibrated(unittest.TestCase):
+    """Field-test findings, 2026-08-14. Measured against a published human
+    essay and a real generated article, the <=9-word aphorism heuristic fired
+    at ~13 per 1000 words on both and drove them to a HIGH advisory rating —
+    which the reviewer maps to a Readability sub-score of <=5. Good writing was
+    being marked down by a proxy that cannot tell a maxim from a short fact."""
+
+    def test_self_contained_maxims_still_flagged(self):
+        for s in ("Speed wins the shelf.", "Strong brands design the data to travel.",
+                  "The future looks bright.", "Quality matters above all else."):
+            with self.subTest(s=s):
+                self.assertTrue(tm.is_aphorism_candidate(s))
+
+    def test_context_dependent_sentences_are_not_maxims(self):
+        """A sentence pointing at a speaker, a reader, or the sentence before it
+        cannot be the self-contained generalization pattern 36 targets."""
+        for s in ("That is what you are looking for.",
+                  "The next step is to notice them.",
+                  "I decided to find out by making it.",
+                  "But pick something and get going.",
+                  "And that is not all."):
+            with self.subTest(s=s):
+                self.assertFalse(tm.is_aphorism_candidate(s))
+
+    def test_aphorisms_do_not_drive_the_advisory_rating(self):
+        """A signal too imprecise to gate on is too imprecise to headline a
+        rating that feeds a reviewer score. Counted and reported, never rating."""
+        maxims = "\n\n".join(["Speed wins the shelf. Quality matters above all else."] * 12)
+        r = tm.ai_tell_scan(maxims)
+        self.assertGreater(r["per_1000_words"]["aphorism_candidates"], 30,
+                           "sanity: fixture should be dense with maxims")
+        self.assertEqual(r["advisory_rating"], "LOW",
+                         "aphorism density alone must not raise the rating")
+        self.assertIn("aphorism_candidates", r["per_1000_words"],
+                      "the metric must still be reported for the editor")
