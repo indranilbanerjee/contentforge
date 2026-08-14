@@ -498,3 +498,59 @@ class TestRobustnessAndPerformance(unittest.TestCase):
         html = sheet.build_sheet(text, tm.ai_tell_scan(text), tm.structure_scan(text), "t")
         self.assertNotIn("<script>alert(1)</script>", html)
         self.assertIn("&lt;script&gt;", html)
+
+
+class TestTheReportMustNotLiveInTheMeasuredFile(unittest.TestCase):
+    """Found by a live probe run, not by reasoning.
+
+    Five humanizer probes ran against planted fixtures. Two followed the old
+    instruction and appended the Humanization Report to
+    `phase-6.5-humanized.md`; two deliberately deviated and flagged the problem
+    unprompted. One of the two that complied produced a provenance record with
+    104 ai_added sentences and `may_claim_authored: false` -- denying the author
+    credit for work they actually did, purely because of where a report was
+    written.
+
+    `authorship.py` classifies EVERY sentence in the draft file. Report prose in
+    that file is machine-added text by definition, so it dilutes
+    `author_word_share`. Real runs landed at 0.253 and 0.250, directly on the
+    0.25 floor, which is why this was not a theoretical risk.
+    """
+
+    ROOT = Path(__file__).resolve().parent.parent
+
+    def test_appending_a_report_can_flip_the_authorship_verdict(self):
+        """The measurement behind the fix. Violations stay clean either way --
+        it is the SHARE that moves, which is the subtle part."""
+        src = ("we spent two years on this and got it wrong twice.\n"
+               "the fix in the end was unglamorous and took a fortnight.\n")
+        body = ("# Title\n\nwe spent two years on this and got it wrong twice.\n\n"
+                "A researched sentence adds context from the verified ledger here.\n\n"
+                "the fix in the end was unglamorous and took a fortnight.\n")
+        report = ("\n\n## Humanization Report\n\n"
+                  + "The catalog was applied and the marker was deleted rather than reworded. " * 12)
+
+        clean = auth.classify(src, body)
+        dirty = auth.classify(src, body + report)
+
+        self.assertTrue(clean["may_claim_authored"])
+        self.assertFalse(dirty["may_claim_authored"],
+                         "appending a report should dilute the author's share")
+        self.assertLess(dirty["author_word_share"], clean["author_word_share"])
+        self.assertEqual(clean["violations"], dirty["violations"],
+                         "violations must be unaffected — only the share moves, "
+                         "which is exactly why this defect was easy to miss")
+
+    def test_humanizer_agent_says_the_draft_file_is_body_only(self):
+        text = (self.ROOT / "agents" / "06.5-humanizer.md").read_text(encoding="utf-8")
+        self.assertIn("phase-6.5-report.md", text,
+                      "the report needs its own path or it lands in the measured file")
+        low = text.lower()
+        self.assertTrue("body only" in low or "article body and nothing else" in low,
+                        "the agent must state that the humanized draft is body-only")
+
+    def test_pipeline_contract_declares_the_separate_report_artifact(self):
+        text = (self.ROOT / "skills" / "contentforge" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("phase-6.5-report.md", text,
+                      "Pipeline Contract must declare the report artifact so the "
+                      "orchestrator saves it somewhere other than the draft")

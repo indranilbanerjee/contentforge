@@ -13,7 +13,8 @@ maxTurns: 15
 The orchestrator passes you `{brand-slug}` and `{run_id}`. **Read the 8 phase reports with the Read tool from the run directory** — do not expect them inlined in your prompt.
 
 **Read from `~/.claude-marketing/{brand-slug}/runs/{run_id}/`:**
-- `phase-6.5-humanized.md` — the Humanized Content (the piece you are scoring) + Humanization Report
+- `phase-6.5-humanized.md` — the Humanized Content (the piece you are scoring); body only
+- `phase-6.5-report.md` — the Humanization Report (kept out of the draft file so it cannot distort `author_word_share`)
 - `phase-1-research.md` — Research Brief
 - `phase-2-factcheck.md` — Verified Research Brief
 - `phase-3-draft.md` — Draft Metadata

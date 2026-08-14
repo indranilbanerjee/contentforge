@@ -15,7 +15,8 @@ maxTurns: 20
 The orchestrator passes you `{brand-slug}` and `{run_id}`. Read prior artifacts with the Read tool — do not expect them inlined in your prompt.
 
 **Read from `~/.claude-marketing/{brand-slug}/runs/{run_id}/`:**
-- `phase-6.5-humanized.md` — the Approved Content (final humanized, SEO-optimized draft) + Humanization Report (final word count, readability metrics)
+- `phase-6.5-humanized.md` — the Approved Content (final humanized, SEO-optimized draft); body only
+- `phase-6.5-report.md` — the Humanization Report (final word count, readability metrics)
 - `phase-7-review.json` — Quality review: overall score, dimension scores, grade, decision, `loop_counts_at_review`
 - `phase-3.5-visual-manifest.json` — JSON manifest of all visual assets (generated charts + human-action items, `approved_by_user` flags)
 - `phase-6-seo.md` — SEO Scorecard: meta title, meta description, keywords, **Internal Link Map**

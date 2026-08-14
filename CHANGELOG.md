@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.24.0] - 2026-08-15
+
+The humanization report stopped corrupting the provenance record it sits next to.
+
+### Fixed — the Humanization Report was written into the file `authorship.py` measures
+
+`authorship.py` classifies **every sentence** in `phase-6.5-humanized.md` to compute
+`author_word_share`. The humanizer was told to return "the humanized draft + Humanization
+Report" for that one path, so a ~900-word report of the agent's own prose landed inside the
+file that decides whether the client may be credited as an author.
+
+This was not theoretical. Five humanizer probes ran against planted fixtures. Two followed
+the instruction and embedded the report; two deviated deliberately and flagged the problem
+unprompted. **One of the runs that complied produced 104 `ai_added` sentences and
+`may_claim_authored: false`** — refusing the author credit for work they had actually done,
+on nothing but where a report was written. The two body-only runs landed at
+`author_word_share` 0.253 and 0.250, directly on the 0.25 floor, which is why the dilution
+was decisive rather than marginal.
+
+The subtle part, and the reason nothing caught it: **`violations` stays clean either way.**
+Zero sentences were rewritten and zero dropped in every run. The check designed to catch
+authorship problems cannot see this one — only the share moves.
+
+- `phase-6.5-humanized.md` is now **the article body and nothing else**.
+- New artifact **`phase-6.5-report.md`** carries the Humanization Report; declared in the
+  Pipeline Contract so the orchestrator saves it to its own path.
+- Reviewer (Phase 7) and Output Manager (Phase 8) updated to read the report from its new path.
+- Three regression tests pin it, including the measured share/verdict flip.
+
+Suite: 317 -> 320.
+
+---
+
 ## [3.23.3] - 2026-08-14
 
 Load-test corrections. A verification harness ran every script in the repo plus
