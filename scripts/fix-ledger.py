@@ -50,8 +50,12 @@ Ledger contract — ``<run-dir>/phase-4-fixes.json``::
           "severity": "MODERATE",         # CRITICAL | MODERATE | MINOR
           "blocking": true,               # may this be published unresolved?
           "class": "text_replace",        # text_replace | requires_human
+                                          #   | requires_rework
+          "source_id": "MOD-2",           # optional: the report issue this came
+                                          #   from, when one issue needs two swaps
           "find": "...",                  # exact substring (text_replace only)
           "replace": "...",               # exact substring; "" deletes the found text
+          "target_phase": "3",            # requires_rework only: who does the work
           "rationale": "...",
           "status": "pending",
           "applied_at_phase": null,
@@ -61,16 +65,27 @@ Ledger contract — ``<run-dir>/phase-4-fixes.json``::
       ]
     }
 
-Statuses: pending, applied, not_found, ambiguous, author_protected, declined,
-human_pending, human_done.
+Classes: ``text_replace`` (a substitution, including deletion), ``requires_human``
+(work no script can do — supply an image), ``requires_rework`` (work an earlier
+phase must redo — write a missing section; neither a swap nor a person's job).
+
+Statuses: pending, applied, already_satisfied, not_found, ambiguous,
+author_protected, declined, human_pending, human_done, superseded.
 
 Usage::
 
-    python fix-ledger.py validate --run-dir DIR
+    python fix-ledger.py validate --run-dir DIR --target phase-3.5-visuals.md
     python fix-ledger.py apply    --run-dir DIR --target phase-5-structured.md \
                                   [--source-draft source-draft.md] [--phase 5]
-    python fix-ledger.py verify   --run-dir DIR --target phase-6.5-humanized.md
+    python fix-ledger.py resolve  --run-dir DIR --target FILE --id MIN-2 \
+                                  --replaced-with "text now in the body"
+    python fix-ledger.py verify   --run-dir DIR --target phase-6.5-humanized.md \
+                                  [--out phase-7-fix-ledger.json]
     python fix-ledger.py status   --run-dir DIR
+
+``validate`` without ``--target`` checks JSON structure only. That is not evidence
+a correction can land: a ledger whose every ``find`` matches nothing is perfectly
+well-formed. Pass ``--target``.
 
 Exit codes:
     0  clean
@@ -95,12 +110,14 @@ SCHEMA = "contentforge.fix-ledger/1"
 LEDGER_NAME = "phase-4-fixes.json"
 
 SEVERITIES = ("CRITICAL", "MODERATE", "MINOR")
-CLASSES = ("text_replace", "requires_human")
+CLASSES = ("text_replace", "requires_human", "requires_rework")
 STATUSES = ("pending", "applied", "already_satisfied", "not_found", "ambiguous",
-            "author_protected", "declined", "human_pending", "human_done")
+            "author_protected", "declined", "human_pending", "human_done",
+            "superseded")
 
 # Statuses that mean the correction is settled and needs nothing further.
-RESOLVED = ("applied", "already_satisfied", "declined", "human_done")
+RESOLVED = ("applied", "already_satisfied", "declined", "human_done",
+            "superseded")
 
 
 _OUT_FILE = None
@@ -138,6 +155,41 @@ def _write(path: pathlib.Path, text: str) -> None:
 
 def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def locate(body: str, find: str):
+    """Find `find` in `body`, tolerating line-ending differences.
+
+    Returns (count, actual_substring). Artifacts on Windows are CRLF and this
+    script reads with newline="" to stay byte-stable, so a `find` string an agent
+    composed with "\\n" matches nothing at all — a silent `not_found` on every
+    multi-line correction, for a reason that has nothing to do with the text. The
+    literal match is tried first; only if it misses do we retry with newlines
+    normalised, and we return the substring as it actually appears so the
+    replacement preserves the file's own line endings.
+    """
+    if not find:
+        return 0, find
+    n = body.count(find)
+    if n:
+        return n, find
+    flat_body = body.replace("\r\n", "\n")
+    flat_find = find.replace("\r\n", "\n")
+    n = flat_body.count(flat_find)
+    if n != 1:
+        return n, find
+    start = flat_body.index(flat_find)
+    # Map the flat offset back onto the real text: every \r removed before the
+    # match shifts the index by one.
+    real_start = start
+    for _ in range(body.count("\r\n")):
+        if body[:real_start].replace("\r\n", "\n") == flat_body[:start]:
+            break
+        real_start += 1
+    actual = body[real_start:real_start + len(flat_find) + flat_find.count("\n")]
+    if actual.replace("\r\n", "\n") != flat_find:
+        return 0, find
+    return 1, actual
 
 
 def _load_authorship():
@@ -238,10 +290,15 @@ def validate_ledger(ledger: dict) -> list:
             if item.get("find") == item.get("replace"):
                 problems.append(f"{where} find and replace are identical — a fix that "
                                 f"changes nothing cannot be verified")
-        elif cls == "requires_human":
+        elif cls in ("requires_human", "requires_rework"):
             if not item.get("rationale"):
-                problems.append(f"{where} requires_human needs a rationale describing "
-                                f"the action a person must take")
+                problems.append(f"{where} {cls} needs a rationale describing "
+                                f"the action required")
+            # A missing section is a correction no substitution can make and no
+            # person is expected to hand-write either -- an earlier phase owns it.
+            if cls == "requires_rework" and not item.get("target_phase"):
+                problems.append(f"{where} requires_rework needs a target_phase "
+                                f"naming the phase that must do the work")
     return problems
 
 
@@ -287,7 +344,7 @@ def cmd_apply(args):
             results.append({"id": fid, "outcome": item["status"], "changed": False,
                             "note": "already resolved"})
             continue
-        if item["class"] == "requires_human":
+        if item["class"] in ("requires_human", "requires_rework"):
             if item.get("status") == "pending":
                 item["status"] = "human_pending"
             results.append({"id": fid, "outcome": item["status"], "changed": False,
@@ -297,7 +354,7 @@ def cmd_apply(args):
             continue
 
         find, replace = item["find"], item["replace"]
-        occurrences = body.count(find)
+        occurrences, find = locate(body, find)
 
         if occurrences == 0:
             # Loud on purpose. A correction whose target has moved is the failure
@@ -460,11 +517,11 @@ def cmd_verify(args):
     for item in ledger["items"]:
         fid, status, blocking = item["id"], item.get("status"), item["blocking"]
 
-        if item["class"] == "requires_human":
+        if item["class"] in ("requires_human", "requires_rework"):
             state = "resolved" if status == "human_done" else "human_pending"
             if state == "human_pending" and blocking:
                 unresolved.append(fid)
-            checks.append({"id": fid, "class": "requires_human", "state": state,
+            checks.append({"id": fid, "class": item["class"], "state": state,
                            "blocking": blocking, "action": item.get("rationale")})
             continue
 
@@ -496,8 +553,12 @@ def cmd_verify(args):
                             "the original wording is back alongside the fix")})
             continue
 
-        if status == "declined":
-            checks.append({"id": fid, "class": "text_replace", "state": "declined",
+        if status in ("declined", "superseded"):
+            # `superseded` is the loop case: Phase 3 rewrote the draft, so this
+            # correction's find string is expected to stop matching. Keeping the
+            # row rather than deleting it is what makes "Phase 3 fixed this
+            # itself" distinguishable from "this was lost".
+            checks.append({"id": fid, "class": "text_replace", "state": status,
                            "blocking": blocking, "detail": item.get("note")})
             continue
 
@@ -550,11 +611,53 @@ def cmd_status(args):
 
 
 def cmd_validate(args):
+    """Structure, and — when given a target — whether the corrections can land.
+
+    Gate 4 cites this command as evidence that a ledger is sound. Structure alone
+    is not that evidence: a ledger whose every `find` string matches nothing in
+    the draft is perfectly well-formed and exits 0. Passing `--target` is what
+    turns the check into the thing the gate is claiming, so the gate now requires
+    it.
+    """
     run_dir = pathlib.Path(args.run_dir).expanduser().resolve()
     ledger = load_ledger(run_dir)
     problems = validate_ledger(ledger)
-    _out({"ok": not problems, "command": "validate", "problems": problems},
-         0 if not problems else 2)
+
+    payload = {"ok": not problems, "command": "validate", "problems": problems,
+               "target_checked": None}
+    if problems:
+        _out(payload, 2)
+
+    if not args.target:
+        payload["warning"] = ("no --target given, so this checked JSON structure "
+                              "only and did NOT confirm any correction can be "
+                              "applied. Gate 4 requires --target.")
+        _out(payload, 0)
+
+    target = run_dir / args.target if not pathlib.Path(args.target).is_absolute() \
+        else pathlib.Path(args.target)
+    if not target.is_file():
+        _fail(f"target not found: {target}")
+
+    body = _read(target)
+    unmatched, ambiguous, ok = [], [], 0
+    for item in ledger["items"]:
+        if item["class"] != "text_replace" or item.get("status") in RESOLVED:
+            continue
+        count, _actual = locate(body, item["find"])
+        if count == 0:
+            unmatched.append(item["id"])
+        elif count > 1:
+            ambiguous.append({"id": item["id"], "occurrences": count})
+        else:
+            ok += 1
+
+    payload["target_checked"] = target.name
+    payload["find_strings_resolvable"] = ok
+    payload["unmatched"] = unmatched
+    payload["ambiguous"] = ambiguous
+    payload["ok"] = not unmatched and not ambiguous
+    _out(payload, 0 if payload["ok"] else 1)
 
 
 def main():
@@ -563,10 +666,17 @@ def main():
                     "prove they survived to publication.")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name, handler in (("validate", cmd_validate), ("status", cmd_status)):
-        p = sub.add_parser(name)
-        p.add_argument("--run-dir", required=True)
-        p.set_defaults(func=handler)
+    p = sub.add_parser("validate")
+    p.add_argument("--run-dir", required=True)
+    p.add_argument("--target", default=None,
+                   help="draft the corrections apply to. Without it this checks "
+                        "JSON structure only and proves nothing about whether any "
+                        "correction can land — Gate 4 requires it")
+    p.set_defaults(func=cmd_validate)
+
+    p = sub.add_parser("status")
+    p.add_argument("--run-dir", required=True)
+    p.set_defaults(func=cmd_status)
 
     p = sub.add_parser("apply")
     p.add_argument("--run-dir", required=True)

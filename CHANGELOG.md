@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.31.0] - 2026-08-16
+
+### Fixed — the gate's evidence was not evidence
+
+Gate 4 cited `fix-ledger.py validate` exiting 0 as proof a run's correction
+ledger was sound. `validate` only checked JSON structure — **it never opened the
+draft** — so a ledger whose every `find` string matched nothing was perfectly
+well-formed and passed. That is the hollow-gate defect the ledger was built to
+cure, reproduced inside the cure. Found by a validation agent running the shipped
+contract against a planted draft, which observed that the only command proving a
+ledger can land is `apply --dry-run`, which the contract never mentions.
+
+`validate --target <draft>` now confirms every unresolved `find` resolves to
+exactly one place, reports `unmatched` and `ambiguous` ids, and exits 1 when a
+correction cannot land. Gate 4 requires `--target`; without it the command says
+in its own output that it proved nothing.
+
+### Fixed — line endings were unmentioned and load-bearing
+
+Run artifacts are CRLF and the script reads with `newline=""` to stay
+byte-stable, so a `find` string composed with `
+` matched nothing at all: a
+silent `not_found` on every multi-line correction, for a reason unrelated to the
+text. Matching now tries the literal string first and falls back to a
+newline-normalised comparison, returning the substring as it actually appears so
+the replacement preserves the file's own endings. A genuinely absent string still
+fails — the tolerance does not turn a miss into a match.
+
+### Added — two representations that were missing
+
+- **`requires_rework`** — a correction that is neither a substitution nor a
+  person's job, such as a section the outline requires and the draft never wrote.
+  It carries a `target_phase` naming who must do it. Filing this under
+  `requires_human` made the pipeline's own work look like a task waiting on the
+  user.
+- **`superseded`** — after a loop, Phase 3 rewrites the draft and every `find`
+  string is expected to stop matching. Marking the stale rows rather than
+  overwriting the ledger keeps "Phase 3 fixed this itself" distinguishable from
+  "this was lost", which is the whole point of the ledger.
+
+### Clarified
+
+- **What counts as a correction**, since one rule required every correction to
+  reach the ledger and another barred advisory suggestions, with no boundary
+  between them: a correction makes the piece wrong or unpublishable if left; an
+  improvement does not, however good the idea.
+- The validate command is given as an absolute path, and the rules no longer cite
+  a report section number the template does not define.
+
+**11 new tests.**
+
 ## [3.30.0] - 2026-08-16
 
 ### Fixed — the remedy for a stale correction manufactured a false accusation

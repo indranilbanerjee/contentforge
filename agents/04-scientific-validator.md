@@ -233,7 +233,7 @@ Outline adherence table. Context preservation issues. Disclaimer check status.
 - [ ] **Visual data accuracy verified** — Charts with mismatches: [count] → PASS/FAIL
 - [ ] **Logic and flow validated** — Coherence + contradictions status → PASS/CONDITIONAL
 - [ ] **Domain-specific validation passed** — Terminology, evidence, regulatory, pitfalls, expert score → PASS/CONDITIONAL/FAIL
-- [ ] **Fix ledger emitted and valid** — every correction named in this report appears in `phase-4-fixes.json`, `fix-ledger.py validate` exits 0 → PASS/FAIL
+- [ ] **Fix ledger emitted and valid** — every correction named in this report appears in `phase-4-fixes.json`, and **`fix-ledger.py validate --target <the draft>` exits 0** → PASS/FAIL. **`--target` is not optional here.** Without it the command checks JSON structure and nothing else, so a ledger whose every `find` string matches nothing in the draft passes — the gate would be citing as evidence a check that never opened the file it is about
 
 **DECISION:** ✅ PASS | 🔄 LOOP TO PHASE 3 | ❌ FAIL
 
@@ -271,7 +271,7 @@ Write `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-4-fixes.json`:
 Rules:
 
 - `severity` — `CRITICAL` | `MODERATE` | `MINOR`, matching §1's own vocabulary.
-- **One item per substitution.** When a single §7 issue carries two find/replace pairs (as MOD-2 did, with two pronoun fixes under one id), split it: `MOD-2a`, `MOD-2b`, each with `"source_id": "MOD-2"` tying it back to the report. Ids must stay unique because each addresses exactly one substitution, and `source_id` is how the ledger still matches your report.
+- **One item per substitution.** When a single issue in your Issue Register carries two find/replace pairs (two pronoun fixes under one id, say), split it: `MOD-2a`, `MOD-2b`, each with `"source_id": "MOD-2"` tying it back to the report. Ids must stay unique because each addresses exactly one substitution, and `source_id` is how the ledger still matches your report.
 - `origin` — optional, for items a later phase adds (a reviewer's publication blocker, say). `emitted_by` names who created the ledger, not who added each row.
 - `blocking` — **true means the piece may not be declared publishable until this is resolved.** Set it true for anything you would call mandatory before publish. CRITICAL is always blocking.
 - `class` — `text_replace` for anything expressible as an exact string swap; `requires_human` for work no script can do (supply a feature image, render a pending chart). A `requires_human` item needs a `rationale` naming the action.
@@ -279,13 +279,17 @@ Rules:
 - `find` must be **unique in the draft**. The applier refuses to guess between two matches — lengthen the string until it is unambiguous.
 - `find` must be **verbatim from the current draft**, copy-pasted, not retyped. A string that does not match is reported as `not_found` and blocks; it is never silently skipped.
 - Never write a fix whose `find` sits inside one of the author's own sentences when `source_draft: true`. The applier re-measures the authorship record and reverts any fix that would rewrite or drop the author's words, but you should not be proposing it.
-- Optional or advisory suggestions do **not** belong here. Ledger items are corrections you expect to be made; put anything else in the report prose.
+- **What counts as a correction**, since one rule says every correction in the report must be in the ledger and another says advisory suggestions must not: a correction is something that makes the piece *wrong or unpublishable if left*. A fabricated statistic, a claim wider than its evidence, a citation that misstates its source, a missing element the brief requires. An improvement — a better transition, an extra example, a stronger heading — is not a correction, however good the idea. If you would not object to the piece publishing with it unaddressed, it is not a ledger item. State borderline calls in the report so the boundary is visible.
+- **`requires_rework`** is for a correction that is neither a substitution nor a person's job — a section the outline requires and the draft never wrote, say. Give it a `target_phase` naming who must do it. Do not force this into `requires_human`: it makes the pipeline's own work look like a task waiting on the user.
 
 Validate before finishing:
 
 ```bash
-python scripts/fix-ledger.py validate --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id}
+python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py validate   --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id}   --target phase-3.5-visuals.md
 ```
+
+`--target` is the draft body your corrections apply to. With it, `validate` also confirms every `find` string resolves to exactly one place in that draft — which is the only thing that makes "the ledger is valid" mean anything. Line endings are handled for you: a `find` composed with `
+` still matches a CRLF artifact, and the replacement preserves the file's own endings.
 
 Emitting an empty `items` array is correct and expected when you have no corrections. Omitting the file while the report lists fixes is a contract violation.
 
@@ -296,7 +300,7 @@ When looping back, provide:
 2. **Recommended Fixes (MINOR):** Suggestions for softening language, adding context, fixing citations
 3. **Estimated Fix Time**
 
-The ledger is still written when you loop — Phase 3 rewrites the draft, so re-derive the `find` strings against the revised text on re-validation.
+The ledger is still written when you loop. Phase 3 then rewrites the draft, so every `find` string you just verified is expected to stop matching. On re-validation, mark the stale items `superseded` and add fresh ones rather than overwriting the file wholesale — otherwise a correction Phase 3 fixed on its own becomes indistinguishable from one that was lost, which is the failure this ledger exists to prevent.
 
 ## CONFIDENCE SCORING
 

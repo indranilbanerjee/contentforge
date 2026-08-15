@@ -344,6 +344,120 @@ class TestMultiPairIds(LedgerHarness):
         self.assertEqual({c["id"] for c in out["checks"]}, {"MOD-2a", "MOD-2b"})
 
 
+class TestValidateProvesSomething(LedgerHarness):
+    """Gate 4 cited `validate` as evidence the ledger was sound. It only checked
+    JSON structure and never opened the draft, so a ledger whose every find
+    string matched nothing passed with exit 0. The gate's evidence was not
+    evidence."""
+
+    def test_structure_only_run_says_it_proved_nothing(self):
+        self.write("real body text\n",
+                   [item("GHOST", "a string that is nowhere in the draft", "x")])
+        code, out = self.run_cmd("validate")
+        self.assertEqual(code, 0)
+        self.assertIn("warning", out)
+        self.assertIn("did NOT confirm", out["warning"])
+        self.assertIsNone(out["target_checked"])
+
+    def test_unlandable_ledger_fails_against_the_draft(self):
+        self.write("real body text\n",
+                   [item("GHOST", "a string that is nowhere in the draft", "x")])
+        code, out = self.run_cmd("validate", "--target", "body.md")
+        self.assertEqual(code, 1, out)
+        self.assertEqual(out["unmatched"], ["GHOST"])
+        self.assertFalse(out["ok"])
+
+    def test_ambiguous_find_is_reported_before_apply(self):
+        self.write("cost line. cost line.\n", [item("X", "cost line", "price line")])
+        code, out = self.run_cmd("validate", "--target", "body.md")
+        self.assertEqual(code, 1)
+        self.assertEqual(out["ambiguous"][0]["id"], "X")
+
+    def test_landable_ledger_passes(self):
+        self.write("It never shows up in a rate.\n",
+                   [item("A", "never shows up", "does not show up")])
+        code, out = self.run_cmd("validate", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["find_strings_resolvable"], 1)
+
+
+class TestLineEndingTolerance(LedgerHarness):
+    """Artifacts are CRLF and the script reads with newline="" to stay
+    byte-stable, so a find string an agent composed with LF matched nothing —
+    a silent not_found for a reason unrelated to the text."""
+
+    def test_lf_find_matches_a_crlf_body(self):
+        self.write("First line here.\nSecond line follows.\nThird ends it.\n",
+                   [item("LF", "Second line follows.\nThird ends it.",
+                         "Second line ends it.")],
+                   newline="\r\n")
+        code, out = self.run_cmd("apply", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertIn("Second line ends it.", self.body())
+
+    def test_the_files_own_line_endings_survive(self):
+        self.write("First line here.\nSecond line follows.\nThird ends it.\n",
+                   [item("LF", "Second line follows.\nThird ends it.",
+                         "Second line ends it.")],
+                   newline="\r\n")
+        self.run_cmd("apply", "--target", "body.md")
+        raw = self.body()
+        self.assertIn("First line here.\r\n", raw)
+        self.assertEqual(raw.count("\r\n"), raw.count("\n"))
+
+    def test_a_genuinely_absent_string_still_fails(self):
+        """The tolerance must not turn every miss into a match."""
+        self.write("First line here.\n", [item("X", "not in the file at all", "y")],
+                   newline="\r\n")
+        code, out = self.run_cmd("apply", "--target", "body.md")
+        self.assertEqual(code, 1)
+        self.assertEqual(out["results"][0]["outcome"], "not_found")
+
+
+class TestReworkClass(LedgerHarness):
+    """A section the outline requires and the draft never wrote is a correction
+    that is neither a substitution nor a person's job — an earlier phase owns it.
+    Forcing it into requires_human makes the pipeline's own work look like a task
+    waiting on the user."""
+
+    def test_rework_item_blocks_and_names_its_phase(self):
+        self.write("body\n",
+                   [dict(item("SEC-1", cls="requires_rework",
+                              rationale="outline point 1 has no section"),
+                         target_phase="3")])
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 1)
+        self.assertEqual(out["checks"][0]["class"], "requires_rework")
+        self.assertEqual(out["checks"][0]["state"], "human_pending")
+
+    def test_rework_without_a_target_phase_is_rejected(self):
+        self.write("body\n",
+                   [item("SEC-1", cls="requires_rework", rationale="missing section")])
+        code, out = self.run_cmd("validate")
+        self.assertEqual(code, 2)
+        self.assertTrue(any("target_phase" in p for p in out["problems"]), out)
+
+
+class TestSupersededOnLoop(LedgerHarness):
+    """On a loop Phase 3 rewrites the draft, so every find string is expected to
+    stop matching. Overwriting the ledger wholesale would make a correction Phase
+    3 fixed on its own indistinguishable from one that was lost."""
+
+    def test_superseded_items_do_not_block(self):
+        self.write("rewritten body\n",
+                   [item("OLD", "text from the previous draft", "x",
+                         status="superseded")])
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["publication_status"], "CLEAR")
+
+    def test_superseded_is_not_reported_as_applied(self):
+        self.write("rewritten body\n",
+                   [item("OLD", "gone", "x", status="superseded")])
+        _, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(out["checks"][0]["state"], "superseded")
+
+
 class TestSchema(LedgerHarness):
     def _validate(self, items, schema="contentforge.fix-ledger/1"):
         (self.run_dir / "body.md").write_text("x", encoding="utf-8")
