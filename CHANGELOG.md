@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.26.0] - 2026-08-15
+
+The recovery path could not see the crash it exists for. Found by crashing a real run.
+
+### Fixed — `resume` was blind to the window it was built for
+
+A self-orchestrated 10-phase run hit a session usage limit mid-Phase 7.
+`phase-7-review.json` was already complete on disk (45KB, `overall_score` 8.3,
+`decision: APPROVED`) but the checkpoint had not been recorded. **`resume` reported
+`next_phase: 7`.** Following that literally would have discarded a finished review and burned
+a full reviewer pass, with no guarantee the new score matched.
+
+`get_status` derived `next_phase` from `manifest["completed_phases"]` alone and never scanned
+the run directory — so a run crashes in one of two windows, and the second one (artifact
+written, checkpoint not recorded) was exactly the one it could not see.
+
+`status` now reports **`orphaned_artifacts`** plus a `reconciliation_note`. `next_phase` keeps
+its old meaning so nothing downstream changes silently; the note is what tells a caller the
+number is incomplete. The contract's instruction is deliberately two-sided: never re-run a
+phase whose work is already on disk, and never checkpoint it unverified either — an unverified
+artifact is a claim, not a pass.
+
+### Fixed — checkpointing was not byte-stable on Windows
+
+`read_text` (universal newlines) plus `write_text` (`os.linesep`) rewrote every LF as CRLF.
+Checkpointing a 45,087-byte review produced a 45,551-byte file with a different sha256 and no
+semantic change. Because a gate FAIL re-saves the looped phase, artifacts churned on every
+loop — and a `source_sha256` recorded in `phase-8-output.json` did not match what `sha256sum`
+reported for the same file, which defeats the point of recording it. Both sides now use
+`newline=""`.
+
+### Fixed — Gate 8 asked for fewer appendices than its own config
+
+The Pipeline Contract said "Appendices A/B/C present" while
+`config/scoring-thresholds.json` requires `appendices_present: 4` (A SEO Scorecard, B Quality
+Scorecard, C Production Details, D Internal Link Map) — in a file that states the config wins
+where they disagree. A Phase 8 emitting three appendices would have passed the documented gate
+and failed the configured one.
+
+### Added — a rule for a subagent that goes silent
+
+The run's output-manager completed the .docx, all four delivery copies and the tracking
+update, then returned only "Now generating the .docx with the real script." — no report, and
+its contracted `phase-8-output.json` unwritten. Re-running it blind would have regenerated
+finished work; calling the phase failed would have been false. The contract now says: audit
+the disk, verify what exists against the gate, and ask the SAME agent for the missing piece.
+
+### The run itself
+
+All 11 phases completed, **38 of 38 contract checks passed**, Phase 7 approved at 8.3 with
+4/4 internal links re-verified live, and a 45,520-byte .docx with all four appendices and zero
+embedded images (every visual stayed `approved_by_user: false`, as it should with image
+generation never opted into). All 6 of the author's source-draft paragraphs are traceable
+verbatim into the delivered document.
+
+Suite: 329 -> 335.
+
+---
+
 ## [3.25.0] - 2026-08-15
 
 Found by a full self-orchestrated pipeline run: the plugin driving its own ten phases, with

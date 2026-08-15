@@ -209,7 +209,16 @@ def save_phase(brand: str, run_id: str, phase: str, content: str,
 
     filename, artifact_key = _artifact_name(phase, extension)
     out = _run_dir(brand, run_id) / filename
-    out.write_text(content, encoding="utf-8")
+    # newline="" disables newline translation. Without it, Python read the
+    # artifact with universal newlines (CRLF -> LF) and wrote it back through
+    # os.linesep (LF -> CRLF): checkpointing a 45,087-byte Phase 7 review
+    # produced a 45,551-byte file and a different sha256, with no semantic
+    # change at all. Because a gate FAIL re-saves the looped phase, artifacts
+    # churned on every loop and any hash-based provenance broke -- including a
+    # `source_sha256` recorded in phase-8-output.json that no longer matched
+    # what `sha256sum` reported for the same file.
+    with open(out, "w", encoding="utf-8", newline="") as fh:
+        fh.write(content)
 
     is_primary = artifact_key == phase
     if is_primary and phase not in manifest["completed_phases"]:
@@ -316,6 +325,30 @@ def get_status(brand: str, run_id: str) -> dict:
     if manifest is None:
         return {"error": f"no run found: brand={brand} run_id={run_id}"}
     done = manifest["completed_phases"]
+
+    # Reconcile the manifest against what is actually on disk.
+    #
+    # A run crashes in one of two windows: before its artifact is written, or
+    # after the artifact is written but before the checkpoint is recorded.
+    # Deriving next_phase from completed_phases alone makes the SECOND window
+    # invisible -- which is the window this whole recovery path exists for.
+    #
+    # Observed: an interrupted run had a complete 45KB phase-7-review.json on
+    # disk (overall_score 8.3, decision APPROVED) while resume reported
+    # next_phase: 7. Following that literally would have thrown away a finished
+    # review and re-run the reviewer, with no guarantee the new score matched.
+    orphaned = []
+    run_dir = _run_dir(brand, run_id)
+    if run_dir.is_dir():
+        for phase in PHASE_ORDER:
+            if phase in done:
+                continue
+            for ext in ("md", "json", "txt"):
+                filename, artifact_key = _artifact_name(phase, ext)
+                if artifact_key == phase and (run_dir / filename).is_file():
+                    orphaned.append({"phase": phase, "artifact": filename})
+                    break
+
     remaining = [p for p in PHASE_ORDER if p not in done]
     pending_rework = manifest.get("pending_rework")
     if pending_rework and pending_rework.get("target_phase"):
@@ -335,6 +368,18 @@ def get_status(brand: str, run_id: str) -> dict:
         "remaining_phases": remaining,
         "next_phase": next_phase,
         "next_phase_label": PHASE_LABELS.get(next_phase, None),
+        # Phases whose artifact exists but was never checkpointed — the crash
+        # window between "artifact written" and "checkpoint recorded".
+        # VERIFY EACH ONE'S GATE, then `save` it; do NOT blindly re-run a phase
+        # whose work is already on disk, and do NOT blindly trust the artifact
+        # either. An unverified artifact is a claim, not a pass.
+        "orphaned_artifacts": orphaned,
+        "reconciliation_note": (
+            None if not orphaned else
+            f"{len(orphaned)} phase(s) have an artifact on disk but no checkpoint: "
+            f"{', '.join(o['phase'] for o in orphaned)}. next_phase was computed from "
+            f"the manifest and does NOT account for them. Verify each artifact against "
+            f"its gate criteria, checkpoint the ones that pass, and only then continue."),
         "loop_counts": manifest.get("loop_counts", {}),
         "total_loops": manifest.get("total_loops", 0),
         "pending_rework": pending_rework,
@@ -509,7 +554,13 @@ def main() -> None:
         elif args.action == "save":
             content = args.content
             if args.content_file:
-                content = Path(args.content_file).expanduser().read_text(encoding="utf-8")
+                # newline="" on the read too: together with the matching write
+                # this makes checkpointing byte-identical, so an artifact's
+                # sha256 survives a re-save and provenance hashes stay
+                # reproducible with standard tooling.
+                with open(Path(args.content_file).expanduser(), "r",
+                          encoding="utf-8", newline="") as fh:
+                    content = fh.read()
             pending_rework = None
             if args.pending_rework:
                 pending_rework = json.loads(args.pending_rework)

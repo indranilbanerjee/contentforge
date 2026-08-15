@@ -63,9 +63,30 @@ MONTH_NAMES = _common.MONTH_NAMES
 
 # ── Helpers ─────────────────────────────────────────────────────────
 
-def get_tracking_dir(brand):
-    """Get the tracking directory for a brand (internal — hidden dotfolder)."""
-    return _common.brand_dir(brand) / "tracking"
+def get_tracking_dir(brand, must_exist=False):
+    """Get the tracking directory for a brand (internal — hidden dotfolder).
+
+    `brand` must be the SLUG, not the display name. `_common.brand_dir` slugifies
+    whatever it is given, so passing "Internet Archive" for the brand whose slug
+    is `e2e-preservation` silently resolves to `~/.claude-marketing/internet-archive`
+    and creates a second, empty brand rather than updating the real one. A live
+    Phase 8 run hit exactly that and had to be called with the slug instead.
+
+    `must_exist=True` on read/update actions turns that silent misdirect into a
+    refusal that names the slugs actually on disk.
+    """
+    d = _common.brand_dir(brand) / "tracking"
+    if must_exist and not d.parent.is_dir():
+        brands_root = _common.brand_dir(brand).parent
+        known = sorted(p.name for p in brands_root.iterdir()
+                       if p.is_dir() and not p.name.startswith("_")) \
+            if brands_root.is_dir() else []
+        raise SystemExit(
+            f"No brand directory for {brand!r} (resolved to {_common.brand_dir(brand)}).\n"
+            f"Pass the brand SLUG, not the display name — the display name would "
+            f"create a second, empty brand.\n"
+            f"Known slugs: {', '.join(known) if known else '(none yet)'}")
+    return d
 
 
 def get_publish_dir(brand, content_type=None, override=None):
@@ -95,8 +116,13 @@ def get_publish_dir(brand, content_type=None, override=None):
 
 
 def load_tracking(brand):
-    """Load tracking records from JSON file. Returns (data, error)."""
-    tracking_file = get_tracking_dir(brand) / "tracking.json"
+    """Load tracking records from JSON file. Returns (data, error).
+
+    Reads require the brand to already exist, so a display name passed here
+    refuses instead of reporting "no tracking file" for a brand that was never
+    the intended one.
+    """
+    tracking_file = get_tracking_dir(brand, must_exist=True) / "tracking.json"
     if not tracking_file.exists():
         return None, f"No tracking file for brand '{brand}'. Run --action init first."
     data = _common.load_json_safe(tracking_file)
