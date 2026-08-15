@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.27.0] - 2026-08-15
+
+### Fixed — Phase 4's corrections had nowhere to go
+
+A completed run was audited against its own artifacts. Phase 4 closed with an
+explicit "apply, do not re-argue" fix list carrying exact find/replace strings,
+and chose PASS over a loop specifically because those fixes would be carried
+forward. **One of eight was applied.** Phase 6.5 later rewrote one of the flagged
+sentences and widened the very claim Phase 4 had objected to. Phase 7 recovered
+six by grepping the finished article, missed a seventh whose string had drifted,
+and recorded them under `mandatory_before_publish` — a field that exists nowhere
+in this plugin. Phase 8 delivered the .docx with all of it outstanding.
+
+No agent misbehaved. Three independent contract defects lost the work:
+
+- Phase 4's only documented destination for a fix list was "FEEDBACK FOR PHASE 3
+  (CONTENT DRAFTER) — when looping back". On a PASS there was no destination.
+- Phase 5's input list described `phase-4-validation.md` as a report with "any
+  minor fixes applied", presupposing the work was done.
+- Phase 5's Critical Rule forbade changing "facts, statistics, or citations",
+  which is exactly what a reference URL, a citation date and a claim-scope
+  tightening are. The corrections were unappliable by contract.
+
+**Added `scripts/fix-ledger.py`** and the `phase-4-fixes.json` artifact:
+
+- Phase 4 emits corrections as a machine-readable ledger whenever it carries any
+  forward, whatever its decision. Prose is not a handoff.
+- Phase 5 applies them verbatim by script (`apply`) before any structural edit,
+  with the Critical Rule now carrying a stated exception for the ledger.
+- **The authorship record is the guard.** Each substitution is trial-applied and
+  reverted if it would rewrite or drop one of the author's own sentences.
+- A find-string that no longer matches is reported `not_found` and blocks —
+  never treated as "nothing to do". Three of the eight had already drifted, so a
+  script that shrugged at a missing match would have reported success having done
+  nothing.
+- `verify` re-checks survival after every later phase, so applying a fix is not
+  the end of its life. Gate 6.5 now fails a humanizer pass that undoes one.
+- Phase 7 copies the verify result into `fix_ledger` + `publication_status`
+  instead of re-deriving the list by hand.
+- Phase 8 enforces it: unresolved blockers do not stop the document being
+  produced, they stop it being called ready — `DRAFT-` prefix,
+  `publication_blockers` recorded, blocked status in the tracking row.
+- `requires_human` items (supply a feature image, render a pending chart) are
+  first-class ledger entries: they cannot be auto-applied and still block.
+
+Gates 4, 5, 6.5, 7 and 8 in the Pipeline Contract updated to match.
+
+**28 new tests** (`tests/test_fix_ledger.py`), including plant-checks that each
+guard can actually fail, and contract-wiring tests that pin the prose — the
+original defect lived entirely in the wording.
+
 ## [3.26.0] - 2026-08-15
 
 The recovery path could not see the crash it exists for. Found by crashing a real run.

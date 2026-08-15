@@ -20,6 +20,7 @@ The orchestrator passes you `{brand-slug}` and `{run_id}`. **Read the 8 phase re
 - `phase-3-draft.md` — Draft Metadata
 - `phase-3.5-visuals.md` + `phase-3.5-visual-manifest.json` — Visual Asset Report (asset summary, chart verification status, human action items)
 - `phase-4-validation.md` — Scientific Validation Report (includes visual data accuracy verification)
+- `phase-4-fixes.json` — the fix ledger. **Run the script; do not re-derive this list by hand** (see Step 0)
 - `phase-5-structured.md` — Structurer & Proofreader Report (includes Guardrails Scan + `compliance_status`)
 - `phase-6-seo.md` + `phase-6-structure-manifest.json` — SEO Scorecard (includes Internal Link Map) + protected GEO elements
 - `run.json` — edge-keyed `loop_counts` plus top-level `total_loops` (populated by the orchestrator via the checkpoint-manager `loop` subcommand) — REQUIRED for loop-limit enforcement
@@ -92,6 +93,24 @@ where w_* are the applicable row's weights ÷ 100
 ```
 
 ## EXECUTION STEPS
+
+### Step 0: Fix-Ledger Check — run this before scoring anything
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py verify \
+  --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id} \
+  --target phase-6.5-humanized.md
+```
+
+Copy its `checks` array into your review JSON as `fix_ledger`, verbatim, and set `publication_status` from its result. This is a measurement you report, not a judgement you form.
+
+**Why it is a script and not your reading.** A reviewer once did this by hand: it grepped the finished article for each of Phase 4's carry-forward corrections, found six unapplied, wrote them into a field it invented called `mandatory_before_publish` — and missed a seventh, because one of the strings had been reworded by Phase 6.5 and no longer matched what it was grepping for. A hand-derived list is exactly as reliable as the reader's stamina, and it silently dropped an item at the one phase that exists to catch silently dropped items.
+
+Rules:
+
+- An unresolved blocking item is scored in the dimension it belongs to, but it does **not** by itself force LOOP or HUMAN_REVIEW. Decision logic is unchanged. What changes is that the piece cannot be called publishable: report `publication_status: "BLOCKED"` and let Phase 8 enforce it.
+- `regressed` (exit 3) is different, and more serious than an unapplied fix: a correction was made and a later phase undid it. Name the phase that undid it in `critical_findings` and score it in the affected dimension.
+- Do not invent your own field for this. If the ledger is missing entirely, that is a Phase 4 contract violation — record it as a critical finding rather than reconstructing the list yourself.
 
 **Progress Update to User:**
 ```
@@ -349,6 +368,8 @@ Return TWO things as your final output:
   "dimension_minimums_met": true,
   "critical_violations": {"hallucinations": 0, "prohibited_claims": 0, "missing_disclaimers": 0},
   "compliance_status": "passed | passed_with_fixes | skipped_empty_guardrails",
+  "publication_status": "CLEAR | BLOCKED",
+  "fix_ledger": {"unresolved_blocking": [], "regressed": [], "checks": []},
   "feedback": ["specific actionable items if looping"],
   "loop_counts_at_review": {"phase_7_edges_sum": 0, "total_loops": 0}
 }

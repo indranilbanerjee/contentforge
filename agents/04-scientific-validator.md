@@ -191,6 +191,8 @@ For regulated industries: verify all required disclaimers from brand profile gua
 
 **Your final artifact is saved by the orchestrator to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-4-validation.md` — return the complete Scientific Validation Report as your final output so the orchestrator can save it verbatim.
 
+**You also write one file yourself:** `phase-4-fixes.json`, the fix ledger (see below). The report is for a human reader; the ledger is the machine handoff. Corrections that exist only in the report do not reach the phase that must make them.
+
 ```markdown
 # SCIENTIFIC VALIDATION REPORT — [Topic]
 
@@ -230,8 +232,58 @@ Outline adherence table. Context preservation issues. Disclaimer check status.
 - [ ] **Visual data accuracy verified** — Charts with mismatches: [count] → PASS/FAIL
 - [ ] **Logic and flow validated** — Coherence + contradictions status → PASS/CONDITIONAL
 - [ ] **Domain-specific validation passed** — Terminology, evidence, regulatory, pitfalls, expert score → PASS/CONDITIONAL/FAIL
+- [ ] **Fix ledger emitted and valid** — every correction named in this report appears in `phase-4-fixes.json`, `fix-ledger.py validate` exits 0 → PASS/FAIL
 
 **DECISION:** ✅ PASS | 🔄 LOOP TO PHASE 3 | ❌ FAIL
+
+## THE FIX LEDGER — `phase-4-fixes.json` (REQUIRED whenever you carry a correction forward)
+
+**A PASS while holding corrections is the case that used to lose them.** Passing rather than looping is often right — spending a 4→3 iteration on find/replace strings re-opens a draft that already clears every threshold. But before this ledger existed, the only documented destination for your fix list was the Phase 3 feedback section below, which applies *when looping back*. On a PASS the corrections had nowhere to go: they were written into this report, no later phase was required to act on them, and Phase 5 was independently forbidden from making them. In a real run 7 of 8 were silently lost and one was later reworded into a wider claim than the one flagged.
+
+So: **prose is not a handoff.** Any correction you expect someone downstream to make goes in the ledger, whatever your decision.
+
+Write `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-4-fixes.json`:
+
+```json
+{
+  "schema": "contentforge.fix-ledger/1",
+  "run_id": "{run_id}",
+  "emitted_by": "phase-4",
+  "items": [
+    {
+      "id": "MIN-4",
+      "severity": "MINOR",
+      "blocking": true,
+      "class": "text_replace",
+      "find": "and under-priced by the market selling it.",
+      "replace": "and, on APTrust's own disclosure, under-priced by the service selling it.",
+      "rationale": "generalisation from one provider's self-disclosure",
+      "status": "pending",
+      "applied_at_phase": null,
+      "applied_to": null,
+      "note": null
+    }
+  ]
+}
+```
+
+Rules:
+
+- `severity` — `CRITICAL` | `MODERATE` | `MINOR`, matching §1's own vocabulary.
+- `blocking` — **true means the piece may not be declared publishable until this is resolved.** Set it true for anything you would call mandatory before publish. CRITICAL is always blocking.
+- `class` — `text_replace` for anything expressible as an exact string swap; `requires_human` for work no script can do (supply a feature image, render a pending chart). A `requires_human` item needs a `rationale` naming the action.
+- `find` must be **unique in the draft**. The applier refuses to guess between two matches — lengthen the string until it is unambiguous.
+- `find` must be **verbatim from the current draft**, copy-pasted, not retyped. A string that does not match is reported as `not_found` and blocks; it is never silently skipped.
+- Never write a fix whose `find` sits inside one of the author's own sentences when `source_draft: true`. The applier re-measures the authorship record and reverts any fix that would rewrite or drop the author's words, but you should not be proposing it.
+- Optional or advisory suggestions do **not** belong here. Ledger items are corrections you expect to be made; put anything else in the report prose.
+
+Validate before finishing:
+
+```bash
+python scripts/fix-ledger.py validate --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id}
+```
+
+Emitting an empty `items` array is correct and expected when you have no corrections. Omitting the file while the report lists fixes is a contract violation.
 
 ## FEEDBACK FOR PHASE 3 (CONTENT DRAFTER)
 
@@ -239,6 +291,8 @@ When looping back, provide:
 1. **Required Fixes (CRITICAL):** Specific claims to remove/correct with exact replacements
 2. **Recommended Fixes (MINOR):** Suggestions for softening language, adding context, fixing citations
 3. **Estimated Fix Time**
+
+The ledger is still written when you loop — Phase 3 rewrites the draft, so re-derive the `find` strings against the revised text on re-validation.
 
 ## CONFIDENCE SCORING
 

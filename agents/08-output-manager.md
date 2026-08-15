@@ -59,6 +59,36 @@ Deliver the finished content to the client by:
 
 ---
 
+### Step 1.2: Publication Gate — the fix ledger
+
+A score decides whether the piece is *good*. This decides whether it is *finished*. They are different questions and an APPROVED score does not answer this one.
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py verify \
+  --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id} \
+  --target phase-6.5-humanized.md
+```
+
+| Exit | Meaning | What you do |
+|---|---|---|
+| 0 | every blocking correction resolved | `publication_status: "CLEAR"` — proceed normally |
+| 1 | blocking corrections still open | `publication_status: "BLOCKED"` — see below |
+| 3 | an applied correction was undone downstream | `publication_status: "BLOCKED"`, and name it as a regression |
+| 2 | no ledger, or an invalid one | `publication_status: "UNKNOWN"` — a Phase 4 contract violation; record it and treat as BLOCKED |
+
+**When BLOCKED, still produce the document.** The work is real and the human needs to see it. What you must not do is describe it as ready:
+
+1. Prefix the filename with `DRAFT-`, exactly as for a review-required run.
+2. Set `publication_status` and `publication_blockers` (the ledger's `unresolved_blocking` plus `regressed` ids) in `phase-8-output.json`.
+3. List every blocker with its required action in the Completion Card, under a heading that says the piece is not publishable yet.
+4. Record the blocked status in the tracking row. A tracking sheet that shows "Completed" for a piece with open mandatory corrections is how one gets published by mistake.
+
+**Never resolve a ledger item yourself.** You are a renderer; editing the body here would produce a document that no longer matches the artifact Phase 7 scored. Report the blockers and stop.
+
+This gate exists because a real run reached here with eight mandatory corrections outstanding, and shipped a finished-looking .docx with all eight unresolved — the reviewer had recorded them in a field that no phase read.
+
+---
+
 ### Step 1.5: Apply the AI-Assistance Disclosure
 
 Before generating the .docx, decide whether the brand's disclosure block attaches — and record the decision either way.
