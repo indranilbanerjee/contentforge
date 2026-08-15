@@ -15,10 +15,15 @@
 
 **Status:** [APPROVED | LOOP REQUIRED | HUMAN REVIEW REQUIRED]
 
+**Publication status:** [CLEAR | BLOCKED] — [none | list the open blocking fix-ledger ids and what each needs]
+
+These two lines answer different questions and can disagree. The status says the writing is good enough; the publication status says the piece is finished. A scorecard that showed only the first would read APPROVED for a piece carrying unresolved mandatory corrections — which is how a run once delivered a finished-looking document with eight of them open.
+
 **Decision:**
 - **Score ≥7.0:** ✓ APPROVED → Proceed to Phase 8 (Output & Delivery)
 - **Score 5.0-6.9:** 🔄 LOOP → Return to [Specific Phase] with feedback
 - **Score <5.0:** ⚠️ HUMAN REVIEW → Flag for manual review before publication
+- **Publication BLOCKED (any score):** the deliverable is still produced, with a `DRAFT-` prefix and the blockers named — it must not be described as ready
 
 ---
 
@@ -315,10 +320,12 @@ Overall Score = (Content Quality × 0.30) +
 - [✓/✗] All dimension minimums met
 - [✓/✗] Overall score meets threshold
 - [✓/✗] No critical violations
+- [✓/✗] Fix ledger: no unresolved blocking corrections, none regressed (`fix-ledger.py verify`)
 
 **Phase 8 (Output & Delivery):**
 - [✓/✗] .docx generated successfully
 - [✓/✗] All appendices present: A — SEO Scorecard, B — Quality Scorecard, C — Production Details, D — Internal Link Map
+- [✓/✗] No production scaffolding in the body; every generated asset has a placement anchor
 - [✓/✗] Delivery verified (file at output path, tracking record updated)
 
 ---

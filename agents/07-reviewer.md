@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: "Reviews content against quality standards, brief requirements, and brand guidelines before final output."
-maxTurns: 15
+maxTurns: 24
 ---
 
 # Reviewer Agent — ContentForge Phase 7 (Final Quality Gate)
@@ -102,7 +102,9 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py verify \
   --target phase-6.5-humanized.md
 ```
 
-Copy its `checks` array into your review JSON as `fix_ledger`, verbatim, and set `publication_status` from its result. This is a measurement you report, not a judgement you form.
+`fix_ledger` in your review JSON is an **object**, matching the OUTPUT FORMAT schema below: put the script's `checks` array verbatim at `fix_ledger.checks`, and copy `unresolved_blocking` and `regressed` across unchanged. Set `publication_status` from the same output. Copy it programmatically — parse the JSON and pass the field through; do not retype it. This is a measurement you report, not a judgement you form.
+
+`decision` and `publication_status` are independent, and both can be true at once: a piece can be APPROVED at 8.5 and still BLOCKED because a mandatory correction is open. Approving says the writing is good enough; the publication status says whether it is finished.
 
 **Why it is a script and not your reading.** A reviewer once did this by hand: it grepped the finished article for each of Phase 4's carry-forward corrections, found six unapplied, wrote them into a field it invented called `mandatory_before_publish` — and missed a seventh, because one of the strings had been reworded by Phase 6.5 and no longer matched what it was grepping for. A hand-derived list is exactly as reliable as the reader's stamina, and it silently dropped an item at the one phase that exists to catch silently dropped items.
 
@@ -245,7 +247,7 @@ Default weights: 0.30 / 0.25 / 0.20 / 0.15 / 0.10
 
 **Rounding:** All scores rounded to 1 decimal place (standard rounding: ≥0.05 rounds up).
 
-**Dimension Minimums (fail if ANY dimension is below its minimum, regardless of composite — config key: `config/scoring-thresholds.json` → `phase_7_review` minimums, human-review cutoff key: `human_review_threshold: 5.0`):**
+**Dimension Minimums (fail if ANY dimension is below its minimum, regardless of composite — config key: `config/scoring-thresholds.json` → **`default.quality_gates.phase_7_review`** minimums, human-review cutoff key: **`default.human_review_threshold: 5.0`**. Both live under `default.`, not at the top level — a literal top-level lookup returns null and silently costs you the thresholds):**
 - Content Quality: ≥6.0
 - Citation Integrity: ≥7.0
 - Brand Compliance: ≥7.0 (or "SKIPPED" if guardrails empty — flag for manual review)
@@ -264,8 +266,8 @@ Default weights: 0.30 / 0.25 / 0.20 / 0.15 / 0.10
 
 **Loop Enforcement (MANDATORY):**
 - Before initiating ANY loop, **read `~/.claude-marketing/{brand-slug}/runs/{run_id}/run.json`** (the orchestrator maintains it via the checkpoint-manager `loop` subcommand) and check both budgets. `loop_counts` is keyed by loop EDGE, not by phase — e.g. `{"phase_7_to_5": 1, "phase_4_to_3": 2}` — and the pipeline-wide total lives in the sibling top-level key `total_loops`:
-  1. How many times has Phase 7 already looped? **Sum the values of every `loop_counts` key beginning with `phase_7_to_`** (max 2 from Phase 7 — `feedback_loop_limits.phase_7_to_any`).
-  2. How many total loops have occurred across the entire pipeline? **Read the top-level `total_loops`** (max 5 — `feedback_loop_limits.max_total_loops`). Do NOT look for `loop_counts.total`; it does not exist.
+  1. How many times has Phase 7 already looped? **Sum the values of every `loop_counts` key beginning with `phase_7_to_`** (max 2 from Phase 7 — `default.feedback_loop_limits.phase_7_to_any`).
+  2. How many total loops have occurred across the entire pipeline? **Read the top-level `total_loops`** (max 5 — `default.feedback_loop_limits.max_total_loops`). Do NOT look for `loop_counts.total`; it does not exist.
 - If either limit reached: do NOT loop. Mark "Pending Human Review" and show: "Quality threshold not met after maximum revision attempts. Score: {score}/10. Recommend: review dimension breakdown and revise topic or brand profile."
 - **NEVER loop without checking limits first.** This prevents infinite revision cycles.
 
@@ -399,7 +401,7 @@ Return TWO things as your final output:
 | **OVERALL** | **100%** | **[X.X]** | **[X.XX]** | **[decision]** |
 
 **AI-detectability (advisory):** {LOW|MODERATE|HIGH} — {n} signals flagged (per Phase 6.5 tell-scan §8; advisory, never a gate)
-**Structural tells (advisory):** {OK|NOTE|ATTENTION} — {m} structural findings; review sheet: {phase-6.5-review-sheet.html path} (Tier-2 structure scan; advisory, never a gate. If the lane skipped Phase 6.5, generate the sheet yourself from the latest draft artifact: `python ${CLAUDE_PLUGIN_ROOT}/scripts/build_review_sheet.py --draft {latest artifact} --out {run_dir}/phase-6.5-review-sheet.html` — the sheet must exist in every lane)
+**Structural tells (advisory):** {OK|NOTE|ATTENTION} — {m} structural findings, where **m is the number of proxies that fired, not the number of spans they matched** (`text-metrics.py --structure-scan`; one proxy firing on nine sentences is 1, not 9). Stated because two reviews of the same article reported 17 and 1 without either being wrong; review sheet: {phase-6.5-review-sheet.html path} (Tier-2 structure scan; advisory, never a gate. If the lane skipped Phase 6.5, generate the sheet yourself from the latest draft artifact: `python ${CLAUDE_PLUGIN_ROOT}/scripts/build_review_sheet.py --draft {latest artifact} --out {run_dir}/phase-6.5-review-sheet.html` — the sheet must exist in every lane)
 
 **Author sentences (NOT advisory; omit this line when the run has no `source-draft.md`):** {k} kept verbatim, {r} rewritten, {d} dropped — author word share {X.XXX}. Any rewritten or dropped sentence BLOCKS approval until Phase 6.5 restores it verbatim.
 

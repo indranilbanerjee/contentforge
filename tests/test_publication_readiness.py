@@ -43,6 +43,7 @@ def _load(name, filename):
 
 tm = _load("cf_text_metrics_pub", "text-metrics.py")
 cm = _load("cf_checkpoint_pub", "checkpoint-manager.py")
+lt = _load("cf_local_tracker_pub", "local-tracker.py")
 
 DIRTY = """# The real cost of preservation
 
@@ -176,6 +177,80 @@ class TestLoopHistory(unittest.TestCase):
         status = cm.get_status("LoopBrand", self.run_id)
         self.assertIsInstance(status, dict)
         self.assertEqual(self.manifest()["loop_history"][0]["reason"], "why")
+
+
+class TestBlockedDeliveryIsFiledHonestly(unittest.TestCase):
+    """Phase 8 correctly refused to call a piece publishable — and the delivery
+    step undid it twice: mark_complete hardcoded status "completed", and it named
+    the published copies from the tracking row's title rather than the source
+    file, so a DRAFT- deliverable published under an ordinary name."""
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        home = Path(self._tmp.name)
+        self._orig = lt._common.marketing_home
+        lt._common.marketing_home = lambda: home
+        self.publish = home / "published"
+        lt.init_tracking("blockedbrand")
+        lt.add_row("blockedbrand", {"title": "The Cost Nobody Budgets",
+                                    "content_type": "blog"})
+        self.src = home / "DRAFT-the-cost-nobody-budgets.docx"
+        self.src.write_bytes(b"PK not really a docx")
+
+    def tearDown(self):
+        lt._common.marketing_home = self._orig
+        self._tmp.cleanup()
+
+    def file_it(self, data):
+        return lt.mark_complete("blockedbrand", "REQ-001", data,
+                                output_file=str(self.src),
+                                publish_dir_override=str(self.publish))
+
+    def test_blocked_status_survives_into_the_record(self):
+        r = self.file_it({"status": "blocked_pending_human_review",
+                          "blocked_reason": "HUM-1: feature image missing"})
+        self.assertEqual(r["status"], "blocked_pending_human_review")
+        self.assertEqual(r["filed_as"], "filed_not_publishable")
+        store, _ = lt.load_tracking("blockedbrand")
+        row = store["records"][0]
+        self.assertEqual(row["status"], "blocked_pending_human_review")
+        self.assertIn("HUM-1", row["blocked_reason"])
+
+    def test_blocked_artifact_cannot_publish_under_a_clean_name(self):
+        r = self.file_it({"status": "blocked_pending_human_review"})
+        for key in ("published_path", "output_path"):
+            name = Path(r[key]).name
+            self.assertTrue(name.upper().startswith("DRAFT-"),
+                            f"{key} published as {name!r} with no marker")
+
+    def test_completed_runs_are_unchanged(self):
+        r = self.file_it({"quality_score": 8.5})
+        self.assertEqual(r["status"], "completed")
+        self.assertFalse(Path(r["published_path"]).name.upper().startswith("DRAFT-"))
+
+    def test_marker_is_not_doubled(self):
+        store, _ = lt.load_tracking("blockedbrand")
+        store["records"][0]["title"] = "DRAFT-already marked"
+        lt.save_tracking("blockedbrand", store)
+        r = self.file_it({"status": "blocked_pending_human_review"})
+        self.assertNotIn("draft-draft", Path(r["published_path"]).name.lower())
+
+
+class TestDocxAppendixHonesty(unittest.TestCase):
+    def test_burstiness_is_not_given_a_target_that_does_not_exist(self):
+        """The appendix printed "(target >=0.7)" while Phase 7 scores burstiness
+        as advisory with no minimum, so the delivered document showed a figure
+        failing a threshold that exists nowhere in the pipeline."""
+        text = (REPO / "scripts" / "generate-docx.py").read_text(encoding="utf-8")
+        # Strip comments first: the explanation of this very fix quotes the old
+        # string, and asserting against raw file text matches the comment.
+        code = " ".join(line for line in text.splitlines()
+                        if not line.lstrip().startswith("#"))
+        self.assertNotIn("target ≥" + "0.7", code)
+        self.assertNotIn("target >=0.7", code)
+        self.assertIn("Burstiness score", code)
+        idx = code.index("Burstiness score")
+        self.assertIn("advisory", code[idx:idx + 200])
 
 
 class TestContractWiring(unittest.TestCase):

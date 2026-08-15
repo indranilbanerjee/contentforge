@@ -344,6 +344,30 @@ class TestContractWiring(unittest.TestCase):
         self.assertHas(text, "fix-ledger.py", rel)
         self.assertHas(text, "publication_status", rel)
 
+    def test_reviewer_fix_ledger_shape_is_unambiguous(self):
+        """Step 0 said 'copy the checks array into fix_ledger' while the schema
+        showed fix_ledger as an object. Both cannot hold, and a reviewer had to
+        pick one."""
+        rel = "agents/07-reviewer.md"
+        text = self.read(rel)
+        self.assertHas(text, "fix_ledger.checks", rel)
+
+    def test_scorecard_template_shows_publication_status(self):
+        """A scorecard rendered exactly to template would have read APPROVED with
+        nothing indicating the piece was unpublishable."""
+        rel = "templates/quality-scorecard.md"
+        text = self.read(rel)
+        self.assertHas(text, "Publication status", rel)
+        self.assertHas(text, "fix-ledger.py verify", rel)
+
+    def test_reviewer_config_keys_are_addressable(self):
+        """`phase_7_review` and `feedback_loop_limits` live under `default.`; the
+        contract cited them as top-level, where a literal lookup returns null."""
+        rel = "agents/07-reviewer.md"
+        text = self.read(rel)
+        self.assertHas(text, "default.quality_gates.phase_7_review", rel)
+        self.assertHas(text, "default.feedback_loop_limits.max_total_loops", rel)
+
     def test_pipeline_contract_declares_the_artifact(self):
         rel = "skills/contentforge/SKILL.md"
         text = self.read(rel)

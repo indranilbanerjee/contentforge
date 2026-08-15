@@ -7,6 +7,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.29.0] - 2026-08-15
+
+### Fixed — the publication gate was undone at the last step
+
+v3.28.0 taught Phase 8 to refuse to call a piece publishable while mandatory
+corrections were open. Running that end to end on a real blocked deliverable
+showed the delivery step reversing it:
+
+- **`mark_complete` hardcoded `target["status"] = "completed"`.** A deliverable
+  the pipeline had just refused to publish could only be filed as finished —
+  producing exactly the tracking row the contract calls "how one gets published
+  by mistake". Status now comes from `--data`, with `blocked_reason` recorded.
+- **Both published copies were named from the tracking row's `title`**, never
+  from the source filename, so a `DRAFT-` prefixed document published under an
+  ordinary name. Any status other than `completed` now prefixes both copies, so
+  the marker follows the recorded status rather than a string someone typed.
+
+### Fixed — a target that exists nowhere in the pipeline
+
+`generate-docx.py` printed `Burstiness score 0.62 (target >=0.7)` into Appendix C
+of the client-facing document. Phase 7 scores burstiness as advisory with no
+minimum and the completion card says "advisory — no minimum". The delivered
+document was showing a figure failing a threshold nobody set.
+
+### Fixed — four contract defects found by running the contracts
+
+- `--brand` was documented as `{brand_name}` where `local-tracker.py` wants the
+  slug; it slugifies whatever it gets, so a display name silently creates a
+  second brand tree. One run delivered into `Documents\ContentForge\Internet
+  Archive\` while its tracking lived under `e2e-preservation`.
+- `fix_ledger` was specified as an array in Step 0 and an object in the OUTPUT
+  FORMAT schema. Both could not hold; it is an object, with the array at
+  `.checks`.
+- The Quality Scorecard template had no publication-status line and no ledger row
+  in its Gate 7 checklist, so a scorecard rendered faithfully to template read
+  APPROVED with nothing indicating the piece was unpublishable.
+- `phase_7_review` minimums and `feedback_loop_limits` were cited as top-level
+  config keys; both live under `default.`, where a literal top-level lookup
+  returns null.
+- Phase 8 now states the embedding rule directly: approval gates AI-generated
+  imagery, not charts rendered deterministically from Phase 2's verified data.
+
+Reviewer `maxTurns` raised 15 -> 24 to match what its contract mandates.
+
+**8 new tests**, including a plant-check confirming both delivery guards fail
+when removed.
+
 ## [3.28.0] - 2026-08-15
 
 ### Fixed — production scaffolding reached the reader

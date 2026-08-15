@@ -322,8 +322,16 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
                 "recovery": "Check the path passed to --output-file."}
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
-    target["status"] = "completed"
+    # Status was hardcoded to "completed", so a deliverable that Phase 8 had
+    # correctly refused to call publishable could only be filed as finished.
+    # Following the contract literally produced exactly the tracking row it warns
+    # about: a blocked piece showing "completed", which is how one gets published
+    # by mistake. The caller may now file the artifact and say what it actually is.
+    status = str(data.get("status") or "completed").strip() or "completed"
+    target["status"] = status
     target["completed_at"] = now
+    if status != "completed":
+        target["blocked_reason"] = data.get("blocked_reason") or data.get("notes")
 
     # Apply quality scores from --data
     score_fields = [
@@ -347,6 +355,13 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
     title_slug = (slugify(target.get("title") or "")
                   or slugify(row_id or "")
                   or "untitled")
+    # Both copies were named from the tracking row's title and never from the
+    # source filename, so a DRAFT- prefixed deliverable published under an
+    # ordinary name — silently undoing the one marker that tells a person the
+    # piece is not ready. The marker now follows the recorded status, which is a
+    # fact about the work rather than a string someone remembered to type.
+    if status != "completed" and not title_slug.lower().startswith("draft-"):
+        title_slug = f"DRAFT-{title_slug}"
     ext = src.suffix
     content_type = target.get("content_type", "") or None
 
@@ -400,7 +415,8 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
     save_tracking(brand, store)
 
     return {
-        "status": "completed",
+        "status": status,
+        "filed_as": "completed" if status == "completed" else "filed_not_publishable",
         "requirement_id": row_id,
         "output_path": tracking_path,
         "published_path": published_path,

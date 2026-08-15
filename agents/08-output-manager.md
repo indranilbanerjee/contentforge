@@ -245,6 +245,8 @@ If the file does not exist or is < 5 KB, the script failed — investigate stder
 
 #### 2.4 Visual Asset Integration
 
+**Approval applies to AI-generated imagery only.** `approved_by_user` exists so a person signs off on a picture a model invented. A chart or diagram rendered deterministically from Phase 2's verified statistics is not that: its data was checked at Gate 4 and its rendering is reproducible, so embed it on `status: "generated"` regardless of the flag. Embed AI assets (`ai_generated: true`) only when `approved_by_user` is true. The rule was previously stated only in Phase 3.5's contract, in the form "Phase 8 embeds only approved AI images", and this file said nothing — so a run with four valid deterministic figures embedded none of them.
+
 **For `chart` assets (status: `generated`):**
 1. Read the PNG from the manifest's `file_path` **verbatim** — per the ONE PATH RULE in `agents/03.5-visual-asset-annotator.md`, that field is already a resolved absolute path (it honours `$CLAUDE_MARKETING_HOME` / `$CLAUDE_PLUGIN_DATA`). Do NOT prefix it with `~/.claude-marketing/...`; concatenating a base onto an absolute path yields a path that does not exist, and the chart silently fails to embed. The run-relative `assets/...` form appears only inside the inline `<!-- VISUAL: ... file= -->` marker.
 2. Insert at position specified by `placement` field
@@ -461,11 +463,21 @@ python {scripts_dir}/airtable-tracker.py \
 ```
 python {scripts_dir}/local-tracker.py \
   --action mark-complete \
-  --brand "{brand_name}" \
+  --brand "{brand-slug}" \
   --row-id {requirement_id} \
   --data '{"quality_score": {score}, "content_quality": {cq}, "citation_integrity": {ci}, "brand_compliance": {bc}, "seo_performance": {seo}, "readability": {read}, "actual_word_count": {words}, "notes": "Completed successfully."}' \
   --output-file {path to generated .docx}
 ```
+
+**`--brand` takes the SLUG, not the display name.** `local-tracker.py` slugifies whatever it is given, so a display name silently creates and publishes under a second brand tree — one run delivered into `Documents\ContentForge\Internet Archive\` while its own tracking lived under `e2e-preservation`.
+
+**When Step 1.2 or 1.3 set `publication_status: "BLOCKED"`, say so in `--data`:**
+
+```
+  --data '{"status": "blocked_pending_human_review", "quality_score": {score}, ..., "blocked_reason": "HUM-1: feature image missing", "notes": "NOT PUBLISHABLE — <blockers>"}'
+```
+
+Pass the status through `--data`; do not file the artifact as completed and correct it afterwards. Any status other than `completed` also makes the script prefix **both** copies with `DRAFT-`, so the marker follows the recorded status rather than depending on the source filename. Both behaviours were missing: `mark_complete` hardcoded `completed` and named the published copies from the tracking row's *title*, so a `DRAFT-` deliverable published under an ordinary filename with a row that read "completed" — undoing this gate at the last step.
 
 The `.docx` is now written to **two** locations:
 

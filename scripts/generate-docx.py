@@ -908,7 +908,12 @@ def add_appendices(doc, reports, link_markers=None):
             ("Citation count", str(production.get("citation_count", 0))),
             ("Source reliability (avg)", f"{production.get('source_reliability_avg', 0):.2f}/10"),
             ("Flesch-Kincaid grade", f"{production.get('flesch_kincaid_grade', 0):.1f}"),
-            ("Burstiness score", f"{production.get('burstiness_score', 0):.2f} (target ≥0.7)"),
+            # No target. Phase 7 scores burstiness as advisory with no minimum,
+            # and the completion card says "advisory — no minimum" — but this line
+            # printed "(target >=0.7)" into the client-facing appendix, so the
+            # delivered document showed 0.62 failing a threshold that does not
+            # exist anywhere in the pipeline.
+            ("Burstiness score", f"{production.get('burstiness_score', 0):.2f} (advisory — no target)"),
             ("Humanizer patterns removed", str(production.get("humanizer_patterns_removed", 0))),
             ("Em dash count", f"{production.get('em_dash_count', 0)} (target ≤1-2 per 500w)"),
             ("AI signal score", f"{production.get('ai_signal_score', 0):.2f} (gate ≤0.30)"),
