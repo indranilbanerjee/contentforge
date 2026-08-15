@@ -66,12 +66,32 @@ Read the JSON it returns. Exit 0 means every blocking correction is applied. Exi
 | Outcome | What it means | What you do |
 |---|---|---|
 | `applied` | substituted verbatim | nothing |
-| `not_found` | the text moved since Phase 4 wrote the string | locate the current wording, make the same correction by hand, then set the item's `status` to `applied` with a `note` recording the string you actually replaced |
+| `not_found` | the text moved since Phase 4 wrote the string | locate the current wording, make the same correction by hand, then close the item with `fix-ledger.py resolve` (below) — **never by editing the JSON** |
 | `ambiguous` | the string occurs more than once | the script refuses to guess; make the intended one unique and re-run |
 | `author_protected` | the fix would alter the author's words | do **not** override; report it in your Phase 5 report for a human decision |
 | `human_pending` | needs a person (an image, a chart render) | carry forward; it blocks publication, not your phase |
 
+**Closing a hand-made correction — use `resolve`, never a JSON edit:**
+
+```bash
+# You made the correction by hand because the find string had moved:
+python scripts/fix-ledger.py resolve --run-dir <run dir> --target <body file> \
+  --id MIN-2 --replaced-with "the exact text that is now in the body" \
+  --note "find string had drifted" --phase 5
+
+# Or: an earlier phase had already made this correction in different words,
+# and you changed nothing:
+python scripts/fix-ledger.py resolve --run-dir <run dir> --target <body file> \
+  --id MOD-2a --already-satisfied --note "body already reads '<current wording>'"
+```
+
+`resolve` re-points `replace` at the text you actually wrote, keeping the Phase 4 wording in `original_replace`. **This matters more than it looks.** `verify` checks that `replace` is present in the body, so an item hand-corrected in different words while `replace` still held Phase 4's phrasing verifies as **`regressed`** — which Phase 8 escalates to "a later phase undid this correction". On a real run that would have accused five of eleven corrections of downstream sabotage that never happened. `resolve` refuses if the text you claim to have written is not in the file, so it cannot be used to declare a correction done without doing it.
+
+Use `--already-satisfied` when your edit changed **zero bytes**. Marking that `applied` would claim a substitution nobody performed.
+
 **Do not proceed to Step 1 with an unresolved blocking `not_found`.** A correction whose target has moved is still a correction.
+
+**Which file to apply to.** `--target` is the draft body you are about to edit — the artifact named in the Pipeline Contract as Phase 3.5's output. If that file turns out to be a *report* rather than a draft body (Phase 3.5 does not always save the annotated draft), do not apply corrections to it: say so, and apply to the most recent artifact that actually holds the article text. Publication corrections applied to a report nobody publishes are corrections that did not happen.
 
 Your Phase 5 report must include the ledger result table. `fix-ledger.py verify` is run again at Gate 5 against your output.
 

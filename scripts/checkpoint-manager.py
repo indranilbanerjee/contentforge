@@ -557,7 +557,13 @@ def main() -> None:
     p_fin = sub.add_parser("finalize", help="Mark a run as completed or failed")
     p_fin.add_argument("--brand", required=True)
     p_fin.add_argument("--run-id", required=True)
-    p_fin.add_argument("--status", default="completed", choices=["completed", "failed", "abandoned"])
+    # "blocked" exists because a run can finish every phase, pass its
+    # reviewer, and still not be publishable: an APPROVED score with an open
+    # mandatory correction is none of completed / failed / abandoned, and
+    # forcing it into "completed" is exactly the misstatement the Phase 8
+    # publication gate is there to prevent.
+    p_fin.add_argument("--status", default="completed",
+                       choices=["completed", "blocked", "failed", "abandoned"])
 
     p_dis = sub.add_parser("discard", help="Delete a run's checkpoint directory")
     p_dis.add_argument("--brand", required=True)

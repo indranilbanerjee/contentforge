@@ -271,6 +271,8 @@ Write `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-4-fixes.json`:
 Rules:
 
 - `severity` — `CRITICAL` | `MODERATE` | `MINOR`, matching §1's own vocabulary.
+- **One item per substitution.** When a single §7 issue carries two find/replace pairs (as MOD-2 did, with two pronoun fixes under one id), split it: `MOD-2a`, `MOD-2b`, each with `"source_id": "MOD-2"` tying it back to the report. Ids must stay unique because each addresses exactly one substitution, and `source_id` is how the ledger still matches your report.
+- `origin` — optional, for items a later phase adds (a reviewer's publication blocker, say). `emitted_by` names who created the ledger, not who added each row.
 - `blocking` — **true means the piece may not be declared publishable until this is resolved.** Set it true for anything you would call mandatory before publish. CRITICAL is always blocking.
 - `class` — `text_replace` for anything expressible as an exact string swap; `requires_human` for work no script can do (supply a feature image, render a pending chart). A `requires_human` item needs a `rationale` naming the action.
 - **A removal is a fix with an empty `replace`.** §1 says a CRITICAL hallucination MUST be removed, so the ledger has to be able to say that: set `"replace": ""` and include the trailing space or sentence boundary in `find` so the surrounding text still reads correctly. Do not re-phrase a deletion as a rewrite to satisfy the schema. Deletions are verified by absence — the correction is regressed if the text comes back.

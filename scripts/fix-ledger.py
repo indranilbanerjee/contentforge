@@ -96,15 +96,26 @@ LEDGER_NAME = "phase-4-fixes.json"
 
 SEVERITIES = ("CRITICAL", "MODERATE", "MINOR")
 CLASSES = ("text_replace", "requires_human")
-STATUSES = ("pending", "applied", "not_found", "ambiguous", "author_protected",
-            "declined", "human_pending", "human_done")
+STATUSES = ("pending", "applied", "already_satisfied", "not_found", "ambiguous",
+            "author_protected", "declined", "human_pending", "human_done")
 
 # Statuses that mean the correction is settled and needs nothing further.
-RESOLVED = ("applied", "declined", "human_done")
+RESOLVED = ("applied", "already_satisfied", "declined", "human_done")
+
+
+_OUT_FILE = None
 
 
 def _out(payload, code=0):
-    sys.stdout.write(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+    text = json.dumps(payload, indent=2, ensure_ascii=False)
+    if _OUT_FILE:
+        # Written as UTF-8 bytes so a consumer reads the file rather than
+        # scraping a console. A reviewer once copied this payload out of stdout
+        # on Windows and silently got "Â§" for "§" and 'â€"' for an em dash —
+        # the console codepage, not the script — then asserted the copy was
+        # verbatim. Nothing downstream could have caught it.
+        pathlib.Path(_OUT_FILE).write_text(text + "\n", encoding="utf-8")
+    sys.stdout.write(text + "\n")
     sys.exit(code)
 
 
@@ -199,6 +210,12 @@ def validate_ledger(ledger: dict) -> list:
             problems.append(f"{where} duplicates id {fid!r}")
         else:
             seen.add(fid)
+        # A single Phase 4 issue can carry two find/replace pairs (MOD-2 gave two
+        # pronoun fixes under one id). Ids must stay unique because they address
+        # one substitution each, so the pair becomes MOD-2a / MOD-2b and
+        # `source_id` keeps the tie back to the report the rules require.
+        if item.get("source_id") is not None and not isinstance(item["source_id"], str):
+            problems.append(f"{where} 'source_id' must be a string when present")
         if item.get("severity") not in SEVERITIES:
             problems.append(f"{where} severity must be one of {SEVERITIES}")
         if not isinstance(item.get("blocking"), bool):
@@ -355,6 +372,74 @@ def cmd_apply(args):
     _out(payload, 0 if blocking_failures == 0 else 1)
 
 
+# ---------------------------------------------------------------- resolve
+
+def cmd_resolve(args):
+    """Close an item the applier could not, without hand-editing the ledger.
+
+    When a fix reports `not_found` the correction still has to be made — the
+    text moved, the correction did not stop being required. Doing that by hand
+    used to mean editing the JSON, and the documented remedy ("set status to
+    applied with a note recording the string you actually replaced") left
+    `replace` pointing at wording that is not in the body. `verify` then reports
+    the item as `regressed`, which Phase 8 escalates to a downstream-sabotage
+    finding. On one real run that would have falsely accused five of eleven
+    corrections. The remedy has to update what `verify` actually checks.
+    """
+    run_dir = pathlib.Path(args.run_dir).expanduser().resolve()
+    target = run_dir / args.target if not pathlib.Path(args.target).is_absolute() \
+        else pathlib.Path(args.target)
+    if not target.is_file():
+        _fail(f"target not found: {target}")
+
+    ledger = load_ledger(run_dir)
+    item = next((i for i in ledger["items"] if i.get("id") == args.id), None)
+    if item is None:
+        _fail(f"no ledger item with id {args.id!r}; ids: "
+              f"{[i.get('id') for i in ledger['items']]}")
+
+    body = _read(target)
+
+    if args.already_satisfied:
+        # Zero bytes change: an earlier phase had already made the correction in
+        # different words. Recording that as "applied" would claim a
+        # substitution this script never performed.
+        if not args.note:
+            _fail("--already-satisfied requires --note explaining what the body "
+                  "already says instead")
+        item["status"] = "already_satisfied"
+        item["note"] = args.note
+        item["applied_at_phase"] = args.phase
+        item["applied_to"] = target.name
+        save_ledger(run_dir, ledger)
+        _out({"ok": True, "command": "resolve", "id": args.id,
+              "outcome": "already_satisfied", "note": args.note}, 0)
+
+    if not args.replaced_with:
+        _fail("resolve needs either --replaced-with '<text now in the body>' or "
+              "--already-satisfied --note '<why no change was needed>'")
+
+    if args.replaced_with not in body:
+        # Refusing here is the point: without it, resolve becomes a way to
+        # declare a correction done without doing it.
+        _fail({"id": args.id,
+               "error": "the text you say you wrote is not in the target",
+               "target": target.name,
+               "searched_for": args.replaced_with[:160]}, 1)
+
+    item["original_replace"] = item.get("original_replace") or item.get("replace")
+    item["replace"] = args.replaced_with
+    item["status"] = "applied"
+    item["applied_at_phase"] = args.phase
+    item["applied_to"] = target.name
+    item["note"] = args.note or ("hand-corrected: the Phase 4 find string no longer "
+                                 "matched the body")
+    save_ledger(run_dir, ledger)
+    _out({"ok": True, "command": "resolve", "id": args.id, "outcome": "applied",
+          "replace_now_verifies_against": args.replaced_with[:160],
+          "original_replace_preserved": item["original_replace"][:160]}, 0)
+
+
 # ----------------------------------------------------------------- verify
 
 def cmd_verify(args):
@@ -381,6 +466,12 @@ def cmd_verify(args):
                 unresolved.append(fid)
             checks.append({"id": fid, "class": "requires_human", "state": state,
                            "blocking": blocking, "action": item.get("rationale")})
+            continue
+
+        if status == "already_satisfied":
+            checks.append({"id": fid, "class": "text_replace",
+                           "state": "already_satisfied", "blocking": blocking,
+                           "detail": item.get("note")})
             continue
 
         if status == "applied":
@@ -490,9 +581,27 @@ def main():
     p = sub.add_parser("verify")
     p.add_argument("--run-dir", required=True)
     p.add_argument("--target", required=True)
+    p.add_argument("--out", default=None,
+                   help="also write the payload here as UTF-8; read this file "
+                        "rather than copying the console output")
     p.set_defaults(func=cmd_verify)
 
+    p = sub.add_parser("resolve",
+                       help="close an item the applier could not, without hand-editing JSON")
+    p.add_argument("--run-dir", required=True)
+    p.add_argument("--target", required=True)
+    p.add_argument("--id", required=True)
+    p.add_argument("--replaced-with", default=None,
+                   help="the text now in the body; verified before the status moves")
+    p.add_argument("--already-satisfied", action="store_true",
+                   help="an earlier phase already made this correction in other words")
+    p.add_argument("--note", default=None)
+    p.add_argument("--phase", default=None)
+    p.set_defaults(func=cmd_resolve)
+
     args = parser.parse_args()
+    global _OUT_FILE
+    _OUT_FILE = getattr(args, "out", None)
     args.func(args)
 
 

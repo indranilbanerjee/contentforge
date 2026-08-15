@@ -244,6 +244,106 @@ class TestVerify(LedgerHarness):
         self.assertEqual(out["checks"][0]["state"], "declined")
 
 
+class TestResolve(LedgerHarness):
+    """A `not_found` correction still has to be made, and the documented remedy
+    used to leave `replace` pointing at wording nobody wrote — so `verify`
+    reported the hand-fixed item as `regressed`, and Phase 8 escalates that to a
+    downstream-sabotage finding. On a real run it would have falsely accused
+    five of eleven corrections."""
+
+    def setUp(self):
+        super().setUp()
+        self.write("The literature prints prices without saying the share.\n",
+                   [item("MIN-3", "the current literature publishes prices "
+                                  "without saying the share",
+                         "Published prices do not say the share.")])
+        self.run_cmd("apply", "--target", "body.md")
+
+    def hand_correct(self):
+        with open(self.run_dir / "body.md", "w", encoding="utf-8", newline="") as fh:
+            fh.write("Published prices do not say the share.\n")
+
+    def test_hand_correction_verifies_instead_of_reporting_sabotage(self):
+        self.hand_correct()
+        code, out = self.run_cmd("resolve", "--target", "body.md", "--id", "MIN-3",
+                                 "--replaced-with",
+                                 "Published prices do not say the share.",
+                                 "--note", "find string had drifted")
+        self.assertEqual(code, 0, out)
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["regressed"], [])
+        self.assertEqual(out["checks"][0]["state"], "survived")
+
+    def test_phase_4_wording_is_preserved_not_lost(self):
+        self.hand_correct()
+        self.run_cmd("resolve", "--target", "body.md", "--id", "MIN-3",
+                     "--replaced-with", "Published prices do not say the share.")
+        led = self.ledger()["items"][0]
+        self.assertIn("current literature", led["original_replace"] + led["find"])
+        self.assertEqual(led["status"], "applied")
+
+    def test_cannot_declare_a_correction_done_without_doing_it(self):
+        code, out = self.run_cmd("resolve", "--target", "body.md", "--id", "MIN-3",
+                                 "--replaced-with", "text nobody ever wrote")
+        self.assertEqual(code, 1)
+        self.assertEqual(self.ledger()["items"][0]["status"], "not_found")
+
+    def test_zero_byte_case_is_not_called_applied(self):
+        """An earlier phase had already made the correction in other words.
+        Calling that 'applied' claims a substitution nobody performed."""
+        code, out = self.run_cmd("resolve", "--target", "body.md", "--id", "MIN-3",
+                                 "--already-satisfied",
+                                 "--note", "body already carries the narrower claim")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(self.ledger()["items"][0]["status"], "already_satisfied")
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["checks"][0]["state"], "already_satisfied")
+
+    def test_already_satisfied_requires_an_explanation(self):
+        code, _ = self.run_cmd("resolve", "--target", "body.md", "--id", "MIN-3",
+                               "--already-satisfied")
+        self.assertEqual(code, 2)
+
+    def test_unknown_id_is_rejected(self):
+        code, _ = self.run_cmd("resolve", "--target", "body.md", "--id", "NOPE",
+                               "--replaced-with", "x")
+        self.assertEqual(code, 2)
+
+
+class TestEncodingSafeOutput(LedgerHarness):
+    def test_out_file_is_utf8_regardless_of_console(self):
+        """A reviewer copied this payload from stdout on Windows and silently got
+        'Â§' for '§' and a mangled em dash, then recorded the copy as verbatim.
+        The file is the safe channel."""
+        note = "per §7 — the author's own wording, left alone"
+        self.write("a claim in the body\n",
+                   [dict(item("A", "x", "y", status="declined"), note=note)])
+        out_path = self.run_dir / "verify.json"
+        self.run_cmd("verify", "--target", "body.md", "--out", str(out_path))
+        raw = out_path.read_bytes().decode("utf-8")   # fails outright if not UTF-8
+        self.assertIn(note, raw)
+        self.assertNotIn("Â§", raw)
+        self.assertNotIn("â€", raw)
+
+
+class TestMultiPairIds(LedgerHarness):
+    def test_two_substitutions_from_one_report_item(self):
+        """Phase 4's MOD-2 carried two find/replace pairs under one id, while ids
+        must stay unique. `source_id` keeps the tie back to the report."""
+        self.write("He is right that it holds. His 40% lands inside.\n",
+                   [dict(item("MOD-2a", "He is right that it holds.", "It holds."),
+                         source_id="MOD-2"),
+                    dict(item("MOD-2b", "His 40% lands inside.", "That 40% lands inside."),
+                         source_id="MOD-2")])
+        code, out = self.run_cmd("apply", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual({c["id"] for c in out["checks"]}, {"MOD-2a", "MOD-2b"})
+
+
 class TestSchema(LedgerHarness):
     def _validate(self, items, schema="contentforge.fix-ledger/1"):
         (self.run_dir / "body.md").write_text("x", encoding="utf-8")

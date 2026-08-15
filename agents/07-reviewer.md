@@ -99,8 +99,11 @@ where w_* are the applicable row's weights ÷ 100
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py verify \
   --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id} \
-  --target phase-6.5-humanized.md
+  --target phase-6.5-humanized.md \
+  --out ~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-7-fix-ledger.json
 ```
+
+**Read the `--out` file, not the console.** A reviewer copied this payload out of stdout on Windows and silently got `Â§` for `§` and `â€"` for an em dash — the console codepage, not the script — then recorded `checks_copied_verbatim: true`. Nothing downstream could have caught it, which is the failure this whole step exists to prevent. The `--out` file is written as UTF-8 bytes; read it and pass the parsed object through.
 
 `fix_ledger` in your review JSON is an **object**, matching the OUTPUT FORMAT schema below: put the script's `checks` array verbatim at `fix_ledger.checks`, and copy `unresolved_blocking` and `regressed` across unchanged. Set `publication_status` from the same output. Copy it programmatically — parse the JSON and pass the field through; do not retype it. This is a measurement you report, not a judgement you form.
 

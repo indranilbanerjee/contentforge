@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.30.0] - 2026-08-16
+
+### Fixed — the remedy for a stale correction manufactured a false accusation
+
+Phase 5's outcome table said that when a correction reports `not_found`, make it
+by hand and set the item to `applied` with a note. But `verify` checks that the
+item's `replace` string is present in the body, and a hand-correction phrased
+differently leaves `replace` pointing at wording nobody wrote — so the item
+verifies as `regressed`, which Phase 8 escalates to "a later phase undid this
+correction". A real remediation would have reported five of eleven corrections as
+downstream sabotage that never happened. The remedy has to update what `verify`
+actually checks.
+
+- **New `fix-ledger.py resolve`** — re-points `replace` at the text actually
+  written, preserves Phase 4's wording in `original_replace`, and **refuses when
+  the text you claim to have written is not in the file**, so it cannot be used
+  to declare a correction done without doing it. Editing the ledger JSON by hand
+  is now explicitly wrong.
+- **New `already_satisfied` status** — for the case where an earlier phase had
+  already made the correction in other words and the edit changed zero bytes.
+  Marking that `applied` claims a substitution nobody performed.
+
+### Fixed — "copy this verbatim" with no safe channel
+
+A reviewer copied the ledger payload out of stdout on Windows and silently got
+`Â§` for `§` and a mangled em dash — the console codepage, not the script — then
+recorded `checks_copied_verbatim: true`. Nothing downstream could have caught it,
+which is the exact failure that step exists to prevent. `verify --out FILE` now
+writes the payload as UTF-8 bytes, declared in the Pipeline Contract as
+`phase-7-fix-ledger.json`, and the reviewer is told to read the file.
+
+### Fixed — three representation gaps
+
+- One Phase 4 issue can carry two find/replace pairs (MOD-2 gave two pronoun
+  fixes under one id) while ledger ids must be unique. `source_id` now ties
+  `MOD-2a`/`MOD-2b` back to the report the rules require them to match.
+- `checkpoint-manager.py finalize` had no status for a run that completed every
+  phase, passed its reviewer, and is still not publishable. `blocked` added —
+  forcing it into `completed` is the misstatement the Phase 8 gate exists to stop.
+- Phase 5's own example named `phase-3.5-visuals.md` as the target, which in a
+  run where the annotated draft was never saved is the Visual Asset *Report*.
+  Applying publication corrections to a report nobody publishes is a correction
+  that did not happen.
+
+**8 new tests.**
+
 ## [3.29.0] - 2026-08-15
 
 ### Fixed — the publication gate was undone at the last step
