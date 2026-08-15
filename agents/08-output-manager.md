@@ -76,6 +76,23 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py verify \
 | 3 | an applied correction was undone downstream | `publication_status: "BLOCKED"`, and name it as a regression |
 | 2 | no ledger, or an invalid one | `publication_status: "UNKNOWN"` — a Phase 4 contract violation; record it and treat as BLOCKED |
 
+### Step 1.3: Publication Gate — production scaffolding and visual anchors
+
+Two measurements on the body you are about to render. Both are numbers, not readings:
+
+```bash
+python "${CLAUDE_PLUGIN_ROOT}/scripts/text-metrics.py" \
+  --file ~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-6.5-humanized.md
+```
+
+1. **`residual_scaffolding.clean` must be `true`.** Any `[VISUAL-PLACEHOLDER: ...]` still in the body is a production instruction addressed to Phase 3.5 — it is not prose, and a reader must never see it. A real run delivered a .docx with three of them visible mid-article. They survived because `body_word_count` had been taught to *exclude* them: correct for the count, and it removed the only thing that would have noticed they were still there.
+
+2. **`visual_markers.ids` must cover every manifest asset with `status: "generated"`.** Phase 3.5 replaces each placeholder with a `<!-- VISUAL: id=... -->` anchor, and §2.4 inserts assets at those anchors. With no anchors there is nowhere to insert: the same run generated three valid charts, embedded **zero**, and every artifact still looked healthy — the charts existed, the manifest was valid, the document rendered.
+
+If either check fails the body is not renderable as-is. **Do not fix it here** — you are a renderer, and editing the body would produce a document that no longer matches what Phase 7 scored. Report it as a Phase 3.5 defect with the line numbers and the missing ids, set `publication_status: "BLOCKED"`, and follow the blocked procedure below.
+
+---
+
 **When BLOCKED, still produce the document.** The work is real and the human needs to see it. What you must not do is describe it as ready:
 
 1. Prefix the filename with `DRAFT-`, exactly as for a review-required run.

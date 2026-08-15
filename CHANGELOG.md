@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.28.0] - 2026-08-15
+
+### Fixed — production scaffolding reached the reader
+
+A delivered run was audited artifact by artifact. The published article carried
+three raw `[VISUAL-PLACEHOLDER: ...]` lines — instructions addressed to Phase 3.5
+— visible to the reader, and embedded **none** of the three valid charts sitting
+on disk. Phase 3.5 never replaced the placeholders with `<!-- VISUAL: id=... -->`
+anchors, so Phase 8 had nowhere to insert the assets. Nothing looked broken: the
+charts existed, the manifest validated, the document rendered.
+
+The compounding part: `body_word_count` had been taught (v3.25.0) to exclude
+placeholder lines so Gate 3 would measure prose. That was right for the count and
+it removed the only thing in the pipeline that touched them. **Excluding something
+from a measurement can delete the last signal that it exists.**
+
+- `text-metrics.py` now reports `residual_scaffolding` (count, line numbers, kind)
+  and `visual_markers` (anchor ids) in its default result — no flag required, so
+  no caller has to know the check exists to receive it.
+- Phase 8 gains a second publication gate: `residual_scaffolding.clean` must be
+  true and `visual_markers.ids` must cover every manifest asset marked
+  `generated`. Failing either blocks the *claim* that the document is ready; the
+  document is still produced, and Phase 8 still does not edit the body.
+- Phase 3.5 must verify its own replacements before returning.
+
+### Fixed — a deletion could not be expressed in the fix ledger
+
+Phase 4's contract says a CRITICAL hallucination MUST be removed, and
+`validate_ledger` rejected an empty `replace` — so the ledger could not carry its
+most severe class of correction, and every removal had to be re-phrased as a
+rewrite. Removals are now first-class (`"replace": ""`) and verified by absence:
+the correction is regressed if the text comes back. Found by a validator agent
+working the real contract on a planted draft.
+
+### Fixed — `loop_history` was documented but never written
+
+`utils/loop-tracker.md` documented a history of from_phase, to_phase, iteration,
+reason and timestamp, and said it survived `/contentforge:resume`. `record_loop`
+wrote counts only, so the reason a run looped lived in the orchestrator's context
+and vanished with the session. `loop` now takes `--reason`, appends a persisted
+`loop_history` entry, and warns when a reason is omitted.
+
+### Fixed — two Phase 4 contract defects
+
+- **Accuracy Confidence had an undefined denominator.** "Total factual claims
+  analyzed" was analyst-chosen, so the figure moved with claim-splitting judgement
+  while being checked against fixed bands — the same defect as a word count with
+  an unstated convention. The counting rule is now written down and the claims
+  must be enumerated so a reader can recount them.
+- **Step 6.1 required an artifact the INPUTS never provided.** Outline adherence
+  was to be checked against a Verified Outline that was not in the input list;
+  `phase-1-research.md` is now declared, with NOT VERIFIABLE as the honest
+  fallback rather than inferring the outline from the draft.
+
+**19 new tests.**
+
 ## [3.27.0] - 2026-08-15
 
 ### Fixed — Phase 4's corrections had nowhere to go

@@ -51,8 +51,9 @@ Usage:
         --pending-rework '{"target_phase": "5", "feedback": "fix flow in section 2"}'
         -> records that the pipeline must loop back to phase 5
 
-    python checkpoint-manager.py loop --brand Acme --run-id RID --edge phase_7_to_5
-        -> increments run.json loop_counts["phase_7_to_5"] and total_loops
+    python checkpoint-manager.py loop --brand Acme --run-id RID --edge phase_7_to_5 \n        --reason "brand compliance failure in section 3"
+        -> increments loop_counts["phase_7_to_5"] + total_loops, and appends a
+           loop_history entry recording why
 
     python checkpoint-manager.py status --brand Acme --run-id RID
     python checkpoint-manager.py load --brand Acme --run-id RID --phase 3
@@ -256,24 +257,49 @@ def save_phase(brand: str, run_id: str, phase: str, content: str,
     }
 
 
-def record_loop(brand: str, run_id: str, edge: str) -> dict:
-    """Increment the loop counter for a feedback edge (e.g. phase_7_to_5)."""
+def record_loop(brand: str, run_id: str, edge: str, reason: str = None) -> dict:
+    """Record a feedback-edge traversal: the count, and why it happened.
+
+    `utils/loop-tracker.md` documents a `loop_history` of from_phase, to_phase,
+    iteration, reason and timestamp, and says the history survives a
+    `/contentforge:resume`. It did not: this function wrote counts only, so the
+    reason a run looped — the single most useful thing when reading a finished
+    run — existed in the orchestrator's context and nowhere on disk, and was gone
+    the moment the session ended. Counts tell you a loop happened; they never
+    tell you what was wrong.
+    """
     manifest = _load_manifest(brand, run_id)
     if manifest is None:
         return {"error": f"no run found: brand={brand} run_id={run_id}"}
     counts = manifest.setdefault("loop_counts", {})
     counts[edge] = counts.get(edge, 0) + 1
     manifest["total_loops"] = sum(counts.values())
+
+    entry = {"edge": edge, "iteration": counts[edge], "timestamp": _now_iso(),
+             "reason": reason or None}
+    m = re.match(r"phase_(.+?)_to_(.+)$", edge)
+    if m:
+        entry["from_phase"] = m.group(1).replace("_", ".")
+        entry["to_phase"] = m.group(2).replace("_", ".")
+    manifest.setdefault("loop_history", []).append(entry)
+
     manifest["last_updated"] = _now_iso()
     _save_manifest(brand, run_id, manifest)
-    return {
+    result = {
         "status": "loop_recorded",
         "run_id": run_id,
         "edge": edge,
         "edge_count": counts[edge],
         "loop_counts": counts,
         "total_loops": manifest["total_loops"],
+        "loop_history_len": len(manifest["loop_history"]),
     }
+    if not reason:
+        # Not an error — but a history entry with no reason is a row that will
+        # not answer the question anyone opens it to ask.
+        result["warning"] = ("no --reason recorded; loop_history entry will not "
+                             "explain why this loop was taken")
+    return result
 
 
 def _maybe_mark_pending(brand: str, run_id: str, files: list) -> dict:
@@ -509,6 +535,8 @@ def main() -> None:
     p_loop.add_argument("--brand", required=True)
     p_loop.add_argument("--run-id", required=True)
     p_loop.add_argument("--edge", required=True, help="Loop edge id, e.g. phase_7_to_5 / phase_4_to_3")
+    p_loop.add_argument("--reason", default=None,
+                        help="Why the loop was taken — persisted into loop_history")
 
     p_status = sub.add_parser("status", help="Show run status, completed and remaining phases")
     p_status.add_argument("--brand", required=True)
@@ -567,7 +595,7 @@ def main() -> None:
             result = save_phase(args.brand, args.run_id, args.phase, content,
                                 args.extension, pending_rework=pending_rework)
         elif args.action == "loop":
-            result = record_loop(args.brand, args.run_id, args.edge)
+            result = record_loop(args.brand, args.run_id, args.edge, args.reason)
         elif args.action == "status":
             result = get_status(args.brand, args.run_id)
         elif args.action == "load":

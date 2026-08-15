@@ -136,6 +136,52 @@ _SCAFFOLD_LINE_RE = re.compile(
     re.I)
 
 
+def _residual_scaffolding(md_text: str) -> dict:
+    """Production instructions still sitting in the text, with their line numbers.
+
+    `_body_word_count` excludes `[VISUAL-PLACEHOLDER: ...]` lines because they are
+    instructions to Phase 3.5, not prose — which is right for the count and wrong
+    as the whole story. Excluding them from the measurement removed the only
+    signal that they were still there, and a real run delivered a .docx with three
+    raw placeholder lines visible to the reader: Phase 3.5 never replaced them
+    with markers, and by then nothing was looking.
+
+    Reported unconditionally. A phase that publishes decides what to do about it;
+    a phase that measures should not be the reason it goes unseen.
+    """
+    m = _APPENDIX_RE.search(md_text)
+    body = md_text[:m.start()] if m else md_text
+    found = []
+    for n, line in enumerate(body.splitlines(), 1):
+        stripped = line.strip()
+        if re.match(r"^\[VISUAL-PLACEHOLDER:", stripped, re.I):
+            found.append({"line": n, "kind": "visual_placeholder",
+                          "text": stripped[:120]})
+        elif re.match(r"^\[(?:TODO|TK|PLACEHOLDER|IMAGE|CHART)\b", stripped, re.I):
+            found.append({"line": n, "kind": "annotation", "text": stripped[:120]})
+    return {"count": len(found), "clean": not found, "items": found[:20]}
+
+
+_VISUAL_MARKER_RE = re.compile(r"<!--\s*VISUAL:\s*([^>]*?)-->", re.I | re.S)
+
+
+def _visual_markers(md_text: str) -> dict:
+    """The `<!-- VISUAL: id=... -->` anchors Phase 8 places assets at.
+
+    Phase 3.5 is contracted to replace each `[VISUAL-PLACEHOLDER: ...]` with one
+    of these. When that replacement does not land, Phase 8 has nowhere to insert
+    a chart that exists on disk, so a run can generate three valid charts and
+    embed none of them while every artifact looks healthy. Counting the anchors
+    turns that into a number two phases can compare.
+    """
+    ids = []
+    for raw in _VISUAL_MARKER_RE.findall(md_text):
+        m = re.search(r"\bid\s*=\s*([^|\s]+)", raw)
+        ids.append(m.group(1).strip().strip('"') if m else None)
+    return {"count": len(ids), "ids": [i for i in ids if i],
+            "unidentified": sum(1 for i in ids if not i)}
+
+
 def _body_word_count(md_text: str) -> int:
     """Words a reader would actually read.
 
@@ -272,6 +318,8 @@ def analyze(md_text: str, keyword: str | None = None) -> dict:
     result = {
         "word_count": word_count,
         "body_word_count": _body_word_count(md_text),
+        "residual_scaffolding": _residual_scaffolding(md_text),
+        "visual_markers": _visual_markers(md_text),
         "sentence_count": sentence_count,
         "avg_sentence_len": round(avg_len, 2),
         "sentence_len_stdev": round(stdev, 2),

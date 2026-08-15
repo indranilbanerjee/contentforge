@@ -17,11 +17,20 @@ Track feedback loops to prevent infinite iterations and enforce max loop limits.
 }
 ```
 
-**Persistence:** loop counts persist in the pipeline run's `run.json` under `loop_counts` (written via the checkpoint-manager `loop` subcommand), so interrupted runs resumed with `/contentforge:resume` keep their loop history.
+**Persistence:** loop counts persist in the pipeline run's `run.json` under `loop_counts`, and each traversal appends an entry to `loop_history` — both written by the checkpoint-manager `loop` subcommand, so a run resumed with `/contentforge:resume` keeps its history.
+
+Record the reason, always:
+
+```bash
+python scripts/checkpoint-manager.py loop --brand {brand} --run-id {run_id} \
+  --edge phase_4_to_3 --reason "unsourced claims in section 2"
+```
+
+`--reason` is optional and the command warns when it is omitted. That warning is the point: this file documented a `loop_history` carrying `reason` and `timestamp` and claimed it survived a resume, while `record_loop` wrote counts only — so the one thing you open a finished run to find out, *why it looped*, lived in the orchestrator's context and vanished with the session. A count tells you a loop happened; it never tells you what was wrong.
 
 ## Loop Tracking State
 
-**Maintained in execution context:**
+**Persisted in `run.json`:**
 
 ```json
 {

@@ -51,7 +51,7 @@ Ledger contract — ``<run-dir>/phase-4-fixes.json``::
           "blocking": true,               # may this be published unresolved?
           "class": "text_replace",        # text_replace | requires_human
           "find": "...",                  # exact substring (text_replace only)
-          "replace": "...",               # exact substring (text_replace only)
+          "replace": "...",               # exact substring; "" deletes the found text
           "rationale": "...",
           "status": "pending",
           "applied_at_phase": null,
@@ -209,9 +209,15 @@ def validate_ledger(ledger: dict) -> list:
         if item.get("status") not in STATUSES:
             problems.append(f"{where} status must be one of {STATUSES}")
         if cls == "text_replace":
-            for field in ("find", "replace"):
-                if not isinstance(item.get(field), str) or not item.get(field):
-                    problems.append(f"{where} text_replace needs a non-empty {field!r}")
+            if not isinstance(item.get("find"), str) or not item.get("find"):
+                problems.append(f"{where} text_replace needs a non-empty 'find'")
+            # An empty 'replace' is a deletion, and deletion has to be expressible:
+            # Phase 4's own contract says a CRITICAL hallucination "MUST be removed",
+            # and forcing every removal to be re-phrased as a rewrite would make the
+            # ledger unable to carry its most severe class of correction.
+            if not isinstance(item.get("replace"), str):
+                problems.append(f"{where} text_replace needs a string 'replace' "
+                                f"(use \"\" to delete the found text)")
             if item.get("find") == item.get("replace"):
                 problems.append(f"{where} find and replace are identical — a fix that "
                                 f"changes nothing cannot be verified")
@@ -378,6 +384,9 @@ def cmd_verify(args):
             continue
 
         if status == "applied":
+            # A deletion (replace == "") is verified by absence: "" is trivially
+            # present in any text, so survival for those rests entirely on the
+            # staleness test below.
             present = item["replace"] in body
             # An appending fix keeps its own find string as a prefix, so a
             # surviving 'find' only proves regression when it is not part of the

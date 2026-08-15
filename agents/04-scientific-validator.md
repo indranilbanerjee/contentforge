@@ -17,6 +17,7 @@ The orchestrator passes you `{brand-slug}` and `{run_id}`. Read prior artifacts 
 - `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-3.5-visual-manifest.json` — JSON manifest of all visual assets
 - `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-3-draft.md` — Draft Metadata block (word count, citation analysis, section coverage)
 - `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-2-factcheck.md` — Verified Research Brief: verified claims, resolved Citation Library, Statistics Verification Report
+- `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-1-research.md` — the Verified Outline, **required by Step 6.1**. It was missing from this list while Step 6.1 asked you to cross-reference against it, which left the completeness check with no input. If the file is genuinely absent, record outline adherence as **NOT VERIFIABLE** with the reason — do not infer the outline from the draft, which would make the draft its own outline and the check vacuous
 
 **Do NOT call pipeline-tracker.** Phase timing is handled exclusively by the orchestrator.
 
@@ -199,7 +200,7 @@ For regulated industries: verify all required disclaimers from brand profile gua
 **Validation Date:** [YYYY-MM-DD] | **Draft Version:** v1 (from Phase 3)
 **Overall Status:** ✅ PASS | ⚠️ CONDITIONAL PASS | ❌ FAIL
 **Hallucination Risk:** LOW | MODERATE | HIGH
-**Accuracy Confidence:** [percentage] — **formula: (claims classified VERIFIED or PARAPHRASED ACCURATELY ÷ total factual claims analyzed) × 100, rounded to the nearest whole percent**
+**Accuracy Confidence:** [percentage] — **formula: (claims classified VERIFIED or PARAPHRASED ACCURATELY ÷ total factual claims analyzed) × 100, rounded to the nearest whole percent.** The denominator is **one entry per distinct factual assertion**, counted as follows, because the figure is checked against fixed bands below and a denominator left to judgement moves the verdict without anything in the draft changing: one claim per statistic, date, named entity, technical specification, or causal assertion as extracted in Step 1.1; **the same assertion repeated in the body and in the reference list is ONE claim, not two**; a sentence carrying two distinct statistics is two claims. **Enumerate the claims in §1 so the denominator is auditable** — a reader must be able to recount it and get your number
 **Issues:** [critical count] critical | [moderate count] moderate | [minor count] minor
 
 ## 1. HALLUCINATION DETECTION RESULTS
@@ -272,6 +273,7 @@ Rules:
 - `severity` — `CRITICAL` | `MODERATE` | `MINOR`, matching §1's own vocabulary.
 - `blocking` — **true means the piece may not be declared publishable until this is resolved.** Set it true for anything you would call mandatory before publish. CRITICAL is always blocking.
 - `class` — `text_replace` for anything expressible as an exact string swap; `requires_human` for work no script can do (supply a feature image, render a pending chart). A `requires_human` item needs a `rationale` naming the action.
+- **A removal is a fix with an empty `replace`.** §1 says a CRITICAL hallucination MUST be removed, so the ledger has to be able to say that: set `"replace": ""` and include the trailing space or sentence boundary in `find` so the surrounding text still reads correctly. Do not re-phrase a deletion as a rewrite to satisfy the schema. Deletions are verified by absence — the correction is regressed if the text comes back.
 - `find` must be **unique in the draft**. The applier refuses to guess between two matches — lengthen the string until it is unambiguous.
 - `find` must be **verbatim from the current draft**, copy-pasted, not retyped. A string that does not match is reported as `not_found` and blocks; it is never silently skipped.
 - Never write a fix whose `find` sits inside one of the author's own sentences when `source_draft: true`. The applier re-measures the authorship record and reverts any fix that would rewrite or drop the author's words, but you should not be proposing it.

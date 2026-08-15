@@ -211,6 +211,32 @@ class TestVerify(LedgerHarness):
         self.assertEqual(code, 0, out)
         self.assertEqual(out["publication_status"], "CLEAR")
 
+    def test_deletion_is_expressible_and_verified_by_absence(self):
+        """Phase 4's contract says a CRITICAL hallucination MUST be removed. A
+        ledger that cannot express a deletion cannot carry its most severe class
+        of correction — found by a validator agent working the real contract."""
+        self.write("Keep this. Fabricated sentence here. Keep that.\n",
+                   [item("CRIT", "Fabricated sentence here. ", "",
+                         severity="CRITICAL")])
+        code, out = self.run_cmd("apply", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertNotIn("Fabricated", self.body())
+        self.assertIn("Keep this. Keep that.", self.body())
+
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["checks"][0]["state"], "survived")
+
+    def test_a_reinstated_deletion_is_caught_as_regression(self):
+        self.write("Keep this. Fabricated sentence here.\n",
+                   [item("CRIT", "Fabricated sentence here.", "", severity="CRITICAL")])
+        self.run_cmd("apply", "--target", "body.md")
+        with open(self.run_dir / "body.md", "w", encoding="utf-8", newline="") as fh:
+            fh.write("Keep this. Fabricated sentence here.\n")
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 3, out)
+        self.assertEqual(out["regressed"], ["CRIT"])
+
     def test_declined_is_a_recorded_decision_not_a_silent_drop(self):
         self.write("body\n", [item("A", "absent", "x", status="declined")])
         code, out = self.run_cmd("verify", "--target", "body.md")
