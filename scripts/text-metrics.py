@@ -118,13 +118,49 @@ _APPENDIX_RE = re.compile(
     re.I | re.M)
 
 
+# Production scaffolding that never reaches the published article. Stripping the
+# reference list alone was not enough: a live Phase 3 draft carried an H1, a bold
+# metadata block (Content Type / Primary Keyword / Reading Time) and three
+# [VISUAL-PLACEHOLDER: ...] annotation lines addressed to Phase 3.5. Counting
+# those put the body at 1,390 against a 1,080-1,320 window — a FAIL — while the
+# drafter, counting only what a reader would read, measured 1,223 and PASSED.
+# Both were defensible readings of "word count", which is the actual defect: a
+# gate whose verdict depends on an unstated convention is not a measurement.
+_SCAFFOLD_LINE_RE = re.compile(
+    r"^\s*(?:"
+    r"\[VISUAL-PLACEHOLDER:[^\]]*\]"      # production instruction for Phase 3.5
+    r"|<!--.*?-->"                        # HTML comment
+    r"|-{3,}\s*"                          # horizontal rule / front-matter fence
+    r"|\*\*[^*]{1,40}:\*\*\s*[^|]*(?:\|\s*\*\*[^*]{1,40}:\*\*\s*[^|]*)*"  # **Key:** value | **Key:** value
+    r")\s*$",
+    re.I)
+
+
 def _body_word_count(md_text: str) -> int:
-    """Words in the article itself, excluding trailing reference/appendix
-    sections. Reported alongside `word_count` rather than replacing it, so no
-    caller has to know a flag exists to get the number the gate actually wants."""
+    """Words a reader would actually read.
+
+    Excludes, in order: trailing reference/appendix sections, the H1 title, the
+    bold key:value metadata block drafts carry at the top, horizontal rules,
+    HTML comments, and `[VISUAL-PLACEHOLDER: ...]` annotation lines. H2/H3
+    headings ARE counted -- they are published text.
+
+    Reported alongside `word_count` rather than behind a flag, so no caller has
+    to know it exists to get the number Gate 3 means.
+    """
     m = _APPENDIX_RE.search(md_text)
     body = md_text[:m.start()] if m else md_text
-    return len(body.split())
+    kept = []
+    seen_prose = False
+    for line in body.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("# ") and not seen_prose:
+            continue                       # H1 title, not body
+        if _SCAFFOLD_LINE_RE.match(stripped):
+            continue
+        if stripped and not stripped.startswith("#"):
+            seen_prose = True
+        kept.append(line)
+    return len(" ".join(kept).split())
 
 
 def analyze(md_text: str, keyword: str | None = None) -> dict:

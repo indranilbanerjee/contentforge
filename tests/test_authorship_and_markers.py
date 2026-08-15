@@ -601,3 +601,63 @@ class TestTheGateMeasuresTheArticleNotTheFile(unittest.TestCase):
                  / "skills" / "contentforge" / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("body_word_count", skill,
                       "Gate 3 must tell the orchestrator which number to check")
+
+
+class TestBodyWordCountExcludesProductionScaffolding(unittest.TestCase):
+    """Found when a live Phase 3 draft produced two defensible word counts.
+
+    The drafter measured 1,223 body words and passed Gate 3. An independent
+    audit measured 1,390 for the same file and failed it. Neither was careless:
+    the draft carried an H1, a bold metadata block, and three
+    `[VISUAL-PLACEHOLDER: ...]` lines addressed to Phase 3.5, and "word count"
+    never said whether those counted.
+
+    A gate whose verdict depends on an unstated convention is not a
+    measurement. The convention is now fixed in code and written into the
+    contract, so the number is the same whoever reads it.
+    """
+
+    # Parenthesise every repeated run separately: adjacent string literals
+    # concatenate BEFORE `*`, so "…header…" "prose " * 8 repeats the header
+    # eight times too. That mistake made this fixture carry eight H1s and made
+    # the test fail for a reason that had nothing to do with the code.
+    HEAD = ("# The Title Of The Piece\n\n"
+            "**Content Type:** Blog | **Reading Time:** 5 min\n"
+            "**Primary Keyword:** some keyword | **Secondary:** another one\n\n"
+            "---\n\n")
+    PROSE = "Real opening prose that a reader would actually read here. " * 8
+    MORE = "More published prose in the body of the article. " * 8
+    ARTICLE = HEAD + PROSE + "\n\n## A real heading\n\n" + MORE + "\n"
+    PLACEHOLDER = ('[VISUAL-PLACEHOLDER: type=chart | description="a chart nobody publishes" '
+                   '| data="Phase 2 Stat #S6" | suggested_chart_type=bar]\n')
+    REFS = "\n\n## References\n\n" + ("Author, A. (2020). A paper title. Journal. " * 30)
+
+    def test_visual_placeholders_do_not_count(self):
+        """They are instructions to Phase 3.5 and never appear in the article."""
+        without = tm.analyze(self.ARTICLE)["body_word_count"]
+        with_ph = tm.analyze(self.ARTICLE + "\n" + self.PLACEHOLDER * 3)["body_word_count"]
+        self.assertEqual(without, with_ph,
+                         "placeholder annotation lines must not move the gate number")
+
+    def test_metadata_block_and_h1_do_not_count(self):
+        bare = self.PROSE + "\n\n## A real heading\n\n" + self.MORE + "\n"
+        self.assertAlmostEqual(tm.analyze(self.ARTICLE)["body_word_count"],
+                               tm.analyze(bare)["body_word_count"], delta=4,
+                               msg="H1 + metadata block are not body prose")
+
+    def test_headings_in_the_article_still_count(self):
+        """H2s are published text — excluding them would under-count."""
+        with_h2 = tm.analyze(self.ARTICLE)["body_word_count"]
+        no_h2 = tm.analyze(self.ARTICLE.replace("## A real heading\n\n", ""))["body_word_count"]
+        self.assertGreater(with_h2, no_h2)
+
+    def test_references_still_excluded(self):
+        self.assertEqual(tm.analyze(self.ARTICLE)["body_word_count"],
+                         tm.analyze(self.ARTICLE + self.REFS)["body_word_count"])
+
+    def test_the_contract_states_the_counting_method(self):
+        skill = (Path(__file__).resolve().parent.parent
+                 / "skills" / "contentforge" / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("VISUAL-PLACEHOLDER", skill,
+                      "the contract must say whether production annotations count")
+        self.assertIn("body_word_count", skill)

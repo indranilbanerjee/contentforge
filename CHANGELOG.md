@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.25.0] - 2026-08-15
+
+Found by a full self-orchestrated pipeline run: the plugin driving its own ten phases, with
+every gate verified by the orchestrator rather than accepted from the agent reporting it.
+
+### Fixed — `body_word_count` counted production scaffolding
+
+The same Phase 3 draft measured **1,223 body words (PASS)** by the drafter's count and
+**1,390 (FAIL)** by an independent audit. Neither reading was careless. The draft carried an
+H1, a bold `**Key:** value` metadata block, and three `[VISUAL-PLACEHOLDER: …]` lines
+addressed to Phase 3.5 — production instructions that never appear in the published article —
+and nothing said whether they counted.
+
+A gate whose verdict depends on an unstated convention is not a measurement. `body_word_count`
+now excludes the H1, the metadata block, horizontal rules, HTML comments, placeholder
+annotations, and trailing reference/appendix sections, while still counting H2/H3 headings
+because those are published text. On the draft in question it returns 1,282 — inside the
+window, and between the two hand-counted figures. The counting method is now stated in the
+Pipeline Contract so no future drafter has to invent and document one, as this one had to.
+
+### Verified in the wild — the v3.24.0 report-location fix holds
+
+The run was executed by an agent following the shipped instructions, with no help from the
+harness. It wrote a 30KB `phase-6.5-report.md` to its own path and left `phase-6.5-humanized.md`
+clean, so `authorship.py` measured only the article: **exit 0, 16/16 author sentences verbatim,
+0 rewritten, 0 dropped**. Phase 7 approved at **8.3** with all five dimensions above their
+minimums. Three gate failures produced three legitimate loops (3.5, 5, 6.5), all within limits.
+
+Suite: 324 -> 329.
+
+---
+
 ## [3.24.0] - 2026-08-15
 
 The humanization report stopped corrupting the provenance record it sits next to.
