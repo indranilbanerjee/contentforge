@@ -347,7 +347,7 @@ Scan your available tools list for any Drive-capable MCP. Common names:
 
 #### Step D0b: Sync pending checkpoint files (v3.12.10+)
 
-The ORCHESTRATOR saves every phase artifact to `~/.claude-marketing/{brand-slug}/runs/{run_id}/` (phase-1-research.md ... phase-7-review.json, run.json) and marks them in `_sync-pending.json` via `scripts/checkpoint-manager.py`. Before the final .docx upload, sync any unsynced run-dir files to Drive so `/contentforge:resume` works across sessions.
+The ORCHESTRATOR saves every phase artifact to `~/.claude-marketing/{brand-slug}/runs/{run_id}/` (every phase's contracted artifacts from research through review, plus run.json) and marks them in `_sync-pending.json` via `scripts/checkpoint-manager.py`. Before the final .docx upload, sync any unsynced run-dir files to Drive so `/contentforge:resume` works across sessions.
 
 List what's pending for this run:
 ```bash

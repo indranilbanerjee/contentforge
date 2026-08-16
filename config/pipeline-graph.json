@@ -1,0 +1,302 @@
+{
+  "_description": "The pipeline contract as data (v4.0). Nodes are phases; reads/writes are the file-based handoff contract; loop_target is the budgeted gate-fail back-edge. This file is AUTHORITATIVE for the pipeline's shape: the SKILL.md contract table narrates it, checkpoint-manager.py and run-audit.py must agree with it (guarded by tests/test_pipeline_graph.py), and the portable execution lane walks it in order. Tokens: 'brand_profile' = the brand's brand-profile.json; 'requirements' = the original-requirements block; 'config:*' = a file under config/. Writes marked optional:true exist only under their stated condition.",
+  "version": "4.0.0",
+  "loop_budgets": {
+    "per_edge": 2,
+    "total_per_run": 5
+  },
+  "phase_order": [
+    "0.5",
+    "1",
+    "2",
+    "3",
+    "3.5",
+    "4",
+    "5",
+    "6",
+    "6.5",
+    "7",
+    "8"
+  ],
+  "nodes": {
+    "0.5": {
+      "label": "Title Curation",
+      "agent": "inline-orchestrator",
+      "reads": [
+        "brand_profile",
+        "requirements"
+      ],
+      "writes": [
+        {
+          "file": "phase-0.5-title.txt"
+        }
+      ],
+      "gate": "User-confirmed title (or --title bypass) — a user checkpoint, not a numbered quality gate",
+      "loop_target": "0.5"
+    },
+    "1": {
+      "label": "Research",
+      "agent": "contentforge:researcher",
+      "reads": [
+        "phase-0.5-title.txt",
+        "requirements",
+        "brand_profile"
+      ],
+      "writes": [
+        {
+          "file": "phase-1-research.md"
+        },
+        {
+          "file": "phase-1-link-inventory.json",
+          "note": "v4.0 companion: the verified Internal-Link Inventory as data rows, so the orchestrator can merge it into brand_pages via harvest-brand-pages.py --merge-inventory instead of handing the owner a to-do"
+        }
+      ],
+      "gate": "Gate 1: 12-15 sources; >=10 citable; >=5 reliability >=8; differentiated angle; Client Site Reconnaissance; >=3 verified deep brand URLs when the brand has a website",
+      "loop_target": "1"
+    },
+    "2": {
+      "label": "Fact Check",
+      "agent": "contentforge:fact-checker",
+      "reads": [
+        "phase-1-research.md"
+      ],
+      "writes": [
+        {
+          "file": "phase-2-factcheck.md"
+        }
+      ],
+      "gate": "Gate 2: >=80% claims verified; zero UNRESOLVED flags; <=3 unverified; all cited URLs live",
+      "loop_target": "1"
+    },
+    "3": {
+      "label": "Content Draft",
+      "agent": "contentforge:content-drafter",
+      "reads": [
+        "phase-0.5-title.txt",
+        "phase-1-research.md",
+        "phase-2-factcheck.md",
+        "brand_profile",
+        "requirements"
+      ],
+      "writes": [
+        {
+          "file": "phase-3-draft.md"
+        }
+      ],
+      "gate": "Gate 3: body_word_count within +/-10% of target (stated counting convention); all outline sections; >=1 citation per 300 words",
+      "loop_target": "3"
+    },
+    "3.5": {
+      "label": "Visual Assets",
+      "agent": "contentforge:visual-asset-annotator",
+      "reads": [
+        "phase-3-draft.md",
+        "phase-2-factcheck.md",
+        "phase-1-research.md"
+      ],
+      "writes": [
+        {
+          "file": "phase-3.5-visuals.md",
+          "note": "contains the ANNOTATED draft — the operative article text from this phase onward; placeholders replaced with VISUAL anchors"
+        },
+        {
+          "file": "phase-3.5-visual-manifest.json"
+        }
+      ],
+      "gate": "Gate 3.5: every chart traceable to a verified statistic; manifest complete; human-action TODOs marked; placeholder replacement verified by the phase itself",
+      "loop_target": "3.5"
+    },
+    "4": {
+      "label": "Scientific Validation",
+      "agent": "contentforge:scientific-validator",
+      "reads": [
+        "phase-3-draft.md",
+        "phase-3.5-visuals.md",
+        "phase-3.5-visual-manifest.json",
+        "phase-2-factcheck.md",
+        "phase-1-research.md"
+      ],
+      "writes": [
+        {
+          "file": "phase-4-validation.md"
+        },
+        {
+          "file": "phase-4-fixes.json",
+          "note": "the fix ledger — required whenever the report names a correction; empty items is valid"
+        }
+      ],
+      "gate": "Gate 4: zero hallucinations; every claim ledger-traceable; fix-ledger validate --target exits 0; every named correction is in the ledger",
+      "loop_target": "3"
+    },
+    "5": {
+      "label": "Structure & Proofread",
+      "agent": "contentforge:structurer-proofreader",
+      "reads": [
+        "phase-3.5-visuals.md",
+        "phase-3-draft.md",
+        "phase-4-validation.md",
+        "phase-4-fixes.json",
+        "brand_profile"
+      ],
+      "writes": [
+        {
+          "file": "phase-5-structured.md"
+        }
+      ],
+      "gate": "Gate 5: fix-ledger verify zero unresolved blocking (HARD); zero grammar/spelling on re-scan; readability within tolerance; brand terminology; VISUAL anchors preserved",
+      "loop_target": "5"
+    },
+    "6": {
+      "label": "SEO / GEO",
+      "agent": "contentforge:seo-geo-optimizer",
+      "reads": [
+        "phase-5-structured.md",
+        "phase-1-research.md",
+        "phase-3.5-visual-manifest.json",
+        "brand_profile",
+        "requirements"
+      ],
+      "writes": [
+        {
+          "file": "phase-6-seo.md"
+        },
+        {
+          "file": "phase-6-structure-manifest.json"
+        }
+      ],
+      "gate": "Gate 6: keyword placements (title, first-100, >=2 H2s, conclusion, meta); all internal-link URLs live (HARD); >=2 deep brand links when site known",
+      "loop_target": "6"
+    },
+    "6.5": {
+      "label": "Humanizer",
+      "agent": "contentforge:humanizer",
+      "reads": [
+        "phase-6-seo.md",
+        "phase-6-structure-manifest.json",
+        "phase-4-fixes.json",
+        "brand_profile",
+        {
+          "file": "source-draft.md",
+          "optional": true,
+          "condition": "author-draft mode"
+        }
+      ],
+      "writes": [
+        {
+          "file": "phase-6.5-humanized.md",
+          "note": "article body ONLY — authorship measures this file"
+        },
+        {
+          "file": "phase-6.5-report.md"
+        },
+        {
+          "file": "phase-6.5-review-sheet.html"
+        },
+        {
+          "file": "phase-6.5-pattern-hits.json",
+          "note": "v4.0 companion: {pattern_id: count} for every catalog pattern that fired, so telemetry.py can aggregate recurrence across runs — the report stays for humans, this file is for the loop"
+        },
+        {
+          "file": "phase-6.5-authorship.json",
+          "optional": true,
+          "condition": "source-draft.md exists"
+        }
+      ],
+      "gate": "Gate 6.5: grounding pass; 43-pattern catalog; GEO structure preserved; keywords preserved; tell-scan reported (advisory); authorship exit 0 when author draft (HARD); fix-ledger verify not exit 3 (HARD)",
+      "loop_target": "6.5"
+    },
+    "7": {
+      "label": "Reviewer",
+      "agent": "contentforge:reviewer",
+      "reads": [
+        "ALL_PRIOR_ARTIFACTS",
+        "phase-4-fixes.json",
+        "brand_profile",
+        "requirements",
+        "config:scoring-thresholds.json"
+      ],
+      "writes": [
+        {
+          "file": "phase-7-review.json"
+        },
+        {
+          "file": "phase-7-fix-ledger.json",
+          "note": "written by fix-ledger.py verify --out, copied never re-derived"
+        },
+        {
+          "file": "phase-7-review-pre-remediation.json",
+          "optional": true,
+          "condition": "re-review mode"
+        }
+      ],
+      "gate": "Gate 7: decision per config/scoring-thresholds.json; approve >=7.0 industry-adjusted; dimension minimums; dead internal link = hard FAIL; fix_ledger copied from script output",
+      "loop_target": "responsible-phase"
+    },
+    "8": {
+      "label": "Output Manager",
+      "agent": "contentforge:output-manager",
+      "reads": [
+        "phase-6.5-humanized.md",
+        "phase-6.5-report.md",
+        "phase-7-review.json",
+        "phase-3.5-visual-manifest.json",
+        "phase-6-seo.md",
+        "run.json",
+        {
+          "file": "phase-6.5-authorship.json",
+          "optional": true,
+          "condition": "author-draft mode"
+        }
+      ],
+      "writes": [
+        {
+          "file": "phase-8-output.json"
+        },
+        {
+          "file": "*.docx",
+          "note": "run-dir artifact + dual copy to ~/Documents/ContentForge/{Brand}/"
+        }
+      ],
+      "gate": "Gate 8: .docx by script with appendices A-D; no scaffolding; every generated asset anchored; only approved assets embedded; fix-ledger verify sets publication_status via --data; DRAFT- prefix on both copies when blocked",
+      "loop_target": "8"
+    }
+  },
+  "post_pipeline_lifecycle": {
+    "_comment": "The between-skills loop (v4.0). Not phases — durable per-brand stores with named producers and consumers, so the lifecycle survives sessions.",
+    "stores": [
+      {
+        "path": "audits/audit-<stamp>.json",
+        "producer": "cf-audit via scripts/audit-ledger.py record",
+        "consumers": [
+          "cf-calendar (audit-ledger latest)",
+          "content-refresh (audit-ledger latest)"
+        ]
+      },
+      {
+        "path": "aeo/checks.json",
+        "producer": "cf-aeo-check (append-only)",
+        "consumers": [
+          "cf-audit freshness model (reported-N/A when absent)"
+        ]
+      },
+      {
+        "path": "brand-profile.json brand_pages",
+        "producer": "brand-setup harvest + orchestrator post-Gate-1 merge (harvest-brand-pages.py --merge-inventory)",
+        "consumers": [
+          "Phase 6 internal linking",
+          "cf-brief",
+          "cf-calendar"
+        ]
+      },
+      {
+        "path": "runs/*/phase-6.5-pattern-hits.json + runs/*/run.json",
+        "producer": "pipeline runs",
+        "consumers": [
+          "telemetry.py (loops/patterns/advisories)",
+          "cf-analytics",
+          "Phase 3 brief advisories (floor: >=3 instrumented runs)"
+        ]
+      }
+    ]
+  }
+}

@@ -341,7 +341,11 @@ Total time scales roughly with the number of pieces and their refresh scope; bat
 ## Integration with Other Skills
 
 **Before Refresh:**
-- `/contentforge:cf-audit` — Identify which content needs refreshing (freshness scores, declining candidates)
+- `/contentforge:cf-audit` — Identify which content needs refreshing (freshness scores, declining candidates). **v4.0 file contract:** when the user says "refresh what the audit found" (or `--from-audit`), read the recorded candidates rather than remembering them:
+  ```bash
+  python ${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py latest --brand <slug>
+  ```
+  Take `pieces` ranked by `refresh_priority`; each row's `recommended_scope` (light/medium/heavy/retire) is this skill's scope input. Exit 1 means no recorded audit exists — say so and point at `/contentforge:cf-audit`; never invent candidates.
 - `/contentforge:cf-brief` — Re-run keyword + competitor research on the topic to see what the SERP now rewards and what competitors have added since you published
 
 **After Refresh:**

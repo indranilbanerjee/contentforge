@@ -137,6 +137,22 @@ After filters: 42 records (last 30 days, all brands)
 Date range: 2026-01-26 to 2026-02-25
 ```
 
+**Pipeline telemetry (v4.0).** When a brand filter is active, also load the
+cross-run telemetry so the dashboard can show where the pipeline itself works
+hard for this brand:
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py loops --brand <slug>
+python ${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py patterns --brand <slug>
+```
+
+Render two additional panels from the output: **Loop edges fired** (by edge and
+content type — an edge firing across many runs of one content type is a contract
+problem worth a template fix, and the panel should say so) and **Recurring
+humanizer patterns** (per-pattern totals and run-presence; runs the script
+reports as `not_instrumented` are shown as "unknown (pre-4.0 run)", never as
+zero). Skip both panels silently only when the brand has no runs at all.
+
 ### Step 2: Aggregate Calculation
 
 **Quality Metrics:**

@@ -1,28 +1,24 @@
-﻿# ContentForge
+# ContentForge
 
-> **You need to ship 30 articles this quarter that pass GPTZero, sound human, cite real sources, and route to the right internal pages. Your team is three people. You have nine weeks. Your last "AI-written" batch got flagged by the editor for hallucinated stats.**
+> **You need to ship 30 articles this quarter that sound human, cite real sources, link into your funnel, and survive an editor who checks. Your team is three people. You have nine weeks. Your last "AI-written" batch got flagged for hallucinated stats — and the batch before that quietly went stale and nobody noticed.**
 
-Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with 43-pattern humanizer, fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece on Claude Opus 4.8. No re-edits for AI voice. No hallucinated citations. No orphan content.
+Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with a 43-pattern humanizer, a fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece. Then the part no single-shot tool has: **the lifecycle loop.** Every published piece is measured (`cf-aeo-check`), audited for decay (`cf-audit`), and fed back into the next calendar and the next brief — through durable file contracts, so what the system learns about your brand survives the session that learned it.
 
-Open-source enterprise content production pipeline — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer**. Built for marketing teams producing high volumes of long-form content that need brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 27 Python scripts, stdlib-only**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, and **OpenClaw** + 35+ Agent Skills platforms. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-3.33.4-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-464%2F464%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v3334)
+[![Tests](https://img.shields.io/badge/tests-498%2F498%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-8%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v400)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v3.33.4 (August 16, 2026): figure furniture is not prose, and the conclusion is not the references.** The same live customer-perspective run that exposed the anchor parser found two more measurement-convention gaps, both proven on the run's own artifacts. Three approved figures' alt texts and captions moved the measured body from 1,274 gate-passed words to 1,501 — the run would have failed its own final audit against the 1,200-word target for having its charts described properly; block image embeds and their italic caption lines are now excluded from `body_word_count`, and the Pipeline Contract's counting convention says so. And the keyword in_conclusion check read the last 200 words of the FILE — the References section on any finished article — masking a keyword that WAS in the Conclusion; the zone is now the Conclusion section's own text, cut before the appendix. After both fixes the article-only and full-file measurements of the live artifact agree to the word (1,293). 22 skills, 464 tests. Previously — **v3.33.3 (August 16, 2026): a valid anchor the measurement could not see.** The first fully-live customer-perspective pipeline run on 3.33.x produced a deterministic four-layer diagram whose anchor description legitimately contained `->` arrows — and the `<!-- VISUAL: … -->` parser's `[^>]` character class stopped at the first `>`, making the anchor invisible: a generated asset would have read as unanchored at Gate 8 even though Phase 3.5 had done everything right. The same `>`-excluding class sat in the .docx renderer's INTERNAL-LINK parser, where a `>` inside a reason string would have turned a hyperlink into a raw HTML comment. Both now read to the first `-->` (a `>` inside an HTML comment is legal), with regression tests proven against the shipped parser — the arrow anchor parses as one marker, and adjacent markers stay separate. 22 skills, 460 tests. Previously — **v3.33.2 (August 16, 2026): the documentation truth pass.** A from-zero audit of every live document found the doc-count guard pattern-blind — "All 21 SKILL.md files", "8 scripts", an AGENTS.md pinned at v3.22.0 listing half the supported surfaces, and a submission bundle claiming an 11-phase pipeline all rotted while the guard passed, because each was phrased just outside the regex. Every number is now re-derived from the filesystem, the historical documents are banner-marked as historical, and the guard grew the exact patterns that escaped it (script counts, SKILL.md-file counts, plugin-name-qualified counts, phase-count consistency, AGENTS.md currency) — each plant-checked against the phrasing it previously missed. 22 skills, 456 tests. Previously — **Just shipped — v3.33.1 (August 16, 2026): richer Agent Plugins listing metadata** — the root manifest now carries the official schema's full optional set (homepage, repository, license, keywords), and `docs/distribution/submission-bundle.md` holds everything both official directories require: listing copy, starter prompts, and the 5+3 test cases. And — **v3.33.0: the run auditor ships, and the audit is the price of the word “completed”.** The instrument that found most of this month's thirty-eight defects — re-deriving every gate from the artifacts instead of trusting any agent's report — lived in a session scratchpad until today. **`scripts/run-audit.py`** is that instrument productized: completed phases vs artifacts on disk, orphaned artifacts in finalized runs, production scaffolding in the delivered body, generated assets with no anchor to embed at, manifest paths pointing at missing files, the authorship record vs a fresh measurement, fix-ledger corrections lost or undone, APPROVED decisions backed by their own scores, and `completed` statuses hiding blocked publications — every check a failure that actually happened while every individual artifact looked healthy. **`finalize --status completed` now REFUSES without a fresh CLEAN verdict on disk**; `--skip-audit` exists as the honest escape hatch that stamps `audit_skipped: true` into the manifest, because a skipped audit should be a fact on the record, not a silence. On first contact with the real remediated run the auditor found three true things, including a stored authorship record one correction staler than the delivered body. Also shipped: **`scripts/feature_card.py`** — a deterministic 1200×630 og:image card rendered from the brand's own recorded colors and the piece's real title, no AI involved, constraints asserted before the file is written. It closes the last blocker class with no pipeline-native exit: a run once ended publication-BLOCKED on a missing feature image while correctly declining AI generation, because the AI path was the only one the contract offered. The card still requires user approval — it is the piece's public face — but a permanently open item became a candidate to approve. 22 skills, 452 tests. Previously — **Just shipped — v3.32.0 (August 16, 2026): ContentForge travels in Agent Plugins 1.0 — and runs without subagents.** OpenAI's Agent Plugins standard (Aug 6; adopted by ChatGPT, Codex, Cursor, GitHub Copilot, VS Code, Kiro) now gets a first-class package: a root `plugin.json` on the closed schema, skills already in the standard shape, and `${PLUGIN_DATA}` accepted everywhere the `CLAUDE_*` names were. The bigger piece is the **portable execution lane**: on platforms with no subagent dispatch, the pipeline runs sequentially in one conversation — each agent contract read as phase instructions, same artifacts, same gates, same loop budgets, with context discipline replacing context isolation. Also reconciled, all found by running the pipeline against itself: **Phase 3.5 still said “Phase 8 embeds only approved images” three times** (the wording that made a real run embed zero of its four valid figures) while Phase 8 had moved to approval-gates-AI-only; **label-bearing diagrams are now routed off the AI image path entirely** (the no-text-in-images rule made it structurally incapable of them); a `feature-image` placement value exists; schematics no longer get fabricated attribution; the reviewer gained a **RE-REVIEW MODE** for post-remediation scoring (preserve the old review, re-measure what moved, consume no loop budget); and comparative percentiles need **five prior pieces** — a run once ranked a piece against itself. 22 skills, 430 tests. Previously — **Just shipped — v3.31.1 (August 16, 2026): the gate's evidence was not evidence — and the cure needed one more pass.** An independent validation sweep adversarially re-tested 3.31.0's own newline tolerance and found it planting the very churn it was built to prevent: an LF-composed multi-line `replace` substituted verbatim into a CRLF body left mixed line endings, and fixing that exposed the twin — a literal `in` check in `verify` would then accuse the correctly applied fix of regression. `match_newlines` now gives every replacement the convention of the text it replaces, and `verify`/`resolve` compare with the same tolerance the matcher uses; 4 plant-checked tests. The 3.31.0 story: Gate 4 cited `fix-ledger.py validate` exiting 0 as proof that a run's correction ledger was sound. **`validate` never opened the draft.** It checked JSON structure and nothing else, so a ledger whose every `find` string matched nothing in the article was perfectly well-formed and passed — the hollow-gate defect this whole ledger was built to cure, reproduced inside the cure. Found by a validation agent running the shipped contract against a planted draft, which noticed that the only command proving a ledger can actually land was one the contract never mentions. `validate --target` now confirms every correction resolves to exactly one place in the draft, and Gate 4 requires it. Also fixed: **line endings were unmentioned and load-bearing** — artifacts are CRLF, so a `find` string composed with `\n` matched nothing and reported a silent `not_found` for a reason that had nothing to do with the text; matching now tolerates either while the file's own endings survive the edit. Plus a **`requires_rework`** class, because a section the outline requires and the draft never wrote is neither a substitution nor a person's job — filing it under “needs a human” made the pipeline's own work look like a task waiting on the user; a **`superseded`** status, so that after a loop rewrites the draft a correction Phase 3 fixed on its own stays distinguishable from one that was lost; and a written definition of what counts as a **correction**, since one rule demanded every correction reach the ledger while another barred advisory suggestions, with nothing between them. 22 skills, 409 tests. Previously — **Just shipped — v3.30.0 (August 16, 2026): the remedy for a stale correction manufactured a false accusation.** The fix ledger tells Phase 5 that when a correction's find string no longer matches — the text moved after Phase 4 wrote it — to make the correction by hand and mark the item applied. But `verify` checks that the item's `replace` text is present in the body, and a hand-correction written in different words leaves `replace` pointing at wording nobody ever wrote. The item then verifies as **`regressed`**, which Phase 8 escalates to *“a later phase undid this correction”*. On a real remediation that would have accused **five of eleven corrections** of downstream sabotage that never happened. New `fix-ledger.py resolve` closes the loop properly: it re-points `replace` at the text actually written, keeps Phase 4's wording in `original_replace`, and **refuses if the text you claim to have written is not in the file** — so it cannot be used to declare a correction done without doing it. Plus `already_satisfied`, for the case where an earlier phase had already made the correction in other words and your edit changed zero bytes: calling that “applied” claims a substitution nobody performed. Also fixed: **a “copy this verbatim” instruction with no safe channel** — a reviewer copied the ledger payload out of stdout on Windows, silently got `Â§` for `§` and a mangled em dash, and recorded the copy as verbatim; `verify --out` now writes UTF-8 bytes to read instead. And: one Phase 4 issue carrying two find/replace pairs could not be represented (`source_id` now ties `MOD-2a`/`MOD-2b` back to the report), `finalize` had no status for a run that is APPROVED and unpublishable, and Phase 5's own example named a file that is a report rather than a body. 22 skills, 398 tests. Previously — **Just shipped — v3.29.0 (August 15, 2026): the publication gate was undone at the last step.** v3.28.0 taught Phase 8 to refuse to call a piece ready while mandatory corrections were open — `DRAFT-` prefix, blockers named, blocked status in the tracking row. Running it end to end on a real blocked deliverable showed the delivery step quietly reversing all three: **`mark_complete` hardcoded `status = "completed"`**, so a piece the pipeline had just refused to publish could only be filed as finished; and it named both published copies from the tracking row's **title** rather than the source file, so a `DRAFT-` prefixed document published under an ordinary name. The one marker that tells a person the work is not ready was removed by the step that hands it over. Status is now passed through `--data`, and any status other than `completed` prefixes **both** copies — the marker follows the recorded status instead of depending on a filename someone remembered to type. Also fixed: **the .docx printed "Burstiness score 0.62 (target ≥0.7)"** into the client-facing appendix, against a target that exists nowhere in the pipeline — Phase 7 scores burstiness as advisory with no minimum; **`--brand` was documented as the display name** where the script wants the slug, so one run delivered into a second brand tree; **`fix_ledger` was specified as an array in one place and an object in another**; **the scorecard template had no publication-status line**, so a template-faithful scorecard read APPROVED with nothing showing the piece was unpublishable; and two config keys were cited at the top level where they live under `default.`, returning null on a literal lookup. 22 skills, 390 tests. Previously — **Just shipped — v3.28.0 (August 15, 2026): the reader was being shown the production instructions.** Auditing a delivered run found three raw `[VISUAL-PLACEHOLDER: …]` lines sitting in the published article — notes addressed to Phase 3.5, visible mid-page — while **three perfectly good charts sat on disk, embedded nowhere.** Phase 3.5 never replaced the placeholders with `<!-- VISUAL: id=… -->` anchors, so Phase 8 had nowhere to insert the assets, and every artifact still looked healthy: the charts existed, the manifest validated, the document rendered. **The subtle part is that an earlier fix of ours caused it to hide.** `body_word_count` had been taught to *exclude* placeholder lines so Gate 3 would measure prose — correct for the count, and it removed the only thing in the pipeline that touched them. Excluding something from a measurement can delete the last signal that it exists. `text-metrics.py` now reports **`residual_scaffolding`** and **`visual_markers`** unconditionally, Phase 8 refuses to call a document publishable while either is wrong, and Phase 3.5 must verify its own replacements. Also in this release, all found by running the plugin against itself: **a deletion could not be expressed in the fix ledger** (Phase 4's contract says a CRITICAL hallucination MUST be removed, and the schema rejected an empty `replace`, so the ledger could not carry its most severe class of correction — removals are now first-class and verified by absence); **`loop_history` was documented but never written** (`utils/loop-tracker.md` promised from_phase, to_phase, iteration, reason and timestamp surviving a resume, while `record_loop` wrote counts only — so *why* a run looped vanished with the session); **Accuracy Confidence had an undefined denominator**, a figure that moved with claim-splitting judgement while being checked against fixed bands; and **Phase 4 was asked to verify outline adherence against an artifact its own INPUTS never gave it.** 22 skills, 382 tests. Previously — **Just shipped — v3.27.0 (August 15, 2026): Phase 4's corrections had nowhere to go, so the pipeline lost them.** Auditing a completed run found Phase 4 passing while holding **8 carry-forward corrections** with exact find/replace strings — a reference URL no phase had verified, an unsourced date precision, two scope overclaims. **One was applied. Seven were silently dropped**, and Phase 6.5 then reworded one of the flagged sentences into a *wider* claim than the one Phase 4 had rejected. Phase 7 caught six by hand-grepping the finished article, **missed the seventh** (its string had been reworded and no longer matched), and recorded them in a `mandatory_before_publish` field that **appeared nowhere in the plugin** — so Phase 8 rendered and delivered a finished-looking .docx with every item outstanding. **No agent misbehaved.** The contract lost them in three independent places: Phase 4's only documented destination for a fix list was "FEEDBACK FOR PHASE 3 — when looping back", so on a PASS there was no destination at all; Phase 5's input list described the validation report as one where fixes were *already applied*; and Phase 5's Critical Rule forbade changing "facts, statistics, or citations" — which is precisely what a reference URL, a citation date and a claim-scope tightening are. **The corrections were unappliable by contract.** New `scripts/fix-ledger.py` carries them as a machine-readable ledger: applied verbatim at Phase 5 by script rather than by hand, **guarded by the authorship record** so a fix that would rewrite the author's own sentence is reverted, re-verified after every later phase so a style pass cannot undo an accuracy fix, and enforced at Phase 8 — unresolved blockers no longer stop the document being produced, they stop it being called ready. A missing find-string is reported **loudly**, never as a no-op: three of these eight had already drifted. 22 skills, 363 tests. Previously — **Just shipped — v3.26.0 (August 15, 2026): the crash-recovery path could not see the crash it exists for.** A self-orchestrated 10-phase run had its agent hit a session limit mid-Phase 7. `phase-7-review.json` was already complete on disk — 45KB, score **8.3, APPROVED** — but the checkpoint had not been recorded, and **`resume` reported `next_phase: 7`**. Following it literally would have thrown away a finished review and re-run the reviewer. `get_status` derived the next phase from the manifest alone and never looked at the run directory, so the window between "artifact written" and "checkpoint recorded" — precisely the window recovery is for — was invisible. It now reports **`orphaned_artifacts`** with a reconciliation note, and the contract says to verify each against its gate rather than re-run it blind or trust it blind. Also fixed: **checkpointing was not byte-stable on Windows** (universal-newline read plus `os.linesep` write turned 45,087 bytes into 45,551 and changed the sha256 — breaking a provenance hash recorded in `phase-8-output.json`, and churning artifacts on every gate loop); **Gate 8 asked for three appendices while the config required four**, in a file that says the config wins; and there is now a rule for a subagent that finishes its work and returns no report — audit the disk, ask the same agent for the missing piece, never re-run finished work. **The run itself passed all 38 contract checks.** 22 skills, 335 tests. Previously — **Just shipped — v3.25.0 (August 15, 2026): a gate whose verdict depends on an unstated convention is not a measurement.** A full self-orchestrated pipeline run — the plugin driving its own 10 phases, every gate verified by the orchestrator — produced a Phase 3 draft that measured **1,223 body words and PASSED** by the drafter's count and **1,390 and FAILED** by an independent audit of the same file. Neither was careless: the draft carried an H1, a bold metadata block and three `[VISUAL-PLACEHOLDER: …]` annotation lines addressed to Phase 3.5, and "word count" never said whether those counted. `body_word_count` now excludes production scaffolding that never reaches the published article — H1, metadata block, horizontal rules, HTML comments, placeholder annotations and trailing reference sections — while still counting H2/H3 headings, which are published text. The counting method is written into the Pipeline Contract so nobody has to invent one. **The run also validated the v3.24.0 fix in the wild:** an independent agent following the shipped instructions wrote a 30KB `phase-6.5-report.md` and left the measured draft clean, with `authorship.py` exit 0 at 16/16 sentences verbatim, and Phase 7 approving at **8.3**. 22 skills, 335 tests. Previously — **Just shipped — v3.24.0 (August 15, 2026): the Humanization Report stopped corrupting the provenance record it sits next to.** `authorship.py` classifies **every sentence** in `phase-6.5-humanized.md` to compute `author_word_share` — and the humanizer was told to return "the humanized draft + Humanization Report" for that one path, putting ~900 words of the agent's own prose inside the file that decides whether the client may be credited as an author. Five probe runs against planted fixtures: two complied and embedded the report, two deviated and flagged the problem unprompted, and **one of the compliant runs produced 104 `ai_added` sentences and `may_claim_authored: false`** — refusing the author credit for work they had actually done, on nothing but where a report was written. The body-only runs landed at 0.253 and 0.250, directly on the 0.25 floor. The subtle part: **`violations` stays clean either way** — zero rewritten, zero dropped — so the check built to catch authorship problems cannot see this one. `phase-6.5-humanized.md` is now the article body and nothing else; the report moves to a declared **`phase-6.5-report.md`**. 22 skills, 335 tests. Previously — **Just shipped — v3.23.3 (August 14, 2026): the author stays in the piece.** Three upgrades to how ContentForge handles voice, all built as craft rather than evasion. **Bring your own words** (`--source-draft`): hand the pipeline your own rough draft — a voice-note transcript, bullets, three angry paragraphs — and it builds the article *around* your sentences instead of over them. Your lines are carried through verbatim (typos, run-ons, lowercase and all), the 43-pattern catalog is switched OFF for them, and `scripts/authorship.py` verifies afterwards that nothing of yours was paraphrased or dropped — the one check here that BLOCKS rather than advises, because "the author wrote this and it is gone" is a fact, not a probability. When the record earns it, the disclosure becomes provenance-accurate ("Written by {author} with AI assistance for research, structure, and fact-checking") — read off the record, never requested, and gated on a 25% floor plus zero violations, so it can only ever understate human authorship. **Patterns 42 + 43**: significance markers ("here's the thing", "that's the part that got me", "let that sink in") are now a high-signal pattern that is DELETED rather than reworded, plus soft-adverb feeling tags. Auditing for these caught ContentForge contradicting itself — the conversational voice profile and the blog/whitepaper templates were *recommending* the exact phrasing the humanizer strips; all three are fixed and a guard now fails if any file recommends what the catalog removes. **Entity development**: a new structural proxy for specifics that are name-dropped once and abandoned, fixed by developing an existing fact from the verified ledger — never by deleting specifics, and never by inventing a mention. 22 skills, 335 tests. Previously — **v3.21.0/.1 (August 12): the Express Lane, battle-tested — and craft-complete.** A second lane through the pipeline for users who bring their own research: **express** keeps every verification gate — fact-check (Gate 2), draft-vs-ledger validation (Gate 4), and the full reviewer (Gate 7) — and keeps the craft: the structure/proofread pass (Gate 5) and the 43-pattern humanizer (Gate 6.5) run by default in every lane, skippable only by explicit flag (v3.21.1). The default skips are visuals and SEO — the two phases whose value depends on surfaces outside the prose — each re-addable by flag. Verification is the product; there is no gate-less phase in any lane, and express is fast because intake replaces the research hunt, not because it skips craft. The release was preceded by an execution battle-test of the quality machinery on the *installed* plugin with planted defects: the fact-checker caught a fabricated date, traced a garbled statistic to the real study it came from, and flagged a source misquote; the reviewer fired its dead-link hard fail and refused to loop without budgets; the humanizer shipped a 24-cut Deletion Ledger and invented nothing. Two probes independently caught the same real-world source drift. Plus: all 22 skill descriptions rewritten trigger-dense with a density guard, a rename-readiness kit (`scripts/rename_readiness.py` — inventory, invariants, ordered plan; suggests no names), and a vendor-neutrality guard pinning the audit-clean state. 22 skills, 248 tests. Previously — **v3.19.4–v3.20.0 (August 12): the creator-craft wave** (Deletion Ledger, climax-first openings, unanswered-questions check, video-script payoff + retention rules, and video scripts through the full quality machinery). [Full changelog →](CHANGELOG.md)
->
-> <sub>Previously — **v3.19.2 (August 8, 2026): the `references/` contract is now machine-enforced.** v3.19.1 moved worked examples and troubleshooting into 10 per-skill `references/` files, which made 24 section-scoped pointers the only route to that content — and nothing verified they still led anywhere. `tests/test_skill_references.py` adds five guards: every pointer resolves to a real file, every cited section matches a real heading, no reference file goes uncited, every pointer carries the `(in this skill's directory)` disambiguator that separates a skill's own `references/` from the plugin root's, and no content is duplicated between a skill body and its own reference. Each guard was verified to fire against a planted defect rather than assumed to work — and the duplication guard caught the one instance already shipped, `cf-style-guide`'s manual-input prompt list, now deduped with the skill body as canonical. 22 skills, 222 tests. [Full changelog →](CHANGELOG.md)</sub>
->
-> <sub>Previously — **v3.19.1 (August 7, 2026): advisory-era coherence + a context-efficiency refactor.** A follow-up sweep closed out the last references to the retired 0.7 burstiness target in `utilities/` and removed a dead scoring-config key, plus two new guard tests pin markdown-image exclusion in link counting and the AI-detectability rating's end-to-end wiring. The five largest SKILL.md bodies (`cf-style-guide`, `cf-social-adapt`, `cf-brief`, `contentforge`, `cf-analytics`) are slimmed to ≤500 lines per Agent Skills guidance — worked examples, templates, and troubleshooting moved into 10 new `references/` files with zero content loss, so every Agent Skills platform loads less context per skill. **Tests 215 → 217.** [Full changelog →](CHANGELOG.md)</sub>
+> 🆕 **Just shipped — v4.0.0 (August 17, 2026): the lifecycle release.** ContentForge 3.x was a production pipeline; 4.0 makes it a content **system**. Three architectural changes, each grounded in a defect a real run exposed: **(1) The lifecycle loop closed.** `cf-audit` findings now land in a validated, canonical per-brand store (`scripts/audit-ledger.py`) that `cf-calendar` and `content-refresh` read across sessions; AI-visibility history (`aeo/checks.json`) feeds the freshness model; and each run's verified link inventory merges back into `brand_pages` automatically — conversion pages only ever *staged* for your confirmation, because a CTA is a commercial decision the system must not make for you. Before 4.0 every one of those handoffs was conversational, and worked only while one session held both ends. **(2) The pipeline contract is data.** `config/pipeline-graph.json` declares every phase's reads, writes, gates, and budgeted loop edges — drift-guarded both directions against the agent contracts, the checkpoint manager, and the run auditor. Encoding it immediately found six under-declared inputs the prose table had lost. **(3) The pipeline learns, with floors.** New `scripts/telemetry.py` aggregates loop history, phase timings, and the humanizer's per-pattern hit counts across runs — recurring patterns reach the next drafter brief as advisories behind a recurrence floor, and never touch a gate, a threshold, or a verdict. 22 skills · 27 scripts · 498 tests. [Release notes →](#release-notes) · [Full changelog →](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -47,31 +43,34 @@ openclaw plugins install git:github.com/indranilbanerjee/contentforge
 
 ## Why ContentForge
 
-Most AI writing tools produce one draft, in one tone, with no quality gates. The output reads like AI, factual claims are unverified, internal links don't exist, brand voice drifts, and the file format is markdown when the editor wants Word. ContentForge fixes this end-to-end:
+Most AI writing tools produce one draft, in one tone, with no quality gates, and forget the piece the moment it ships. The output reads like AI, factual claims are unverified, internal links don't exist, brand voice drifts, the file format is markdown when the editor wants Word — and six months later nobody knows which pieces went stale. ContentForge fixes this end to end:
 
 | Capability | Why it matters |
 |---|---|
 | **10-phase pipeline with a quality gate after every phase** | Bad output is caught and re-run before it propagates downstream |
 | **43-pattern AI-detection humanizer** + self-critique meta-pass | Output reads human, not AI — measured advisory tell-scan + burstiness metrics (`text-metrics.py --ai-tell-scan`) |
-| **Fact-checker subagent** verifies URLs and cross-references claims | Citations work and aren't hallucinated |
+| **Fact-checker subagent** verifies URLs and cross-references claims | Citations work and aren't hallucinated — every statistic traces to a verified ledger entry |
 | **Three-category internal linking** (topical / commercial / authority) | Content becomes a funnel, not a stranded page |
 | **Real `.docx` output** with embedded SEO + Quality + Production + Internal-Link appendices | Editor / design team gets a working Word file, not markdown |
-| **C2PA content provenance signing** for EU AI Act Article 50 compliance | Long-form AI-written content distributed in EU markets needs provenance from 2 Aug 2026 |
+| **A run auditor that re-derives every gate from the artifacts** | "The pipeline says it finished" and "the artifacts prove it finished" can never drift apart silently — `finalize --status completed` refuses without a fresh CLEAN verdict |
+| **The lifecycle loop (v4.0)** — audit → refresh → measure → plan, joined by file contracts | Published content stops being fire-and-forget: decay is detected, refreshes are prioritized from data, and what the pipeline learns about your brand compounds |
+| **C2PA content provenance signing** for EU AI Act Article 50 compliance | Long-form AI-assisted content distributed in EU markets needs provenance from 2 Aug 2026 |
 
 ---
 
-## Supported surfaces (v3.33.4)
+## Supported surfaces (v4.0.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
 | **Claude Code** CLI + IDE extension | `/plugin install contentforge@neels-plugins` | `.claude-plugin/plugin.json` | Full support (canonical for solo devs) |
-| **Anthropic Cowork** | Plugins panel in UI → Add marketplace → `indranilbanerjee/neels-plugins` → Install ContentForge | same `.claude-plugin/` files | **Recommended for teams** — `/contentforge:cf-cowork-setup` wires Google Drive for team-shareable output |
+| **Anthropic Cowork** | Plugins panel in UI → Add marketplace → `indranilbanerjee/neels-plugins` → Install ContentForge | same `.claude-plugin/` files | **Recommended for teams** — `/contentforge:cf-cowork-setup` wires Google Drive for team-shareable output (and, in 4.0, for the lifecycle stores that make the loop compound across sessions) |
 | **OpenAI Codex** CLI + IDE + App | `codex plugin marketplace add indranilbanerjee/neels-plugins` then `codex plugin install contentforge@neels-plugins` | `.codex-plugin/plugin.json` (published OpenAI schema) | Full skills + MCP support |
 | **Cursor 2.5+** | In any Cursor Agent chat: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` | `.cursor-plugin/plugin.json` (verified Cursor 2.5+ JSON Schema) | Full skills + agents + commands support |
 | **GitHub Copilot CLI** | `copilot plugin marketplace add indranilbanerjee/neels-plugins` then `copilot plugin install contentforge@neels-plugins` | `.github/plugin/plugin.json` (Copilot also recognizes `.claude-plugin/plugin.json` as fallback) | Full skills + MCP support |
 | **Google Antigravity 2.0** CLI + IDE | `agy plugin install https://github.com/indranilbanerjee/contentforge` | `gemini-extension.json` (at repo root, per Google's reference pattern) | Full skills + hooks support |
 | **Hermes Agent** (Nous Research) — Desktop + CLI on macOS / Windows / Linux | `hermes plugins install indranilbanerjee/contentforge` | `plugin.yaml` + `__init__.py` at repo root (Hermes native spec) | Native plugin — adapter walks `skills/` at register time and exposes all 22 skills via `ctx.register_skill()`. Targets Hermes Desktop v0.15.2+ (public preview June 2 2026). |
 | **OpenClaw** (formerly Clawdbot / Moltbot) | `openclaw plugins install git:github.com/indranilbanerjee/contentforge` | `openclaw.plugin.json` at repo root (also auto-detects `.claude-plugin/plugin.json` as Claude-compatible bundle) | Native plugin via `openclaw.plugin.json`; `skills` field points at `./skills`. |
+| **Agent Plugins 1.0 hosts** (ChatGPT, Kiro, VS Code, and other adopters of OpenAI's vendor-neutral standard) | via the root `plugin.json` (closed AP1.0 schema) | `plugin.json` at repo root | Skills-only package; `${PLUGIN_ROOT}` / `${PLUGIN_DATA}` accepted everywhere; the **portable execution lane** runs the full pipeline on hosts without subagent dispatch |
 
 **Why this works:** Agent Skills became an open standard in December 2025 (41+ agent products by June 2026). All 22 SKILL.md files in ContentForge are platform-portable as written. The sibling manifests are thin platform-specific wrappers around the same `skills/` directory — no skill duplication.
 
@@ -101,7 +100,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates. The
 
 ### 2. Turn on auto-update (one-time, recommended)
 
-**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When v3.12.6 is the marketplace's latest and you're still running v3.12.0, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
+**Third-party marketplaces — including this one — have auto-update OFF by default in Claude Code.** When a newer version is on the marketplace and you're still running an older one, nothing tells you. There's no banner, no badge, no notification. So the first thing to do after install is enable updates:
 
 Open `/plugin`, go to the **Marketplaces** tab, find `neels-plugins`, and toggle **Enable auto-update**. Done — Claude Code will refresh and pull new ContentForge releases at startup from now on, prompting you to run `/reload-plugins` to pick up changes mid-session (no full restart, conversation context preserved).
 
@@ -113,7 +112,7 @@ If you'd rather update manually each time instead, see the [Updating](#updating)
 /contentforge:brand-setup
 ```
 
-The agent walks you through brand voice, terminology, guardrails, citation rules, internal-linking site structure, and (if you want commercial impact) the **brand_pages** block — your product/service URLs, conversion CTAs, and authority pages. It saves a `brand-profile.json` to `~/.claude-marketing/<brand-slug>/`.
+The agent walks you through brand voice, terminology, guardrails, citation rules, internal-linking site structure, and (if you want commercial impact) the **brand_pages** block — your product/service URLs, conversion CTAs, and authority pages. When you give it a website, it runs a robots-respecting crawler and harvests a verified page inventory in one confirmation step. It saves a `brand-profile.json` to `~/.claude-marketing/<brand-slug>/`.
 
 ### 4. Generate content
 
@@ -121,11 +120,11 @@ The agent walks you through brand voice, terminology, guardrails, citation rules
 /contentforge:create-content
 ```
 
-The skill prompts you for content type, brand, topic, target word count, and audience. It then runs 10 phases via specialized subagents (research → fact-check → draft → visuals → validate → proofread → SEO → humanize → review → output), enforces a quality gate after each phase, and writes a real `.docx` you can hand to your editor or design team.
+The skill prompts you for content type, brand, topic, target word count, and audience. It then runs 10 phases via specialized subagents (research → fact-check → draft → visuals → validate → proofread → SEO → humanize → review → output), enforces a quality gate after each phase, audits the finished run against its own artifacts, and writes a real `.docx` you can hand to your editor or design team.
 
 ### 5. Find your output
 
-ContentForge now writes the finished `.docx` to **two** places (v3.12.3+):
+ContentForge writes the finished `.docx` to **two** places:
 
 **User-visible copy — this is the one to open:**
 
@@ -142,48 +141,89 @@ This lives in your normal Documents folder, visible in Windows Explorer / macOS 
 └── <slug>_v1.0.docx
 ```
 
-The intermediate phase artefacts (research brief, fact-check report, draft, SEO scorecard, review report, etc.) plus rendered chart PNGs land alongside the tracking copy under `~/.claude-marketing/<brand-slug>/output/<content-type>/<YYYY-MM-DD>/`. The `.docx` includes the body, references, and four appendices — **A** SEO Scorecard, **B** Quality Scorecard, **C** Production Details, **D** Internal Link Map.
+The intermediate phase artefacts (research brief, fact-check report, draft, SEO scorecard, review report, etc.) plus rendered chart PNGs land alongside the tracking copy in the run directory. The `.docx` includes the body, references, and four appendices — **A** SEO Scorecard, **B** Quality Scorecard, **C** Production Details, **D** Internal Link Map.
 
-> **Bug fix in v3.12.3:** earlier versions only wrote to the hidden `~/.claude-marketing/` dotfolder, which Windows Explorer hides by default. Multiple users reported "the file isn't saving on local drive" — it was saving, just somewhere they couldn't see. The dual-copy fix is the resolution; `/contentforge:output-folder` is the quick-reveal command.
+> **Historical note (fixed in v3.12.3):** earlier versions only wrote to the hidden `~/.claude-marketing/` dotfolder, which Windows Explorer hides by default. Multiple users reported "the file isn't saving on local drive" — it was saving, just somewhere they couldn't see. The dual-copy design is the resolution; `/contentforge:output-folder` is the quick-reveal command.
 
 ### 6. If the run gets interrupted, resume it
 
-The 10-phase pipeline runs 20–60 minutes end to end. If the session terminates partway through (context-window exhaustion, network blip, Ctrl-C, machine sleep), v3.12.3+ saves each completed phase to disk via `scripts/checkpoint-manager.py`. Resume the run with:
+The 10-phase pipeline runs 20–60 minutes end to end. If the session terminates partway through (context-window exhaustion, network blip, Ctrl-C, machine sleep), every completed phase is saved to disk via `scripts/checkpoint-manager.py`. Resume the run with:
 
 ```
 /contentforge:resume                 # auto-picks the most recent in-progress run for the active brand
 /contentforge:resume <run-id>        # pick a specific run from `checkpoint-manager.py list`
 ```
 
-The resumer reloads the saved Phase 1..N outputs and continues from Phase N+1 — no re-running phases that already completed. (Earlier versions had no checkpointing — an interruption meant starting over from Phase 1.)
+The resumer reloads the saved Phase 1..N outputs and continues from Phase N+1 — no re-running phases that already completed. It also reports **orphaned artifacts** (a phase whose artifact exists but was never checkpointed — precisely the window a crash creates), so finished work is verified rather than re-run blind or trusted blind.
+
+### 7. Close the loop (the v4.0 habit)
+
+After you've published a few pieces, three commands turn production into a lifecycle:
+
+```
+/contentforge:cf-aeo-check      # did AI engines cite the piece? appends to per-brand history
+/contentforge:audit-content     # score the library for decay; findings recorded durably
+/contentforge:cf-calendar --from-audit=latest   # next period's plan, fed from the recorded audit
+```
+
+Each one writes or reads a durable per-brand file — the loop works across sessions, across weeks, and (with Cowork + Drive) across your whole team. Details in [The content lifecycle loop](#the-content-lifecycle-loop-v40).
 
 ---
 
 ## What ContentForge does (the 10-phase pipeline)
 
+![The 10-phase ContentForge pipeline: title curation, research, fact-check, draft, visual assets, scientific validation, structure and proofread, SEO/GEO, humanizer, reviewer, and output manager — with budgeted gate-fail loop edges](docs/assets/pipeline-dag.svg)
+
 ```
-0.5  Title Curation       → 4-5 SERP-aware title options; user selects
- 1   Research              → 5+ verified sources, competitive analysis
- 2   Fact Checking         → URL verification, claim cross-reference
- 3   Content Drafting      → SME-calibrated first draft using industry pack
- 3.5 Visual Asset Annotator → matplotlib charts from verified data + visual markers
- 4   Scientific Validation → hallucination check, domain rules, regulatory
- 5   Structuring & Proofread → grammar, readability, brand compliance
- 6   SEO/GEO Optimization  → keywords, meta tags, schema, internal links (3 categories)
- 6.5 Humanizer             → 43-pattern AI-detection catalog + self-critique
+0.5  Title Curation        → 4-5 SERP-aware title options; user selects
+ 1   Research              → 12-15 verified sources, competitive analysis, site recon + link inventory
+ 2   Fact Checking         → URL verification, claim cross-reference → the verified claim ledger
+ 3   Content Drafting      → SME-calibrated first draft, every statistic ledger-traceable
+ 3.5 Visual Asset Annotator → deterministic charts from verified data + visual anchors
+ 4   Scientific Validation → hallucination check vs the ledger; corrections filed in the fix ledger
+ 5   Structuring & Proofread → grammar, readability, brand compliance; fix ledger applied BY SCRIPT
+ 6   SEO/GEO Optimization  → keyword placements, meta tags, schema, internal links (3 categories, live-verified)
+ 6.5 Humanizer             → 43-pattern AI-detection catalog + self-critique + pattern-hit telemetry
  7   Review                → 5-dimension scoring (Content, Citation, Brand, SEO, Readability)
- 8   Output Manager        → real .docx with embedded scorecards + link map
+ 8   Output Manager        → real .docx with embedded scorecards + link map; run audit gates "completed"
 ```
 
-Each phase has a quality gate. If a gate fails, the orchestrator loops back to the offending phase (max 5 loops per pipeline). All phases run via the **Task** tool against dedicated subagent definitions in `agents/01-researcher.md` through `agents/08-output-manager.md` — there is no single-pass shortcut.
+Each phase has a quality gate **verified by the orchestrator with scripts, never taken from an agent's self-report**. If a gate fails, the orchestrator loops back to the offending phase — max 2 loops per edge, 5 per run, every loop recorded with its reason. All phases run via the **Task** tool against dedicated subagent definitions in `agents/01-researcher.md` through `agents/08-output-manager.md` — there is no single-pass shortcut. On platforms without subagent dispatch, the **portable execution lane** runs the same phases sequentially from the same agent contracts: same artifacts, same gates, same budgets.
 
-**Realistic timing:** FAQ 30–35 min · article 35–45 min · whitepaper 45–75 min · research paper 60–90 min. The README used to claim "20–30 minutes for everything" — that was too optimistic and is no longer accurate.
+The pipeline's shape — every phase's inputs, outputs, gate, and loop target — is declared as data in **`config/pipeline-graph.json`** (v4.0) and drift-guarded against the agent contracts, the checkpoint manager, and the run auditor. A phase asked to verify something its inputs never gave it is now a failing test, not a latent bug.
+
+**And when the last phase ends, the run still has to prove it.** `scripts/run-audit.py` re-derives every claim the finished run makes from the artifacts on disk — completed phases vs artifacts, scaffolding in the delivered body, unanchored assets, corrections lost or undone, an APPROVED decision backed by its own score, a `completed` status hiding a blocked publication. `finalize --status completed` **refuses** without a fresh CLEAN verdict; `--skip-audit` exists as an escape hatch that stamps `audit_skipped: true` into the manifest, because a skipped audit should be a fact on the record, not a silence.
+
+**Realistic timing:** FAQ 30–35 min · article 35–45 min · whitepaper 45–75 min · research paper 60–90 min.
 
 ---
 
-## Internal linking — the three categories (v3.9.5)
+## The content lifecycle loop (v4.0)
 
-ContentForge is a **marketing system**, not a search-engine pipeline. Informational links alone don't drive any commercial outcome. v3.9.5 introduced three independently-scored link categories:
+![The v4.0 content lifecycle loop: plan, produce, publish, measure, audit — joined by durable per-brand file contracts](docs/assets/lifecycle-loop.svg)
+
+A pipeline makes a piece. A lifecycle keeps a library alive. ContentForge has had every stage of this loop for a while — what 4.0 adds is the connective tissue that makes it a **system**: every joint is now a file with a schema, so the loop survives the session that ran it.
+
+| Joint | Store (per brand) | Producer → Consumer |
+|---|---|---|
+| Audit findings | `audits/audit-<date>.json` | `/contentforge:audit-content` records via `scripts/audit-ledger.py` (schema-validated — a malformed record is refused with every problem listed) → `cf-calendar --from-audit=latest` and `content-refresh` read the ranked candidates and recommended scopes by file |
+| AI-visibility history | `aeo/checks.json` | `/contentforge:cf-aeo-check` appends every check with deltas → `cf-audit`'s freshness model deducts for lost AI citations (a piece that lost its citations is decaying regardless of its age) |
+| Verified brand links | `brand-profile.json` → `brand_pages` | Phase 1's reconnaissance writes `phase-1-link-inventory.json` each run → after Gate 1, the orchestrator merges it via `harvest-brand-pages.py --merge-inventory`. Product/authority pages upsert with freshness stamps; **conversion pages only ever stage for your confirmation** — a CTA is a commercial decision, and the system collects the evidence without making the decision |
+| Pipeline learning | `runs/*/phase-6.5-pattern-hits.json` + `runs/*/run.json` | Every run records which humanizer patterns fired and which gate-fail loops ran → `scripts/telemetry.py` aggregates across runs → recurring patterns reach the next Phase 3 brief as advisories, `cf-analytics` shows loop edges and pattern trends |
+
+Three rules keep the loop honest, and they are enforced in code, not intentions:
+
+1. **Absence of measurement is never zero.** A pre-4.0 run without pattern telemetry is `not_instrumented`, not clean; an audit that never saw AEO history says `"n/a — no aeo/checks.json"` in a required field — "not consulted" and "consulted, no signal" can never be the same answer.
+2. **Learning has floors.** Telemetry advisories require a recurrence floor (default: a pattern seen in ≥3 instrumented runs) before a word of them reaches a brief. Below the floor the answer is `insufficient_history` and nothing is advised — a brief fed from fewer runs than the floor is fed from anecdote.
+3. **Loops inform; they never gate.** Advisories shape drafting style and dashboards. They are forbidden — by contract and by test — from modifying a gate, a threshold, or a verdict. The quality machinery stays human-set and re-derived.
+
+On **Cowork**, these stores ride the same Drive sync as brand profiles and checkpoints (`/contentforge:cf-cowork-setup`). Without Drive routing, the Cowork sandbox forgets them at session end — the loop still works within a session, but compounding across sessions is most of its point, so teams should treat Drive routing as required.
+
+---
+
+## Internal linking — the three categories
+
+ContentForge is a **marketing system**, not a search-engine pipeline. Informational links alone don't drive any commercial outcome. Links are scored in three independent categories:
 
 | Category | What it does | Brand profile field |
 |---|---|---|
@@ -194,9 +234,11 @@ ContentForge is a **marketing system**, not a search-engine pipeline. Informatio
 
 The SEO agent emits typed `<!-- INTERNAL-LINK: type=... | anchor=... | url=... -->` markers; the .docx generator renders each as a real Word hyperlink, **color-coded by type** (topical blue, commercial green, conversion purple, authority slate). Where the brand has not provided a URL, the marker stays as a visibly-distinct red `[anchor] [LINK TBD: type]` placeholder — the human reviewer fills it in before publication, instead of the link opportunity being silently skipped.
 
-**Auto-harvest (v3.19.0):** `/contentforge:brand-setup` now runs `scripts/harvest-brand-pages.py` against the brand's website — a stdlib, robots-respecting crawler that returns an HTTP-verified page inventory (service/conversion/authority pages) plus verbatim `brand_facts` (one source URL per fact; where pages disagree, both versions are kept with an `inconsistency_note` for you to resolve, never silently merged). One confirmation step and it's saved straight into the `brand_pages` block above. If you decline, the crawl fails, or the brand genuinely has no site, `harvest_status` records exactly which — honestly, never as a silent skip.
+**Auto-harvest:** `/contentforge:brand-setup` runs `scripts/harvest-brand-pages.py` against the brand's website — a stdlib, robots-respecting crawler that returns an HTTP-verified page inventory (service/conversion/authority pages) plus verbatim `brand_facts` (one source URL per fact; where pages disagree, both versions are kept with an `inconsistency_note` for you to resolve, never silently merged). One confirmation step and it's saved straight into the `brand_pages` block. If you decline, the crawl fails, or the brand genuinely has no site, `harvest_status` records exactly which — honestly, never as a silent skip.
 
-**Deep-link rule + thin-`brand_pages` guard:** the researcher (Phase 1) also builds a live Internal-Link Inventory of deep brand URLs the piece could naturally reference, HTTP-verified on the day of the run. Phase 6 requires **≥2 deep links** (not just the homepage) whenever the brand's site has them — if `brand_pages` is empty or homepage-only, Phase 6 now falls back to that Phase 1 inventory, then a just-in-time sitemap fetch, instead of silently skipping commercial linking.
+**And from v4.0, the inventory stays alive:** every pipeline run re-verifies deep brand URLs during Phase 1 reconnaissance, and the orchestrator merges the verified rows back into `brand_pages` after Gate 1 — freshness stamps updated, new pages added with provenance, your manual curation never overwritten, and conversion candidates staged (never activated) for your review under `brand_pages.recon_candidates`.
+
+**Deep-link rule + thin-`brand_pages` guard:** the researcher (Phase 1) builds a live Internal-Link Inventory of deep brand URLs the piece could naturally reference, HTTP-verified on the day of the run. Phase 6 requires **≥2 deep links** (not just the homepage) whenever the brand's site has them — if `brand_pages` is empty or homepage-only, Phase 6 falls back to that Phase 1 inventory, then a just-in-time sitemap fetch, instead of silently skipping commercial linking.
 
 **Configure once per brand:**
 
@@ -224,13 +266,15 @@ The SEO agent emits typed `<!-- INTERNAL-LINK: type=... | anchor=... | url=... -
 }
 ```
 
-The reviewer (Phase 7) scores 6a Topical / 6b Commercial / 6c Conversion **independently**. Categories the brand has not configured score N/A and don't penalize — but a brand **with** a website whose `brand_pages` was never harvested is now a scored deficiency, not an N/A free-pass; homepage-only linking caps the 6b sub-score with a mandatory finding; and any dead internal-link URL is a hard publish-blocking FAIL. The agent must produce useful link markers (real URLs or placeholders) to earn credit.
+The reviewer (Phase 7) scores 6a Topical / 6b Commercial / 6c Conversion **independently**. Categories the brand has not configured score N/A and don't penalize — but a brand **with** a website whose `brand_pages` was never harvested is a scored deficiency, not an N/A free-pass; homepage-only linking caps the 6b sub-score with a mandatory finding; and any dead internal-link URL is a hard publish-blocking FAIL. The agent must produce useful link markers (real URLs or placeholders) to earn credit.
 
 > See `config/brand-registry-template.json` for the full schema.
 
 ---
 
-## Run a real white paper — worked example
+## Examples
+
+### Run a real white paper — worked example
 
 ```
 /contentforge:create-content
@@ -245,13 +289,31 @@ When prompted, supply:
 - **Word Count:** 3500-4200
 - **SEO Keywords:** `ADC pharmacovigilance, T-DXd ILD monitoring`
 
-The pipeline runs ~60 min. When it finishes you get:
+The pipeline runs ~60 min. When it finishes you get a `.docx` in `~/Documents/ContentForge/acme-pharma/whitepaper/<YYYY-MM>/`. Open it in Word: the body, the references, then **Appendix A** (SEO scorecard with keyword placements, meta tags, schema), **Appendix B** (5-dimension quality scorecard), **Appendix C** (production details — phase timings, source reliability, accuracy figures with their phase attributions), and **Appendix D** (internal link map showing every topical / commercial / conversion / authority link the agent placed, with target URLs and anchor text). All inline hyperlinks are clickable in Word.
+
+### What a real gated run looks like — from a live validation run
+
+This is an actual run (August 2026, a digital-preservation test brand, 1,200-word blog, keyword "link rot") — reported exactly as it happened, because the failure-catching is the product:
+
+- **Phase 2 caught Phase 1 misreading a statistic.** The research summarized a source as "the Wayback Machine recovers ~16% of dead URLs"; the fact-checker read the primary source, found 16% was a share of the *entire dataset* (not of dead URLs), locked corrected wording into the verified ledger, and **banned the original sentence from the draft**. The correction survived — verbatim — through six more phases into the delivered Word file, with the disambiguation printed for the reader.
+- **Phase 4 diffed 42 claims against the ledger: zero hallucinations**, one minor citation-placement correction — filed in the fix ledger, applied *by script* at Phase 5, and verified still intact at Phases 6.5, 7, and 8.
+- **Phase 7 approved at 9.0/10** — and honestly sub-scored internal linking down because the test brand had no `conversion_pages` configured, naming the config gap instead of hiding it.
+- **Phase 8's Appendix C corrected a number the orchestrator supplied.** Asked to print "source reliability 8.1", the output manager recomputed it from the research artifact, got 7.9, and printed 7.9 with its reasoning. The honesty discipline binds in every direction.
+- **The run auditor re-derived all of it** — 14 checks passed, 0 failed — and only then did `finalize --status completed` accept the run.
+
+Single-prompt tools produce none of these paper trails. The point isn't that the pipeline never errs — it's that its errors get caught by its own machinery, on the record, before your editor ever sees the file.
+
+### Close the loop on a growing library
 
 ```
-~/.claude-marketing/acme-pharma/output/whitepaper/2026-05-13/whitepaper.docx
+# After a month of publishing:
+/contentforge:cf-aeo-check           # record which pieces AI engines cite (history + deltas)
+/contentforge:audit-content          # freshness-score the library; the findings are RECORDED
+/contentforge:cf-calendar --period=90 --from-audit=latest   # next quarter: refreshes + gaps, from data
+/contentforge:content-refresh        # execute a refresh at the audit's recommended scope
 ```
 
-Open it in Word. You will see the body, the references, then **Appendix A** (SEO scorecard with keyword density, meta tags, schema), **Appendix B** (5-dimension quality scorecard), **Appendix C** (production details — phase timings, em-dash count, AI signal score), and **Appendix D** (internal link map showing every topical / commercial / conversion / authority link the agent placed, with target URLs and anchor text). All inline hyperlinks are clickable in Word.
+Every command reads what the previous one recorded — in a new session, on a different day, by a different teammate.
 
 ---
 
@@ -266,10 +328,10 @@ These 9 commands are the user-facing entry points:
 | `/contentforge:social-adapt` | Repurpose an article into LinkedIn / Twitter / Instagram / Facebook / Threads posts |
 | `/contentforge:publish` | Push to Webflow or WordPress with preview, verification, HTML fallback |
 | `/contentforge:translate` | Translate into 15+ languages preserving brand voice, citations, SEO |
-| `/contentforge:brand-setup` | Configure brand voice, terminology, guardrails, internal linking, **brand_pages** |
-| `/contentforge:audit-content` | Audit content library for freshness decay and coverage gaps |
-| `/contentforge:output-folder` | Print + open the user-visible output folder (`~/Documents/ContentForge/<brand>/`) — answers "where did my file go?" (v3.12.3+) |
-| `/contentforge:resume` | Resume an interrupted pipeline run from the last completed phase instead of starting over (v3.12.3+) |
+| `/contentforge:brand-setup` | Configure brand voice, terminology, guardrails, internal linking, **brand_pages** (with auto-harvest) |
+| `/contentforge:audit-content` | Audit content library for freshness decay and coverage gaps — findings recorded to the durable audit ledger (v4.0) |
+| `/contentforge:output-folder` | Print + open the user-visible output folder (`~/Documents/ContentForge/<brand>/`) — answers "where did my file go?" |
+| `/contentforge:resume` | Resume an interrupted pipeline run from the last completed phase instead of starting over |
 
 > Slash command syntax is canonical `/<plugin-name>:<command>` — the older `/cf:` shortcuts no longer work as of v3.9.3.
 
@@ -281,14 +343,14 @@ These 9 commands are the user-facing entry points:
 |---|---|
 | `contentforge` | Full 10-phase production (the default skill the `/contentforge:create-content` command invokes) |
 | `batch-process` | Process 10–50+ pieces as a sequential, checkpointed queue — survives interruption, resumes mid-piece |
-| `content-refresh` | Update old content with current data, preserve SEO |
+| `content-refresh` | Update old content with current data, preserve SEO — reads recorded audit candidates by file (v4.0) |
 | `cf-brief` | Research-backed brief with keyword analysis and outline |
-| `cf-audit` | Freshness scoring, decay detection, gap analysis |
-| `cf-calendar` | Production scheduling with deadline tracking |
+| `cf-audit` | Freshness scoring, decay detection, gap analysis — records findings to `audits/` via `audit-ledger.py`, consumes AEO history (v4.0) |
+| `cf-calendar` | Production scheduling with deadline tracking — imports refresh slots from the recorded audit (v4.0) |
 | `cf-style-guide` | Import brand voice, generate brand profile JSON |
 | `cf-template` | Create custom content type templates beyond the 8 built-in |
 | `cf-variants` | Generate 3–10 headline / hook / CTA variations with scoring |
-| `cf-analytics` | Quality trends, timing breakdown, brand performance |
+| `cf-analytics` | Quality trends, timing breakdown, brand performance — plus loop-edge and humanizer-pattern telemetry panels (v4.0) |
 | `cf-translate` | Translate preserving brand voice (15+ languages, 3 levels) |
 | `cf-video-script` | Timestamped scripts for YouTube / TikTok / Instagram Reels |
 | `cf-social-adapt` | Article → social media platform-specific posts |
@@ -298,8 +360,8 @@ These 9 commands are the user-facing entry points:
 | `cf-add-integration` | Add a custom MCP connector for any API |
 | `cf-switch-backend` | Switch tracking backend (local / Airtable / Google) with optional data migration |
 | `cf-help` | User guide, pipeline overview, examples, troubleshooting |
-| `cf-aeo-check` | Post-publication AI-citation check — AI Overview presence, own-citation status, extractability audit, deltas over time |
-| `cf-cowork-setup` | One-time Cowork + Google Drive wiring so team runs persist across sessions |
+| `cf-aeo-check` | Post-publication AI-citation check — AI Overview presence, own-citation status, extractability audit, append-only per-brand history with deltas |
+| `cf-cowork-setup` | One-time Cowork + Google Drive wiring so team runs — and the v4.0 lifecycle stores — persist across sessions |
 | `cf-environment` | Detect the runtime environment and show its capability matrix |
 
 ---
@@ -310,19 +372,23 @@ These 9 commands are the user-facing entry points:
 
 | Phase | Agent | Purpose | Avg Time |
 |---|---|---|---|
-| 1 | Researcher | SERP analysis, source mining, outline | 6–8 min |
-| 2 | Fact Checker | URL verification, claim cross-reference | 4–6 min |
+| 1 | Researcher | SERP analysis, source mining, outline, site recon + link inventory | 6–8 min |
+| 2 | Fact Checker | URL verification, claim cross-reference → verified ledger | 4–6 min |
 | 3 | Content Drafter | First draft with brand voice + SME calibration | 4–6 min |
-| 3.5 | Visual Asset Annotator | Chart generation, visual markers, asset manifest | 3–9 min |
-| 4 | Scientific Validator | Hallucination detection, domain validation | 3–9 min |
-| 5 | Structurer & Proofreader | Grammar, readability, brand compliance | 2–7 min |
+| 3.5 | Visual Asset Annotator | Chart generation, visual anchors, asset manifest | 3–9 min |
+| 4 | Scientific Validator | Hallucination detection, domain validation, fix ledger | 3–9 min |
+| 5 | Structurer & Proofreader | Grammar, readability, brand compliance, ledger application | 2–7 min |
 | 6 | SEO/GEO Optimizer | Keywords, meta tags, AI Overview, **3-category internal linking** | 3–8 min |
-| 6.5 | Humanizer | 43-pattern AI-detection catalog + self-critique meta-pass | 5–8 min |
+| 6.5 | Humanizer | 43-pattern AI-detection catalog + self-critique meta-pass + pattern telemetry | 5–8 min |
 | 7 | Reviewer | 5-dimension scoring with comparative ranking | 1–4 min |
 | 8 | Output Manager | `.docx` with hyperlinks, charts, scorecards, link map | <1 min |
 | 9 | Batch Orchestrator | Sequential, checkpointed queue coordination | post-pipeline |
 | 10 | Social Adapter | Platform-specific repurposing | post-pipeline |
 | 11 | Translator | Brand voice mapping, cultural adaptation | post-pipeline |
+
+### The pipeline graph (v4.0)
+
+`config/pipeline-graph.json` is the machine-readable form of the pipeline contract: nodes are phases, edges are the file-based handoffs, loop targets carry their budgets. `tests/test_pipeline_contract_graph.py` fails the build if the graph, the agent contracts, the orchestrator's table, `checkpoint-manager.py`, or `run-audit.py` ever disagree — in either direction. Encoding the contract as data immediately surfaced six inputs the prose table had under-declared (including one the agent file itself annotated as "was missing from this list" after a previous drift incident). The portable execution lane and the resumer walk this graph rather than re-deriving the order from prose.
 
 ### Quality scoring (Phase 7 reviewer, 5 dimensions)
 
@@ -334,32 +400,52 @@ These 9 commands are the user-facing entry points:
 | SEO Performance | 15% | Keywords, meta tags, on-page SEO, GEO, schema, **internal linking (6a/6b/6c split)** |
 | Readability | 10% | Reading level, sentence variety, paragraph structure, scannability, humanization |
 
-Decision thresholds: **9.0+ A** publish + repurpose · **7.0–8.9 B** publish · **5.0–6.9 C** loop back · **<5.0 D** human escalation.
+Decision thresholds: **9.0+ A** publish + repurpose · **7.0–8.9 B** publish · **5.0–6.9 C** loop back · **<5.0 D** human escalation. Thresholds, weights, dimension minimums, and industry overrides live in `config/scoring-thresholds.json` — the single source of truth; where prose and config disagree, the config wins.
 
 ### Three-layer fact verification
 
-Single-pass fact-checking misses 15–20% of hallucinations. ContentForge uses three independent layers — Phase 2 (Fact Checker) verifies sources before drafting, Phase 4 (Scientific Validator) re-verifies the draft against verified sources, Phase 7 (Reviewer) audits factual accuracy as part of holistic scoring. Production runs typically achieve 94–100% factual accuracy with 0 hallucinations.
+Single-pass fact-checking misses 15–20% of hallucinations. ContentForge uses three independent layers — Phase 2 (Fact Checker) verifies sources before drafting and builds the verified claim ledger, Phase 4 (Scientific Validator) re-diffs the draft against that ledger claim by claim, Phase 7 (Reviewer) audits factual accuracy as part of holistic scoring. Corrections travel in a machine-verified **fix ledger** (`phase-4-fixes.json`): applied by script at Phase 5, guarded so a style pass cannot undo an accuracy fix, re-verified at every later phase, and enforced at Phase 8 — unresolved blocking corrections don't stop the document being produced; they stop it being called ready (`DRAFT-` prefix, named blockers, blocked tracking status).
+
+### The run auditor
+
+`scripts/run-audit.py` re-checks a finished run the way an outside auditor would: every completed phase has its artifact, no orphaned artifacts in a finalized run, the delivered body carries no production scaffolding and anchors every generated asset, the authorship record matches a fresh measurement, no fix-ledger correction was lost or undone, an APPROVED decision is backed by its own score, and no `completed` status hides a blocked publication. Every check corresponds to a failure that actually happened in a real run while every individual artifact looked healthy. Two disciplines throughout: **re-derive, never trust** (gate fields are compared against fresh script output), and **a missing input is reported-N/A, never silent-pass**.
 
 ### Industry knowledge packs
 
-10 domain-specific configs at `config/industries/` (pharma, BFSI, healthcare, legal, real estate, technology, B2B SaaS, e-commerce, consumer goods, education) calibrate the Content Drafter as a subject-matter expert and give the Scientific Validator domain-specific terminology, evidence standards, regulatory rules, and common pitfalls to check against.
+10 domain-specific configs at `config/industries/` (pharma, BFSI, healthcare, legal, real estate, technology, B2B SaaS, e-commerce, consumer goods, education) calibrate the Content Drafter as a subject-matter expert and give the Scientific Validator domain-specific terminology, evidence standards, regulatory rules, and common pitfalls to check against. A brand whose industry has no pack gets an honest "generic writing mode" declaration that travels to the reviewer — never a silent pretense of expertise.
 
 ### Phase 6.5 Humanizer (the differentiator)
 
-43-pattern AI-detection catalog (7 buckets: content, language/grammar, style, communication, filler/hedging, structure/framing, detector-signal) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field. Typical results: 12–67 patterns removed per piece, AI signal score ≤3/10, em dashes ≤2 per 500 words.
+43-pattern AI-detection catalog (7 buckets: content, language/grammar, style, communication, filler/hedging, structure/framing, detector-signal) adapted from Wikipedia: Signs of AI Writing + blader/humanizer. Includes a self-critique meta-pass ("what makes this still obviously AI?") and optional voice calibration from a brand `writing_sample` field.
 
-**Grounding-first, not trick-first (v3.19.0).** The old move — inserting short punchy sentences to raise the burstiness number — is gone: it manufactured the exact aphoristic-maxim tell modern detectors flag. In its place, a **Human-Expert Grounding Pass** (patterns 36–38) grounds every standing maxim, impersonal assertion, and flat-confidence claim in a specific from the Phase 2 verified ledger — or removes it; nothing is invented for style. Sentence variety is now **content-derived**: uniform runs get broken by material the content already earns (a caveat standing alone, a source clause folded in), never by content-free filler. Burstiness is reported as advisory context, not a pass/fail gate.
+**Grounding-first, not trick-first.** The old move — inserting short punchy sentences to raise the burstiness number — is gone: it manufactured the exact aphoristic-maxim tell modern detectors flag. In its place, a **Human-Expert Grounding Pass** grounds every standing maxim, impersonal assertion, and flat-confidence claim in a specific from the Phase 2 verified ledger — or removes it; nothing is invented for style. Sentence variety is **content-derived**: uniform runs get broken by material the content already earns, never by content-free filler. Burstiness is reported as advisory context, not a pass/fail gate. Significance markers ("here's the thing", "let that sink in") are **deleted, never reworded**. When an author supplies their own draft (`--source-draft`), their sentences are carried verbatim, exempt from the catalog, and `scripts/authorship.py` **blocks** if any were paraphrased or dropped — the one hard check in the phase, because "the author wrote this and it is gone" is a fact, not a probability.
 
-**Advisory `--ai-tell-scan` (v3.19.0).** `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, zero-dependency proxy scan (aphorism density, banned lexemes, connective/participial-opener rate, uniform sentence runs) and reports a **LOW / MODERATE / HIGH** advisory rating — surfaced in the Phase 6.5 report, the reviewer's Readability sub-score, and the Completion Card. It is never a publish gate, and ContentForge never claims to "beat" any specific detector — see the [FAQ](#faq) and `references/ai-detection-signals.md` for the full reasoning. When an MCP-connected external detector is available, at most one optional validation pass may run against it; that pass is advisory too.
+**Advisory `--ai-tell-scan`.** `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, zero-dependency proxy scan (aphorism density, banned lexemes, connective/participial-opener rate, uniform sentence runs) and reports a **LOW / MODERATE / HIGH** advisory rating — surfaced in the Phase 6.5 report, the reviewer's Readability sub-score, and the Completion Card. It is never a publish gate, and ContentForge never claims to "beat" any specific detector — see the [FAQ](#faq) and `references/ai-detection-signals.md` for the full reasoning.
 
-### Model curator (v3.12.2+) — no hardcoded model ids
+**And from v4.0 the phase reports what it fixed, durably:** `phase-6.5-pattern-hits.json` records per-pattern fire counts for `scripts/telemetry.py`, so a pattern your brand's drafts keep producing eventually reaches the drafter's brief as an advisory — behind the recurrence floor, never as a gate. The pipeline stops re-making mistakes its own quality machinery keeps catching.
 
-Frontier models change every ~6 weeks. ContentForge ships a shared registry + resolver so model ids are never hardcoded across scripts: edit `scripts/model_registry.json` in one place and every script picks up the change next call. Aliases like `latest-balanced-anthropic`, `latest-vision-google`, `latest-image-google` resolve at call time; deprecated ids auto-fall-forward to their replacement; `scripts/refresh_models.py` polls live provider catalogs and reports drift. See [`docs/MODEL-CURATOR.md`](docs/MODEL-CURATOR.md).
+### Model curator — no hardcoded model ids
+
+Frontier models change every ~6 weeks. ContentForge ships a shared registry + resolver so model ids are never hardcoded across scripts: edit `scripts/model_registry.json` in one place and every script picks up the change next call. Aliases resolve at call time; deprecated ids auto-fall-forward to their replacement; `scripts/refresh_models.py` polls live provider catalogs and reports drift. See [`docs/MODEL-CURATOR.md`](docs/MODEL-CURATOR.md).
 
 ```bash
 python scripts/resolve_model.py --alias latest-balanced-anthropic
-python scripts/resolve_model.py --check gemini-2.0-flash      # warns: deprecated, use gemini-3.5-flash
+python scripts/resolve_model.py --check <some-old-model-id>      # warns when deprecated + names the replacement
 ```
+
+### Where your data lives
+
+```
+~/.claude-marketing/<brand-slug>/
+├── brand-profile.json        # voice, terminology, guardrails, brand_pages (+ recon_candidates)
+├── runs/<run-id>/            # per-run artifacts, checkpoints, fix ledger, run-audit.json, telemetry
+├── audits/                   # recorded cf-audit findings (v4.0) — what the calendar reads
+├── aeo/checks.json           # append-only AI-visibility history (per-check deltas)
+├── tracking/outputs/         # the internal system-of-record .docx copies
+└── output/                   # intermediate artifacts + rendered charts
+```
+
+Plus the user-visible deliverables in `~/Documents/ContentForge/<brand>/`. Everything under the brand directory rides Drive sync on Cowork once `/contentforge:cf-cowork-setup` has run.
 
 ---
 
@@ -369,7 +455,7 @@ ContentForge ships with **9 HTTP connectors** that work in both Cowork and Claud
 
 For Cowork users who need Google Sheets / Drive / and ~1000 other SaaS services that have no first-party HTTP MCP, see `.mcp.json.connectors-reference` for Pipedream / Composio / Zapier / Make.com aggregator paths.
 
-For Claude Code users who want stdio MCPs (Google Sheets via service account, Google Drive, Stability AI, etc.), copy the example config:
+For Claude Code users who want stdio MCPs (Google Sheets via service account, Google Drive, etc.), copy the example config:
 
 ```bash
 cp .mcp.json.example .mcp.json
@@ -383,15 +469,23 @@ See [CONNECTORS.md](CONNECTORS.md) for the full reference.
 
 ### Pipeline stops early in `--print` / one-shot mode
 
-`claude --print` exits at the first interactive prompt (e.g., title selection). When scripting non-interactive runs, **pre-supply every input** in the prompt — including the title selection from Phase 0.5. See the validation prompt in `examples/` for the pattern.
+`claude --print` exits at the first interactive prompt (e.g., title selection). When scripting non-interactive runs, **pre-supply every input** in the prompt — including the title selection from Phase 0.5.
 
 ### Pipeline didn't actually invoke subagents (everything happened "in one inference")
 
-Verify v3.9.4 or later is installed (`claude plugin list`). Pre-v3.9.4 versions had a SKILL.md bug that allowed single-pass generation. The fix mandates Task-tool dispatch per phase.
+Verify v3.9.4 or later is installed (`claude plugin list`). Pre-v3.9.4 versions had a SKILL.md bug that allowed single-pass generation. The fix mandates Task-tool dispatch per phase. On platforms with no Task dispatch at all, the portable execution lane is the supported mode — sequential, same gates.
+
+### `finalize --status completed` was refused
+
+Working as designed: the run auditor found something the artifacts don't support — the refusal lists the failing checks and the recovery options. Fix the findings and re-run `scripts/run-audit.py`, or finalize honestly as `blocked` if the run is legitimately unpublishable as it stands. `--skip-audit` exists but stamps `audit_skipped: true` into the record.
+
+### `cf-calendar --from-audit=latest` says no recorded audits exist
+
+The calendar reads recorded audits (`audits/`), not conversations. Run `/contentforge:audit-content` first — since v4.0 it records its findings via `audit-ledger.py` as the final, required step. An audit rendered but not recorded did not happen, as far as the lifecycle is concerned.
 
 ### `.docx` has no internal links
 
-Check your brand profile has `seo_preferences.internal_linking.page_registry` (or `sitemap_url`) populated. For commercial and conversion links, populate `seo_preferences.brand_pages.product_or_service_pages` and `conversion_pages`. If those are empty, the agent has nothing to link to. Re-run `/contentforge:brand-setup` to fill them in.
+Check your brand profile has `seo_preferences.internal_linking.page_registry` (or `sitemap_url`) populated. For commercial and conversion links, populate `seo_preferences.brand_pages.product_or_service_pages` and `conversion_pages`. If those are empty, the agent has nothing to link to. Re-run `/contentforge:brand-setup` to fill them in — or, from v4.0, just run the pipeline: verified pages found during research merge back into the profile automatically (conversion pages staged for your confirmation under `brand_pages.recon_candidates`).
 
 ### Pipeline fails at Phase 1 (Research)
 
@@ -399,7 +493,7 @@ Topic too niche, no search volume, or `WebSearch` not enabled. Broaden the topic
 
 ### Content score below 7.0 and keeps looping
 
-Review Phase 7 Quality Scorecard for the weakest dimension. Most common cause: weak brand profile. Run `/contentforge:brand-setup` and verify voice, guardrails, and audience are filled in. For regulated industries (pharma, BFSI, healthcare, legal) the threshold is 8.0 and guardrails are required.
+Review Phase 7 Quality Scorecard for the weakest dimension. Most common cause: weak brand profile. Run `/contentforge:brand-setup` and verify voice, guardrails, and audience are filled in. For regulated industries (pharma, BFSI, healthcare, legal) the threshold is 8.0 and guardrails are required. Loops are budgeted (2 per edge, 5 per run) — at the limit the run stops for human review instead of burning tokens. If the same edge keeps firing across runs, check `cf-analytics`'s loop panel: a recurring edge is a contract/template problem, not a run problem.
 
 ### Phase 6.5 Humanizer degrades SEO
 
@@ -431,7 +525,7 @@ As of v3.9.3 the canonical namespace is `/contentforge:`. The `/cf:` prefix was 
 >
 > Once you're in Claude Code, the rest of this section applies.
 
-**Third-party marketplaces (including this one) have auto-update DISABLED by default in Claude Code.** Anthropic's official marketplace updates itself; ours does not. So when v3.9.5 is on the marketplace and you're still running v3.9.4, nothing tells you — there is no update banner, no badge, no notification.
+**Third-party marketplaces (including this one) have auto-update DISABLED by default in Claude Code.** Anthropic's official marketplace updates itself; ours does not. So when a newer version is on the marketplace and you're still running an older one, nothing tells you — there is no update banner, no badge, no notification.
 
 You have two options:
 
@@ -460,6 +554,10 @@ rm -rf ~/.claude/plugins/cache/neels-plugins
 /reload-plugins
 ```
 
+### Upgrading from 3.x to 4.0
+
+No breaking changes to existing runs, brands, or artifacts — 4.0 is additive. Pre-4.0 runs simply read as `not_instrumented` in telemetry (unknown, never zero), and the first recorded audit starts the lifecycle stores. See [UPGRADE-GUIDE.md](UPGRADE-GUIDE.md).
+
 ### Installs in Cowork
 
 Cowork is the Anthropic Desktop computer-use product (macOS/Windows). It supports third-party plugins from custom marketplaces — same `/plugin marketplace add` install pattern. Cowork has local filesystem access, so the full ContentForge pipeline including the `generate-docx.py` step runs and produces real `.docx` files, just as in Claude Code CLI/Desktop. The only Cowork limitation that affects ContentForge is **HTTP MCPs only** (no stdio/npx) — which is why our `.mcp.json.connectors-reference` documents Pipedream / Composio / Zapier / Make.com aggregator paths for any service that doesn't ship a first-party HTTP MCP.
@@ -469,7 +567,7 @@ Cowork is the Anthropic Desktop computer-use product (macOS/Windows). It support
 ## FAQ
 
 **Q: How does ContentForge compare to ChatGPT or Claude directly?**
-Single-prompt tools produce content in 30 seconds with ~15–20% hallucination rate, generic voice, and visible AI patterns. ContentForge takes 35–60 minutes but applies three-layer fact verification, brand voice calibration, AI-pattern removal, and dimensioned quality scoring. Each piece comes with a transparent scorecard.
+Single-prompt tools produce content in 30 seconds with ~15–20% hallucination rate, generic voice, and visible AI patterns. ContentForge takes 35–60 minutes but applies three-layer fact verification, brand voice calibration, AI-pattern removal, dimensioned quality scoring, and a run audit that re-derives every gate before the run may call itself finished. Each piece comes with a transparent scorecard — and from 4.0, each brand gets a lifecycle: published pieces are measured, decay is detected, and the next plan is fed from data.
 
 **Q: Can I use ContentForge without Google Drive / Sheets?**
 Yes. Three tracking backends: Google Sheets + Drive, Airtable, or local filesystem. Local works zero-config. Switch any time with `/contentforge:cf-switch-backend`.
@@ -478,16 +576,22 @@ Yes. Three tracking backends: Google Sheets + Drive, Airtable, or local filesyst
 Plugin is MIT-licensed and free. Claude API costs are typically $1–4 per piece depending on length and how many quality-gate loops are needed.
 
 **Q: What content types are supported?**
-8 built-in: articles (1,500–2,000 words), blog posts (800–1,500), whitepapers (2,500–5,000), FAQs (600–1,200), research papers (4,000–8,000), video scripts (duration-driven, 15s–10min), case studies (1,200–2,000, with a client-data provenance rule), and newsletters (500–1,200, subject-line package + one-CTA rule). Use `/contentforge:cf-template` to add custom types.
+8 built-in: articles (1,500–2,000 words), blog posts (800–1,500), whitepapers (2,500–5,000), FAQs (600–1,200), research papers (4,000–8,000), video scripts (duration-driven, 15s–10min), case studies (case_study, 1,200–2,000, with a client-data provenance rule), and newsletters (500–1,200, subject-line package + one-CTA rule). Use `/contentforge:cf-template` to add custom types.
 
 **Q: Can I batch multiple pieces?**
 Yes — `/contentforge:batch-process` queues 10–50+ pieces and runs them one at a time, fully gated and checkpointed per phase. The win is unattended throughput and interruption-proof resume, not concurrency: pieces do NOT run simultaneously (shared per-brand state and API limits make that unsafe).
 
 **Q: How do I add internal links to a brand's own pages?**
-Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_pages, authority_pages}` in the brand profile. The SEO agent uses these to insert commercial and conversion links into the content; the .docx renders them as inline hyperlinks color-coded by category. See the [Internal linking](#internal-linking--the-three-categories-v395) section above.
+Populate `seo_preferences.brand_pages.{product_or_service_pages, conversion_pages, authority_pages}` in the brand profile — `/contentforge:brand-setup` harvests most of it from your website in one confirmation step, and from v4.0 every pipeline run keeps it fresh automatically. See the [Internal linking](#internal-linking--the-three-categories) section above.
+
+**Q: What exactly does "the loop learns" mean — is my quality bar changing by itself?**
+No, and that's a design rule with tests on it. Telemetry advisories shape the *drafting brief* (e.g., "this brand's drafts keep producing em-dash overuse — avoid it up front") behind a recurrence floor, and dashboards show trends. Gates, thresholds, weights, and verdicts are set in `config/scoring-thresholds.json` by humans and re-derived by scripts — no loop output ever modifies them.
+
+**Q: If my word count target is 1,200, do image captions count against it?**
+No. `body_word_count` counts the prose a reader reads (including H2/H3 headings) and excludes figure furniture — image alt text and the caption line under an embed — along with reference sections and production scaffolding. The counting convention is stated in the Pipeline Contract, because a gate whose verdict depends on an unstated convention isn't a measurement.
 
 **Q: How does the AI-detectability score work?**
-Honestly: we don't optimize against any detector. ContentForge writes so there's little to detect — the Phase 6.5 Human-Expert Grounding Pass grounds every claim in a specific from the verified research (a real perplexity-raising move, not a trick), and sentence variety comes from the content, not from inserted filler. On top of that, `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, dependency-free proxy scan for known detector-signal patterns (aphorism density, banned lexemes, connective/participial openers, uniform runs) and reports an advisory **LOW / MODERATE / HIGH** rating in the Phase 6.5 report, the reviewer scorecard, and the Completion Card. If an external AI-detector is reachable via a connected MCP, at most one optional validation pass may also run — still advisory. **None of this is ever a publish gate, and we never promise to "beat" any specific detector** — the evidence shows one-shot static tricks do little (and can backfire) while genuine grounding is durable. Full reasoning in `references/ai-detection-signals.md`.
+Honestly: we don't optimize against any detector. ContentForge writes so there's little to detect — the Phase 6.5 Human-Expert Grounding Pass grounds every claim in a specific from the verified research (a real perplexity-raising move, not a trick), and sentence variety comes from the content, not from inserted filler. On top of that, `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, dependency-free proxy scan for known detector-signal patterns and reports an advisory **LOW / MODERATE / HIGH** rating in the Phase 6.5 report, the reviewer scorecard, and the Completion Card. If an external AI-detector is reachable via a connected MCP, at most one optional validation pass may also run — still advisory. **None of this is ever a publish gate, and we never promise to "beat" any specific detector** — the evidence shows one-shot static tricks do little (and can backfire) while genuine grounding is durable. Full reasoning in `references/ai-detection-signals.md`.
 
 ---
 
@@ -495,12 +599,12 @@ Honestly: we don't optimize against any detector. ContentForge writes so there's
 
 | Platform | Status | Notes |
 |---|---|---|
-| **Anthropic Cowork + Google Drive** | ✅ **Recommended for teams** | The friendliest UX for non-CLI marketing teams. `/plugin` commands + HTTP MCPs work natively. Pipeline outputs route to Google Drive (via Anthropic platform integration in Settings → Integrations) instead of the Cowork sandbox — files persist, are team-shareable, and accessible from any device. One-time setup: `/contentforge:cf-cowork-setup` after install. |
-| Anthropic Cowork (without Drive) | ⚠️ Single-session only | All ContentForge commands run, but generated files land in the Cowork Linux sandbox — visible during the session, **gone after**. Connect Google Drive in Cowork Settings → Integrations (60 seconds) to upgrade to the team-ready setup above. |
+| **Anthropic Cowork + Google Drive** | ✅ **Recommended for teams** | The friendliest UX for non-CLI marketing teams. `/plugin` commands + HTTP MCPs work natively. Pipeline outputs — and the v4.0 lifecycle stores — route to Google Drive instead of the Cowork sandbox: files persist, are team-shareable, and the loop compounds across sessions. One-time setup: `/contentforge:cf-cowork-setup` after install. |
+| Anthropic Cowork (without Drive) | ⚠️ Single-session only | All ContentForge commands run, but generated files land in the Cowork Linux sandbox — visible during the session, **gone after** — and the lifecycle loop cannot compound. Connect Google Drive in Cowork Settings → Integrations (60 seconds) to upgrade. |
 | Claude Code CLI | ✅ Full local support | Reference environment for developers. Files land in `~/Documents/ContentForge/<brand>/...` on your host. Every feature tested here first. |
 | Claude Code IDE extension (VS Code / JetBrains) | ✅ Full local support | Same as CLI; uses host filesystem. |
 | Standard Claude chat (browser `claude.ai` OR installed Claude Desktop app) | ❌ `/plugin` slash commands not available | Plugins still install and run via the **Plugins** UI button at the bottom of the chat. |
-| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 22 skills, same scripts, same MCP catalog as Claude Code. |
+| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 22 skills, same scripts. On builds without subagent dispatch, the portable execution lane runs the full pipeline sequentially with every gate intact. |
 | **Cursor 2.5+** | ✅ Full skills + agents + commands | `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` in any Cursor Agent chat. |
 | **GitHub Copilot CLI** | ✅ Full skills + MCP | `copilot plugin install contentforge@neels-plugins`. Custom slash commands not yet supported in Copilot CLI (open issue) — invoke skills by natural language. |
 | **Google Antigravity 2.0** CLI + IDE | ✅ Full skills + hooks | `agy plugin install https://github.com/indranilbanerjee/contentforge`. Subagents need `/agent` CLI spawning; slash commands fold into skills. |
@@ -523,7 +627,7 @@ Run `/contentforge:cf-environment` after install to see exactly what's available
 
 ## About the maintainer
 
-ContentForge is built and maintained by **[Indranil “Neel” Banerjee](https://indranil.in)** — a builder and systems thinker with roots in information security and a second act across growth marketing, enterprise digital operations, and AI transformation. This repository is one public implementation of a broader focus on trustworthy AI execution: preserve context, make evidence inspectable, and keep people at consequential decision points.
+ContentForge is built and maintained by **[Indranil "Neel" Banerjee](https://indranil.in)** — a builder and systems thinker with roots in information security and a second act across growth marketing, enterprise digital operations, and AI transformation. This repository is one public implementation of a broader focus on trustworthy AI execution: preserve context, make evidence inspectable, and keep people at consequential decision points.
 
 - 🌐 **Website:** [indranil.in](https://indranil.in)
 - 💼 **LinkedIn:** [linkedin.com/in/askneelnow](https://www.linkedin.com/in/askneelnow)
@@ -550,9 +654,9 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 | Plugin | What it does |
 |---|---|
-| [Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro) | End-to-end engagement methodology — 12-Part Strategy Flow, Four Core Documents, 24 agents, 158 skills |
-| **ContentForge** (this plugin) | Publication-ready content via 10-phase pipeline, fact-checker, 43-pattern AI-detection humanizer, `.docx` export with C2PA signing |
-| [SocialForge](https://github.com/indranilbanerjee/socialforge) | Social media calendar with AI image (Vertex AI Nano Banana Pro) + video (WaveSpeed Kling v3.0 Pro) generation, C2PA signing |
+| [Digital Marketing Pro](https://github.com/indranilbanerjee/digital-marketing-pro) | End-to-end engagement methodology — 12-Part Strategy Flow, Four Core Documents, 24 agents, 163 skills |
+| **ContentForge** (this plugin) | Publication-ready content via 10-phase pipeline + lifecycle loop, fact-checker, 43-pattern AI-detection humanizer, `.docx` export with C2PA signing |
+| [SocialForge](https://github.com/indranilbanerjee/socialforge) | Social media calendar with asset-first compositing, AI image + video via your connected providers, delivery audit, C2PA signing |
 
 ```
 /plugin marketplace add indranilbanerjee/neels-plugins
@@ -565,61 +669,27 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v3.22.0 (2026-08-13)** — **Honest provenance + the structural tier.** Response to Claude's new statistical text watermarking (models ≥ 2026-08-02) and the StoryScope structural-detection findings (arXiv 2604.03136) — built on transparency, never evasion. (1) **AI-assistance disclosure**: brand-configurable `ai_disclosure` block (modes `claude-surfaces` default / `always` / `off`), author-OPTIONAL wording that names no vendor and claims only the review the pipeline performs; new `scripts/detect_surface.py` classifies the harness with an uncertain⇒disclose fail-safe (skipping requires an affirmative non-Claude fingerprint); applied inside the deliverable body so it survives `/contentforge:publish`; decision recorded in run.json either way. (2) **Tier-2 structural scan**: `text-metrics.py --structure-scan` measures StoryScope-derived structural tells adapted to non-fiction — moralizing/over-explanation, section symmetry, parallel headings, specificity density, stance absence, paragraph evenness — each with spans and OK/NOTE/ATTENTION bands whose thresholds live in the script, deliberately never in scoring-thresholds.json. (3) **Two-tier review sheet**: `scripts/build_review_sheet.py` renders Tier-1 sentence highlights + Tier-2 structural cards into `phase-6.5-review-sheet.html`; humanizer emits it, reviewer guarantees it in every lane (express included), Completion Card carries a structural-tells line. Humanizer gains structural-edit guidance (cut spelled-out takeaways, break template symmetry, add ledger-grounded specifics — never invented). Design spec committed at `research/2026-08-13-disclosure-provenance-design.md`. **Tests 248 → 273.**
+**v4.0.0 (2026-08-17)** — **The lifecycle release.** ContentForge 3.x produced excellent pieces and forgot them; 4.0 makes production, measurement, and planning one auditable system. **(1) The lifecycle loop closed by file contracts.** New `scripts/audit-ledger.py`: `/contentforge:audit-content` now RECORDS its findings (schema-validated — pieces with freshness scores, ranked refresh priorities, recommended scopes, gap topics, and a required `aeo_history_considered` field, because "not consulted" and "consulted" must never be the same answer) into `audits/` per brand; `cf-calendar --from-audit=latest` and `content-refresh` read the recorded candidates by file, across sessions — before this, the calendar's documented read of "the most recent cf-audit output" resolved to nothing once the session ended. `cf-aeo-check`'s append-only history now feeds the freshness model (lost AI citations deduct, with the deduction named). And Phase 1's verified link inventory merges into `brand_pages` automatically after Gate 1 (`harvest-brand-pages.py --merge-inventory`): product/authority pages upsert with freshness stamps, manual curation never overwritten, **conversion pages only staged for human confirmation** — a CTA is a commercial decision the system must not make. **(2) The pipeline contract as data.** `config/pipeline-graph.json` declares nodes, reads/writes, gates, and budgeted loop edges; `tests/test_pipeline_contract_graph.py` drift-guards it both directions against agent contracts, the orchestrator's table, `checkpoint-manager.py`, and `run-audit.py`. Encoding the table immediately surfaced six under-declared inputs (including Phase 8's real dependency on the SEO scorecard and humanization report, and Phase 5's on the annotated draft whose anchors must survive). **(3) Telemetry with floors.** New `scripts/telemetry.py` aggregates loop edges + reasons, phase timings, and the humanizer's new `phase-6.5-pattern-hits.json` across runs; `cf-analytics` renders loop-edge and pattern panels; recurring patterns reach the Phase 3 brief as advisories behind a ≥3-run recurrence floor. Pre-4.0 runs count as `not_instrumented` — unknown, never zero — and advisories never touch a gate, a threshold, or a verdict, by contract and by test. Design specs for the two follow-on stores (the living link graph and the per-brand claim library) are committed at `research/2026-08-17-link-graph-and-claim-library-spec.md` — deliberately specified before being built. **Tests 464 → 468.**
 
-**v3.21.1 (2026-08-12)** — **Express keeps the craft.** The express lane's default phase set now includes the structure/proofread pass (Gate 5) and the 43-pattern humanizer (Gate 6.5) — they are craft, not ceremony, and a speed lane that ships robot prose or typos would betray the product promise. Express's speed comes from intake replacing Phase 1's deep research hunt (which dominates full-pipeline wall-clock), so keeping the craft passes costs little and protects the output. Default skips are now only Phase 3.5 visuals and Phase 6 SEO (`--with-visuals` / `--with-seo` re-add them with their full gates); the craft passes drop only on explicit `--skip-structure` / `--skip-humanizer`, recorded in `skipped_phases` like any other choice. In express without Phase 6, the humanizer reads the latest artifact and its GEO/keyword-preservation checks apply only when SEO ran. Reviewer's EXPRESS RUNS default-skip list updated to match, and `tests/test_express_lane.py` now pins the craft-default invariant (a lane that quietly drops the humanizer fails the build). **Tests 247 → 248.**
+**v3.33.x (2026-08-16/17)** — **The audit-hardening arc.** v3.33.0: `scripts/run-audit.py` productized (the instrument that found most of the month's 38 defects), `finalize --status completed` refuses without a CLEAN verdict, deterministic `feature_card.py` closes the last blocker class with no pipeline-native exit. v3.33.1: Agent Plugins 1.0 listing metadata + the directory submission bundle. v3.33.2: the documentation truth pass (every live count re-derived from the filesystem; the count guard grew the phrasings that had been escaping it). v3.33.3: a valid VISUAL anchor with `->` arrows in its description was invisible to a `[^>]` parser — found by the first fully-live customer-perspective run, fixed with regression tests proven against the shipped parser. v3.33.4: figure furniture (alt text + captions) no longer counts as body prose, and the keyword-in-conclusion check reads the Conclusion, not the References tail. **Tests 452 → 464.**
 
-**v3.21.0 (2026-08-12)** — **The Express Lane, battle-tested.** A second lane for users who bring their own research: Phase 1 becomes source INTAKE (catalog and rate what was provided — no new hunting, Gate 1-E), then fact-check (Gate 2), draft (Gate 3), validation (Gate 4), review (Gate 7 with the express contract — chosen skips are not defects; SEO dimension N/A unless `--with-seo`; hard fails lane-independent), output. Skipped polish phases (3.5/5/6/6.5) each re-addable by flag, and every re-added phase brings its full gate — no gate-less phase in any lane. Shipped alongside: an execution battle-test of the installed plugin's machinery with planted defects (fact-checker caught a fabricated date + traced a garbled stat to its real study; reviewer fired the dead-link hard fail and refused to loop without `run.json` budgets; humanizer produced a 24-cut Deletion Ledger and invented nothing — and two probes independently caught the same live source drift on a cited page); all 22 skill descriptions rewritten trigger-dense (median ~770 chars) + `tests/test_description_density.py`; `scripts/rename_readiness.py` + guard (occurrences classified by role — manifest identity, namespace refs, skill prefixes, URLs, prose; invariants checked; ordered plan on demand; suggests no names); `tests/test_vendor_neutrality.py` pinning the audit-clean vendor state (conditional-connector framing enforced). **Tests 224 → 247.**
+**v3.32.0 (2026-08-16)** — **Agent Plugins 1.0 + the portable execution lane.** Root `plugin.json` on OpenAI's vendor-neutral closed schema; `${PLUGIN_DATA}` accepted everywhere the `CLAUDE_*` names were; and on platforms with no subagent dispatch the pipeline runs sequentially in one conversation — each agent contract read as phase instructions, same artifacts, same gates, same loop budgets. Also: the Phase 3.5 embedding-contract reconciliation, label-bearing diagrams routed off the AI image path, reviewer RE-REVIEW MODE, comparative percentiles need five prior pieces. **Tests 409 → 430.**
 
-**v3.20.0 (2026-08-12)** — **Video scripts pass the same quality machinery as articles.** cf-video-script gains the Phase 3.5 claim-verification gate (fact-checker on narration + overlays, zero unverified claims), a spoken-language humanizer pass, and the 5-dimension review scorecard (≥7.0, no dimension below 6). **v3.19.5 (2026-08-12)** — payoff rule (no scene ends on setup) + retention notes for 3min+ scripts. **v3.19.4 (2026-08-12)** — humanizer Deletion Ledger (§6, verbatim cuts + pattern ids), drafter climax-first openings from Phase-2-verified claims, reviewer unanswered-questions check (top-3, PATCH/FAQ/FOLLOW-UP).
+**v3.27.0–v3.31.1 (2026-08-15/16)** — **The fix-ledger arc.** Five releases, each found by running the real pipeline and auditing the artifacts: corrections that were unappliable by contract got a machine-verified ledger (applied by script, authorship-guarded, re-verified after every phase); the reader stopped being shown production scaffolding; `mark_complete` stopped undoing the publication gate; a remedy that manufactured false regression accusations was replaced by `resolve`; and Gate 4's evidence became evidence (`validate --target` proves every correction lands). Plus the counting convention, byte-stable checkpoints, and orphaned-artifact-aware resume. **Tests 335 → 409.**
 
-**v3.19.3 (2026-08-09)** — **Documentation caught up with the repo.** `TESTING-GUIDE.md` had drifted to roughly the v3.8.0 state: it expected 19 skills and 7 commands (actual: 22 and 9), so a correct install "failed" its checklist; section 2.3 tested a `SessionStart` hook and a `setup.py` both removed in v3.9.0; section 2.4's file counts matched no directory; and section 8 tested a hook set that ships empty by design — it now verifies that intended silence and points at the Phase 2.5 validator and Phase 7 reviewer where those checks actually run. `SUBMISSION.md` corrected (19→22 skills, 7→9 commands, 16→10 industry knowledge packs). `COWORK-GUIDE.md` skill total corrected. New `tests/test_doc_counts.py` derives counts from the filesystem and fails the build if any live doc disagrees, while leaving dated release entries at their ship-time numbers (plant-check verified, mirrored into DMP and SocialForge). Sponsorship wiring added: `.github/FUNDING.yml`, README sponsor section, `SPONSORS.md`. No runtime behaviour change. **Tests 222 → 224.**
+**v3.23.x–v3.26.x (2026-08-14/15)** — **Craft + calibration.** Author-draft protection (`--source-draft`: your sentences verbatim, catalog-exempt, `authorship.py` BLOCKS on paraphrase/drop), significance markers deleted never reworded, entity development, provenance-accurate disclosure gated on the authorship record; the humanize gate measured against a pre-ChatGPT human corpus (39 documents, 272 chunks) and told the truth about what it proves; the aphorism proxy stopped marking down a genuinely good published essay. **Tests 248 → 335.**
 
-**v3.19.2 (2026-08-08)** — **The `references/` contract is machine-enforced.** v3.19.1's refactor made 24 section-scoped pointers the only route to the relocated examples, transcripts, and troubleshooting, with nothing verifying they still resolved — a renamed heading or moved file would have failed silently at runtime. New `tests/test_skill_references.py` adds five guards: pointers resolve to real files, cited `section "…"` names match real headings, no reference file goes uncited, every pointer carries the `(in this skill's directory)` disambiguator, and no run of content lines is duplicated between a skill body and its own reference. Every guard was plant-check verified against a deliberately broken copy. The duplication guard caught the one instance v3.19.1 shipped — `cf-style-guide`'s 7-item manual-input prompt list existed verbatim in both the body and `references/cli-usage-examples.md`; the body copy is canonical (it carries the E-E-A-T authorless opt-out Step 5 depends on) and the reference now points at it. No runtime behaviour change. 22 skills. **Tests 217 → 222.**
+**v3.22.0 (2026-08-13)** — **Honest provenance + the structural tier.** Brand-configurable `ai_disclosure` (uncertain⇒disclose fail-safe), StoryScope-derived `--structure-scan`, two-tier human review sheet (`build_review_sheet.py`) in every lane. Built on transparency, never evasion — no watermark detection or removal, permanently. **Tests 248 → 273.**
 
-**v3.19.1 (2026-08-07)** — **Advisory-era coherence + context-efficiency refactor.** `utilities/translation-manager.md` and `utilities/analytics-tracker.md` no longer reference the retired 0.7 burstiness target (burstiness has been advisory-only since v3.19.0); the orphaned `min_sentence_variety_score` key removed from `config/scoring-thresholds.json`. Two new guard tests: markdown image syntax is confirmed excluded from internal-link counting, and the AI-detectability advisory rating's reviewer → Completion Card → Phase 6.5 wiring is pinned end to end. Context-efficiency refactor: the five largest SKILL.md bodies (`cf-style-guide`, `cf-social-adapt`, `cf-brief`, `contentforge`, `cf-analytics`) slimmed to ≤500 lines per Agent Skills guidance — verbatim example transcripts, templates, and troubleshooting moved into 10 new per-skill `references/` files with 24 read-when pointers; zero content loss, gates/contract/Completion Card untouched. 22 skills. **Tests 215 → 217.**
+**v3.21.x (2026-08-12)** — **The Express Lane, battle-tested — and craft-complete.** Bring-your-own-research lane keeping every verification gate; structure + humanizer default-ON in express (craft ≠ ceremony); execution battle-test with planted defects; all 22 skill descriptions trigger-dense; vendor-neutrality guard. **Tests 224 → 248.**
 
-**v3.19.0 (2026-08-07)** — **Client-site intelligence + internalized humanizer.** `scripts/harvest-brand-pages.py` (stdlib, robots-respecting) auto-crawls a brand's website for `brand_pages` and verbatim, source-cited `brand_facts` in one confirmation step; the researcher's new Step 0 Client Site Reconnaissance builds a live Internal-Link Inventory and Gate 1 now requires ≥3 verified deep brand URLs when the brand has a site. Phase 6's thin-`brand_pages` guard means an empty or homepage-only page list no longer skips commercial linking — it falls back to the Phase 1 inventory, then a just-in-time sitemap fetch, enforcing a ≥2-deep-link rule. New `references/ai-detection-signals.md` internalizes what detectors actually measure; the humanizer catalog grows 35→43 patterns (aphoristic maxims, impersonal assertion, epistemic flatness, perfect parallelism, participial openers, connective-opener density) with a Human-Expert Grounding Pass replacing the old short-sentence burstiness trick. `text-metrics.py --ai-tell-scan` adds a deterministic, advisory LOW/MODERATE/HIGH detector-signal rating surfaced in the reviewer scorecard and Completion Card — never a publish gate. Reviewer no-free-passes: unharvested `brand_pages` on a brand with a website is now a scored deficiency, homepage-only linking caps the sub-score, dead internal links hard-fail. Also: layered Cowork/sandbox detection (new `linux-sandbox-uncertain` tier) and `generate-docx.py` link telemetry now counts both marker and inline-markdown links. 22 skills. **Tests 173 → 215.**
+**v3.19.x–v3.20.0 (2026-08-07/12)** — **Client-site intelligence + the creator-craft wave.** `harvest-brand-pages.py`, Client Site Reconnaissance + deep-link rule, humanizer catalog 35→43 with the Human-Expert Grounding Pass, advisory `--ai-tell-scan`, Deletion Ledger, climax-first openings, video scripts through the full quality machinery, `references/` contract machine-enforced, `test_doc_counts.py`. **Tests 173 → 224.**
 
-**v3.18.1–v3.18.2 (2026-07-30)** — **Documentation sweep + anonymity guard.** User docs (README, AGENTS.md, USER-GUIDE) had drifted from the v3.18.0 four-capability release — the README skills table, content-type counts, and stale "parallel batch" claims corrected across all three; USER-GUIDE brought current with a What's-new note. Case study and newsletter verified by execution, not just review (checkpoint records, docx author byline, local-tracker round-trip). `tests/test_source_anonymity.py` added — the suite-wide rule that the methodology's source organization is never named in the repo is now machine-enforced on every run (forbidden strings assembled at runtime, verified to fire on a planted needle). **Tests 170 → 173.**
+**v3.16.0–v3.18.x (2026-07-07/30)** — **Reliability & Truth + the audit series + four capabilities.** Checkpoint/resume actually wired, file-based phase handoff contract, measured gates via `text-metrics.py`, `_common.py` (single slugifier, atomic writes, UTF-8 guard), honest "10 phases / 10 quality gates" claim; the interconnection audit that found three never-dispatched agents; E-E-A-T byline layer, case studies (client-data provenance rule — fabricating a client metric halts the pipeline), newsletters, `cf-aeo-check`; the source-anonymity guard. **Tests 53 → 173.**
 
-**v3.18.0 (2026-07-30)** — **Four new capabilities.** Author/E-E-A-T byline layer (`author_profiles` → Phase 3 byline → Person JSON-LD in Phase 6; authorless runs are flagged, never silent). Case Study and Newsletter as built-in content types 7–8 — case studies enforce a client-data provenance rule (fabricating a client metric halts the pipeline); newsletters map email fields onto the existing Phase 6 gate so no gate is special-cased. New `/contentforge:cf-aeo-check` closes the loop `cf-brief` opens: post-publication AI-citation probes, on-page extractability audit, delta history, evidence-routed refresh. 22 skills. **Tests 162 → 170.**
+**v3.9.x–v3.15.x (2026-05/06)** — **The foundation releases.** Task-tool orchestration mandate (v3.9.4), real `.docx` output with appendices, three-category internal linking + `brand_pages` schema (v3.9.5), C2PA provenance for EU AI Act Article 50 (v3.10.0), model curator (v3.12.2), dual-copy output + checkpoint/resume (v3.12.3), native manifests for 8 platforms (v3.13.0–v3.15.0), release-consistency test suite (v3.15.1).
 
-**v3.17.x (2026-07-29–30)** — **The audit series.** Line-by-line read of every file, then a functional pass that *executed* every script, then a cross-file contract audit that treated the plugin as a graph. Highlights: three shipped agents were never dispatched (social-adapter, translator, batch-orchestrator — now wired via `Task`/`subagent_type`); `video_script` registered in the 8 enumerations that rejected it; 12 false “parallel batch” claims corrected (the queue is sequential and checkpointed by design); chart-embed path and storage-resolver fixes; stale 2025 AI-search stats replaced with sourced 2026 figures. New `tests/test_pipeline_graph.py` locks the interconnection graph. **Tests 145 → 162.**
-
-**v3.16.1 (2026-07-12)** — **Self-containment patch.** Removed cross-plugin capability references from the skill surface: `content-refresh` routes pre-refresh diagnosis to ContentForge's own `cf-brief` (keyword + competitor re-research) alongside `cf-audit` instead of recommending another plugin's skills. Suite table in this README corrected (sibling stats were stale) and now states each plugin is fully standalone. No runtime change.
-
-**v3.16.0 (2026-07-07)** — **Reliability & Truth release.** Five-layer deep audit implemented end to end. Orchestration: checkpointing wired into the master skill (Step 0 init + per-phase saves + `loop` counters + `pending_rework`), per-phase input/output contract table with loop targets, orchestrator-owned gates verified via new `scripts/text-metrics.py`, no-brand and no-web modes, honest sequential batch orchestrator (success = reviewer-approved ≥7.0). Agents: user interaction hoisted out of subagents (title curation + image approvals now orchestrator-owned), fact-checker paywall/SERP fixes, drafter body-format contract, structure-manifest guard between SEO and humanizer phases, reviewer industry weights fully specified, ~50 dangling slash references fixed. Skills: connector docs now match the shipped empty `.mcp.json`, cf-brief rewritten for AEO/GEO (LSI/density dogma removed), EU AI Act Article 50 disclosure step in cf-publish, YouTube Shorts + TikTok long-form in cf-video-script, command/skill twins collapsed to thin wrappers. Configs: `scoring-thresholds.json` is now the single source of truth (10 gates incl. new Phase 8 gate), humanizer catalog 29→35 patterns + defined AI-signal formula (evasion framing removed), social specs add TikTok/Bluesky/YouTube Shorts + per-platform `ai_disclosure`, all 10 industry packs enriched (FDA CCN, OCR tracking-tech, SEC Marketing Rule) and dated. Scripts: new `_common.py` (single slugifier — fixes the Cowork sync-path bug, atomic JSON writes, UTF-8 console guard, real exit codes), checkpoint-manager meta/loop/pending-rework, pipeline-tracker run_id keying, .docx image embedding + TOC field + page footer + nested lists + underscore emphasis, Airtable formula-injection fix, Drive pagination. **Tests 53 → 143.**
-
-**v3.15.3 (2026-06-28)** — README sync patch. Adds v3.15.2, v3.15.1 entries to these release notes (they shipped without README updates here) + extends `tests/test_release_consistency.py` to also lock the `## Supported surfaces (vX.Y.Z)` heading + anchor links to canonical version, so this gap is caught in CI next time. No runtime change.
-
-**v3.15.2 (2026-06-28)** — June 2026 market-refresh sync. Mirrors DMP v3.14.0 sweep: model registry rebuilt to 47 entries verified against Anthropic / OpenAI / Google primary docs (new actives: Claude Opus 4.8, GPT-5.5 family, gpt-image-2, Gemini 3.1 Pro Preview, Nano Banana Pro/2 GA, Veo 3.1 Preview); resolver now unconditionally rewrites `retired` model IDs to their `replacement_id`; new `--check-params` scanner flags unsafe `temperature` / `top_p` / `top_k` near Claude Opus 4.7+ targets. Plus `docs/MODEL-CURATOR.md` refresh with current aliases table + new § "Parameter compatibility — Claude Opus 4.7 and later". Docs-only — zero pipeline change. EvoLink vendor added via community PR.
-
-**v3.15.1 (2026-06-09)** — Test-infrastructure polish. New `tests/test_release_consistency.py` (+30 tests; CF total 23 → 53 passing). Catches 7-manifest version drift, README badge/hero callout staleness, CHANGELOG out-of-sync, byte-identical descriptions across 5 Claude-family manifests, install-command presence, critical-section presence, internal-anchor integrity. README hero callout + test badge updated.
-
-**v3.15.0 (2026-06-09)** — Multi-harness expansion: native **Hermes Agent** + native **OpenClaw** + 23-test stdlib suite. Brings ContentForge to parity with DMP's 8-platform native support. Ships `plugin.yaml` + `__init__.py` at repo root for Hermes (walks `skills/` at register time, exposes all 21 CF skills via `ctx.register_skill()`); ships `openclaw.plugin.json` at repo root for OpenClaw native install. Install: `hermes plugins install indranilbanerjee/contentforge` or `openclaw plugins install git:github.com/indranilbanerjee/contentforge`. Tests cover plugin.yaml schema, adapter import + register, mock ctx integration, graceful degradation on bad ctx/None, cross-manifest version consistency. Zero impact on existing platforms — each reads only its own manifest path.
-
-**v3.14.0 (2026-05-27)** — Distribution & context-efficiency polish. Trimmed install-UI descriptions to ~150 chars across all 5 platform manifests + 4 marketplace JSONs. Pain-first README hero. GitHub topics refreshed (`cursor-plugin`, `copilot-cli-plugin`, `gemini-cli-extension`, `google-antigravity` added for cross-platform discoverability). Context-efficiency callouts inserted in heavy SKILL.md files (grep-before-read, `${CLAUDE_PLUGIN_DATA}` directory-list-before-open, offset+limit on partial reads). Skill count corrected 19 → **21**.
-
-**v3.13.0 (2026-05-27)** — Real native manifests for 5 verified surfaces. Ships `.codex-plugin/plugin.json` (per the published OpenAI schema), `gemini-extension.json` at repo root (per Google's `gemini-cli-extensions/data-agent-kit-starter-pack` reference pattern), `.cursor-plugin/plugin.json` (per the verified Cursor 2.5+ JSON Schema), and `.github/plugin/plugin.json` (verified GitHub Copilot CLI schema). Adds `AGENTS.md` at root (auto-loaded by Codex + Antigravity + Copilot + Cursor agent context chains). All 21 skills share via the Agent Skills open standard — no duplication. Replaces the v3.11/v3.12 era invented manifests correctly removed in v3.12.11.
-
-**v3.12.11 (2026-05-26)** — Honest positioning. Removed the v3.11 / v3.12 era invented manifests + `docs/cross-platform-install.md`. Zero functional changes; ContentForge behaved identically in Claude Code + Cowork.
-
-**v3.10.0 (2026-05-17)** — C2PA content provenance for the .docx output for EU AI Act Article 50 compliance (applicable 2 Aug 2026). New `--c2pa-sign` flag on `scripts/generate-docx.py` with `.docx`-embed-if-supported + verifiable `.c2pa.json` sidecar fallback (c2pa-python 0.32 does not yet support `.docx` MIME inline, so the sidecar is the pragmatic path). Plus May 2026 AEO reality update in Phase 6 SEO/GEO optimizer (Google AI Overviews 55% prevalence + 61% organic CTR drop, citation source skew by engine, LLMs.txt companion standard, Profound/Otterly/Conductor measurement integration references). Production-cert short pointer added at `docs/c2pa-production-cert.md`.
-
-**v3.9.5 (2026-05-13)** — Three-category internal linking. New `brand_pages` schema for product/service/conversion/authority pages. Real inline Word hyperlinks color-coded by category. Appendix D internal link map. Reviewer scoring split into 6a/6b/6c with no free-pass for missing site structure.
-
-**v3.9.4 (2026-05-12)** — Fixed pipeline orchestration to actually invoke subagents via Task tool (single-pass generation was skipping quality gates). Added `scripts/generate-docx.py` for real Microsoft Word output with embedded SEO/Quality/Production appendices.
-
-**v3.9.3 (2026-05-09)** — Swept all `/cf:` shorthand to `/contentforge:` across docs and runtime files for namespace consistency.
-
-**v3.9.2 (2026-05-03)** — Fixed manifest install format: `repository` must be a string URL (not npm-shorthand object), `$schema` field removed (parser rejects unknown top-level keys).
-
-**v3.9.1 (2026-05-03)** — Cowork-compatible aggregator MCP catalog (Pipedream, Composio, Zapier, Make.com) for Google Sheets/Drive and other services without a first-party HTTP MCP.
-
-**v3.9.0 (2026-05-03)** — World-class humanizer rebuilt around 35-pattern AI-detection catalog (5 buckets), self-critique meta-pass, optional voice calibration from a brand `writing_sample`. Removed all 4 global hooks for multi-plugin coexistence.
-
-**Earlier versions:** see [CHANGELOG.md](CHANGELOG.md) for the full history (v3.0 through v3.8 — social adaptation, CMS publishing, translation, video scripts, content briefs, A/B variants, content audits, calendars, style guides, analytics, visual asset annotator, industry knowledge packs, multi-backend I/O, AI image generation, SERP-informed title curation).
+**Earlier versions:** see [CHANGELOG.md](CHANGELOG.md) for the complete history back to v3.0.
 
 ---
 

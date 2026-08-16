@@ -130,6 +130,16 @@ Freshness Score = (Age Score x 0.35) +
                   (Citation Recency x 0.20)
 ```
 
+**AEO history input (v4.0).** Before scoring, read the brand's AI-visibility
+history at `~/.claude-marketing/{brand-slug}/aeo/checks.json` (written by
+`/contentforge:cf-aeo-check`). A piece whose recorded AI citations were LOST
+since the previous check is decaying regardless of what its age says: subtract
+up to 15 points from that piece's freshness score (5 per lost citation, capped),
+and name the deduction in its factor breakdown. When the file does not exist,
+the audit record's `aeo_history_considered` field says so explicitly
+(`"n/a — no aeo/checks.json for brand"`) — "not consulted" and "consulted, no
+signal" must never be the same answer.
+
 **Factor 1: Age Score (35% weight)**
 ```
 Formula: max(0, 100 - (months_since_publish * 4.2))
@@ -382,6 +392,26 @@ The complete audit report includes:
 | **Performance Data** | Traffic, rankings, declining content (if analytics connected) |
 | **Recommendations** | Prioritized action list with refresh scope and projected impact |
 | **Next Steps** | Specific commands to run for each recommendation |
+
+**Record the audit — this step is the product (v4.0, REQUIRED).** The report you
+just rendered is for the human in this conversation; the durable output is the
+canonical audit record, because `/contentforge:cf-calendar` and
+`/contentforge:content-refresh` read their refresh recommendations from it BY
+FILE, across sessions. Before this contract the calendar's read of "the most
+recent cf-audit output" resolved to nothing once the session ended — the loop
+existed and broke exactly here. Write the findings as JSON (schema in the
+script's docstring: pieces with title / freshness_score / refresh_priority /
+recommended_scope / reasons, plus gap_topics, retire_candidates,
+aeo_history_considered) and record it:
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py record --brand <slug> --file <report.json>
+```
+
+The script validates the schema (exit 1 lists every problem — fix the record,
+never skip the recording) and stores it under
+`~/.claude-marketing/{brand-slug}/audits/`. An audit that was rendered but not
+recorded did not happen, as far as the rest of the lifecycle is concerned.
 
 ## MCP Integrations
 

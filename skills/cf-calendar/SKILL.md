@@ -89,7 +89,13 @@ Sheet with columns: `title`, `content_type`, `publish_date`, `priority`, `brand`
 ```
 /contentforge:cf-calendar --period=90 --from-audit=latest --cadence=biweekly
 ```
-Pulls the top refresh and new content recommendations from the most recent `/contentforge:cf-audit` output and schedules them.
+Pulls the top refresh and new content recommendations from the most recent recorded `/contentforge:cf-audit` output and schedules them. **The read is a file contract (v4.0), not a memory of the conversation:**
+
+```bash
+python ${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py latest --brand <slug>
+```
+
+The returned record's `pieces` (ranked by `refresh_priority`, with `recommended_scope`) become refresh slots, and its `gap_topics` become new-content slots. When the script exits 1 (no recorded audits for the brand), say exactly that and suggest running `/contentforge:cf-audit` first — never reconstruct recommendations from memory of an audit this session may never have seen.
 
 ## What Happens
 

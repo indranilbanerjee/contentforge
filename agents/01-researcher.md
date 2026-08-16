@@ -330,6 +330,15 @@ Use `templates/research-brief.md` as your output template.
 
 **Your final artifact is saved by the orchestrator to:** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-1-research.md` — return the complete Research Brief as your final output so the orchestrator can save it verbatim.
 
+**Companion artifact (v4.0 — write it yourself, directly):** `~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-1-link-inventory.json` — the Internal-Link Inventory as data rows, exactly the pages your reconnaissance verified live this run (never a page you did not fetch):
+
+```json
+{ "rows": [ { "url": "https://...", "category": "service_or_product | authority | conversion | informational | other",
+              "title": "<page title as fetched>", "verified_at": "<ISO date>", "http_status": 200 } ] }
+```
+
+This file exists so the verified inventory stops evaporating with the run: after Gate 1 passes, the orchestrator merges it into the brand profile's `brand_pages` via `scripts/harvest-brand-pages.py --merge-inventory` (service/product and authority rows upsert; conversion rows only STAGE for human confirmation — a CTA is a commercial decision, and the merge never makes it for the user). The markdown inventory table in the Research Brief stays — humans read that; this file is for the loop.
+
 **Required Sections:**
 1. SERP Analysis (Top 10)
 2. Competitive Content Gap Analysis

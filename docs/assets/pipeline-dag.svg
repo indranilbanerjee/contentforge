@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1180 330" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6577"/>
+    </marker>
+    <marker id="arrloop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#b06414"/>
+    </marker>
+  </defs>
+
+  <text x="590" y="26" text-anchor="middle" font-size="17" font-weight="700" fill="#8a94a4">The 10-phase pipeline — every arrow is a file contract, every node ends at a gate</text>
+
+  <!-- Row 1: 0.5, 1, 2, 3, 3.5, 4 -->
+  <!-- Row 2: 5, 6, 6.5, 7, 8 -->
+
+  <!-- row 1 nodes -->
+  <g font-size="13" text-anchor="middle">
+    <g>
+      <rect x="20"  y="60" width="150" height="64" rx="10" fill="#eef1f5" stroke="#c4ccd8"/>
+      <text x="95" y="84" font-weight="700" fill="#1f2733">0.5 Title</text>
+      <text x="95" y="103" fill="#5a6577" font-size="11.5">user checkpoint</text>
+    </g>
+    <g>
+      <rect x="215" y="60" width="150" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="290" y="84" font-weight="700" fill="#1f2733">1 Research</text>
+      <text x="290" y="103" fill="#5a6577" font-size="11.5">15 sources + site recon</text>
+    </g>
+    <g>
+      <rect x="410" y="60" width="150" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="485" y="84" font-weight="700" fill="#1f2733">2 Fact-check</text>
+      <text x="485" y="103" fill="#5a6577" font-size="11.5">verified claim ledger</text>
+    </g>
+    <g>
+      <rect x="605" y="60" width="150" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="680" y="84" font-weight="700" fill="#1f2733">3 Draft</text>
+      <text x="680" y="103" fill="#5a6577" font-size="11.5">ledger-faithful body</text>
+    </g>
+    <g>
+      <rect x="800" y="60" width="150" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="875" y="84" font-weight="700" fill="#1f2733">3.5 Visuals</text>
+      <text x="875" y="103" fill="#5a6577" font-size="11.5">charts from verified data</text>
+    </g>
+    <g>
+      <rect x="995" y="60" width="160" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="1075" y="84" font-weight="700" fill="#1f2733">4 Validation</text>
+      <text x="1075" y="103" fill="#5a6577" font-size="11.5">draft vs ledger + fix ledger</text>
+    </g>
+  </g>
+
+  <!-- row 1 arrows -->
+  <g stroke="#5a6577" stroke-width="1.6" fill="none">
+    <line x1="170" y1="92" x2="209" y2="92" marker-end="url(#arr)"/>
+    <line x1="365" y1="92" x2="404" y2="92" marker-end="url(#arr)"/>
+    <line x1="560" y1="92" x2="599" y2="92" marker-end="url(#arr)"/>
+    <line x1="755" y1="92" x2="794" y2="92" marker-end="url(#arr)"/>
+    <line x1="950" y1="92" x2="989" y2="92" marker-end="url(#arr)"/>
+  </g>
+
+  <!-- wrap connector: 4 down to 5 -->
+  <path d="M 1075 124 L 1075 160 L 100 160 L 100 190" stroke="#5a6577" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+
+  <!-- row 2 nodes -->
+  <g font-size="13" text-anchor="middle">
+    <g>
+      <rect x="25"  y="196" width="150" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="100" y="220" font-weight="700" fill="#1f2733">5 Structure</text>
+      <text x="100" y="239" fill="#5a6577" font-size="11.5">applies the fix ledger</text>
+    </g>
+    <g>
+      <rect x="240" y="196" width="150" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="315" y="220" font-weight="700" fill="#1f2733">6 SEO / GEO</text>
+      <text x="315" y="239" fill="#5a6577" font-size="11.5">live-verified links</text>
+    </g>
+    <g>
+      <rect x="455" y="196" width="160" height="64" rx="10" fill="#e5f1ee" stroke="#9cc5bb"/>
+      <text x="535" y="220" font-weight="700" fill="#1f2733">6.5 Humanizer</text>
+      <text x="535" y="239" fill="#5a6577" font-size="11.5">43-pattern catalog</text>
+    </g>
+    <g>
+      <rect x="680" y="196" width="150" height="64" rx="10" fill="#f9efe2" stroke="#d9b389"/>
+      <text x="755" y="220" font-weight="700" fill="#1f2733">7 Reviewer</text>
+      <text x="755" y="239" fill="#5a6577" font-size="11.5">weighted scorecard</text>
+    </g>
+    <g>
+      <rect x="895" y="196" width="160" height="64" rx="10" fill="#f9efe2" stroke="#d9b389"/>
+      <text x="975" y="220" font-weight="700" fill="#1f2733">8 Output</text>
+      <text x="975" y="239" fill="#5a6577" font-size="11.5">.docx + run audit gate</text>
+    </g>
+  </g>
+
+  <!-- row 2 arrows -->
+  <g stroke="#5a6577" stroke-width="1.6" fill="none">
+    <line x1="175" y1="228" x2="234" y2="228" marker-end="url(#arr)"/>
+    <line x1="390" y1="228" x2="449" y2="228" marker-end="url(#arr)"/>
+    <line x1="615" y1="228" x2="674" y2="228" marker-end="url(#arr)"/>
+    <line x1="830" y1="228" x2="889" y2="228" marker-end="url(#arr)"/>
+  </g>
+
+  <!-- loop-back edges (budgeted) -->
+  <g stroke="#b06414" stroke-width="1.4" stroke-dasharray="5 4" fill="none">
+    <path d="M 485 60 C 460 38, 340 38, 300 58" marker-end="url(#arrloop)"/>
+    <path d="M 1070 60 C 1030 30, 740 30, 690 56" marker-end="url(#arrloop)"/>
+    <path d="M 750 260 C 700 292, 200 292, 110 264" marker-end="url(#arrloop)"/>
+  </g>
+  <g font-size="10.5" fill="#b06414">
+    <text x="390" y="46">gate fail → re-source</text>
+    <text x="860" y="41">hallucination → redraft</text>
+    <text x="400" y="288">score 5.0–6.9 → rework (max 2/edge, 5/run)</text>
+  </g>
+
+  <text x="590" y="322" text-anchor="middle" font-size="11.5" fill="#8a94a4">Machine-readable form: config/pipeline-graph.json — drift-guarded against the agent contracts, checkpoint manager, and run auditor</text>
+</svg>

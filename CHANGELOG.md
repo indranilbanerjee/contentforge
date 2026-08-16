@@ -7,6 +7,112 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.0.0] - 2026-08-17
+
+### The lifecycle release
+
+ContentForge 3.x was a production pipeline that made excellent pieces and forgot
+them. 4.0 makes production, measurement, and planning one auditable system. The
+release implements the first three findings of the graph/loop analysis
+(2026-08-17), each grounded in a defect a real run exposed; the two follow-on
+stores are deliberately specified-not-built at
+`research/2026-08-17-link-graph-and-claim-library-spec.md`.
+
+### Added — the lifecycle loop, closed by file contracts
+
+- **`scripts/audit-ledger.py`** — the canonical, durable output of
+  `/contentforge:audit-content`. Records schema-validated audit findings
+  (pieces with freshness scores, ranked refresh priorities, recommended scopes,
+  reasons; gap topics; retire candidates; and a REQUIRED
+  `aeo_history_considered` field, because "not consulted" and "consulted, no
+  signal" must never be the same answer) into `{brand}/audits/`, atomically.
+  `latest` / `list` / `validate` actions; exit 1 lists every schema problem.
+  Before this contract, cf-calendar's documented read of "the most recent
+  cf-audit output" resolved to nothing once the session ended — the loop
+  existed and broke exactly there, the same defect class the pipeline itself
+  cured in v3.16 (file-based phase handoff) and v3.27 (corrections with no
+  destination), now cured at the between-skills level.
+- **cf-calendar and content-refresh read the recorded audit by file**
+  (`audit-ledger.py latest`) — ranked candidates become refresh slots, gap
+  topics become new-content slots, recommended scopes drive refresh depth.
+  Exit 1 (nothing recorded) is said out loud, never reconstructed from memory.
+- **cf-aeo-check history feeds the freshness model** — pieces whose recorded AI
+  citations were lost since the previous check take a named deduction (up to 15
+  points, 5 per lost citation); a brand with no `aeo/checks.json` gets the
+  explicit n/a, never a silent skip.
+- **The verified link inventory stops evaporating with the run** — Phase 1 now
+  also writes `phase-1-link-inventory.json` (data rows of the recon-verified
+  pages), and after Gate 1 the orchestrator merges it via
+  `harvest-brand-pages.py --merge-inventory`: service/product and authority
+  pages upsert by normalized URL with `verified_live` stamps, manual curation
+  is never overwritten, informational rows are skipped-and-counted, and
+  **conversion rows only ever STAGE under `brand_pages.recon_candidates`** — a
+  CTA is a commercial decision, and the merge collects the evidence without
+  making the decision. Closes the owner to-do a live run's Phase 7 had to hand
+  back to the user.
+
+### Added — the pipeline contract as data
+
+- **`config/pipeline-graph.json`** — nodes, reads/writes edges, gates, and
+  budgeted loop edges, declared once. `tests/test_pipeline_contract_graph.py`
+  drift-guards it BOTH directions against the agent contracts (every contracted
+  input mentioned, every mentioned artifact contracted), the orchestrator's
+  table, `checkpoint-manager.py`'s phase order, and `run-audit.py`'s artifact
+  expectations. Encoding the prose table immediately surfaced six
+  under-declared inputs — including Phase 8's real dependency on the SEO
+  scorecard and humanization report, Phase 5's on the annotated draft whose
+  VISUAL anchors must survive, and Phase 4's on the research artifact its own
+  file annotates as "was missing from this list" after a previous drift.
+  The SKILL.md contract table now names the graph as authoritative.
+
+### Added — telemetry with floors
+
+- **`scripts/telemetry.py`** — read-only cross-run aggregation: `loops` (edge
+  fire counts by content type, loop reasons, per-phase timing summaries from
+  the tracker's real ISO stamps), `patterns` (humanizer per-pattern totals and
+  run-presence), `advisories` (brief lines behind a recurrence floor).
+- **`phase-6.5-pattern-hits.json`** — the humanizer's new companion artifact:
+  `{pattern_id: count}` for every catalog pattern that fired, counted honestly
+  (instances fixed, not sentences touched). The report stays for humans; this
+  file is for the loop.
+- **The orchestrator injects advisories into the Phase 3 brief** only when
+  telemetry says `status: ok` — below the floor (default: a pattern seen in ≥3
+  instrumented runs) the answer is `insufficient_history` and nothing is
+  advised. Pre-4.0 runs count as `not_instrumented` — unknown, never zero.
+  **Advisories never modify a gate, a threshold, or a verdict** — stated in the
+  contract beside the step, and pinned by test.
+- **cf-analytics renders loop-edge and pattern panels** from telemetry output —
+  an edge that fires across many runs of one content type is presented as what
+  it is: a contract problem worth a template fix, not a run problem.
+
+### Changed
+
+- README rewritten end to end for 4.0: lifecycle section with diagrams
+  (`docs/assets/pipeline-dag.svg`, `docs/assets/lifecycle-loop.svg`), a
+  from-a-real-run example with the F-1 catch story, data-layout map,
+  consolidated release notes, refreshed FAQ/troubleshooting.
+- COWORK-GUIDE: the lifecycle stores ride the brand-directory Drive sync — and
+  without Drive routing the loop cannot compound across sessions, which is most
+  of its point.
+- Shared manifest description updated across the five Claude-family manifests
+  (byte-identical, guard-checked): "content lifecycle system".
+- Loader contract fix in the three new scripts: `_common.load_json_safe`
+  returns an 'error'-keyed dict, never None — normalized at every call site
+  (the tests caught the wrong assumption before it shipped).
+
+### Tests
+
+- `tests/test_pipeline_contract_graph.py` (12) — graph shape, order sync with
+  both scripts, artifact drift both directions, SKILL-table completeness,
+  plant-checks.
+- `tests/test_lifecycle_loop.py` (22) — audit-ledger roundtrip + eight
+  schema plants + brand mismatch; merge semantics (refresh vs add vs stage vs
+  skip, idempotence, www/trailing-slash identity, CLI roundtrip through the
+  real argv path); telemetry aggregation, unknown-vs-zero, advisory floor
+  both sides, loud unreadable runs; wiring guards on every contract edge.
+- Tests 464 → 498, alongside the v3.17.x interconnection suite
+  (`tests/test_pipeline_graph.py`), which remains in force unchanged.
+
 ## [3.33.4] - 2026-08-16
 
 ### Fixed — figure furniture is not prose, and the conclusion is not the references

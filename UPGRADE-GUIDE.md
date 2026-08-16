@@ -1,6 +1,33 @@
-# ContentForge Upgrade Guide — v2.1.0 → v3.0.0 (Historical)
+# ContentForge Upgrade Guide
 
-This guide covers the v2.1.0 → v3.0.0 migration only. For changes since v3.0.0, see the CHANGELOG.md entries for v3.1.0 through v3.16.1.
+## Upgrading 3.x → 4.0.0 (the lifecycle release)
+
+**No breaking changes.** 4.0 is additive: existing brands, runs, artifacts, and
+configurations work unchanged. What to know:
+
+- **Nothing migrates and nothing is required.** The lifecycle stores start
+  empty and fill as you use them: the first recorded `/contentforge:audit-content`
+  creates `audits/`, the first `cf-aeo-check` keeps building `aeo/checks.json`
+  exactly as before, and each new pipeline run writes its telemetry companions.
+- **Pre-4.0 runs read as `not_instrumented` in telemetry** — unknown, never
+  zero. Advisories only begin once ≥3 instrumented runs exist for a brand (the
+  recurrence floor).
+- **`brand_pages` gains, never loses.** The post-Gate-1 merge upserts verified
+  pages with freshness stamps and never overwrites your manual curation;
+  harvested conversion candidates appear under `brand_pages.recon_candidates`
+  awaiting your confirmation — review them after your first 4.0 run.
+- **`cf-calendar --from-audit=latest` now requires a recorded audit.** If you
+  relied on running audit + calendar in one conversation, nothing changes
+  except that it now also works in two.
+- **On Cowork, run `/contentforge:cf-cowork-setup`** (or confirm it has run):
+  the lifecycle stores ride the brand-directory Drive sync, and without it they
+  vanish with the sandbox at session end.
+
+---
+
+## v2.1.0 → v3.0.0 (Historical)
+
+This section covers the v2.1.0 → v3.0.0 migration only. For changes since v3.0.0, see the CHANGELOG.md entries for v3.1.0 onward.
 
 Upgrading from v2.1.0 to v3.0.0. No breaking changes.
 

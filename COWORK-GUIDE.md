@@ -112,6 +112,8 @@ In Cowork: profile menu → **Settings** → **Integrations** → find **Google 
 ```
 It verifies the Cowork environment, confirms a Drive MCP is reachable, creates the canonical Drive folder layout, and persists the routing config. One run per team.
 
+**What rides that persistence (v4.0):** everything under the brand directory — the profile and per-run checkpoints as before, plus the lifecycle stores the 4.0 loop depends on: `audits/` (recorded cf-audit findings that cf-calendar and content-refresh read across sessions), `aeo/checks.json` (AI-visibility history), and each run's telemetry files. On Cowork WITHOUT Drive routing these stores vanish with the session like everything else in the sandbox — the loop then still works within a session but cannot compound across sessions, which is most of its point. Teams that want the lifecycle loop should treat Drive routing as required, not optional.
+
 **3. Verify**
 ```
 /contentforge:cf-integrations

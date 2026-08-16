@@ -1,5 +1,7 @@
-# ContentForge v3.22.0 — Complete User Guide
+# ContentForge — Complete User Guide
 
+> **New in v4.0.0 — the lifecycle release:** ContentForge now closes the loop after publication. `/contentforge:audit-content` records its findings durably (`audits/` per brand, via `scripts/audit-ledger.py`), `/contentforge:cf-calendar --from-audit=latest` and `/contentforge:content-refresh` read those recorded candidates across sessions, `cf-aeo-check` history feeds the freshness model, and each run's verified brand links merge back into `brand_pages` automatically (conversion pages staged for your confirmation, never auto-activated). The pipeline contract is now machine-readable data (`config/pipeline-graph.json`, drift-guarded), and `scripts/telemetry.py` aggregates loop history and humanizer pattern hits across runs — recurring patterns reach the drafter brief as advisories behind a recurrence floor, and never change a gate or a threshold. See the README's "The content lifecycle loop" section.
+>
 > **New in v3.19.2:** the per-skill `references/` files introduced in v3.19.1 are now covered by a test contract — every "read this before that step" pointer is verified to resolve to a real file and a real heading, no reference file is left uncited, and no content is allowed to live in both a skill body and its own reference. Nothing changes in how you run ContentForge; this keeps a future edit from quietly cutting a skill off from its own examples. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
 >
 > **New in v3.19.0:** `/contentforge:brand-setup` now auto-harvests your site — a robots-respecting crawler builds your `brand_pages` inventory and pulls verbatim `brand_facts` (one source URL per fact) in a single confirmation step, and the researcher recons your own site first before every piece. The humanizer's detector knowledge is now internalized (43-pattern catalog, a grounding-first rewrite, and an advisory `--ai-tell-scan`) instead of leaning on burstiness tricks. Plus hardened Cowork/sandbox detection. See [CHANGELOG.md](../CHANGELOG.md) for the full list.
@@ -65,9 +67,9 @@
 | Task | Time |
 |------|------|
 | First-time brand setup | 5-10 minutes |
-| Single article (1,800 words) | 20-30 minutes |
-| Single blog post (1,200 words) | 15-22 minutes |
-| Whitepaper (3,500 words) | 30-45 minutes |
+| Single article (1,800 words) | 35-45 minutes |
+| Single blog post (1,200 words) | 30-40 minutes |
+| Whitepaper (3,500 words) | 45-75 minutes |
 | Batch of 10 articles | 3-5 hours (sequential — sum of the individual runs) |
 | Social adaptation of 1 article | 3-5 minutes |
 | Content brief | 5-8 minutes |
@@ -135,11 +137,11 @@ This shows which connectors are active and what they unlock. **Out of the box, z
 `plugin-metadata.py` is the single source of truth for "what's in this install right now" — every count it prints is read from the filesystem, so it never drifts from the shipped plugin:
 
 ```
-Version: 3.16.1
+Version: 4.0.0
 PLUGIN_ROOT=/home/user/.claude/plugins/contentforge
 SCRIPTS_DIR=/home/user/.claude/plugins/contentforge/scripts
 Python: 3.10.12
-Agents: 13 · Skills: 21 · Commands: 9
+Agents: 13 · Skills: 22 · Commands: 9
 Connectors active: 0 (catalog: 16 HTTP, opt-in)
 ```
 
@@ -1409,7 +1411,7 @@ contentforge/
 │   ├── drive-folder-manager.md    # Drive folder layout conventions
 │   └── loop-tracker.md            # Loop accounting rules
 │
-├── scripts/                       # 25 Python scripts (stdlib only)
+├── scripts/                       # 27 Python scripts (stdlib only)
 │   ├── _common.py                 # Shared storage-root/brand-dir/atomic-write helpers
 │   ├── checkpoint-manager.py      # Per-phase run checkpoints (powers resume)
 │   ├── pipeline-tracker.py        # Phase start/end events + progress

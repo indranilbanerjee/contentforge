@@ -16,17 +16,20 @@ ready to paste; items marked **[owner action]** need the account holder.
 
 - **Name:** contentforge · **Display name:** ContentForge
 - **Category:** Content / Writing / Marketing
-- **Short description:** Open-source enterprise content pipeline — 22 skills,
-  13 agents, a 43-pattern AI humanizer, verified fix ledger, run auditor, and
-  real .docx output.
+- **Short description:** Open-source content lifecycle system — 22 skills,
+  13 agents, a 10-gate pipeline, 43-pattern AI humanizer, run auditor, real
+  .docx output, and a measure-audit-plan loop that compounds per brand.
 - **Long description:** A 10-phase content pipeline where every quality claim
   is measured, not asserted: research → fact-check (verified claim ledger) →
   draft → visuals → hallucination validation → structure → SEO/GEO →
   humanize (43-pattern catalog, author-sentence protection) → review (weighted
   scorecard) → delivery (.docx with appendices). Corrections travel as a
   machine-verified fix ledger; a run auditor re-derives every gate from the
-  artifacts before a run may call itself completed. Works with subagent
-  dispatch or fully portable single-context execution.
+  artifacts before a run may call itself completed; and from 4.0 the lifecycle
+  loop closes after publication — audits recorded durably, AI-visibility
+  history feeding freshness, verified brand links persisting, and cross-run
+  telemetry informing briefs behind recurrence floors (never gates). Works
+  with subagent dispatch or fully portable single-context execution.
 - **Homepage / repo / support:** https://github.com/indranilbanerjee/contentforge
 - **License:** MIT
 - **Policy note for reviewers:** no hardcoded model ids, prices, or vendors

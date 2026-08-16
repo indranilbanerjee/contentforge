@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
-  "version": "3.33.4",
-  "description": "Open-source enterprise content pipeline — 22 skills, 13 agents, 43-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
+  "version": "4.0.0",
+  "description": "Open-source content lifecycle system — 22 skills, 13 agents, 10-gate pipeline, 43-pattern AI humanizer, run auditor, real .docx output, and a measure-audit-plan loop that compounds per brand.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"
@@ -26,7 +26,7 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "ContentForge",
-    "shortDescription": "Open-source enterprise content pipeline — 22 skills, 13 agents, 43-pattern AI humanizer, real .docx output. Runs on Claude Code, Codex, Cursor, Antigravity.",
+    "shortDescription": "Open-source content lifecycle system — 22 skills, 13 agents, 10-gate pipeline, 43-pattern AI humanizer, run auditor, real .docx output, and a measure-audit-plan loop that compounds per brand.",
     "longDescription": "22 skills + 13 specialist agents + 10 quality gates + 43-pattern AI-detection humanizer + fact-checker subagent + three-category internal linking. Produces real .docx with embedded SEO/Quality/Production/Internal-Link appendices. EU AI Act Article 50 ready via C2PA .docx signing. Zero global hooks. 16 opt-in HTTP MCP connectors. Per-phase checkpoint resume. Portable across Claude Code, Codex, Cursor, and Antigravity via the Agent Skills open standard.",
     "developerName": "Indranil Banerjee",
     "category": "Productivity",
