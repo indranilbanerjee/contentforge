@@ -151,8 +151,17 @@ class TestCheckpointRoundtrip(unittest.TestCase):
         self.assertIn("Body — with em dash.", p["content"])
 
     def test_50_finalize_and_list(self):
+        # Since 3.33.0 finalize --status completed refuses without a clean
+        # run-audit.json — the audit is the price of the word "completed".
         rc, p = run_cp(self.env, "finalize", "--brand", "Acme Corp", "--run-id", self.run_id)
+        self.assertEqual(rc, 1, p)
+        self.assertIn("no run-audit.json", p["error"])
+        # The mechanics roundtrip continues via the honest escape hatch, which
+        # stamps the skip into the manifest rather than staying silent.
+        rc, p = run_cp(self.env, "finalize", "--brand", "Acme Corp",
+                       "--run-id", self.run_id, "--skip-audit")
         self.assertEqual(rc, 0, p)
+        self.assertIn("warning", p)
         rc, listed = run_cp(self.env, "list", "--brand", "Acme Corp")
         self.assertEqual(listed["runs"][0]["status"], "completed")
 

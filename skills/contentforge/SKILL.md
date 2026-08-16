@@ -147,10 +147,19 @@ The `.docx` must contain: title page, full article body, sources/citations, **Ap
 
 **Dual-copy save:** the `.docx` is written into the run directory (`~/.claude-marketing/{brand-slug}/runs/{run_id}/`) AND copied to the user-visible folder `~/Documents/ContentForge/{Brand}/`. Always tell the user the `~/Documents/ContentForge/` path. If the brand has Google Drive configured (`tracking.backend == "google_sheets"` with a `tracking.google_drive.folder_id`), additionally upload the .docx via `drive-uploader.py`.
 
-Then finalize the run:
+Then audit, and only then finalize:
 ```bash
+# 1. Re-derive every gate from the artifacts. This is not optional ceremony:
+#    finalize --status completed REFUSES without a fresh CLEAN verdict on disk.
+python ${CLAUDE_PLUGIN_ROOT}/scripts/run-audit.py --brand <slug> --run-id "$RUN_ID"
+
+# 2. Close the run.
 python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize --brand <slug> --run-id "$RUN_ID" --status completed
 ```
+
+**What the audit is.** `run-audit.py` re-checks the finished run the way an outside auditor would: every completed phase has its artifact, no orphaned artifacts in a finalized run, the delivered body carries no production scaffolding and anchors every generated asset, the authorship record matches a fresh measurement, no fix-ledger correction was lost or undone, an APPROVED decision is backed by its own score, and no `completed` status hides a blocked publication. Every one of those is a failure that actually happened in a real run while every individual artifact looked healthy. The verdict lands in `run-audit.json` inside the run directory.
+
+**When the audit fails:** fix the findings and re-run it — or, if the run is legitimately unpublishable as it stands (an open `requires_human` blocker, say), finalize with `--status blocked`, which needs no audit because it claims nothing. `finalize --skip-audit` exists as an escape hatch that stamps `audit_skipped: true` into `run.json`: the absence of verification becomes part of the record rather than a silence.
 
 ### Why This Matters
 

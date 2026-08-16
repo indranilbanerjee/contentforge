@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.33.0] - 2026-08-16
+
+### Added — the run auditor, shipped
+
+`scripts/run-audit.py` re-derives every claim a finished run makes from the
+artifacts on disk, using the plugin's own scripts. Checks: completed phases vs
+artifacts, orphaned artifacts in finalized runs, production scaffolding in the
+delivered body, generated assets without anchors, ghost manifest paths, the
+authorship record vs a fresh measurement, fix-ledger regressions, APPROVED
+decisions backed by their own scores, loop arithmetic and history, and statuses
+that hide blocked publications. Every check is a failure class observed on a
+real run while every individual artifact looked healthy. A missing input
+downgrades a check to reported-N/A, never to silent-pass; `--strict` fails on
+N/A for CI use. Verdict lands in `run-audit.json` inside the run.
+
+**`finalize --status completed` now refuses without a fresh CLEAN verdict.**
+`--skip-audit` finalizes anyway and stamps `audit_skipped: true` into the
+manifest — the absence of verification becomes part of the record. Finalizing
+as `blocked` needs no audit, because it claims nothing.
+
+First contact with the real remediated run: three true findings, including a
+stored authorship record one correction staler than the delivered body, and a
+loop history that predates the history feature (reported N/A with the reason,
+not failed — absence of the key dates the run).
+
+### Added — the deterministic feature card
+
+`scripts/feature_card.py`: a 1200×630 og:image card rendered from the brand's
+recorded colors and the piece's real title. No AI generation, nothing invented —
+colors are rejected unless they are the profile's own `#RRGGBB` values, text
+artists are asserted before the file is written, size is verified off disk, and
+the result is deterministic per environment with its sha256 in the record. It
+closes the last blocker class with no pipeline-native exit: a run once ended
+publication-BLOCKED on a missing feature image while correctly declining AI
+generation, because AI was the only path the contract offered. The card still
+requires user approval before becoming og:image — it is the piece's public face
+— but a permanently open item became a candidate to approve.
+
+**22 new tests**, including plants for every auditor guard and the finalize
+gate refusing an unaudited or violating run.
+
 ## [3.32.0] - 2026-08-16
 
 ### Added — Agent Plugins 1.0 packaging + the portable execution lane

@@ -473,15 +473,58 @@ def pick_resumable(brand: str, run_id: str | None) -> dict:
     return {"brand": brand, "resume_run": s}
 
 
-def finalize_run(brand: str, run_id: str, status: str = "completed") -> dict:
+def finalize_run(brand: str, run_id: str, status: str = "completed",
+                 skip_audit: bool = False) -> dict:
+    """Close a run — and make the audit the price of the word "completed".
+
+    Before this gate, finalize took the caller's word for it: a run could be
+    stamped completed while its delivered body carried production scaffolding,
+    its fix ledger held open blocking corrections, and its authorship record
+    described a body that no longer existed — all observed on one real run.
+    `run-audit.py` re-derives every gate from the artifacts; finalizing as
+    completed now requires that record, fresh and clean.
+
+    `--skip-audit` exists for honesty, not convenience: it finalizes anyway and
+    stamps `audit_skipped: true` into the manifest, so the absence of
+    verification is itself on the record. A skipped audit is a fact the next
+    reader deserves to see; a silently waived one is how gates go hollow.
+    """
     manifest = _load_manifest(brand, run_id)
     if manifest is None:
         return {"error": f"no run found: brand={brand} run_id={run_id}"}
+
+    if status == "completed" and not skip_audit:
+        audit_path = _run_dir(brand, run_id) / "run-audit.json"
+        audit = _common.load_json_safe(audit_path) if audit_path.exists() else None
+        if not isinstance(audit, dict) or "verdict" not in audit:
+            return {"error": "cannot finalize as completed: no run-audit.json "
+                             "in the run directory",
+                    "recovery": "Run: python scripts/run-audit.py --brand "
+                                f"{brand} --run-id {run_id}  — then finalize. "
+                                "Or finalize with --skip-audit to record that "
+                                "the run was closed unverified."}
+        if audit.get("verdict") != "CLEAN":
+            fails = [c["name"] for c in audit.get("checks", [])
+                     if c.get("result") == "FAIL"]
+            return {"error": "cannot finalize as completed: the run audit "
+                             f"reports VIOLATIONS ({len(fails)} failing)",
+                    "failing_checks": fails[:10],
+                    "recovery": "Fix the findings and re-run run-audit.py, or "
+                                "finalize with --status blocked if the run is "
+                                "legitimately unpublishable as it stands."}
+        manifest["audit_verdict"] = "CLEAN"
+    elif status == "completed" and skip_audit:
+        manifest["audit_skipped"] = True
+
     manifest["status"] = status
     manifest["finalized_at"] = _now_iso()
     manifest["last_updated"] = _now_iso()
     _save_manifest(brand, run_id, manifest)
-    return {"status": status, "run_id": run_id}
+    result = {"status": status, "run_id": run_id}
+    if manifest.get("audit_skipped"):
+        result["warning"] = ("finalized WITHOUT verification — audit_skipped is "
+                             "now stamped in run.json")
+    return result
 
 
 def discard_run(brand: str, run_id: str) -> dict:
@@ -564,6 +607,9 @@ def main() -> None:
     # publication gate is there to prevent.
     p_fin.add_argument("--status", default="completed",
                        choices=["completed", "blocked", "failed", "abandoned"])
+    p_fin.add_argument("--skip-audit", action="store_true",
+                       help="finalize as completed WITHOUT a clean run-audit; "
+                            "stamps audit_skipped into run.json")
 
     p_dis = sub.add_parser("discard", help="Delete a run's checkpoint directory")
     p_dis.add_argument("--brand", required=True)
@@ -611,7 +657,8 @@ def main() -> None:
         elif args.action == "resume":
             result = pick_resumable(args.brand, args.run_id)
         elif args.action == "finalize":
-            result = finalize_run(args.brand, args.run_id, args.status)
+            result = finalize_run(args.brand, args.run_id, args.status,
+                                  skip_audit=getattr(args, "skip_audit", False))
         elif args.action == "discard":
             result = discard_run(args.brand, args.run_id)
         else:
