@@ -458,6 +458,64 @@ class TestSupersededOnLoop(LedgerHarness):
         self.assertEqual(out["checks"][0]["state"], "superseded")
 
 
+class TestReplacementEndings(LedgerHarness):
+    """The 3.31.0 tolerance matched an LF-composed find against a CRLF body but
+    substituted the LF-composed replace verbatim — planting a bare LF in the
+    middle of a CRLF file. Mixed endings are exactly the churn the
+    byte-stability work exists to prevent, and fixing it exposes the twin: once
+    apply writes the body's convention, a literal `in` check in verify reports
+    the correctly applied fix as regressed."""
+
+    def multiline(self):
+        self.write("Alpha line.\nBeta line.\nGamma line.\nDelta line.\n",
+                   [item("ML", "Beta line.\nGamma line.",
+                         "Beta rewritten.\nGamma rewritten.")],
+                   newline="\r\n")
+
+    def test_multiline_replace_adopts_the_bodys_convention(self):
+        self.multiline()
+        code, out = self.run_cmd("apply", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        raw = self.body()
+        crlf = raw.count("\r\n")
+        bare_lf = raw.count("\n") - crlf
+        self.assertEqual(bare_lf, 0,
+                         f"apply planted {bare_lf} bare LF into a CRLF file: {raw!r}")
+        self.assertIn("Beta rewritten.\r\nGamma rewritten.", raw)
+
+    def test_verify_does_not_accuse_the_multiline_fix_of_regression(self):
+        self.multiline()
+        self.run_cmd("apply", "--target", "body.md")
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["regressed"], [])
+        self.assertEqual(out["checks"][0]["state"], "survived")
+
+    def test_resolve_accepts_the_bodys_own_form(self):
+        """--replaced-with typed with LF must match text stored as CRLF."""
+        self.write("Old first.\nOld second.\n",
+                   [item("R", "text that moved away", "unused")],
+                   newline="\r\n")
+        self.run_cmd("apply", "--target", "body.md")
+        with open(self.run_dir / "body.md", "w", encoding="utf-8", newline="") as fh:
+            fh.write("New first.\r\nNew second.\r\n")
+        code, out = self.run_cmd("resolve", "--target", "body.md", "--id", "R",
+                                 "--replaced-with", "New first.\nNew second.",
+                                 "--note", "hand-corrected across a line break")
+        self.assertEqual(code, 0, out)
+        code, out = self.run_cmd("verify", "--target", "body.md")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["checks"][0]["state"], "survived")
+
+    def test_lf_body_stays_lf(self):
+        """The convention follows the file, not the platform."""
+        self.write("Alpha.\nBeta.\nGamma.\n",
+                   [item("L", "Beta.", "Beta one.\nBeta two.")])
+        code, _ = self.run_cmd("apply", "--target", "body.md")
+        self.assertEqual(code, 0)
+        self.assertNotIn("\r\n", self.body())
+
+
 class TestSchema(LedgerHarness):
     def _validate(self, items, schema="contentforge.fix-ledger/1"):
         (self.run_dir / "body.md").write_text("x", encoding="utf-8")

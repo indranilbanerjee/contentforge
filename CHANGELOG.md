@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.31.1] - 2026-08-16
+
+### Fixed — the newline tolerance planted the very churn it was built to prevent
+
+Found by an independent validation pass adversarially re-testing 3.31.0's newest
+code. `locate` correctly matched an LF-composed `find` against a CRLF body and
+handed back the CRLF-form match — but the LF-composed `replace` was substituted
+verbatim, planting a bare LF in the middle of a CRLF file. Mixed endings are
+exactly the churn the byte-stability work exists to prevent: the next
+universal-newline read/write cycle rewrites the file and breaks any recorded
+sha256.
+
+Fixing it exposed the twin: once `apply` writes the body's convention, `verify`'s
+literal `in` check reports the correctly applied multi-line fix as `regressed` —
+another false accusation manufactured by an encoding detail. `match_newlines`
+now gives every replacement the convention of the text it replaces (LF bodies
+stay LF — the convention follows the file, not the platform), and `verify` and
+`resolve` compare with the same tolerance `locate` matches with.
+
+**4 new tests**, plant-checked: with the fix reverted, the suite fails.
+
 ## [3.31.0] - 2026-08-16
 
 ### Fixed — the gate's evidence was not evidence

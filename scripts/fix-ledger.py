@@ -157,6 +157,36 @@ def _sha256(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def match_newlines(replacement: str, matched: str) -> str:
+    """Give a replacement the line-ending convention of the text it replaces.
+
+    `locate` maps an LF-composed `find` onto a CRLF body and hands back the
+    CRLF-form match — but the `replace` string comes from the same LF-composed
+    ledger, so substituting it verbatim planted a bare LF in the middle of a
+    CRLF file. Mixed endings are exactly the churn the byte-stability work
+    exists to prevent: the next universal-newline read/write cycle rewrites the
+    file and breaks any recorded sha256."""
+    if "\n" not in replacement:
+        return replacement
+    if "\r\n" in matched:
+        return replacement.replace("\r\n", "\n").replace("\n", "\r\n")
+    return replacement
+
+
+def contains(body: str, text: str) -> bool:
+    """Substring test that tolerates line-ending differences, like `locate`.
+
+    `verify` and `resolve` compare ledger strings against the body. Once `apply`
+    writes replacements in the body's own convention, a literal `in` on the
+    LF-form ledger string would report a correctly applied multi-line fix as
+    `regressed` — a false accusation manufactured by an encoding detail."""
+    if not text:
+        return True
+    if text in body:
+        return True
+    return text.replace("\r\n", "\n") in body.replace("\r\n", "\n")
+
+
 def locate(body: str, find: str):
     """Find `find` in `body`, tolerating line-ending differences.
 
@@ -379,7 +409,7 @@ def cmd_apply(args):
                 blocking_failures += 1
             continue
 
-        candidate = body.replace(find, replace, 1)
+        candidate = body.replace(find, match_newlines(replace, find), 1)
 
         if guard == "active":
             after = _authorship_signature(auth, source_text, candidate)
@@ -476,7 +506,7 @@ def cmd_resolve(args):
         _fail("resolve needs either --replaced-with '<text now in the body>' or "
               "--already-satisfied --note '<why no change was needed>'")
 
-    if args.replaced_with not in body:
+    if not contains(body, args.replaced_with):
         # Refusing here is the point: without it, resolve becomes a way to
         # declare a correction done without doing it.
         _fail({"id": args.id,
@@ -535,11 +565,11 @@ def cmd_verify(args):
             # A deletion (replace == "") is verified by absence: "" is trivially
             # present in any text, so survival for those rests entirely on the
             # staleness test below.
-            present = item["replace"] in body
+            present = contains(body, item["replace"])
             # An appending fix keeps its own find string as a prefix, so a
             # surviving 'find' only proves regression when it is not part of the
             # replacement text.
-            stale = (item["find"] in body) and (item["find"] not in item["replace"])
+            stale = contains(body, item["find"]) and not contains(item["replace"], item["find"])
             if present and not stale:
                 state = "survived"
             else:
