@@ -162,7 +162,12 @@ def _residual_scaffolding(md_text: str) -> dict:
     return {"count": len(found), "clean": not found, "items": found[:20]}
 
 
-_VISUAL_MARKER_RE = re.compile(r"<!--\s*VISUAL:\s*([^>]*?)-->", re.I | re.S)
+# `.*?` (non-greedy to the first `-->`), NOT `[^>]*?`: the annotator legitimately
+# writes `->` arrows inside diagram descriptions ("dropped pages -> Layer 1"), and
+# a character class that excludes `>` makes any such anchor invisible — a valid
+# marker the measurement cannot see, which is how a generated asset reads as
+# unanchored at Gate 8. Found live on the first diagram a real run produced.
+_VISUAL_MARKER_RE = re.compile(r"<!--\s*VISUAL:\s*(.*?)-->", re.I | re.S)
 
 
 def _visual_markers(md_text: str) -> dict:

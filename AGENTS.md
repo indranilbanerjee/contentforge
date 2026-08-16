@@ -6,7 +6,7 @@ This file is auto-loaded by OpenAI Codex, Google Antigravity, GitHub Copilot CLI
 
 ContentForge is an open-source enterprise content production pipeline — turn a one-line topic into a publication-ready, fact-checked, brand-compliant Microsoft Word document (`.docx` with C2PA content provenance signing for EU AI Act Article 50 compliance) in 30–60 minutes. **22 skills · 13 specialist agents · 8 built-in content types · 10 quality gates · 43-pattern AI-detection humanizer · fact-checker subagent · three-category internal linking · author/E-E-A-T byline layer.**
 
-**Supported surfaces (v3.33.2):** Claude Code (CLI + IDE extensions), Anthropic Cowork, OpenAI Codex (CLI + IDE + App), Cursor 2.5+, GitHub Copilot CLI, Google Antigravity 2.0 (CLI + IDE), Hermes Agent, OpenClaw. Plus 35+ additional platforms via the Agent Skills open standard, and any Agent Plugins 1.0 host via the root `plugin.json` (with the portable execution lane for hosts without subagent dispatch).
+**Supported surfaces (v3.33.3):** Claude Code (CLI + IDE extensions), Anthropic Cowork, OpenAI Codex (CLI + IDE + App), Cursor 2.5+, GitHub Copilot CLI, Google Antigravity 2.0 (CLI + IDE), Hermes Agent, OpenClaw. Plus 35+ additional platforms via the Agent Skills open standard, and any Agent Plugins 1.0 host via the root `plugin.json` (with the portable execution lane for hosts without subagent dispatch).
 
 ## How to use it as an agent
 

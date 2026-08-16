@@ -97,9 +97,14 @@ def _plugin_version() -> str:
 # Marker format produced by 06-seo-geo-optimizer.md Step 5:
 #   <!-- INTERNAL-LINK: type=topical|commercial|conversion|authority |
 #        anchor="..." | url=... | priority=... | reason="..." | section=... -->
+# `.+?` (non-greedy to the first `-->`), NOT `[^>]+?`: a `>` inside an attribute
+# (an arrow in a reason string, a `>` in anchor text) would make the whole marker
+# invisible to a `>`-excluding character class — the marker would then render as
+# a raw HTML comment instead of a hyperlink. Same defect class as the VISUAL
+# anchor parser in text-metrics.py, fixed the same day.
 INTERNAL_LINK_PATTERN = re.compile(
-    r"<!--\s*INTERNAL-LINK:\s*(?P<body>[^>]+?)-->",
-    re.IGNORECASE,
+    r"<!--\s*INTERNAL-LINK:\s*(?P<body>.+?)-->",
+    re.IGNORECASE | re.DOTALL,
 )
 
 # Block-level image: ![alt](path "optional title") alone on a line

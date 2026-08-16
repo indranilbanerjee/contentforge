@@ -140,6 +140,29 @@ class TestInternalLinkMarkers(unittest.TestCase):
         link = gd.split_text_with_links(text)[0][1]
         self.assertTrue(link["placeholder"])
 
+    def test_gt_inside_attribute_does_not_hide_the_marker(self):
+        """Same defect class as the VISUAL anchor parser (live, 2026-08-16): a
+        `>` inside an attribute — an arrow in a reason string — made the whole
+        marker invisible to a `[^>]` character class, so it would have rendered
+        as a raw HTML comment instead of a hyperlink. The parser must read to
+        the first `-->`, not the first `>`."""
+        text = ('<!-- INTERNAL-LINK: type=topical | anchor="capture workflow" | '
+                'url=https://x.example/g | priority=2 | '
+                'reason="maps citation -> capture flow" | section=Body -->')
+        segments = gd.split_text_with_links(text)
+        kinds = [k for k, _ in segments]
+        self.assertIn("link", kinds)
+        link = next(seg for kind, seg in segments if kind == "link")
+        self.assertEqual(link["anchor"], "capture workflow")
+
+    def test_two_markers_with_arrows_stay_two_markers(self):
+        """The wider capture may not merge adjacent markers."""
+        text = ('<!-- INTERNAL-LINK: type=topical | anchor="a" | url=https://x.example/1 | reason="x -> y" -->'
+                ' mid '
+                '<!-- INTERNAL-LINK: type=commercial | anchor="b" | url=https://x.example/2 | reason="p -> q" -->')
+        links = [seg for kind, seg in gd.split_text_with_links(text) if kind == "link"]
+        self.assertEqual([l["anchor"] for l in links], ["a", "b"])
+
 
 @unittest.skipUnless(HAS_DOCX, "python-docx not installed")
 class TestEndToEndRender(unittest.TestCase):

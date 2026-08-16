@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.33.3] - 2026-08-16
+
+### Fixed — a valid anchor the measurement could not see
+
+The first fully-live customer-perspective run on 3.33.x (Phases 1–3.5 with the real
+subagents, orchestrator-verified gates) produced a deterministic four-layer diagram
+whose `<!-- VISUAL: … -->` anchor carried `->` arrows in its description —
+"dropped pages -> Layer 1 capture" — and `text-metrics.py`'s marker regex used a
+`[^>]` character class that stopped at the first `>`. The anchor was valid; the
+measurement could not see it. Phase 3.5 had replaced every placeholder and verified
+its own work, and Gate 8 would still have reported the diagram unanchored — the
+same "measurement excludes the thing it measures" class as the v3.28.0 finding,
+from the opposite direction.
+
+- `text-metrics.py` `_VISUAL_MARKER_RE`: `[^>]*?` → `(.*?)` (non-greedy to the
+  first `-->`; a `>` inside an HTML comment is legal). `run-audit.py` inherits the
+  fix — it parses anchors through this module.
+- `generate-docx.py` `INTERNAL_LINK_PATTERN`: same class, same fix — a `>` inside
+  an attribute would have rendered the whole marker as a raw HTML comment instead
+  of a hyperlink.
+- Four regression tests, each proven against the shipped 3.33.2 parser (which
+  returns count 0 on the arrow anchor): the arrow anchor parses with its id, and
+  adjacent arrow-bearing markers stay two markers — the wider capture may not
+  merge them. Tests 456 → 460.
+
 ## [3.33.2] - 2026-08-16
 
 ### Fixed — the documentation truth pass

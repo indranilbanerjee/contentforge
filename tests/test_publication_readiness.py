@@ -117,6 +117,31 @@ class TestVisualMarkers(unittest.TestCase):
         self.assertEqual(m["unidentified"], 1)
         self.assertEqual(m["ids"], [])
 
+    def test_arrow_in_description_does_not_hide_the_anchor(self):
+        """Live failure, 2026-08-16: the first diagram a real run produced carried
+        '->' arrows in its description ("dropped pages -> Layer 1 capture"), and
+        the parser's `[^>]` character class stopped at the first `>` — a valid
+        anchor the measurement could not see, so the generated diagram read as
+        unanchored at Gate 8. A `>` inside an HTML comment is legal; the parser
+        must read to the first `-->`, not the first `>`."""
+        anchor = ('<!-- VISUAL: id=visual-03 | type=diagram | '
+                  'description="dropped pages -> Layer 1 capture; '
+                  'migration misses -> Layer 2 repair" | '
+                  'file=assets/diagram-01.png | placement=section-4-end -->\n')
+        m = tm._visual_markers(anchor)
+        self.assertEqual(m["count"], 1)
+        self.assertEqual(m["ids"], ["visual-03"])
+
+    def test_two_anchors_with_arrows_stay_two_anchors(self):
+        """Non-greedy must stop at each marker's own terminator — the wider
+        capture may not merge adjacent markers."""
+        text = ('<!-- VISUAL: id=v1 | description="a -> b" -->\n'
+                'prose between\n'
+                '<!-- VISUAL: id=v2 | description="c -> d" -->\n')
+        m = tm._visual_markers(text)
+        self.assertEqual(m["count"], 2)
+        self.assertEqual(m["ids"], ["v1", "v2"])
+
 
 class TestLoopHistory(unittest.TestCase):
     def setUp(self):
