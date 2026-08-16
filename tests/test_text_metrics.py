@@ -129,6 +129,56 @@ class TestKeywordPlacements(unittest.TestCase):
         self.assertFalse(r["keyword_placements"]["in_title"])
         self.assertFalse(r["keyword_placements"]["in_conclusion"])
 
+    def test_references_tail_does_not_mask_the_conclusion(self):
+        """Live failure, 2026-08-16: the conclusion zone was the last 200 words
+        of the FILE, which on a finished article is the References section — so
+        a keyword that WAS in the Conclusion read as absent, and the old
+        explicit-section fallback prepended only the heading text, not the
+        section body. The zone must be the Conclusion section's own text,
+        cut before the appendix."""
+        refs = "\n".join("- Author%d, A. (2024). Unrelated citation title. Journal." % i
+                         for i in range(60))
+        doc = KEYWORD_DOC + "\n## References\n\n" + refs + "\n"
+        p = tm.analyze(doc, keyword="AI in Healthcare")["keyword_placements"]
+        self.assertTrue(p["in_conclusion"],
+                        "the References tail masked a keyword present in the Conclusion")
+
+    def test_no_explicit_conclusion_uses_pre_appendix_tail(self):
+        doc = ("# T\n\nOpening prose about archives.\n\n## Middle\n\nMore prose. "
+               "The final words mention link rot explicitly.\n\n## References\n\n"
+               + "\n".join("- Ref %d. Nothing relevant." % i for i in range(80)))
+        p = tm.analyze(doc, keyword="link rot")["keyword_placements"]
+        self.assertTrue(p["in_conclusion"])
+
+
+class TestFigureFurnitureExcluded(unittest.TestCase):
+    """Live failure, 2026-08-16: three approved figures' alt texts and captions
+    moved the measured body from 1,274 gate-passed words to 1,501 — the run
+    would then have failed its own final audit against the 1,200-word target
+    for having its charts described properly. Figure furniture is not prose."""
+
+    PROSE = ("# Title\n\nOpening paragraph with exactly this prose counted.\n\n"
+             "## Section\n\nClosing paragraph of ordinary body text here.\n")
+    FIGURE = ("\n![A long descriptive alt text carrying many many words that a "
+              "screen reader announces but a sighted reader never reads as "
+              "article prose at all](assets/chart-01.png)\n"
+              "*Data: Example Research Center (2026); methods differ across "
+              "corpora and are not directly comparable.*\n\n"
+              "<!-- VISUAL: id=visual-01 | type=chart -->\n")
+
+    def test_image_and_caption_do_not_count(self):
+        base = tm._body_word_count(self.PROSE)
+        with_figure = tm._body_word_count(self.PROSE + self.FIGURE)
+        self.assertEqual(with_figure, base,
+                         "figure alt text and caption were counted as body prose")
+
+    def test_standalone_italic_line_still_counts(self):
+        """Only the caption line under an image is furniture — an italic
+        sentence in running prose is still prose."""
+        base = tm._body_word_count(self.PROSE)
+        with_italic = tm._body_word_count(self.PROSE + "\n*An italic closing thought.*\n")
+        self.assertGreater(with_italic, base)
+
 
 class TestStructuredElements(unittest.TestCase):
     def test_counts(self):

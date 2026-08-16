@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.33.4] - 2026-08-16
+
+### Fixed — figure furniture is not prose, and the conclusion is not the references
+
+Two more measurement-convention gaps from the same live customer-perspective run,
+both proven on the run's own artifacts before and after the fix.
+
+- **`body_word_count` counted the approved visual layer as article prose.** Three
+  embedded figures' descriptive alt texts and italic caption lines moved the
+  measured body from 1,274 gate-passed words to 1,501 against a 1,200 target —
+  so the final `run-audit.py` word check would have failed a run whose prose
+  never changed, for having its charts described properly. Block image embeds
+  and the caption line directly beneath each are now excluded; the Pipeline
+  Contract's stated counting convention names the exclusion (the convention doc
+  existed precisely because unstated conventions had already produced a
+  1,223-vs-1,390 verdict flip once). After the fix the article-only extract and
+  the full file measure identically: 1,293.
+- **`in_conclusion` read the file tail, not the conclusion.** The zone was the
+  last 200 words of the document — on any finished article, the References
+  section — and the explicit-conclusion fallback prepended only the section's
+  heading text. A keyword present in the Conclusion measured as absent. The zone
+  is now the Conclusion section's own text (or the pre-appendix tail when no
+  conclusion heading exists).
+- Four regression tests, each verified failing against the shipped 3.33.3
+  module: references-tail masking, pre-appendix fallback, figure furniture
+  excluded, standalone italic prose still counted. Tests 460 → 464.
+
 ## [3.33.3] - 2026-08-16
 
 ### Fixed — a valid anchor the measurement could not see

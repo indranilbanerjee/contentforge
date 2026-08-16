@@ -187,13 +187,27 @@ def _visual_markers(md_text: str) -> dict:
             "unidentified": sum(1 for i in ids if not i)}
 
 
+# A block image alone on a line. Its alt text is accessibility metadata, not
+# body prose: on a live run, three embedded figures' descriptive alt texts and
+# captions moved the measured body from 1,274 gate-passed words to 1,501 —
+# a run that would then fail its own final audit against the 1,200 target
+# because the APPROVED visual layer was being counted as article prose.
+_BLOCK_IMAGE_RE = re.compile(r"^!\[[^\]]*\]\([^)]*\)\s*$")
+# The figure caption/attribution convention Phase 3.5 emits: an italic-only
+# line placed directly under the image embed ("*Data: Pew Research ...*").
+_FIGURE_CAPTION_RE = re.compile(r"^\*[^*].*\*$")
+
+
 def _body_word_count(md_text: str) -> int:
     """Words a reader would actually read.
 
     Excludes, in order: trailing reference/appendix sections, the H1 title, the
     bold key:value metadata block drafts carry at the top, horizontal rules,
-    HTML comments, and `[VISUAL-PLACEHOLDER: ...]` annotation lines. H2/H3
-    headings ARE counted -- they are published text.
+    HTML comments, `[VISUAL-PLACEHOLDER: ...]` annotation lines, block image
+    embeds, and the italic figure-caption line directly under an embed. H2/H3
+    headings ARE counted -- they are published text. Figure furniture is not:
+    the word-count target is a brief about prose, and a piece does not blow its
+    budget by having its approved charts described properly.
 
     Reported alongside `word_count` rather than behind a flag, so no caller has
     to know it exists to get the number Gate 3 means.
@@ -202,12 +216,21 @@ def _body_word_count(md_text: str) -> int:
     body = md_text[:m.start()] if m else md_text
     kept = []
     seen_prose = False
+    prev_was_image = False
     for line in body.splitlines():
         stripped = line.strip()
         if stripped.startswith("# ") and not seen_prose:
             continue                       # H1 title, not body
         if _SCAFFOLD_LINE_RE.match(stripped):
             continue
+        if _BLOCK_IMAGE_RE.match(stripped):
+            prev_was_image = True
+            continue                       # alt text is metadata, not prose
+        if prev_was_image and _FIGURE_CAPTION_RE.match(stripped):
+            prev_was_image = False
+            continue                       # the figure's caption line
+        if stripped:
+            prev_was_image = False
         if stripped and not stripped.startswith("#"):
             seen_prose = True
         kept.append(line)
@@ -343,13 +366,23 @@ def analyze(md_text: str, keyword: str | None = None) -> dict:
         title_text = next((h[1] for h in headings if h[0] == 1), None) or fm_title or ""
         first_100 = " ".join(words[:100]).lower()
         h2s = [h[1] for h in headings if h[0] == 2]
-        conclusion_zone = " ".join(words[-200:]).lower() if words else ""
-        # Prefer an explicit conclusion-ish section when present
-        for i, (lvl, htext) in enumerate(headings):
-            if lvl == 2 and re.search(r"\b(conclusion|final thoughts|takeaway|summary|bottom line)\b",
-                                      htext, re.I):
-                conclusion_zone = (htext + " " + conclusion_zone).lower()
-                break
+        # The conclusion zone must come from the article, not the file tail: on
+        # a live run the last 200 words of the file were the References section,
+        # which masked a keyword that WAS in the Conclusion — and the old
+        # "prefer an explicit conclusion section" fallback prepended only the
+        # section's HEADING text, not its body, so it could not unmask it.
+        appendix_cut = _APPENDIX_RE.search(md_text)
+        pre_appendix = md_text[:appendix_cut.start()] if appendix_cut else md_text
+        concl_head = re.search(
+            r"^##\s+.*\b(conclusion|final thoughts|takeaway|summary|bottom line)\b.*$",
+            pre_appendix, re.I | re.M)
+        if concl_head:
+            after = pre_appendix[concl_head.end():]
+            nxt = re.search(r"^##\s+", after, re.M)
+            section = after[:nxt.start()] if nxt else after
+            conclusion_zone = (concl_head.group(0) + " " + section).lower()
+        else:
+            conclusion_zone = " ".join(pre_appendix.split()[-200:]).lower()
 
         result.update({
             "keyword": keyword,
