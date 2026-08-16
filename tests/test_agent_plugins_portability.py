@@ -53,7 +53,7 @@ class TestRootManifest(unittest.TestCase):
     def test_closed_schema_respected(self):
         """The spec forbids hooks/agents/commands/mcpServers at the top level —
         clients reject unknown fields, so extras break installs everywhere."""
-        allowed = {"$schema", "name", "version", "description", "author", "extensions"}
+        allowed = {"$schema", "name", "version", "description", "author", "homepage", "repository", "license", "keywords", "extensions"}
         self.assertLessEqual(set(self.manifest.keys()), allowed,
                              f"unexpected top-level fields: "
                              f"{set(self.manifest.keys()) - allowed}")
