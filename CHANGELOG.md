@@ -7,6 +7,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.32.0] - 2026-08-16
+
+### Added — Agent Plugins 1.0 packaging + the portable execution lane
+
+OpenAI's Agent Plugins 1.0 (2026-08-06; ChatGPT, Codex, Cursor, GitHub Copilot,
+VS Code, Kiro) is now a first-class target:
+
+- Root `plugin.json` on the closed AP1.0 schema, version-synced with the Claude
+  manifest and guarded by tests (closed-schema check, name rules, skills layout).
+- `${PLUGIN_DATA}` accepted wherever `CLAUDE_PLUGIN_DATA` was (CF `_common`,
+  and the same change shipped to DMP and SF resolvers) — a compliant non-Claude
+  host previously resolved no data directory at all.
+- **Portable execution lane** in the orchestrator skill: on platforms without
+  subagent dispatch the pipeline runs sequentially in-conversation — each agent
+  contract read as that phase's instructions, same artifacts, same gates, same
+  loop budgets; context discipline replaces context isolation.
+
+### Fixed — visual-layer contract reconciliation
+
+- Phase 3.5 said three times "Phase 8 embeds only approved images" while Phase 8
+  says approval gates AI imagery only — the contradiction that made a real run
+  embed zero of its four valid deterministic figures. All three statements now
+  carry the deterministic-assets exemption.
+- Label-bearing diagrams are routed off the AI image path entirely: the
+  no-text-in-generated-images rule made the AI path structurally incapable of a
+  labeled diagram, and two instructions still sent labeled diagrams there.
+- Deterministic diagrams are a first-class category with a naming rule
+  (`{run_id}-diagram-{nn}.png`), honest attribution for schematics that plot no
+  data, and a defined `feature-image` placement value for document-level assets.
+
+### Added — reviewer RE-REVIEW MODE
+
+Scoring after an out-of-band remediation is now specified: preserve the prior
+review as `phase-7-review-pre-remediation.json` (declared in the Pipeline
+Contract), re-measure every body-fed sub-score against the delivered text,
+inherit only what demonstrably could not move, consume no loop budget, and read
+humanization quality from a fresh scan rather than a stale report. Comparative
+percentiles require at least 5 prior pieces — the formula once ranked a piece
+against itself.
+
+### Fixed — Phase 8 render path
+
+Step 2.0 wrote to a separate `output/{type}/{date}/` tree that both observed
+real runs ignored; the contract now matches practice (artifacts render beside
+the run's evidence; the tracking dual-copy remains the user-visible delivery).
+
+**17 new tests.**
+
 ## [3.31.1] - 2026-08-16
 
 ### Fixed — the newline tolerance planted the very churn it was built to prevent

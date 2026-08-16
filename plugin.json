@@ -1,0 +1,10 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "contentforge",
+  "version": "3.32.0",
+  "description": "Open-source enterprise content pipeline \u2014 22 skills, 13 agents, 43-pattern AI humanizer, verified fix ledger, real .docx output.",
+  "author": {
+    "name": "Indranil Banerjee",
+    "url": "https://github.com/indranilbanerjee"
+  }
+}

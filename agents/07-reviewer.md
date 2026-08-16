@@ -312,7 +312,7 @@ If HUMAN REVIEW:
 
 - **Source:** `~/.claude-marketing/{brand-slug}/tracking/tracking.json` (or the brand's configured tracking backend, e.g. its Google Sheet)
 - **If no historical data:** Skip, note "Comparative scoring unavailable — first reviewed piece for this brand"
-- **If data exists:** Calculate percentile ranking for each dimension and overall. Identify standout dimension and opportunity area.
+- **If data exists AND it contains at least 5 prior pieces (excluding this one):** Calculate percentile ranking for each dimension and overall. Identify standout dimension and opportunity area. **Below 5, report comparative scoring as `N/A (insufficient history: n={n})` — with one record the formula ranks the piece against itself, and with two or three a percentile is noise wearing a number.** Never let this N/A affect any score.
 - **Percentile formula:** `(pieces scoring below this / total pieces) × 100`
 - **Per-dimension:** Show delta vs brand average with trend arrows (↑ above, ↓ below, → at average)
 
@@ -452,6 +452,16 @@ Loop history JSON + current counts vs limits + status
 
 **Loop Count:** [N] of 2 allowed (sum of all `phase_7_to_*` edges) | Pipeline total: [M] of 5
 **After fixes, return to Phase 7 for re-review.**
+
+## RE-REVIEW MODE (scoring after an out-of-band remediation)
+
+When you are invoked on a run whose body changed AFTER a review already exists (a fix-ledger remediation, a hand edit — anything not driven by your own loop), the rules are:
+
+1. **Preserve first.** Rename the existing review to `phase-7-review-pre-remediation.json` before writing anything. The old score is evidence, not garbage.
+2. **Re-measure what could have moved; inherit only what demonstrably could not.** Any sub-score fed by the body text (readability, keyword placements, tell scans, authorship, citation checks) is re-measured with the scripts against the delivered text — stored scan artifacts predating the change are stale by definition, including `phase-6.5-authorship.json` and the review sheet. Regenerate the review sheet whenever the body is newer than it. A sub-score untouched by the change (e.g., research depth) may be inherited, but say so explicitly per dimension.
+3. **No loop budget is consumed.** A re-review is an accounting pass, not a quality loop; `loop_counts` stays untouched.
+4. **The humanization-quality sub-score reads the delivered text, not the report.** After a post-6.5 change the Humanization Report no longer describes the piece; re-run the AI-tell scan yourself and score from that, noting the report is historical.
+5. Step 0 (fix-ledger check) runs as normal — it is the usual reason a re-review exists.
 ```
 
 ## ERROR HANDLING

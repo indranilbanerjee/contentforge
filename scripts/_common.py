@@ -60,13 +60,15 @@ def marketing_home() -> Path:
 
     Resolution order:
       1. $CLAUDE_MARKETING_HOME (explicit override; used by tests)
-      2. $CLAUDE_PLUGIN_DATA if set (non-empty) AND the directory exists
+      2. $CLAUDE_PLUGIN_DATA, else $PLUGIN_DATA (the Agent Plugins 1.0 standard
+         name — Codex/ChatGPT/Cursor-hosted installs set only this one), if set
+         (non-empty) AND the directory exists
       3. ~/.claude-marketing
     """
     override = os.environ.get("CLAUDE_MARKETING_HOME")
     if override:
         return Path(override).expanduser()
-    plugin_data = os.environ.get("CLAUDE_PLUGIN_DATA")
+    plugin_data = os.environ.get("CLAUDE_PLUGIN_DATA") or os.environ.get("PLUGIN_DATA")
     if plugin_data:  # empty string must NOT resolve to Path(".")
         p = Path(plugin_data).expanduser()
         if p.exists():

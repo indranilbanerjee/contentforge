@@ -135,8 +135,11 @@ The `.docx` MUST be produced by calling the bundled script. Do NOT hand-craft th
 **Step 2.0.a — assemble the reports JSON:**
 
 ```bash
-mkdir -p ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}
-cat > ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json << 'JSON'
+mkdir -p ~/.claude-marketing/{brand-slug}/runs/{run_id}
+
+**Why the run directory:** earlier revisions of this step wrote to a separate `output/{type}/{date}/` tree. Both observed real runs ignored it and wrote beside the phase artifacts instead — corrected and superseded deliverables belong next to the evidence that produced them, and a second tree is a second place for a stale copy to hide. The tracking dual-copy (Step D1) remains the user-visible delivery.
+
+cat > ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}-reports.json << 'JSON'
 {
   "seo": {
     "primary_keyword": "{primary_keyword}",
@@ -183,7 +186,7 @@ JSON
 **Step 2.0.b — write the article markdown to a temp file:**
 
 ```bash
-cat > ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.md << 'MD'
+cat > ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}.md << 'MD'
 {full_article_markdown_with_h1_title_h2_h3_paragraphs_lists_tables_citations}
 MD
 ```
@@ -192,9 +195,9 @@ MD
 
 ```bash
 python ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
-    --content ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.md \
-    --output ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.docx \
-    --reports ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}-reports.json \
+    --content ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}.md \
+    --output ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}.docx \
+    --reports ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}-reports.json \
     --brand "{Brand Name}" \
     --brand-domain "{website domain from brand-profile.json}" \
     --content-type {type}
@@ -207,8 +210,8 @@ The script returns a JSON status line on stdout — capture it and report the pa
 **Step 2.0.d — verify:**
 
 ```bash
-ls -la ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.docx
-file ~/.claude-marketing/{brand-slug}/output/{type}/{YYYY-MM-DD}/{slug}.docx  # should report "Microsoft Word 2007+"
+ls -la ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}.docx
+file ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}.docx  # should report "Microsoft Word 2007+"
 ```
 
 If the file does not exist or is < 5 KB, the script failed — investigate stderr and retry once before escalating.
