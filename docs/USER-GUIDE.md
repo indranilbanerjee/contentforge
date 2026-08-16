@@ -1409,7 +1409,7 @@ contentforge/
 │   ├── drive-folder-manager.md    # Drive folder layout conventions
 │   └── loop-tracker.md            # Loop accounting rules
 │
-├── scripts/                       # 17 Python scripts (stdlib only)
+├── scripts/                       # 25 Python scripts (stdlib only)
 │   ├── _common.py                 # Shared storage-root/brand-dir/atomic-write helpers
 │   ├── checkpoint-manager.py      # Per-phase run checkpoints (powers resume)
 │   ├── pipeline-tracker.py        # Phase start/end events + progress

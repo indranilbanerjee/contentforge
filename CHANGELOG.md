@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.33.2] - 2026-08-16
+
+### Fixed — the documentation truth pass
+
+A from-zero audit of every live document, prompted by the question "is everything
+actually updated?", found the doc-count guard pattern-blind: it required a number
+directly before one of three nouns, and every stale count in the repo was phrased
+some other way.
+
+- **README** said "All 21 SKILL.md files" and "all 21 ContentForge skills" — the repo
+  ships 22.
+- **AGENTS.md** — the file every non-Claude runtime auto-loads — pinned "Supported
+  surfaces (v3.22.0)" and listed only 4 of the 8 native surfaces. It now carries the
+  current version, all 8 surfaces, and the Agent Plugins 1.0 lane.
+- **docs/USER-GUIDE.md** said "17 Python scripts"; **TESTING-GUIDE.md**'s versioning
+  checklist pinned v3.8.0-era numbers ("8 scripts", "not 9-phase") — eleven releases
+  stale, telling a tester to fail a correct install. The checklist is now
+  version-agnostic and points at the sources of truth instead of restating them.
+- **docs/distribution/submission-bundle.md** claimed an "11-phase" pipeline against the
+  canonical 10 — the first number a directory reviewer would check — and pinned a
+  release version in its release-notes section; both fixed, the latter made
+  version-agnostic so it cannot rot.
+- **SUBMISSION.md** and **ContentForge-PRD-Blueprint.md** are now banner-marked
+  HISTORICAL DOCUMENT: the May-2026 submission packet is superseded by
+  `docs/distribution/submission-bundle.md`, and the founding PRD describes the plan,
+  not the shipped product.
+
+### Changed — the guard can now see what rotted
+
+`tests/test_doc_counts.py` grew the patterns the audit proved necessary: script counts
+(including "N Python scripts"), "N SKILL.md files", "N ContentForge skills",
+comparison-table "Skills count" rows, a phase-count consistency check (everything says
+10-phase or fails), and AGENTS.md currency (version = manifest, all 8 surfaces named).
+Release-narrative sections keep their ship-time numbers via heading-aware exemptions,
+and each new pattern is plant-checked against the exact phrasing that previously
+escaped. Tests 452 → 456.
+
 ## [3.33.1] - 2026-08-16
 
 ### Changed — richer Agent Plugins 1.0 listing metadata + submission bundle

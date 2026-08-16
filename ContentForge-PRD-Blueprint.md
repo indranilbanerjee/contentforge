@@ -1,5 +1,9 @@
 # ContentForge — Product Requirements Document (Full Vision)
 
+> **HISTORICAL DOCUMENT** — the original February 2026 PRD, preserved as the founding
+> blueprint. Counts, phase numbers, and architecture described here are the plan as it
+> stood before build; the shipped product is documented in README.md and CHANGELOG.md.
+
 **Product:** ContentForge — Enterprise Multi-Agent Content Generation Platform
 **Author:** Indranil "Neel" Banerjee
 **Version:** 1.0

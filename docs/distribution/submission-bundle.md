@@ -19,7 +19,7 @@ ready to paste; items marked **[owner action]** need the account holder.
 - **Short description:** Open-source enterprise content pipeline — 22 skills,
   13 agents, a 43-pattern AI humanizer, verified fix ledger, run auditor, and
   real .docx output.
-- **Long description:** An 11-phase content pipeline where every quality claim
+- **Long description:** A 10-phase content pipeline where every quality claim
   is measured, not asserted: research → fact-check (verified claim ledger) →
   draft → visuals → hallucination validation → structure → SEO/GEO →
   humanize (43-pattern catalog, author-sentence protection) → review (weighted
@@ -80,9 +80,11 @@ ready to paste; items marked **[owner action]** need the account holder.
 
 ## Release notes for first submission
 
-v3.33.0 — see CHANGELOG.md. Versioning note for the OpenAI portal: published
-skills are snapshots; every ContentForge release requires re-scan → re-review →
-re-publish there (added to the release ritual).
+Submit the version in `.claude-plugin/plugin.json` (always the CHANGELOG.md top
+entry) — never restate the number here, where it can go stale. Versioning note
+for the OpenAI portal: published skills are snapshots; every ContentForge
+release requires re-scan → re-review → re-publish there (added to the release
+ritual).
 
 ## Known platform caveats to disclose
 

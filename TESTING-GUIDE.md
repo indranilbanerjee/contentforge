@@ -888,17 +888,19 @@ Run this after any changes to verify nothing is broken.
 
 ### Versioning Consistency
 
-- [ ] `plugin.json` version = 3.8.0
-- [ ] `hooks.json` version string = v3.8
-- [ ] `README.md` version = 3.8.0
-- [ ] Marketplace entry version = 3.8.0
-- [ ] `13 agents` in all descriptions (not 12)
-- [ ] `22 skills` in all descriptions
-- [ ] `9 commands` in all descriptions
-- [ ] `9 HTTP connectors` in all descriptions (not 7)
-- [ ] `8 scripts` in all descriptions (not 4)
-- [ ] `10 industry knowledge packs` mentioned
-- [ ] `10-phase pipeline` everywhere (not 9-phase)
+Never pin version numbers or counts in this checklist — they rot silently (this very
+section once pinned v3.8.0 for eleven releases). Verify against the sources of truth:
+
+- [ ] `.claude-plugin/plugin.json` version = CHANGELOG.md top entry = README version
+      badge (enforced by `tests/test_release_consistency.py`)
+- [ ] Root Agent Plugins `plugin.json` carries the same version (enforced by
+      `tests/test_agent_plugins_portability.py`)
+- [ ] Marketplace entry version matches (checked by the marketplace repo's own suite)
+- [ ] Skill / agent / command / script counts in every live doc match the filesystem —
+      run `python -m pytest tests/test_doc_counts.py` instead of counting by hand
+- [ ] `10-phase pipeline` everywhere (guarded by the same test)
+- [ ] AGENTS.md "Supported surfaces" line carries the current version and all 8 native
+      surfaces (guarded by the same test)
 - [ ] Brand setup mentions Step G (backend selection)
 
 ---
