@@ -1,5 +1,14 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.1.0 → 4.1.1 (docs release)
+
+**No functional changes.** 4.1.1 is documentation: 11 README translations
+(version-stamped and guard-checked), the real validated-run artifacts embedded
+in the README, full OpenAI-surface (Codex/ChatGPT) documentation, and a
+per-surface updating table. Nothing to migrate.
+
+---
+
 ## Upgrading 4.0.0 → 4.1.0 (two new surfaces)
 
 **No breaking changes, nothing migrates.** 4.1.0 adds install surfaces only:

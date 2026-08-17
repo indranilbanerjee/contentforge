@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.1] - 2026-08-17
+
+### The README goes global, and shows its receipts
+
+**Twelve languages.**
+
+- 11 full translations at repo root: `README.hi.md`, `README.zh-CN.md`,
+  `README.ja.md`, `README.ko.md`, `README.es.md`, `README.pt-BR.md`,
+  `README.ar.md`, `README.ur.md`, `README.ta.md`, `README.bn.md`,
+  `README.ru.md` — each a curated, self-sufficient translation (install on all
+  nine platforms + claude.ai + ChatGPT/AP1.0, quick start, real-run results,
+  updating, FAQ essentials) that names the English README as source of truth
+  and carries a "Synced with English README vX.Y.Z" stamp.
+- New `tests/test_readme_translations.py`: every translation file must exist,
+  carry the byte-identical language-switcher line, link back to README.md,
+  and be stamped with the CURRENT canonical version — a translation that
+  silently falls behind the shipping release fails the suite (stamp regex
+  plant-checked). The English README must carry the switcher line naming
+  every translation.
+
+**Real artifacts embedded in Examples.**
+
+- The validated 2026-08-16 run's actual outputs, sourced from its JSON
+  artifacts: the rendered link-rot benchmarks chart
+  (`docs/assets/real-run/link-rot-benchmarks-chart.png`), the delivered
+  opening prose, three verbatim before→after humanizer edits from the Phase
+  6.5 report, the run auditor's CLEAN verdict, and a scorecard SVG
+  (`docs/assets/real-run-scorecard.svg`) — overall 9.0/A APPROVED, dimensions
+  8.8/8.9/9.6/8.6/8.8, 42 claims zero hallucinations, 14/0/1 audit, real
+  phase durations including Phase 8 surviving two session drops.
+- The run brand is an internal validation persona (not client work); its
+  branded feature card is deliberately NOT embedded — only unbranded
+  artifacts ship in the README.
+
+**OpenAI surfaces documented at full depth.**
+
+- New README section "ContentForge on OpenAI surfaces — Codex and ChatGPT":
+  the mechanical Codex walkthrough (manifest discovery, AGENTS.md auto-load,
+  intent invocation, the portable execution lane's sequential-phases
+  guarantee, shared storage), the honest Agent Plugins 1.0 / ChatGPT status
+  (package listing-ready; directory listing is an owner-side submission), and
+  the per-surface contract summary for Cursor / Copilot CLI / Antigravity /
+  Grok / Hermes / OpenClaw.
+- Updating section now covers all nine platforms + claude.ai `.skill`
+  re-uploads in a per-surface table (it previously detailed only the Claude
+  family).
+
+**Author presence.**
+
+- `docs/assets/author-banner.svg` (maintainer identity + Neelverse suite +
+  sponsor call-to-action) linked at the top of the README to GitHub Sponsors;
+  language-switcher line added at the very top.
+
+Tests: 514 → 520.
+
+---
+
 ## [4.1.0] - 2026-08-17
 
 ### Two new surfaces: Grok native support + claude.ai hero-skill release assets

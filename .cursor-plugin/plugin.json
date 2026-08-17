@@ -1,7 +1,7 @@
 {
   "name": "contentforge",
   "displayName": "ContentForge",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "Open-source content lifecycle system — 22 skills, 13 agents, 10-gate pipeline, 43-pattern AI humanizer, run auditor, real .docx output, and a measure-audit-plan loop that compounds per brand.",
   "author": {
     "name": "Indranil Banerjee",

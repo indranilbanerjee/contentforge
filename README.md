@@ -1,24 +1,30 @@
 # ContentForge
 
+🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
+
 > **You need to ship 30 articles this quarter that sound human, cite real sources, link into your funnel, and survive an editor who checks. Your team is three people. You have nine weeks. Your last "AI-written" batch got flagged for hallucinated stats — and the batch before that quietly went stale and nobody noticed.**
 
 Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with a 43-pattern humanizer, a fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece. Then the part no single-shot tool has: **the lifecycle loop.** Every published piece is measured (`cf-aeo-check`), audited for decay (`cf-audit`), and fed back into the next calendar and the next brief — through durable file contracts, so what the system learns about your brand survives the session that learned it.
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 28 Python scripts, stdlib-only**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.1.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.1.1-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-514%2F514%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v410)
+[![Tests](https://img.shields.io/badge/tests-520%2F520%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v411)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.1.0 (August 17, 2026): two new surfaces.** ContentForge now installs natively on **Grok (xAI Build CLI)** — `grok plugin install indranilbanerjee/contentforge` — via a first-class `.grok-plugin/` manifest pair, version-locked to every other manifest by the release-consistency suite. And five **hero skills now ship as claude.ai-uploadable `.skill` release assets** (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`), built by a deterministic packager (`scripts/build-skill-assets.py`) that bundles each skill's config/template dependencies and *refuses to package* any skill whose prose references a file that wouldn't exist after upload — so a claude.ai user never downloads a skill with broken references. [Install for your platform →](#supported-surfaces-v410)
+[![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
+
+> 🆕 **Just shipped — v4.1.1 (August 17, 2026): the README goes global, and shows its receipts.** This README now reads in **12 languages** (हिन्दी, 中文, 日本語, 한국어, Español, Português, العربية, اردو, தமிழ், বাংলা, Русский — switcher at the top, every translation version-stamped and guard-checked), carries **the real artifacts from a real validated run** — the actual chart the pipeline rendered, the actual humanizer before/after edits, the actual 9.0/A scorecard and CLEAN audit verdict ([see them](#the-artifacts-themselves--real-output-you-can-inspect)) — and documents **running ContentForge on OpenAI surfaces** (Codex CLI/IDE/App and ChatGPT via Agent Plugins 1.0) with the same depth as the Claude surfaces, including [updating on all nine platforms](#updating). Previously —
+>
+> **v4.1.0 (August 17, 2026): two new surfaces.** ContentForge now installs natively on **Grok (xAI Build CLI)** — `grok plugin install indranilbanerjee/contentforge` — via a first-class `.grok-plugin/` manifest pair, version-locked to every other manifest by the release-consistency suite. And five **hero skills now ship as claude.ai-uploadable `.skill` release assets** (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`), built by a deterministic packager (`scripts/build-skill-assets.py`) that bundles each skill's config/template dependencies and *refuses to package* any skill whose prose references a file that wouldn't exist after upload — so a claude.ai user never downloads a skill with broken references. [Install for your platform →](#supported-surfaces-v411)
 >
 > **v4.0.0 (August 17, 2026): the lifecycle release.** ContentForge 3.x was a production pipeline; 4.0 makes it a content **system**. Three architectural changes, each grounded in a defect a real run exposed: **(1) The lifecycle loop closed.** `cf-audit` findings now land in a validated, canonical per-brand store (`scripts/audit-ledger.py`) that `cf-calendar` and `content-refresh` read across sessions; AI-visibility history (`aeo/checks.json`) feeds the freshness model; and each run's verified link inventory merges back into `brand_pages` automatically — conversion pages only ever *staged* for your confirmation, because a CTA is a commercial decision the system must not make for you. Before 4.0 every one of those handoffs was conversational, and worked only while one session held both ends. **(2) The pipeline contract is data.** `config/pipeline-graph.json` declares every phase's reads, writes, gates, and budgeted loop edges — drift-guarded both directions against the agent contracts, the checkpoint manager, and the run auditor. Encoding it immediately found six under-declared inputs the prose table had lost. **(3) The pipeline learns, with floors.** New `scripts/telemetry.py` aggregates loop history, phase timings, and the humanizer's per-pattern hit counts across runs — recurring patterns reach the next drafter brief as advisories behind a recurrence floor, and never touch a gate, a threshold, or a verdict. 22 skills · 27 scripts · 498 tests. [Release notes →](#release-notes) · [Full changelog →](CHANGELOG.md)
 
@@ -63,7 +69,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.1.0)
+## Supported surfaces (v4.1.1)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -309,6 +315,42 @@ This is an actual run (August 2026, a digital-preservation test brand, 1,200-wor
 - **The run auditor re-derived all of it** — 14 checks passed, 0 failed — and only then did `finalize --status completed` accept the run.
 
 Single-prompt tools produce none of these paper trails. The point isn't that the pipeline never errs — it's that its errors get caught by its own machinery, on the record, before your editor ever sees the file.
+
+### The artifacts themselves — real output you can inspect
+
+Everything below is from that same run — not a mock-up, not a demo. The numbers are read from the run's own JSON artifacts (`phase-7-review.json`, `run-audit.json`, `phase-6.5-report.md`, `pipeline-run.json`):
+
+![Scorecard of the real run: overall 9.0 grade A approved; dimension scores 8.8 / 8.9 / 9.6 / 8.6 / 8.8; run audit CLEAN with 14 checks passed and 0 failed; 42 claims verified with zero hallucinations; 20 AI-pattern instances removed; the 10-phase timeline with real durations](docs/assets/real-run-scorecard.svg)
+
+**A chart the pipeline actually rendered** (Phase 3.5 annotates the visual opportunity from verified Phase 2 data; a stdlib matplotlib-free renderer produces the PNG; the data citations ride in the caption):
+
+![Horizontal bar chart of four link-rot benchmarks: 70 percent of web-citing STM articles suffer reference rot (Klein et al., 2014); 66.5 percent of outbound links have rotted since January 2013 (Ahrefs, 2024); 38 percent of webpages that existed in 2013 are no longer available (Pew, 2024); 25 percent of webpages collected 2013-2023 were inaccessible by October 2023 (Pew, 2024)](docs/assets/real-run/link-rot-benchmarks-chart.png)
+
+**The opening the reader actually gets** (from the delivered file — note there's no "In today's digital landscape" anywhere in sight):
+
+> 38% of webpages that existed in 2013 are not available today (Chapekis et al., 2024). Not redesigned. Not moved. Gone. The same Pew study found that 21% of government webpages contain at least one broken link.
+>
+> The uncomfortable part is the cause, not the scale. When institutional pages disappear, the trigger is usually organizational rather than slow technical decay: a CMS (content management system) migration that dropped a URL structure, or a decision to take pages down. That has a practical upside: events can be planned for, and decay can't.
+
+**What the humanizer actually did to earn that opening** — three of the 20 logged edits, verbatim from the Phase 6.5 report (every edit records before → after, and whether SEO placements survived):
+
+| Pattern | Before | After |
+|---|---|---|
+| #09 negative parallelism | "link rot isn't a distant hazard, it's already on the premises" | "For public institutions, link rot is already on the premises." — the contrast now rides on "already" |
+| #28 signposting | a 38-word roadmap sentence ("What follows is the evidence: …") | **DELETED** (logged in the Deletion Ledger — announcements that the next part matters never survive) |
+| #14 em-dash overuse | 14 em dashes (~5.4 per 500 words) | 5 (~1.9 per 500) — nine converted to periods, commas, colons, parentheses; the two kept include a dash-gloss pair that matches the brand's own writing sample, which the voice calibration step protected |
+
+**And the honesty layer, in one JSON excerpt** — the run auditor's verdict that gated `finalize --status completed`:
+
+```json
+{
+  "run_id": "20260816-131632-link-rot-…",
+  "pass": 14, "fail": 0, "na": 1,
+  "verdict": "CLEAN"
+}
+```
+
+One more real detail worth knowing: Phase 8 was killed twice mid-run by session limits. Both times the checkpoint contract resumed it from the artifacts on disk — the delivered `.docx` exists because resume is a contract, not a hope. (The run brand is an internal validation persona for the digital-preservation space, not client work — which is why we can show you its artifacts.)
 
 ### Close the loop on a growing library
 
@@ -561,9 +603,28 @@ rm -rf ~/.claude/plugins/cache/neels-plugins
 /reload-plugins
 ```
 
-### Upgrading from 3.x to 4.0
+### Updating on every other surface
 
-No breaking changes to existing runs, brands, or artifacts — 4.0 is additive. Pre-4.0 runs simply read as `not_instrumented` in telemetry (unknown, never zero), and the first recorded audit starts the lifecycle stores. See [UPGRADE-GUIDE.md](UPGRADE-GUIDE.md).
+The sections above cover Claude Code because that's where update *management* has the most footguns (the auto-update default). Everywhere else, updating is one command or one UI action:
+
+| Surface | How to update |
+|---|---|
+| **Anthropic Cowork** | Plugins panel → ContentForge → **Update** (or Remove + re-install from `neels-plugins` — the re-pull fetches latest). If the marketplace itself is stale, Remove + re-add the marketplace too. |
+| **claude.ai web / Claude Desktop** (plugin) | Plugins UI button at the bottom of the chat → Manage plugins → Remove + Add to re-pull. |
+| **claude.ai web** (hero `.skill` uploads) | Re-download the skill from the [latest release](https://github.com/indranilbanerjee/contentforge/releases/latest) and re-upload — uploaded skills never self-update. |
+| **OpenAI Codex** | `codex plugin update contentforge` |
+| **Cursor 2.5+** | Re-run `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` — it re-pulls the repository. |
+| **GitHub Copilot CLI** | `copilot plugin update contentforge` |
+| **Google Antigravity 2.0** | `agy plugin update contentforge` |
+| **Hermes Agent** | `hermes plugins update contentforge` (then `hermes plugins list` to confirm the version) |
+| **OpenClaw** | `openclaw plugins update contentforge` |
+| **Grok (xAI Build CLI)** | `grok plugin update contentforge` |
+
+After any update, the fastest sanity check on every surface is asking the agent: *"What version of ContentForge is installed?"* — `scripts/plugin-metadata.py` answers from the installed manifest, not from memory.
+
+### Upgrading from 3.x to 4.x
+
+No breaking changes to existing runs, brands, or artifacts — 4.x is additive. Pre-4.0 runs simply read as `not_instrumented` in telemetry (unknown, never zero), and the first recorded audit starts the lifecycle stores. See [UPGRADE-GUIDE.md](UPGRADE-GUIDE.md).
 
 ### Installs in Cowork
 
@@ -599,6 +660,50 @@ No. `body_word_count` counts the prose a reader reads (including H2/H3 headings)
 
 **Q: How does the AI-detectability score work?**
 Honestly: we don't optimize against any detector. ContentForge writes so there's little to detect — the Phase 6.5 Human-Expert Grounding Pass grounds every claim in a specific from the verified research (a real perplexity-raising move, not a trick), and sentence variety comes from the content, not from inserted filler. On top of that, `scripts/text-metrics.py --ai-tell-scan` runs a deterministic, dependency-free proxy scan for known detector-signal patterns and reports an advisory **LOW / MODERATE / HIGH** rating in the Phase 6.5 report, the reviewer scorecard, and the Completion Card. If an external AI-detector is reachable via a connected MCP, at most one optional validation pass may also run — still advisory. **None of this is ever a publish gate, and we never promise to "beat" any specific detector** — the evidence shows one-shot static tricks do little (and can backfire) while genuine grounding is durable. Full reasoning in `references/ai-detection-signals.md`.
+
+---
+
+## ContentForge on OpenAI surfaces — Codex and ChatGPT
+
+The Claude surfaces get most of this README's screen time because they're where the plugin standard was born — but ContentForge is engineered to run at full depth on OpenAI's surfaces too, and here is exactly how that works, with no hand-waving.
+
+### OpenAI Codex (CLI + IDE + App) — full pipeline, today
+
+```bash
+codex plugin marketplace add indranilbanerjee/neels-plugins
+codex plugin install contentforge@neels-plugins
+```
+
+What happens after install, mechanically:
+
+1. **Codex reads `.codex-plugin/plugin.json`** (OpenAI's published schema — not a converted Claude file) and discovers all 22 skills from the shared `skills/` directory. [AGENTS.md](AGENTS.md) is auto-loaded into context, so Codex knows the plugin's capabilities, storage layout, and current version before you type anything.
+2. **You invoke by intent, not slash command**: say *"Create a blog post for my brand using ContentForge"* or *"Run contentforge brand-setup"*. Codex matches your request against the skill descriptions — the same trigger-dense descriptions the routing layer maintains for exactly this purpose.
+3. **The pipeline runs through the portable execution lane.** Claude Code dispatches each phase to its specialist agent as a Task-tool subagent; on Codex builds without subagent dispatch, the lane runs the same 10 phases in one conversation — each agent contract read as phase instructions, writing the same numbered artifacts (`phase-1-research.md` → `phase-8-output.json`), passing the same quality gates, respecting the same loop budgets. Same `.docx` at the end, same appendices, same run audit before "completed" is allowed.
+4. **Storage lands in the same places** — `~/.claude-marketing/<brand>/` for state (the `${PLUGIN_DATA}` name is accepted everywhere the `CLAUDE_*` names are), `~/Documents/ContentForge/` for deliverables. A brand you set up in Codex is immediately usable from Claude Code, and vice versa.
+
+Two honest caveats: Codex enforces `[a-z0-9-]+` skill names (all 22 of ours pass — test-guarded), and phases that lean on web search inherit whatever browsing capability your Codex build has, exactly as they inherit Claude's.
+
+### ChatGPT and the Agent Plugins 1.0 ecosystem
+
+OpenAI's **Agent Plugins 1.0** standard (announced August 6, 2026; adopted by ChatGPT, Codex, Cursor, GitHub Copilot, VS Code, and Kiro) reads a root [`plugin.json`](plugin.json) on a closed schema. ContentForge ships that manifest — version-synced with every other manifest and guarded by `tests/test_agent_plugins_portability.py`, which verifies the closed-schema rules, the name constraints, and that all 22 skills resolve in the standard's layout.
+
+What that means in practice, stated honestly:
+
+- **The package is listing-ready today.** Any AP1.0 host that can point at this repository gets a skills-complete ContentForge with the portable execution lane — `${PLUGIN_ROOT}` and `${PLUGIN_DATA}` are honored everywhere, so a compliant non-Claude host resolves real storage instead of nothing.
+- **The official ChatGPT plugin directory requires a verified-publisher listing**, which is an owner-side submission step (the bundle is prepared in [docs/distribution/submission-bundle.md](docs/distribution/submission-bundle.md)). Until that listing is live, ChatGPT users' cleanest path is Codex (above) — same OpenAI account, full pipeline — or the claude.ai hero-skill uploads if they also use Claude.
+- **On any AP1.0 host without subagent dispatch**, the pipeline behaves exactly as described for Codex: sequential phases, every gate intact, the run auditor still the last word.
+
+### Cursor, Copilot CLI, Antigravity, Grok, Hermes, OpenClaw — the same contract
+
+Every remaining surface follows the same pattern — a native manifest wrapping the same `skills/` directory, the portable lane where subagent dispatch is missing:
+
+- **Cursor 2.5+**: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` — full skills + agents + commands.
+- **GitHub Copilot CLI**: `copilot plugin install contentforge@neels-plugins` — full skills + MCP; custom slash commands aren't supported by Copilot CLI yet (open issue), so invoke by natural language.
+- **Google Antigravity 2.0**: `agy plugin install https://github.com/indranilbanerjee/contentforge` — full skills + hooks; subagents spawn via the `/agent` CLI.
+- **Grok (xAI Build CLI)**: `grok plugin install indranilbanerjee/contentforge` — native `.grok-plugin/` pair; Grok also reads the Claude manifests for compatibility.
+- **Hermes Agent / OpenClaw**: native adapters at repo root (`plugin.yaml` + `__init__.py`, `openclaw.plugin.json`) registering all 22 skills.
+
+Whatever the surface, the invariants hold: same skills, same scripts, same artifacts, same gates, same honesty rules. The platform changes how phases are *dispatched*, never what they must *prove*.
 
 ---
 
@@ -676,6 +781,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.1.1 (2026-08-17)** — **The README goes global, and shows its receipts.** **(1) Twelve languages.** The README now ships in English plus 11 full translations (हिन्दी, 中文, 日本語, 한국어, Español, Português, العربية, اردو, தமிழ், বাংলা, Русский), each version-stamped ("Synced with English README v4.1.1") and guarded by a new `tests/test_readme_translations.py` — a translation that silently falls behind the shipping version fails the suite, the same discipline every other count and claim in this repo lives under. The English README is declared the source of truth in every file. **(2) Real artifacts in the Examples.** The validated August run's actual outputs are now embedded: the chart the pipeline rendered, the delivered opening prose, three verbatim before→after humanizer edits from the Phase 6.5 report, the run auditor's CLEAN verdict JSON, and a scorecard SVG whose every number is read from the run's own artifacts. **(3) OpenAI surfaces documented at full depth.** A new section walks through exactly how the pipeline runs on Codex (CLI/IDE/App) and what Agent Plugins 1.0 means for ChatGPT — mechanically, with the portable execution lane's guarantees stated and the directory-listing status stated honestly. The Updating section now covers all nine platforms plus claude.ai re-uploads, not just Claude Code. **(4)** Author banner + sponsor call-to-action at the top; the real-run chart and scorecard live in `docs/assets/`.
 
 **v4.1.0 (2026-08-17)** — **Two new surfaces.** **(1) Grok (xAI Build CLI) becomes the ninth native platform.** A first-class `.grok-plugin/` manifest pair (`plugin.json` + single-plugin `marketplace.json`) makes `grok plugin install indranilbanerjee/contentforge` work directly — Grok also reads the Claude Code manifests for compatibility, but the native pair is what an official xAI marketplace listing points at. Both files are version-locked into the release-consistency suite, so they can never drift from the other manifests silently. **(2) Hero skills ship as claude.ai `.skill` release assets.** `config/skill-assets.json` declares the five skills that are safe standalone on claude.ai (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`) plus each one's config/template dependencies; `scripts/build-skill-assets.py` packages them deterministically (byte-identical rebuilds) with those dependencies bundled at the same relative paths the prose references — and **refuses to build** any skill whose SKILL.md references `${CLAUDE_PLUGIN_ROOT}` or an undeclared repo file (plant-checked, both directions). The pipeline skill is guard-excluded: it needs subagent dispatch and must never masquerade as a standalone upload. **Tests 498 → 514.**
 
