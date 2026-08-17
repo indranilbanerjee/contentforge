@@ -1,5 +1,16 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.0.0 → 4.1.0 (two new surfaces)
+
+**No breaking changes, nothing migrates.** 4.1.0 adds install surfaces only:
+Grok (xAI Build CLI) native manifests, and five hero skills packaged as
+claude.ai-uploadable `.skill` release assets. Existing installs, brands, runs,
+and stores are untouched. If you use claude.ai alongside your main install,
+grab the hero skills from the
+[latest release](https://github.com/indranilbanerjee/contentforge/releases/latest).
+
+---
+
 ## Upgrading 3.x → 4.0.0 (the lifecycle release)
 
 **No breaking changes.** 4.0 is additive: existing brands, runs, artifacts, and

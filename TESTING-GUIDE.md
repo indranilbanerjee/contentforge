@@ -899,7 +899,7 @@ section once pinned v3.8.0 for eleven releases). Verify against the sources of t
 - [ ] Skill / agent / command / script counts in every live doc match the filesystem —
       run `python -m pytest tests/test_doc_counts.py` instead of counting by hand
 - [ ] `10-phase pipeline` everywhere (guarded by the same test)
-- [ ] AGENTS.md "Supported surfaces" line carries the current version and all 8 native
+- [ ] AGENTS.md "Supported surfaces" line carries the current version and all 9 native
       surfaces (guarded by the same test)
 - [ ] Brand setup mentions Step G (backend selection)
 

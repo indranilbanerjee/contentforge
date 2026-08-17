@@ -1,0 +1,30 @@
+{
+  "$comment": "Packaging manifest for claude.ai-uploadable .skill release assets. Each entry names a skill that is safe to run STANDALONE on claude.ai (no subagent dispatch, no plugin-root scripts) plus the repo-level files its SKILL.md references, which the builder copies into the bundle at the same relative path so in-prose references resolve from the skill root. scripts/build-skill-assets.py consumes this; tests/test_skill_assets.py guards it. A skill whose SKILL.md needs ${CLAUDE_PLUGIN_ROOT} or an undeclared repo file is REJECTED by the builder — add the file here or fix the skill, never ship a broken reference.",
+  "claude_ai_upload_cap_files": 200,
+  "skills": {
+    "cf-brief": {
+      "extra_files": [
+        "templates/content-brief-template.md"
+      ]
+    },
+    "cf-social-adapt": {
+      "extra_files": [
+        "config/social-platform-specs.json",
+        "templates/social-post-templates.md"
+      ]
+    },
+    "cf-translate": {
+      "extra_files": [
+        "config/multilingual-patterns.json"
+      ]
+    },
+    "cf-video-script": {
+      "extra_files": [
+        "templates/content-types/video-script-structure.md"
+      ]
+    },
+    "cf-aeo-check": {
+      "extra_files": []
+    }
+  }
+}

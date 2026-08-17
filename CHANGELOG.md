@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.0] - 2026-08-17
+
+### Two new surfaces: Grok native support + claude.ai hero-skill release assets
+
+**Grok (xAI Build CLI) is the ninth native platform.**
+
+- New `.grok-plugin/plugin.json` (mirrors the Claude manifest, plus the
+  `"skills": "./skills/"` pointer Grok's loader uses) and
+  `.grok-plugin/marketplace.json` (single-plugin marketplace source, so
+  `grok plugin marketplace add indranilbanerjee/contentforge` works directly).
+- Grok also reads the Claude Code manifests for compatibility
+  ([Grok Build docs](https://docs.x.ai/build/features/skills-plugins-marketplaces));
+  the native pair is the first-class lane and what an official xAI marketplace
+  listing points at.
+- Both files are version-locked in `tests/test_release_consistency.py`
+  (`PLATFORM_MANIFESTS_JSON` now has 8 entries; a dedicated test pins the
+  marketplace entry's version and source URL). The README platform-name guard,
+  the AGENTS.md surfaces guard, and the install-command guard all now require
+  Grok.
+
+**Five hero skills ship as claude.ai-uploadable `.skill` release assets.**
+
+- New `config/skill-assets.json` declares which skills are safe standalone on
+  claude.ai — `cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`,
+  `cf-aeo-check` — plus the repo-level config/template files each SKILL.md
+  references (e.g. `cf-social-adapt` bundles `config/social-platform-specs.json`
+  and `templates/social-post-templates.md`).
+- New `scripts/build-skill-assets.py` packages each as `dist/<skill>.skill`:
+  one top-level skill directory, dependencies copied to the same relative paths
+  the prose references (so nothing dangles after upload), exactly one SKILL.md,
+  claude.ai's 200-file cap enforced from the manifest, and byte-identical
+  deterministic rebuilds. It **refuses to package** a skill whose SKILL.md
+  references `${CLAUDE_PLUGIN_ROOT}` (no plugin root exists on claude.ai) or an
+  undeclared repo path.
+- New `tests/test_skill_assets.py` (13 tests): manifest integrity, portability
+  scan green for every declared skill, both refusal paths plant-checked, built
+  zip shape (single top dir / one SKILL.md / under cap / extras present), and
+  build determinism. The pipeline skill is guard-excluded from the manifest —
+  it needs subagent dispatch and must never masquerade as a standalone upload.
+- `dist/` gitignored; assets are attached to GitHub releases, not committed.
+  Install path documented in the README's Supported surfaces table and
+  cross-platform matrix (claude.ai → enable *Code execution and file creation*
+  → Customize → Skills → Upload skill).
+
+**Docs and guards.**
+
+- README: platforms badge 8→9 native (anchor `#supported-surfaces-v410`), Grok
+  and claude.ai rows in Supported surfaces + cross-platform matrix, install
+  commands in the hero block, v4.1.0 release notes.
+- AGENTS.md surfaces line and TESTING-GUIDE checklist updated to 9 native.
+- Corrected the v4.0.0 release-note test tally in the README: 4.0.0 shipped
+  464 → 498 (the note said 468, a mid-release artifact).
+- Tests: 498 → 514.
+
+---
+
 ## [4.0.0] - 2026-08-17
 
 ### The lifecycle release

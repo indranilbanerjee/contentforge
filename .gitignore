@@ -30,6 +30,8 @@ output/
 .tmp/
 temp/
 generated/
+# Built .skill release assets (attached to GitHub releases, never committed)
+dist/
 
 # ===========================
 # Logs

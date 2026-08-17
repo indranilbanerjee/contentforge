@@ -2,7 +2,7 @@
   "id": "contentforge",
   "name": "ContentForge",
   "description": "Open-source enterprise content production plugin — 22 skills, 13 agents, 10 quality gates, 43-pattern AI humanizer, fact-checker, real .docx output with C2PA signing (EU AI Act Article 50 ready).",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "skills": ["./skills"],
   "configSchema": {
     "type": "object",

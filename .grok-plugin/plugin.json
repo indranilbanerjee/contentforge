@@ -42,6 +42,9 @@
     "content-provenance",
     "eu-ai-act",
     "article-50",
+    "grok",
+    "xai-grok",
+    "grok-plugin",
     "claude-code",
     "claude-code-plugin",
     "claude-cowork",
@@ -57,5 +60,6 @@
     "marketing-plugin",
     "ai-marketing",
     "neelverse"
-  ]
+  ],
+  "skills": "./skills/"
 }

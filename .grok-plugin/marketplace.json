@@ -1,0 +1,29 @@
+{
+  "name": "contentforge",
+  "owner": {
+    "name": "Indranil Banerjee",
+    "url": "https://github.com/indranilbanerjee"
+  },
+  "description": "Marketplace source for the ContentForge content lifecycle plugin",
+  "plugins": [
+    {
+      "name": "contentforge",
+      "description": "Open-source content lifecycle system — 22 skills, 13 agents, 10-gate pipeline, 43-pattern AI humanizer, run auditor, real .docx output, and a measure-audit-plan loop that compounds per brand.",
+      "version": "4.1.0",
+      "category": "marketing",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/indranilbanerjee/contentforge.git"
+      },
+      "homepage": "https://github.com/indranilbanerjee/contentforge",
+      "keywords": [
+        "content-marketing",
+        "content-pipeline",
+        "ai-humanizer",
+        "seo",
+        "aeo",
+        "contentforge"
+      ]
+    }
+  ]
+}
