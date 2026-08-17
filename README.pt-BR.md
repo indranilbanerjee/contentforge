@@ -2,7 +2,7 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **Sincronizado com o README em inglês v4.1.1 (2026-08-17).** O [README em inglês](README.md) é a fonte da verdade — as notas de versão, o catálogo completo de skills e comandos, a arquitetura, a solução de problemas e o FAQ completo estão lá. Esta tradução cobre tudo o que você precisa para instalar, executar e atualizar o ContentForge.
+> **Sincronizado com o README em inglês v4.1.2 (2026-08-17).** O [README em inglês](README.md) é a fonte da verdade — as notas de versão, o catálogo completo de skills e comandos, a arquitetura, a solução de problemas e o FAQ completo estão lá. Esta tradução cobre tudo o que você precisa para instalar, executar e atualizar o ContentForge.
 
 > **Você precisa entregar 30 artigos neste trimestre que soem humanos, citem fontes reais, se conectem ao seu funil e sobrevivam a um editor que confere tudo. Sua equipe tem três pessoas. Você tem nove semanas. Seu último lote "escrito por IA" foi sinalizado por estatísticas alucinadas — e o lote anterior envelheceu em silêncio sem que ninguém percebesse.**
 
@@ -10,7 +10,7 @@ Execute `/contentforge:create-content` para cada tema. O pipeline de 10 fases pr
 
 Sistema open-source de produção de conteúdo de nível corporativo — **22 skills · 13 agentes especialistas · 10 gates de qualidade · humanizador anti-detecção de IA com 43 padrões · um auditor de execução que rederiva cada gate antes que uma execução possa se declarar concluída · 28 scripts Python, apenas stdlib**. Criado por [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-**Versão 4.1.1** · [Changelog](CHANGELOG.md) · Licença MIT · [Patrocine este projeto ❤](https://github.com/sponsors/indranilbanerjee)
+**Versão 4.1.2** · [Changelog](CHANGELOG.md) · Licença MIT · [Patrocine este projeto ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ Cada comando lê o que o anterior registrou — em uma nova sessão, em outro di
 
 ---
 
-## Superfícies suportadas (v4.1.1)
+## Superfícies suportadas (v4.1.2)
 
 Nove plataformas nativas + uploads no claude.ai + mais de 35 clientes Agent Skills:
 

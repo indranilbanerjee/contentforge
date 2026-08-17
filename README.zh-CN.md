@@ -2,7 +2,7 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **已与英文版 README v4.1.1（2026-08-17）同步。** [英文版 README](README.md) 是唯一权威来源——发行说明、完整的技能/命令目录、架构说明、故障排查以及完整 FAQ 均在其中。本翻译涵盖了安装、运行和更新 ContentForge 所需的全部内容。
+> **已与英文版 README v4.1.2（2026-08-17）同步。** [英文版 README](README.md) 是唯一权威来源——发行说明、完整的技能/命令目录、架构说明、故障排查以及完整 FAQ 均在其中。本翻译涵盖了安装、运行和更新 ContentForge 所需的全部内容。
 
 > **本季度你要交付 30 篇文章：读起来像真人写的、引用真实来源、串联进你的转化漏斗，还要经得起较真编辑的审核。你的团队只有 3 个人，时间只有 9 周。上一批“AI 写的”稿件因为编造的统计数据被打了回来——而再上一批则悄无声息地过时了，没有任何人察觉。**
 
@@ -10,7 +10,7 @@
 
 开源企业级内容生产系统——**22 个技能 · 13 个专家代理 · 10 道质量门 · 43 模式 AI 痕迹人性化引擎 · 一个在流水线宣告完成之前重新推导每道质量门的运行审计器 · 28 个纯标准库 Python 脚本**。由 [Indranil Banerjee](https://indranil.in) 创建 · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)。
 
-**版本 4.1.1** · [更新日志](CHANGELOG.md) · MIT 许可证 · [赞助本项目 ❤](https://github.com/sponsors/indranilbanerjee)
+**版本 4.1.2** · [更新日志](CHANGELOG.md) · MIT 许可证 · [赞助本项目 ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## 支持的平台（v4.1.1）
+## 支持的平台（v4.1.2）
 
 9 个原生平台 + claude.ai 上传 + 35+ 个 Agent Skills 客户端：
 

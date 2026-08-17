@@ -1,0 +1,5 @@
+# Why this plugin ships zero active hooks
+
+`hooks.json` deliberately contains only `{"hooks": {}}`. This file carries the rationale that used to live in a `_readme` field inside `hooks.json` itself — moved here because Cowork's plugin validation rejects unknown top-level fields in `hooks.json` ([issue #9](https://github.com/indranilbanerjee/digital-marketing-pro/issues/9)).
+
+ContentForge ships NO active hooks as of v3.9.0. Earlier versions registered SessionStart, PreToolUse, SubagentStart, and Stop hooks that fired on EVERY Claude Code operation in EVERY project — even unrelated ones. Their work (hallucination checks, brand-voice rules, completion verification) already lives in the right place: the Phase 7 reviewer agent, the agent files themselves, and the Quality Gate criteria. Global hooks added latency, token cost, and noise to operations outside ContentForge content production. To re-enable a specific hook (e.g., a per-session reminder), add an entry below. The 'hooks-reference.example.json' file in this directory documents the prior set with rationale notes for each.

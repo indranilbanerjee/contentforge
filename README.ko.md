@@ -2,7 +2,7 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **영문 README v4.1.1 (2026-08-17)과 동기화되었습니다.** [영문 README](README.md)가 공식 원본입니다 — 릴리스 노트, 전체 스킬/명령어 카탈로그, 아키텍처, 문제 해결 가이드, 전체 FAQ는 모두 그곳에 있습니다. 이 번역본에는 ContentForge를 설치하고, 실행하고, 업데이트하는 데 필요한 모든 내용이 담겨 있습니다.
+> **영문 README v4.1.2 (2026-08-17)과 동기화되었습니다.** [영문 README](README.md)가 공식 원본입니다 — 릴리스 노트, 전체 스킬/명령어 카탈로그, 아키텍처, 문제 해결 가이드, 전체 FAQ는 모두 그곳에 있습니다. 이 번역본에는 ContentForge를 설치하고, 실행하고, 업데이트하는 데 필요한 모든 내용이 담겨 있습니다.
 
 > **이번 분기에 기사 30편을 내보내야 합니다. 사람이 쓴 것처럼 읽히고, 실제 출처를 인용하고, 퍼널로 연결되며, 꼼꼼히 확인하는 편집자의 검수까지 통과해야 합니다. 팀원은 3명, 남은 시간은 9주. 지난번 "AI가 쓴" 원고 묶음은 환각으로 지어낸 통계 때문에 반려되었고, 그 전 묶음은 조용히 낡아 가는데도 아무도 눈치채지 못했습니다.**
 
@@ -10,7 +10,7 @@
 
 오픈소스 엔터프라이즈 콘텐츠 프로덕션 시스템 — **22개 스킬 · 13개 전문 에이전트 · 10개 품질 게이트 · 43가지 패턴의 AI 탐지 휴머나이저 · 실행이 스스로 완료를 선언하기 전에 모든 게이트를 재검증하는 런 오디터 · 표준 라이브러리만 사용하는 28개 Python 스크립트**. 제작자: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-**버전 4.1.1** · [체인지로그](CHANGELOG.md) · MIT 라이선스 · [이 프로젝트 후원하기 ❤](https://github.com/sponsors/indranilbanerjee)
+**버전 4.1.2** · [체인지로그](CHANGELOG.md) · MIT 라이선스 · [이 프로젝트 후원하기 ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## 지원 플랫폼 (v4.1.1)
+## 지원 플랫폼 (v4.1.2)
 
 9개 네이티브 플랫폼 + claude.ai 업로드 + 35개 이상의 Agent Skills 클라이언트:
 

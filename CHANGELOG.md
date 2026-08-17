@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.1.2] - 2026-08-17
+
+### Schema-clean hooks manifest (suite-wide fix from digital-marketing-pro#9)
+
+- `hooks/hooks.json` carried a `_readme` rationale field that Cowork's plugin
+  validation rejects as an unknown top-level key — the same defect shipped in
+  all three suite plugins. The rationale text moved verbatim to
+  `hooks/README.md`; `hooks.json` is now exactly `{"hooks": {}}`.
+- New `TestHooksManifestSchemaClean` guard: hooks.json must contain the
+  `hooks` key and nothing else, and the rationale doc must exist.
+- The 11 README translations re-stamped to v4.1.2 (no user-facing README
+  content changed; the stamp guard requires the conscious re-stamp).
+- Tests: 520 → 522.
+
+---
+
 ## [4.1.1] - 2026-08-17
 
 ### The README goes global, and shows its receipts
