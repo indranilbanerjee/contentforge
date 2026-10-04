@@ -1,6 +1,7 @@
 {
   "name": "contentforge",
-  "version": "4.2.0",
+  "displayName": "ContentForge",
+  "version": "4.3.0",
   "description": "Open-source content lifecycle system — 22 skills, 13 agents, 10-gate pipeline, 43-pattern AI humanizer, run auditor, real .docx output, and a measure-audit-plan loop that compounds per brand.",
   "author": {
     "name": "Indranil Banerjee",
@@ -57,5 +58,10 @@
     "marketing-plugin",
     "ai-marketing",
     "neelverse"
-  ]
+  ],
+  "icon": "./assets/icon.png",
+  "documentationUrl": "https://github.com/indranilbanerjee/contentforge#readme",
+  "supportUrl": "https://github.com/indranilbanerjee/contentforge/issues",
+  "privacyPolicyUrl": "https://github.com/indranilbanerjee/contentforge/blob/master/PRIVACY.md",
+  "termsOfServiceUrl": "https://github.com/indranilbanerjee/contentforge/blob/master/LICENSE"
 }

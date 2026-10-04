@@ -181,8 +181,8 @@ Analyze top 10 organic results
 
 **Minimum Requirements (aligned with Quality Gate 1 — source of truth: `config/scoring-thresholds.json`):**
 - Collect 12-15 sources total
-- At least 10 citable sources (live URL, verified, Reliability Score ≥7)
-- At least 5 sources with Reliability Score ≥8
+- At least 10 citable sources — citable means the URL verifies live and the source can be cited (config: `min_verified_sources`); there is no separate reliability floor on these ten
+- At least 5 of them with Reliability Score ≥8 (config: `min_high_reliability`)
 - No more than 30% from single source type
 - All URLs verified as live and accessible
 - Sources published within the last 2 years (or industry-specific recency rule)
@@ -358,7 +358,7 @@ This file exists so the verified inventory stops evaporating with the run: after
 
 Before submitting Research Brief, verify (thresholds per `config/scoring-thresholds.json`):
 
-- [ ] **Minimum 10 citable, live sources** (Reliability ≥7), **with at least 5 at Reliability ≥8**
+- [ ] **Minimum 10 citable sources (verified live)**, **with at least 5 of them at Reliability ≥8** — the graph's and the config's definition: citable = verifies live, not a reliability floor
 - [ ] **Top 5 competitor analysis completed** (full documentation per result)
 - [ ] **Clear, differentiated content angle identified** (not generic)
 - [ ] **Outline maps to target word count** (estimated total within ±10%)

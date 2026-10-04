@@ -512,6 +512,26 @@ def finalize_run(brand: str, run_id: str, status: str = "completed",
                     "recovery": "Fix the findings and re-run run-audit.py, or "
                                 "finalize with --status blocked if the run is "
                                 "legitimately unpublishable as it stands."}
+        # A CLEAN verdict describes the run AS IT WAS when audited. Any artifact
+        # changed, added or removed since then makes it a verdict about a
+        # different run — and "completed" must not be stamped on that. The audit
+        # records a content fingerprint of the files it read; compare it to now.
+        recorded_fp = audit.get("fingerprint")
+        if not isinstance(recorded_fp, dict) or not isinstance(
+                recorded_fp.get("files"), dict):
+            return {"error": "cannot finalize as completed: run-audit.json "
+                             "carries no artifact fingerprint, so it cannot "
+                             "be shown to describe the run as it stands now",
+                    "recovery": "Re-run: python scripts/run-audit.py --brand "
+                                f"{brand} --run-id {run_id}  — then finalize."}
+        drift = _common.fingerprint_drift(
+            recorded_fp, _common.run_artifact_fingerprint(_run_dir(brand, run_id)))
+        if drift:
+            return {"error": "cannot finalize as completed: the run changed "
+                             f"after it was audited ({len(drift)} file(s))",
+                    "changed_since_audit": drift[:10],
+                    "recovery": "Re-run: python scripts/run-audit.py --brand "
+                                f"{brand} --run-id {run_id}  — then finalize."}
         manifest["audit_verdict"] = "CLEAN"
     elif status == "completed" and skip_audit:
         manifest["audit_skipped"] = True

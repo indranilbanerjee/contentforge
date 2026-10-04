@@ -2,15 +2,15 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **अंग्रेज़ी README v4.2.0 (2026-08-17) के साथ सिंक किया गया।** [अंग्रेज़ी README](README.md) ही सत्य का स्रोत है — रिलीज़ नोट्स, स्किल्स/कमांड्स की पूरी सूची, आर्किटेक्चर, समस्या-निवारण और संपूर्ण FAQ वहीं उपलब्ध हैं। ContentForge को इंस्टॉल करने, चलाने और अपडेट करने के लिए आवश्यक हर जानकारी इस अनुवाद में मौजूद है।
+> **अंग्रेज़ी README v4.3.0 (2026-10-04) के साथ सिंक किया गया।** [अंग्रेज़ी README](README.md) ही सत्य का स्रोत है — रिलीज़ नोट्स, स्किल्स/कमांड्स की पूरी सूची, आर्किटेक्चर, समस्या-निवारण और संपूर्ण FAQ वहीं उपलब्ध हैं। ContentForge को इंस्टॉल करने, चलाने और अपडेट करने के लिए आवश्यक हर जानकारी इस अनुवाद में मौजूद है।
 
 > **आपको इस तिमाही में 30 ऐसे लेख प्रकाशित करने हैं जो इंसानी लगें, असली स्रोतों का हवाला दें, आपके फ़नल से जुड़ें, और उस संपादक की जाँच से पार उतरें जो सचमुच जाँच करता है। आपकी टीम में तीन लोग हैं। आपके पास नौ हफ़्ते हैं। आपका पिछला "AI-लिखित" बैच मनगढ़ंत आँकड़ों के कारण पकड़ा गया — और उससे पहले वाला बैच चुपचाप बासी हो गया और किसी का ध्यान तक नहीं गया।**
 
 हर विषय पर `/contentforge:create-content` चलाइए। 10-चरणीय पाइपलाइन प्रकाशन-योग्य `.docx` तैयार करती है — 43-पैटर्न ह्यूमनाइज़र, fact-checker सबएजेंट, तीन-श्रेणी आंतरिक लिंकिंग और EU AI Act अनुपालन के लिए C2PA प्रोवेनेंस के साथ — प्रति लेख 30–60 मिनट में। और फिर वह हिस्सा जो किसी भी सिंगल-शॉट टूल के पास नहीं है: **लाइफ़साइकल लूप।** हर प्रकाशित लेख मापा जाता है, क्षरण (decay) के लिए ऑडिट होता है, और अगले कैलेंडर तथा अगली ब्रीफ़ में वापस जोड़ा जाता है — टिकाऊ फ़ाइल कॉन्ट्रैक्ट्स के ज़रिए, ताकि सिस्टम आपके ब्रांड के बारे में जो कुछ सीखता है, वह उस सत्र के ख़त्म होने के बाद भी बना रहे जिसमें उसने वह सीखा था।
 
-ओपन-सोर्स एंटरप्राइज़ कंटेंट प्रोडक्शन सिस्टम — **22 स्किल्स · 13 विशेषज्ञ एजेंट · 10 क्वालिटी गेट · 43-पैटर्न AI-डिटेक्शन ह्यूमनाइज़र · एक रन ऑडिटर जो रन के स्वयं को पूर्ण घोषित करने से पहले हर गेट को दोबारा व्युत्पन्न करता है · 28 Python स्क्रिप्ट, केवल stdlib**। निर्माता: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)।
+ओपन-सोर्स एंटरप्राइज़ कंटेंट प्रोडक्शन सिस्टम — **22 स्किल्स · 13 विशेषज्ञ एजेंट · 10 क्वालिटी गेट · 43-पैटर्न AI-डिटेक्शन ह्यूमनाइज़र · एक रन ऑडिटर जो रन के स्वयं को पूर्ण घोषित करने से पहले हर गेट को दोबारा व्युत्पन्न करता है · 29 Python स्क्रिप्ट, केवल stdlib**। निर्माता: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)।
 
-**संस्करण 4.2.0** · [चेंजलॉग](CHANGELOG.md) · MIT लाइसेंस · [इस प्रोजेक्ट को स्पॉन्सर करें ❤](https://github.com/sponsors/indranilbanerjee)
+**संस्करण 4.3.0** · [चेंजलॉग](CHANGELOG.md) · MIT लाइसेंस · [इस प्रोजेक्ट को स्पॉन्सर करें ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## समर्थित प्लेटफ़ॉर्म (v4.2.0)
+## समर्थित प्लेटफ़ॉर्म (v4.3.0)
 
 नौ नेटिव प्लेटफ़ॉर्म + claude.ai अपलोड + 35+ Agent Skills क्लाइंट:
 
@@ -177,4 +177,4 @@ ContentForge को **[Indranil "Neel" Banerjee](https://indranil.in)** बन�
 
 अगर ContentForge आपकी टीम का समय बचाता है, तो [⭐ रिपो को स्टार करें](https://github.com/indranilbanerjee/contentforge/stargazers) और [प्रोजेक्ट को स्पॉन्सर करने ❤](https://github.com/sponsors/indranilbanerjee) पर विचार करें — इसी से रिलीज़ की रफ़्तार टिकाऊ बनी रहती है।
 
-**लाइसेंस:** MIT · **सुरक्षा:** [निजी एडवाइज़री](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **समस्याएँ:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**लाइसेंस:** MIT (अपवाद `config/humanization-patterns.json`: CC BY-SA 4.0, देखें [NOTICE.md](NOTICE.md)) · **सुरक्षा:** [निजी एडवाइज़री](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **समस्याएँ:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)

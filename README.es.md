@@ -2,15 +2,15 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **Sincronizado con el README en inglés v4.2.0 (2026-08-17).** El [README en inglés](README.md) es la fuente de verdad: allí encontrarás las notas de versión, el catálogo completo de skills y comandos, la arquitectura, la resolución de problemas y las preguntas frecuentes completas. Esta traducción cubre todo lo que necesitas para instalar, ejecutar y actualizar ContentForge.
+> **Sincronizado con el README en inglés v4.3.0 (2026-10-04).** El [README en inglés](README.md) es la fuente de verdad: allí encontrarás las notas de versión, el catálogo completo de skills y comandos, la arquitectura, la resolución de problemas y las preguntas frecuentes completas. Esta traducción cubre todo lo que necesitas para instalar, ejecutar y actualizar ContentForge.
 
 > **Tienes que publicar 30 artículos este trimestre que suenen humanos, citen fuentes reales, enlacen con tu embudo y superen la revisión de un editor exigente. Tu equipo es de tres personas. Tienes nueve semanas. Tu último lote «escrito con IA» fue señalado por estadísticas alucinadas — y el lote anterior quedó desactualizado sin que nadie se diera cuenta.**
 
 Ejecuta `/contentforge:create-content` con cada tema. El pipeline de 10 fases produce un `.docx` listo para publicar, con un humanizador de 43 patrones, un subagente verificador de datos, enlazado interno de tres categorías y procedencia C2PA para cumplir con la EU AI Act — en 30–60 minutos por pieza. Y después, lo que ninguna herramienta de un solo disparo ofrece: **el ciclo de vida completo.** Cada pieza publicada se mide, se audita en busca de deterioro y alimenta el siguiente calendario y el siguiente brief — mediante contratos de archivos duraderos, de modo que lo que el sistema aprende sobre tu marca sobrevive a la sesión en la que lo aprendió.
 
-Sistema de producción de contenido empresarial de código abierto — **22 skills · 13 agentes especialistas · 10 puertas de calidad · humanizador anti-detección de IA de 43 patrones · un auditor de ejecución que rederiva cada puerta antes de que una ejecución pueda darse por terminada · 28 scripts de Python, solo con la biblioteca estándar**. Creado por [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Sistema de producción de contenido empresarial de código abierto — **22 skills · 13 agentes especialistas · 10 puertas de calidad · humanizador anti-detección de IA de 43 patrones · un auditor de ejecución que rederiva cada puerta antes de que una ejecución pueda darse por terminada · 29 scripts de Python, solo con la biblioteca estándar**. Creado por [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-**Versión 4.2.0** · [Registro de cambios](CHANGELOG.md) · Licencia MIT · [Patrocina este proyecto ❤](https://github.com/sponsors/indranilbanerjee)
+**Versión 4.3.0** · [Registro de cambios](CHANGELOG.md) · Licencia MIT · [Patrocina este proyecto ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ Cada comando lee lo que el anterior dejó registrado — en una sesión nueva, e
 
 ---
 
-## Plataformas compatibles (v4.2.0)
+## Plataformas compatibles (v4.3.0)
 
 Nueve plataformas nativas + cargas en claude.ai + más de 35 clientes de Agent Skills:
 
@@ -177,4 +177,4 @@ ContentForge está creado y mantenido por **[Indranil "Neel" Banerjee](https://i
 
 Si ContentForge le ahorra tiempo a tu equipo, [⭐ dale una estrella al repositorio](https://github.com/indranilbanerjee/contentforge/stargazers) y considera [patrocinar el proyecto ❤](https://github.com/sponsors/indranilbanerjee) — eso mantiene sostenible el ritmo de lanzamientos.
 
-**Licencia:** MIT · **Seguridad:** [avisos privados](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **Incidencias:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**Licencia:** MIT (excepto `config/humanization-patterns.json`: CC BY-SA 4.0, ver [NOTICE.md](NOTICE.md)) · **Seguridad:** [avisos privados](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **Incidencias:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)

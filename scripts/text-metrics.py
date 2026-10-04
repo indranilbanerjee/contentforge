@@ -451,6 +451,31 @@ def is_aphorism_candidate(sentence: str) -> bool:
     return s.endswith(".")
 
 
+# Opening "-ing" words that are not participles. Without this, "During the
+# night..." or "Something changed..." counted as participial openers.
+_NON_PARTICIPLE_ING = frozenset({
+    "during", "something", "nothing", "anything", "everything", "morning",
+    "evening", "spring", "string", "thing", "things", "ceiling", "wedding",
+    "sibling", "sterling", "offspring", "pudding", "darling", "notwithstanding",
+})
+
+
+def _connective_matcher(connectives):
+    """Whole-word match at the start of a sentence. A bare prefix match let
+    "so" fire on "Sometimes", "Soon", "Something" and "Software"."""
+    alts = "|".join(r"\s+".join(re.escape(w) for w in c.split())
+                    for c in sorted(connectives, key=len, reverse=True))
+    return re.compile(rf"^(?:{alts})(?![\w'-])", re.I)
+
+
+def _is_participial_opener(sentence: str) -> bool:
+    words = sentence.strip().split()
+    if not words:
+        return False
+    first = re.sub(r"[^a-z]", "", words[0].lower())
+    return len(first) >= 5 and first.endswith("ing") and first not in _NON_PARTICIPLE_ING
+
+
 def ai_tell_scan(text: str) -> dict:
     """Deterministic Tier-1 detector-signal proxy scan. Advisory only, never
     a publish gate — see references/ai-detection-signals.md. Consumed by the
@@ -462,10 +487,9 @@ def ai_tell_scan(text: str) -> dict:
 
     lset = set(lex["llm_favored_words"])
     banned = sum(1 for w in re.findall(r"[A-Za-z'-]+", text) if w.lower() in lset)
-    connectives = tuple(lex["connective_openers"])
-    conn = sum(1 for s in sentences if s.strip().lower().startswith(connectives))
-    part = sum(1 for s in sentences
-               if (s.strip().split() or [""])[0].lower().endswith("ing"))
+    connective_re = _connective_matcher(lex["connective_openers"])
+    conn = sum(1 for s in sentences if connective_re.match(s.strip()))
+    part = sum(1 for s in sentences if _is_participial_opener(s))
     em_dashes = text.count("—") + text.count(" -- ")
 
     # Patterns 42/43. Markers are matched on a normalized sentence so that a
@@ -489,7 +513,7 @@ def ai_tell_scan(text: str) -> dict:
         elif is_aphorism_candidate(s):
             aph += 1
             flagged.append({"index": i, "text": st, "tell": "aphorism_candidate"})
-        elif st.lower().startswith(connectives):
+        elif connective_re.match(st):
             flagged.append({"index": i, "text": st, "tell": "connective_opener"})
         elif sum(1 for w in re.findall(r"[A-Za-z'-]+", st) if w.lower() in lset) >= 2:
             flagged.append({"index": i, "text": st, "tell": "banned_lexeme_cluster"})

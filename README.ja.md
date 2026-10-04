@@ -2,15 +2,15 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **英語版 README v4.2.0(2026-08-17)と同期済み。** 信頼できる唯一の情報源は[英語版 README](README.md)です — リリースノート、スキル/コマンドの完全カタログ、アーキテクチャ、トラブルシューティング、FAQ 全文はそちらに掲載されています。本翻訳には、ContentForge のインストール・実行・アップデートに必要な情報がすべて含まれています。
+> **英語版 README v4.3.0(2026-10-04)と同期済み。** 信頼できる唯一の情報源は[英語版 README](README.md)です — リリースノート、スキル/コマンドの完全カタログ、アーキテクチャ、トラブルシューティング、FAQ 全文はそちらに掲載されています。本翻訳には、ContentForge のインストール・実行・アップデートに必要な情報がすべて含まれています。
 
 > **今四半期中に 30 本の記事を出稿しなければならない。人間らしく読めて、実在するソースを引用し、ファネルへ内部リンクを張り、細部まで確認する編集者のチェックにも耐える記事を。チームは 3 人。残された期間は 9 週間。前回の「AI 生成」バッチは統計のハルシネーションでフラグが立ち、その前のバッチはいつの間にか陳腐化して、誰も気づかなかった。**
 
 各トピックに対して `/contentforge:create-content` を実行してください。10 フェーズのパイプラインが、43 パターンのヒューマナイザー、ファクトチェッカーのサブエージェント、3 カテゴリの内部リンク、EU AI Act 準拠のための C2PA 来歴情報を備えた出稿可能な `.docx` を、1 本あたり 30〜60 分で生成します。そしてその先に、単発生成型ツールには決して真似できない仕組みがあります。それが**ライフサイクルループ**です。公開されたすべての記事は計測され、陳腐化がないか監査され、次のカレンダーと次のブリーフへフィードバックされます — 永続的なファイルコントラクトを通じて行われるため、システムがあなたのブランドについて学んだことは、それを学んだセッションが終わっても失われません。
 
-オープンソースのエンタープライズ向けコンテンツ制作システム — **22 スキル · 13 の専門エージェント · 10 の品質ゲート · 43 パターンの AI 検出ヒューマナイザー · すべてのゲートを再検証してからでなければランに完了を宣言させないランオーディター · 標準ライブラリのみで動く 28 本の Python スクリプト**。開発者: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)。
+オープンソースのエンタープライズ向けコンテンツ制作システム — **22 スキル · 13 の専門エージェント · 10 の品質ゲート · 43 パターンの AI 検出ヒューマナイザー · すべてのゲートを再検証してからでなければランに完了を宣言させないランオーディター · 標準ライブラリのみで動く 29 本の Python スクリプト**。開発者: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)。
 
-**バージョン 4.2.0** · [変更履歴](CHANGELOG.md) · MIT ライセンス · [このプロジェクトを支援する ❤](https://github.com/sponsors/indranilbanerjee)
+**バージョン 4.3.0** · [変更履歴](CHANGELOG.md) · MIT ライセンス · [このプロジェクトを支援する ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## 対応プラットフォーム(v4.2.0)
+## 対応プラットフォーム(v4.3.0)
 
 9 つのネイティブプラットフォーム + claude.ai へのアップロード + 35 以上の Agent Skills クライアント:
 
@@ -177,4 +177,4 @@ ContentForge の開発と保守は **[Indranil "Neel" Banerjee](https://indranil
 
 ContentForge がチームの時間を節約できたなら、[⭐ リポジトリにスターを付けて](https://github.com/indranilbanerjee/contentforge/stargazers)、[プロジェクトへのスポンサー支援 ❤](https://github.com/sponsors/indranilbanerjee)もぜひご検討ください — 持続可能なリリースサイクルの維持につながります。
 
-**ライセンス:** MIT · **セキュリティ:** [非公開アドバイザリ](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **Issues:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**ライセンス:** MIT（`config/humanization-patterns.json` のみ CC BY-SA 4.0。[NOTICE.md](NOTICE.md) を参照） · **セキュリティ:** [非公開アドバイザリ](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **Issues:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)

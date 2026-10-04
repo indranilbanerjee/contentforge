@@ -119,6 +119,7 @@
       }
     },
     "feedback_loop_limits": {
+      "_precedence": "Loop caps live in three places: config/pipeline-graph.json loop_budgets (per_edge, total_per_run), the named caps below, and quality_gates max_validation_loops / max_seo_loops. Where they disagree the SMALLER cap governs. A named edge cap bounds that edge; phase_7_to_any bounds the SUM of every phase_7_to_* edge; max_validation_loops and max_seo_loops bound the SUM of edges leaving phase 4 and phase 6; max_total_loops and total_per_run bound the whole run. scripts/run-audit.py enforces this rule.",
       "phase_4_to_3_5": 1,
       "phase_4_to_3": 2,
       "phase_6_to_5": 1,

@@ -7,6 +7,80 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.3.0] - 2026-10-04
+
+### The quality contract, made checkable
+
+**Added**
+
+- **`docs/QUALITY-CONTRACT.md`** — what ContentForge guarantees before a
+  piece is delivered and what it does not: every gate, the approve line per
+  industry, the loop budgets, and which guarantees a script enforces versus
+  which are a reviewer's judgment. `tests/test_quality_contract.py` parses the
+  document against `config/` and fails the build if any number disagrees.
+- **`scripts/scorecard-html.py`** — a one-page, self-contained HTML scorecard
+  for a finished run: decision and score against the approve line its
+  industry resolves to, every dimension against its minimum and weight, the
+  run-audit verdict, fix-ledger and publication status. It reads only the
+  run's own files, shows a missing or stale audit as such (never a stale
+  CLEAN as current), and never invalidates the audit. The pipeline builds it
+  after `finalize`, then offers to publish it as a private page only when the
+  session has a page-publishing tool and only on the user's yes. 51 tests.
+- **Workflow `/contentforge:audit-library`** (`workflows/`): per-URL
+  freshness checks in parallel, then one record through the audit ledger.
+- **`docs/ALWAYS-ON-RECIPES.md`**: scheduled library audits and freshness
+  checks for Claude routines, Claude Tag, Grok Bot, Gemini Spark, Cursor
+  automations and Hermes cron, each with its approval boundary.
+- **`evals/`**: a trigger suite for `claude plugin eval` (8 cases plus a
+  stay-quiet case).
+- **Directory listing fields** (`displayName`, `icon`, `documentationUrl`,
+  `supportUrl`, `privacyPolicyUrl`, `termsOfServiceUrl`), `PRIVACY.md` with
+  every network endpoint a script can call and the credential it needs, and
+  `assets/icon.png`. The root `plugin.json` gains
+  `extensions["com.openai"].interface` for OpenAI's ChatGPT + Codex
+  directory. Guarded.
+- **`NOTICE.md`**: `config/humanization-patterns.json` is adapted from
+  Wikipedia's *Signs of AI writing* and is distributed under CC BY-SA 4.0,
+  not MIT. The README (all 12 languages) now says so in its license line.
+
+**Fixed — the run auditor was laxer than the config it guards**
+
+- **The approve line was hardcoded at 7.0.** `run-audit.py` now resolves it
+  from `config/scoring-thresholds.json` in layers (default, content type,
+  industry), takes the stricter of the review's industry and the brand
+  profile's, and checks that the reviewer recorded the line it applied. A
+  pharma piece approved at 7.5 under an 8.0 line now fails the audit.
+- **Dimension minimums, weights and the composite** are now checked: an
+  APPROVED review with any dimension below its minimum fails, and the overall
+  score must match the configured weights applied to the review's own
+  dimension scores (±0.15).
+- **Loop budgets**: each loop edge and the run total are held to the smaller
+  of the caps declared in `pipeline-graph.json` and the scoring config
+  (precedence documented in `feedback_loop_limits._precedence`).
+- **A CLEAN audit could go stale silently.** The audit now records a sha256
+  fingerprint of `run.json`, every phase artifact, the source draft and the
+  `.docx`; `finalize --status completed` refuses if the audit is missing,
+  not CLEAN, or any fingerprinted file changed after it.
+- The reviewer's output schema records `industry` and
+  `minimum_pass_score_applied`, and applies industry dimension minimums.
+- The researcher's gate text matches the config: 10 live-verified sources,
+  5 of them at reliability 8 or higher (it had added a reliability-7 floor
+  that neither the config nor the pipeline graph defines).
+- The real August validation run still audits CLEAN under every new check
+  (23 pass, 0 fail, 1 not applicable).
+
+**Fixed — elsewhere**
+
+- **Opener matching in the AI-tell scan**: connectives match as whole words
+  ("so" no longer matched "Sometimes") and the participial check skips
+  non-participles ("During", "Something"). On a human sample the two rates
+  went from 60% / 60% to 0% / 0%.
+- **Two unsourced statistics removed from the README** ("single-pass
+  fact-checking misses 15–20% of hallucinations", "~15–20% hallucination
+  rate"). No source supported either.
+- The doc-count guard now sees qualified counts ("12 top-level slash
+  commands", "13 specialist agents").
+
 ## [4.2.0] - 2026-10-04
 
 ### The seven-week freshness pass

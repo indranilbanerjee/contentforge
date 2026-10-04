@@ -2,15 +2,15 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **已与英文版 README v4.2.0（2026-08-17）同步。** [英文版 README](README.md) 是唯一权威来源——发行说明、完整的技能/命令目录、架构说明、故障排查以及完整 FAQ 均在其中。本翻译涵盖了安装、运行和更新 ContentForge 所需的全部内容。
+> **已与英文版 README v4.3.0（2026-10-04）同步。** [英文版 README](README.md) 是唯一权威来源——发行说明、完整的技能/命令目录、架构说明、故障排查以及完整 FAQ 均在其中。本翻译涵盖了安装、运行和更新 ContentForge 所需的全部内容。
 
 > **本季度你要交付 30 篇文章：读起来像真人写的、引用真实来源、串联进你的转化漏斗，还要经得起较真编辑的审核。你的团队只有 3 个人，时间只有 9 周。上一批“AI 写的”稿件因为编造的统计数据被打了回来——而再上一批则悄无声息地过时了，没有任何人察觉。**
 
 对每个选题运行 `/contentforge:create-content`。10 阶段流水线会产出一份可直接发布的 `.docx`：内置 43 模式人性化引擎、事实核查子代理、三类内部链接，以及满足 EU AI Act 合规要求的 C2PA 内容溯源——每篇仅需 30–60 分钟。接下来是任何单发式工具都不具备的部分：**生命周期闭环。** 每一篇已发布的内容都会被持续度量、接受内容衰减审计，并回馈到下一期内容日历与下一份内容简报中——一切通过持久化的文件契约实现，因此系统对你品牌的认知不会随着学到它的那次会话结束而消失。
 
-开源企业级内容生产系统——**22 个技能 · 13 个专家代理 · 10 道质量门 · 43 模式 AI 痕迹人性化引擎 · 一个在流水线宣告完成之前重新推导每道质量门的运行审计器 · 28 个纯标准库 Python 脚本**。由 [Indranil Banerjee](https://indranil.in) 创建 · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)。
+开源企业级内容生产系统——**22 个技能 · 13 个专家代理 · 10 道质量门 · 43 模式 AI 痕迹人性化引擎 · 一个在流水线宣告完成之前重新推导每道质量门的运行审计器 · 29 个纯标准库 Python 脚本**。由 [Indranil Banerjee](https://indranil.in) 创建 · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)。
 
-**版本 4.2.0** · [更新日志](CHANGELOG.md) · MIT 许可证 · [赞助本项目 ❤](https://github.com/sponsors/indranilbanerjee)
+**版本 4.3.0** · [更新日志](CHANGELOG.md) · MIT 许可证 · [赞助本项目 ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## 支持的平台（v4.2.0）
+## 支持的平台（v4.3.0）
 
 9 个原生平台 + claude.ai 上传 + 35+ 个 Agent Skills 客户端：
 
@@ -177,4 +177,4 @@ ContentForge 由 **[Indranil "Neel" Banerjee](https://indranil.in)** 构建并�
 
 如果 ContentForge 为你的团队节省了时间，欢迎[⭐ 为仓库加星](https://github.com/indranilbanerjee/contentforge/stargazers)，也欢迎考虑[赞助本项目 ❤](https://github.com/sponsors/indranilbanerjee)——这能让发布节奏保持可持续。
 
-**许可证：**MIT · **安全：**[私密安全通报](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **问题反馈：**[GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**许可证：**MIT（`config/humanization-patterns.json` 除外：CC BY-SA 4.0，见 [NOTICE.md](NOTICE.md)） · **安全：**[私密安全通报](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **问题反馈：**[GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)

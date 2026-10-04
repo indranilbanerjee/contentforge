@@ -2,15 +2,15 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **영문 README v4.2.0 (2026-08-17)과 동기화되었습니다.** [영문 README](README.md)가 공식 원본입니다 — 릴리스 노트, 전체 스킬/명령어 카탈로그, 아키텍처, 문제 해결 가이드, 전체 FAQ는 모두 그곳에 있습니다. 이 번역본에는 ContentForge를 설치하고, 실행하고, 업데이트하는 데 필요한 모든 내용이 담겨 있습니다.
+> **영문 README v4.3.0 (2026-10-04)과 동기화되었습니다.** [영문 README](README.md)가 공식 원본입니다 — 릴리스 노트, 전체 스킬/명령어 카탈로그, 아키텍처, 문제 해결 가이드, 전체 FAQ는 모두 그곳에 있습니다. 이 번역본에는 ContentForge를 설치하고, 실행하고, 업데이트하는 데 필요한 모든 내용이 담겨 있습니다.
 
 > **이번 분기에 기사 30편을 내보내야 합니다. 사람이 쓴 것처럼 읽히고, 실제 출처를 인용하고, 퍼널로 연결되며, 꼼꼼히 확인하는 편집자의 검수까지 통과해야 합니다. 팀원은 3명, 남은 시간은 9주. 지난번 "AI가 쓴" 원고 묶음은 환각으로 지어낸 통계 때문에 반려되었고, 그 전 묶음은 조용히 낡아 가는데도 아무도 눈치채지 못했습니다.**
 
 각 주제에 대해 `/contentforge:create-content`를 실행하십시오. 10단계 파이프라인이 43가지 패턴의 휴머나이저, 팩트체커 서브에이전트, 3가지 범주의 내부 링크, EU AI Act 준수를 위한 C2PA 출처 증명을 갖춘, 즉시 게재 가능한 `.docx`를 편당 30–60분 만에 만들어 냅니다. 그리고 어떤 원샷 도구도 갖지 못한 것이 이어집니다: **라이프사이클 루프.** 게재된 모든 콘텐츠는 성과가 측정되고, 노후화 여부가 감사되며, 다음 캘린더와 다음 브리프에 다시 반영됩니다 — 지속되는 파일 계약을 통해서입니다. 시스템이 브랜드에 대해 학습한 내용은 학습이 이루어진 세션이 끝나도 살아남습니다.
 
-오픈소스 엔터프라이즈 콘텐츠 프로덕션 시스템 — **22개 스킬 · 13개 전문 에이전트 · 10개 품질 게이트 · 43가지 패턴의 AI 탐지 휴머나이저 · 실행이 스스로 완료를 선언하기 전에 모든 게이트를 재검증하는 런 오디터 · 표준 라이브러리만 사용하는 28개 Python 스크립트**. 제작자: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+오픈소스 엔터프라이즈 콘텐츠 프로덕션 시스템 — **22개 스킬 · 13개 전문 에이전트 · 10개 품질 게이트 · 43가지 패턴의 AI 탐지 휴머나이저 · 실행이 스스로 완료를 선언하기 전에 모든 게이트를 재검증하는 런 오디터 · 표준 라이브러리만 사용하는 29개 Python 스크립트**. 제작자: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-**버전 4.2.0** · [체인지로그](CHANGELOG.md) · MIT 라이선스 · [이 프로젝트 후원하기 ❤](https://github.com/sponsors/indranilbanerjee)
+**버전 4.3.0** · [체인지로그](CHANGELOG.md) · MIT 라이선스 · [이 프로젝트 후원하기 ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## 지원 플랫폼 (v4.2.0)
+## 지원 플랫폼 (v4.3.0)
 
 9개 네이티브 플랫폼 + claude.ai 업로드 + 35개 이상의 Agent Skills 클라이언트:
 
@@ -177,4 +177,4 @@ ContentForge는 **[Indranil "Neel" Banerjee](https://indranil.in)** 가 만들�
 
 ContentForge가 팀의 시간을 아껴 준다면 [⭐ 리포지토리에 스타](https://github.com/indranilbanerjee/contentforge/stargazers)를 눌러 주시고, [프로젝트 후원 ❤](https://github.com/sponsors/indranilbanerjee)도 고려해 주십시오 — 지속 가능한 릴리스 주기를 유지하는 데 힘이 됩니다.
 
-**라이선스:** MIT · **보안:** [비공개 보안 권고](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **이슈:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**라이선스:** MIT (`config/humanization-patterns.json`만 CC BY-SA 4.0, [NOTICE.md](NOTICE.md) 참조) · **보안:** [비공개 보안 권고](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **이슈:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)

@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "contentforge",
-  "version": "4.2.0",
-  "description": "Open-source enterprise content pipeline \u2014 22 skills, 13 agents, a 43-pattern AI humanizer, verified fix ledger, run auditor, and real .docx output.",
+  "version": "4.3.0",
+  "description": "Open-source enterprise content pipeline — 22 skills, 13 agents, a 43-pattern AI humanizer, verified fix ledger, run auditor, and real .docx output.",
   "author": {
     "name": "Indranil Banerjee",
     "url": "https://github.com/indranilbanerjee"
@@ -18,5 +18,32 @@
     "fact-checking",
     "content-pipeline",
     "marketing"
-  ]
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "ContentForge",
+        "shortDescription": "Open-source content lifecycle system — 22 skills, 13 agents, 10-gate pipeline, 43-pattern AI humanizer, run auditor, real .docx output, and a measure-audit-plan loop that compounds per brand.",
+        "longDescription": "22 skills + 13 specialist agents + 10 quality gates + 43-pattern AI-detection humanizer + fact-checker subagent + three-category internal linking. Produces real .docx with embedded SEO/Quality/Production/Internal-Link appendices. EU AI Act Article 50 ready via C2PA .docx signing. Zero global hooks. 16 opt-in HTTP MCP connectors. Per-phase checkpoint resume. Portable across Claude Code, Codex, Cursor, and Antigravity via the Agent Skills open standard.",
+        "developerName": "Indranil Banerjee",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://indranil.in",
+        "privacyPolicyURL": "https://github.com/indranilbanerjee/contentforge/blob/master/PRIVACY.md",
+        "termsOfServiceURL": "https://github.com/indranilbanerjee/contentforge/blob/master/LICENSE",
+        "defaultPrompt": [
+          "Run the ContentForge 10-phase pipeline for an article on EU AI Act compliance.",
+          "Humanize this draft against the 43-pattern AI-detection catalog.",
+          "Fact-check the claims in this draft against authoritative sources.",
+          "Generate a .docx of this article with C2PA provenance for EU distribution."
+        ],
+        "brandColor": "#0F6E66",
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png"
+      }
+    }
+  }
 }

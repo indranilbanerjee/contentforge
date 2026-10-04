@@ -119,3 +119,6 @@ test-output/
 
 # Local issue tracking (screenshots, internal notes)
 Issues_*/
+
+# claude plugin eval output
+evals/results/

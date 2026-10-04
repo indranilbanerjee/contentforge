@@ -1,5 +1,17 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.2.x → 4.3.0 (the quality contract)
+
+**Nothing migrates.** One behaviour change to know: the run auditor now
+resolves the approve line for the run's industry instead of a fixed 7.0, so a
+run in a stricter industry (pharma, for example) that was approved below its
+industry's line now audits as a violation, and `finalize --status completed`
+refuses it. `finalize` also refuses when any file the audit read has changed
+since the audit: re-run `scripts/run-audit.py` after editing a finished run.
+Audits written by 4.2.x have no fingerprint; re-audit before finalizing.
+
+---
+
 ## Upgrading 4.1.x → 4.2.0 (freshness pass)
 
 **No breaking changes, nothing migrates.** Two behaviour changes to know:

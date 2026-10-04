@@ -2,15 +2,15 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **انگریزی README v4.2.0 (2026-08-17) کے ساتھ ہم آہنگ۔** حتمی ماخذ [انگریزی README](README.md) ہی ہے — ریلیز نوٹس، اسکلز/کمانڈز کا مکمل کیٹلاگ، آرکیٹیکچر، ٹربل شوٹنگ اور مکمل FAQ وہیں موجود ہیں۔ یہ ترجمہ ContentForge کو انسٹال کرنے، چلانے اور اپڈیٹ کرنے کے لیے درکار ہر چیز کا احاطہ کرتا ہے۔
+> **انگریزی README v4.3.0 (2026-10-04) کے ساتھ ہم آہنگ۔** حتمی ماخذ [انگریزی README](README.md) ہی ہے — ریلیز نوٹس، اسکلز/کمانڈز کا مکمل کیٹلاگ، آرکیٹیکچر، ٹربل شوٹنگ اور مکمل FAQ وہیں موجود ہیں۔ یہ ترجمہ ContentForge کو انسٹال کرنے، چلانے اور اپڈیٹ کرنے کے لیے درکار ہر چیز کا احاطہ کرتا ہے۔
 
 > **آپ کو اس سہ ماہی میں 30 ایسے آرٹیکل شائع کرنے ہیں جو انسانی تحریر لگیں، حقیقی ماخذوں کا حوالہ دیں، آپ کے فنل سے جُڑیں، اور اُس ایڈیٹر کی جانچ سے بھی گزر جائیں جو واقعی پرکھتا ہے۔ آپ کی ٹیم تین افراد پر مشتمل ہے۔ آپ کے پاس نو ہفتے ہیں۔ آپ کا پچھلا "AI سے لکھا ہوا" بیچ من گھڑت اعداد و شمار کی وجہ سے پکڑا گیا — اور اُس سے پہلے والا بیچ خاموشی سے پرانا ہوتا گیا اور کسی کو خبر تک نہ ہوئی۔**
 
 ہر موضوع پر `/contentforge:create-content` چلائیں۔ 10 مرحلوں کی پائپ لائن اشاعت کے لیے تیار `.docx` بناتی ہے — جس میں 43 پیٹرن والا humanizer، ایک fact-checker ذیلی ایجنٹ، تین زمروں کی اندرونی لنکنگ، اور EU AI Act کی تعمیل کے لیے C2PA پرووننس شامل ہے — ہر تحریر 30–60 منٹ میں۔ پھر وہ حصہ جو کسی سنگل شاٹ ٹول کے پاس نہیں: **لائف سائیکل لوپ۔** ہر شائع شدہ تحریر کی پیمائش ہوتی ہے، زوال (decay) کے لیے اس کا آڈٹ ہوتا ہے، اور وہ اگلے کیلنڈر اور اگلی بریف میں واپس شامل ہوتی ہے — پائیدار فائل کنٹریکٹس کے ذریعے، تاکہ سسٹم آپ کے برانڈ کے بارے میں جو کچھ سیکھے وہ اُس سیشن کے ختم ہونے کے بعد بھی باقی رہے جس میں وہ سیکھا گیا۔
 
-اوپن سورس انٹرپرائز کنٹنٹ پروڈکشن سسٹم — **22 اسکلز · 13 ماہر ایجنٹس · 10 کوالٹی گیٹس · 43 پیٹرن والا AI-ڈیٹیکشن humanizer · ایک run auditor جو ہر گیٹ کو دوبارہ اخذ کرتا ہے، اس سے پہلے کہ کوئی رن خود کو مکمل قرار دے سکے · 28 Python اسکرپٹس، صرف stdlib**۔ تخلیق کار: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)۔
+اوپن سورس انٹرپرائز کنٹنٹ پروڈکشن سسٹم — **22 اسکلز · 13 ماہر ایجنٹس · 10 کوالٹی گیٹس · 43 پیٹرن والا AI-ڈیٹیکشن humanizer · ایک run auditor جو ہر گیٹ کو دوبارہ اخذ کرتا ہے، اس سے پہلے کہ کوئی رن خود کو مکمل قرار دے سکے · 29 Python اسکرپٹس، صرف stdlib**۔ تخلیق کار: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)۔
 
-**ورژن 4.2.0** · [چینج لاگ](CHANGELOG.md) · MIT لائسنس · [اس پروجیکٹ کو اسپانسر کریں ❤](https://github.com/sponsors/indranilbanerjee)
+**ورژن 4.3.0** · [چینج لاگ](CHANGELOG.md) · MIT لائسنس · [اس پروجیکٹ کو اسپانسر کریں ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## معاون پلیٹ فارمز (v4.2.0)
+## معاون پلیٹ فارمز (v4.3.0)
 
 نو نیٹو پلیٹ فارمز + claude.ai اپ لوڈز + 35+ Agent Skills کلائنٹس:
 
@@ -177,4 +177,4 @@ ContentForge کو **[Indranil "Neel" Banerjee](https://indranil.in)** بناتے
 
 اگر ContentForge آپ کی ٹیم کا وقت بچاتا ہے تو [⭐ ریپو کو اسٹار کریں](https://github.com/indranilbanerjee/contentforge/stargazers) اور [پروجیکٹ کو اسپانسر کرنے ❤](https://github.com/sponsors/indranilbanerjee) پر غور کریں — اسی سے ریلیز کی رفتار پائیدار رہتی ہے۔
 
-**لائسنس:** MIT · **سیکیورٹی:** [نجی ایڈوائزریز](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **مسائل:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**لائسنس:** MIT (سوائے `config/humanization-patterns.json` کے: CC BY-SA 4.0، دیکھیں [NOTICE.md](NOTICE.md)) · **سیکیورٹی:** [نجی ایڈوائزریز](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **مسائل:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)

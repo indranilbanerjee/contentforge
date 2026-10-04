@@ -140,6 +140,58 @@ def load_json_safe(path: Path):
         }
 
 
+# ── Run-directory fingerprint (audit freshness) ─────────────────────
+
+def run_artifact_fingerprint(run_dir) -> dict:
+    """Content hashes of the files a run audit reads, so "this audit is fresh"
+    is a comparison and not a promise.
+
+    Audited set — top level of the run directory only: ``run.json``, every
+    ``phase-*`` artifact, ``source-draft.md`` and every ``*.docx``. The audit's
+    own ``run-audit.json`` is excluded (it is the record being compared), as is
+    ``_sync-pending.json`` (Drive-sync bookkeeping, rewritten after every save)
+    and ``*.tmp`` files.
+
+    Hashes, not mtimes: a Drive sync, a copy or a restore rewrites mtimes
+    without changing a byte, and a hand edit inside the same second can leave
+    an mtime ordering ambiguous. The bytes are the evidence.
+
+    Returns ``{"algorithm": "sha256", "digest": <hex over the whole set>,
+    "files": {name: sha256}}``.
+    """
+    import hashlib
+
+    root = Path(run_dir)
+    files = {}
+    if root.is_dir():
+        for p in sorted(root.iterdir()):
+            name = p.name
+            if not p.is_file() or name.endswith(".tmp"):
+                continue
+            if not (name == "run.json" or name.startswith("phase-")
+                    or name == "source-draft.md" or name.lower().endswith(".docx")):
+                continue
+            h = hashlib.sha256()
+            with open(p, "rb") as fh:
+                for chunk in iter(lambda: fh.read(1 << 20), b""):
+                    h.update(chunk)
+            files[name] = h.hexdigest()
+    whole = hashlib.sha256()
+    for name in sorted(files):
+        whole.update(f"{name}\t{files[name]}\n".encode("utf-8"))
+    return {"algorithm": "sha256", "digest": whole.hexdigest(), "files": files}
+
+
+def fingerprint_drift(recorded: dict, current: dict) -> list:
+    """Human-readable differences between two fingerprints (empty = identical)."""
+    rec = (recorded or {}).get("files", {}) or {}
+    cur = (current or {}).get("files", {}) or {}
+    drift = [f"{n} changed" for n in sorted(rec) if n in cur and rec[n] != cur[n]]
+    drift += [f"{n} was added" for n in sorted(set(cur) - set(rec))]
+    drift += [f"{n} was removed" for n in sorted(set(rec) - set(cur))]
+    return drift
+
+
 # ── CLI result handling ─────────────────────────────────────────────
 
 def finish(result) -> "None":

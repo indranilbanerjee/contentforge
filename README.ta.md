@@ -2,15 +2,15 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **ஆங்கில README v4.2.0 (2026-08-17) உடன் ஒத்திசைக்கப்பட்டது.** [ஆங்கில README](README.md)-தான் அதிகாரப்பூர்வ மூல ஆவணம் — வெளியீட்டுக் குறிப்புகள், skills/commands முழுப் பட்டியல், கட்டமைப்பு விவரம், சிக்கல்தீர்வு வழிகாட்டி, முழுமையான FAQ ஆகியவை அங்கேயே உள்ளன. ContentForge-ஐ நிறுவவும், இயக்கவும், புதுப்பிக்கவும் தேவையான அனைத்தையும் இந்த மொழிபெயர்ப்பு உள்ளடக்கியுள்ளது.
+> **ஆங்கில README v4.3.0 (2026-10-04) உடன் ஒத்திசைக்கப்பட்டது.** [ஆங்கில README](README.md)-தான் அதிகாரப்பூர்வ மூல ஆவணம் — வெளியீட்டுக் குறிப்புகள், skills/commands முழுப் பட்டியல், கட்டமைப்பு விவரம், சிக்கல்தீர்வு வழிகாட்டி, முழுமையான FAQ ஆகியவை அங்கேயே உள்ளன. ContentForge-ஐ நிறுவவும், இயக்கவும், புதுப்பிக்கவும் தேவையான அனைத்தையும் இந்த மொழிபெயர்ப்பு உள்ளடக்கியுள்ளது.
 
 > **இந்தக் காலாண்டில் நீங்கள் 30 கட்டுரைகளை வெளியிட வேண்டும் — அவை மனிதர் எழுதியதுபோல் ஒலிக்க வேண்டும், உண்மையான ஆதாரங்களை மேற்கோள் காட்ட வேண்டும், உங்கள் funnel-க்குள் இணைய வேண்டும், கறாராகச் சரிபார்க்கும் editor-இடமும் தேற வேண்டும். உங்கள் அணியில் இருப்பது மூன்று பேர். கையில் இருப்பது ஒன்பது வாரங்கள். உங்கள் கடந்த "AI எழுதிய" தொகுப்பு கற்பனையான புள்ளிவிவரங்களுக்காகக் கொடியிடப்பட்டது — அதற்கும் முந்தைய தொகுப்பு யாரும் கவனிக்காமலேயே அமைதியாகக் காலாவதியாகிப் போனது.**
 
 ஒவ்வொரு தலைப்புக்கும் `/contentforge:create-content` ஐ இயக்குங்கள். 10-கட்டப் பைப்லைன், 43-வடிவ humanizer, ஒரு fact-checker subagent, மூன்று-வகை உள் இணைப்பு (internal linking), EU AI Act இணக்கத்திற்கான C2PA provenance ஆகியவற்றுடன் வெளியீட்டுக்குத் தயாரான `.docx`-ஐ உருவாக்கித் தருகிறது — ஒரு கட்டுரைக்கு 30–60 நிமிடங்களில். அதன் பிறகு, வேறு எந்த single-shot கருவியிடமும் இல்லாத அம்சம்: **lifecycle loop.** வெளியிடப்பட்ட ஒவ்வொரு கட்டுரையும் அளவிடப்பட்டு, தேய்மானத்திற்காக (decay) தணிக்கை செய்யப்பட்டு, அடுத்த calendar-க்கும் அடுத்த brief-க்கும் மீண்டும் ஊட்டப்படுகிறது — நிலைத்து நிற்கும் file contracts வழியாக; எனவே உங்கள் brand பற்றி அமைப்பு கற்றுக்கொண்டவை, அவற்றைக் கற்ற session முடிந்த பிறகும் நிலைத்திருக்கும்.
 
-திறந்த மூல, நிறுவனத் தரத்திலான உள்ளடக்க உற்பத்தி அமைப்பு — **22 skills · 13 specialist agents · 10 quality gates · 43-வடிவ AI-கண்டறிதல் humanizer · ஓர் ஓட்டம் தன்னை முடிந்ததாக அறிவிக்கும் முன் ஒவ்வொரு gate-ஐயும் மீண்டும் தருவித்துச் சரிபார்க்கும் run auditor · 28 Python scripts, stdlib-மட்டுமே**. உருவாக்கியவர்: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+திறந்த மூல, நிறுவனத் தரத்திலான உள்ளடக்க உற்பத்தி அமைப்பு — **22 skills · 13 specialist agents · 10 quality gates · 43-வடிவ AI-கண்டறிதல் humanizer · ஓர் ஓட்டம் தன்னை முடிந்ததாக அறிவிக்கும் முன் ஒவ்வொரு gate-ஐயும் மீண்டும் தருவித்துச் சரிபார்க்கும் run auditor · 29 Python scripts, stdlib-மட்டுமே**. உருவாக்கியவர்: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-**பதிப்பு 4.2.0** · [Changelog](CHANGELOG.md) · MIT உரிமம் · [இந்தத் திட்டத்தை ஆதரியுங்கள் ❤](https://github.com/sponsors/indranilbanerjee)
+**பதிப்பு 4.3.0** · [Changelog](CHANGELOG.md) · MIT உரிமம் · [இந்தத் திட்டத்தை ஆதரியுங்கள் ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -127,7 +127,7 @@ Content type, brand, தலைப்பு, சொல் எண்ணிக்�
 
 ---
 
-## ஆதரிக்கப்படும் தளங்கள் (v4.2.0)
+## ஆதரிக்கப்படும் தளங்கள் (v4.3.0)
 
 ஒன்பது native தளங்கள் + claude.ai uploads + 35+ Agent Skills clients:
 
@@ -177,4 +177,4 @@ ContentForge-ஐ உருவாக்கிப் பராமரிப்ப�
 
 ContentForge உங்கள் அணியின் நேரத்தை மிச்சப்படுத்தினால், [⭐ repo-வுக்கு star கொடுங்கள்](https://github.com/indranilbanerjee/contentforge/stargazers); மேலும் [திட்டத்திற்கு sponsor செய்வதையும் ❤](https://github.com/sponsors/indranilbanerjee) பரிசீலியுங்கள் — இது release வேகத்தை நிலையாகத் தொடர உதவுகிறது.
 
-**உரிமம்:** MIT · **பாதுகாப்பு:** [private advisories](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **சிக்கல்கள்:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)
+**உரிமம்:** MIT (விதிவிலக்கு `config/humanization-patterns.json`: CC BY-SA 4.0, பார்க்க [NOTICE.md](NOTICE.md)) · **பாதுகாப்பு:** [private advisories](https://github.com/indranilbanerjee/contentforge/security/advisories/new) · **சிக்கல்கள்:** [GitHub Issues](https://github.com/indranilbanerjee/contentforge/issues)

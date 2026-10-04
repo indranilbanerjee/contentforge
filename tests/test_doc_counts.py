@@ -33,7 +33,10 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 # "22 skills" / "25 Python scripts" but not "3-5 skills", "<5 agents", "v3.19.2 skills"
-COUNT_RE = re.compile(r"(?<![-<>~\d])\b(\d{1,3})\s+(?:Python\s+)?(skills|agents|commands|scripts)\b")
+# 2026-10-04: one optional qualifier let "18 top-level commands" and "24 specialist
+# agents" escape in a sibling plugin after a command fold; qualifiers now chain.
+COUNT_RE = re.compile(r"(?<![-<>~\d])\b(\d{1,3})\s+(?:(?:Python|top-level|slash|specialist)\s+)*"
+                      r"(skills|agents|commands|scripts)\b")
 # "All 21 SKILL.md files" — the phrasing the original guard could not see
 SKILL_MD_RE = re.compile(r"(?<![-<>~\d])\b(\d{1,3})\s+SKILL\.md files?\b")
 # "all 21 ContentForge skills" — plugin name between number and noun
@@ -129,6 +132,8 @@ class TestLiveDocCounts(unittest.TestCase):
         self.assertTrue(TABLE_ROW_RE.search("| Skills count | **158** |"))
         self.assertTrue(COUNT_RE.search("86 Python scripts"))
         self.assertFalse(COUNT_RE.search("~86 scripts"))  # approx stays exempt
+        self.assertTrue(COUNT_RE.search("12 top-level slash commands"))
+        self.assertTrue(COUNT_RE.search("13 specialist agents"))
 
 
 class TestAgentsContextCurrent(unittest.TestCase):

@@ -245,12 +245,13 @@ Overall Score = (Content Quality × w_cq) + (Citation Integrity × w_ci) +
 Default weights: 0.30 / 0.25 / 0.20 / 0.15 / 0.10
 ```
 
-**Industry Threshold Override:** Before comparing the composite score to the pass threshold, check the brand's industry:
-- Pharma: minimum 8.0 | BFSI: minimum 7.5 | Healthcare: minimum 8.0 | Legal: minimum 8.0 | All others: default 7.0
+**Threshold resolution — ONE rule for the approve line, the weights AND the dimension minimums (read at run time, never from memory):** start from `default` in `config/scoring-thresholds.json`; then apply `content_type_overrides.{content_type}` if it exists; then `industry_overrides.{industry}` if it exists (the brand profile's `industry`, lowercased, spaces as underscores). A later layer replaces every key it defines. That yields three things: `minimum_pass_score` (the approve line), `dimension_weights`, and the `quality_gates.phase_7_review` dimension minimums. An industry's raised minimums (pharma's Citation Integrity minimum, for instance, is above the default) bind exactly as its raised approve line does — they are not decoration. Before comparing the composite score to the pass threshold, use the resolved line. As shipped, the approve lines are Pharma 8.0 | BFSI 7.5 | Healthcare 8.0 | Legal 8.0 | all others 7.0 — illustrative only; config wins.
+
+**Record what you resolved** in the review JSON (`industry`, `minimum_pass_score_applied`, `weights_applied`). `scripts/run-audit.py` re-resolves the same policy from config and fails the run when your record disagrees with it, when an APPROVED decision sits below the resolved line or below any resolved dimension minimum, or when your composite does not follow from your own dimension scores and the resolved weights.
 
 **Rounding:** All scores rounded to 1 decimal place (standard rounding: ≥0.05 rounds up).
 
-**Dimension Minimums (fail if ANY dimension is below its minimum, regardless of composite — config key: `config/scoring-thresholds.json` → **`default.quality_gates.phase_7_review`** minimums, human-review cutoff key: **`default.human_review_threshold: 5.0`**. Both live under `default.`, not at the top level — a literal top-level lookup returns null and silently costs you the thresholds):**
+**Dimension Minimums — the DEFAULTS are listed below; apply the minimums the threshold-resolution rule above resolves for this industry (fail if ANY dimension is below its resolved minimum, regardless of composite — config key: `config/scoring-thresholds.json` → **`default.quality_gates.phase_7_review`** minimums, human-review cutoff key: **`default.human_review_threshold: 5.0`**. Both live under `default.`, not at the top level — a literal top-level lookup returns null and silently costs you the thresholds):**
 - Content Quality: ≥6.0
 - Citation Integrity: ≥7.0
 - Brand Compliance: ≥7.0 (or "SKIPPED" if guardrails empty — flag for manual review)
@@ -362,6 +363,8 @@ Return TWO things as your final output:
   "grade": "B+",
   "decision": "APPROVED | LOOP | HUMAN_REVIEW",
   "loop_target_phase": null,
+  "industry": "the brand profile's industry as you read it, e.g. pharma",
+  "minimum_pass_score_applied": 7.0,
   "weights_applied": {"content_quality": 30, "citation_integrity": 25, "brand_compliance": 20, "seo_performance": 15, "readability": 10},
   "dimensions": {
     "content_quality": 0.0,
@@ -415,8 +418,8 @@ For each dimension, report: overall score, component scores (1-line each with sc
 - Hallucinations: [count] | Prohibited Claims: [count] | Required Disclaimers: [status] | Guardrail Compliance: [%] | Citation Accuracy: [%]
 
 ## QUALITY GATE 7 CRITERIA CHECK
-- [ ] All dimension minimums met (CQ ≥6.0, CI ≥7.0, BC ≥7.0, SEO ≥6.0, Read ≥6.0)
-- [ ] Overall score ≥ minimum_pass_score (industry-adjusted)
+- [ ] All dimension minimums met (defaults: CQ ≥6.0, CI ≥7.0, BC ≥7.0, SEO ≥6.0, Read ≥6.0 — use the industry-resolved minimums where config raises them)
+- [ ] Overall score ≥ minimum_pass_score (industry-adjusted; record it as `minimum_pass_score_applied`)
 - [ ] No critical violations
 **OVERALL DECISION:** [APPROVED | LOOP | HUMAN REVIEW]
 
