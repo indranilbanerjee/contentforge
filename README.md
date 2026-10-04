@@ -8,21 +8,21 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 29 Python scripts, stdlib-only**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.3.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.3.1-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-687%2F687%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v430)
+[![Tests](https://img.shields.io/badge/tests-689%2F689%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v431)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.3.0 (October 4, 2026): the quality contract, made checkable.** **[The Quality Contract](docs/QUALITY-CONTRACT.md)** now states in one page what ContentForge guarantees before a piece is delivered — every gate, the approve line per industry, the loop budgets — and which guarantees a script enforces versus which are a reviewer's judgment; a test fails the build if the page and the config ever disagree. **The run auditor was laxer than that config:** it checked every run against a hardcoded 7.0, so a pharma piece approved at 7.5 under its 8.0 line passed. It now resolves the line per industry, enforces every dimension minimum, recomputes the weighted score, holds each loop to its budget, and fingerprints the files it read — `finalize --status completed` refuses if any changed after the audit. The real August validation run still audits CLEAN. **New:** a one-page HTML scorecard for every finished run (offered as a private page when your host can publish one), an `audit-library` workflow, always-on recipes for six schedulers, an eval suite, and directory listing fields. Also fixed: whole-word opener matching in the AI-tell scan (60% → 0% false flags on a human sample), and two unsourced statistics removed from this README.
+> 🆕 **Just shipped — v4.3.1 (October 4, 2026), on top of v4.3.0: the quality contract, made checkable.** **[The Quality Contract](docs/QUALITY-CONTRACT.md)** now states in one page what ContentForge guarantees before a piece is delivered — every gate, the approve line per industry, the loop budgets — and which guarantees a script enforces versus which are a reviewer's judgment; a test fails the build if the page and the config ever disagree. **The run auditor was laxer than that config:** it checked every run against a hardcoded 7.0, so a pharma piece approved at 7.5 under its 8.0 line passed. It now resolves the line per industry, enforces every dimension minimum, recomputes the weighted score, holds each loop to its budget, and fingerprints the files it read — `finalize --status completed` refuses if any changed after the audit. The real August validation run still audits CLEAN. **New:** a one-page HTML scorecard for every finished run (offered as a private page when your host can publish one), an `audit-library` workflow, always-on recipes for six schedulers, an eval suite, and directory listing fields. Also fixed: whole-word opener matching in the AI-tell scan (60% → 0% false flags on a human sample), and two unsourced statistics removed from this README.
 >
 > **v4.2.0 (October 4, 2026): the seven-week freshness pass.** Codex installs repaired (the shared marketplace's source shorthand made Codex list zero plugins), the model registry re-verified, and `cf-publish` now places the AI-disclosure label at first exposure, as Article 50 requires.
 >
@@ -30,7 +30,7 @@ Open-source enterprise content production system — **22 skills · 13 specialis
 >
 > **v4.1.1 (August 17, 2026): the README goes global, and shows its receipts.** This README now reads in **12 languages** (हिन्दी, 中文, 日本語, 한국어, Español, Português, العربية, اردو, தமிழ், বাংলা, Русский — switcher at the top, every translation version-stamped and guard-checked), carries **the real artifacts from a real validated run** — the actual chart the pipeline rendered, the actual humanizer before/after edits, the actual 9.0/A scorecard and CLEAN audit verdict ([see them](#the-artifacts-themselves--real-output-you-can-inspect)) — and documents **running ContentForge on OpenAI surfaces** (Codex CLI/IDE/App and ChatGPT via Agent Plugins 1.0) with the same depth as the Claude surfaces, including [updating on all nine platforms](#updating). Previously —
 >
-> **v4.1.0 (August 17, 2026): two new surfaces.** ContentForge now installs natively on **Grok (xAI Build CLI)** — `grok plugin install indranilbanerjee/contentforge` — via a first-class `.grok-plugin/` manifest pair, version-locked to every other manifest by the release-consistency suite. And five **hero skills now ship as claude.ai-uploadable `.skill` release assets** (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`), built by a deterministic packager (`scripts/build-skill-assets.py`) that bundles each skill's config/template dependencies and *refuses to package* any skill whose prose references a file that wouldn't exist after upload — so a claude.ai user never downloads a skill with broken references. [Install for your platform →](#supported-surfaces-v430)
+> **v4.1.0 (August 17, 2026): two new surfaces.** ContentForge now installs natively on **Grok (xAI Build CLI)** — `grok plugin install indranilbanerjee/contentforge` — via a first-class `.grok-plugin/` manifest pair, version-locked to every other manifest by the release-consistency suite. And five **hero skills now ship as claude.ai-uploadable `.skill` release assets** (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`), built by a deterministic packager (`scripts/build-skill-assets.py`) that bundles each skill's config/template dependencies and *refuses to package* any skill whose prose references a file that wouldn't exist after upload — so a claude.ai user never downloads a skill with broken references. [Install for your platform →](#supported-surfaces-v431)
 >
 > **v4.0.0 (August 17, 2026): the lifecycle release.** ContentForge 3.x was a production pipeline; 4.0 makes it a content **system**. Three architectural changes, each grounded in a defect a real run exposed: **(1) The lifecycle loop closed.** `cf-audit` findings now land in a validated, canonical per-brand store (`scripts/audit-ledger.py`) that `cf-calendar` and `content-refresh` read across sessions; AI-visibility history (`aeo/checks.json`) feeds the freshness model; and each run's verified link inventory merges back into `brand_pages` automatically — conversion pages only ever *staged* for your confirmation, because a CTA is a commercial decision the system must not make for you. Before 4.0 every one of those handoffs was conversational, and worked only while one session held both ends. **(2) The pipeline contract is data.** `config/pipeline-graph.json` declares every phase's reads, writes, gates, and budgeted loop edges — drift-guarded both directions against the agent contracts, the checkpoint manager, and the run auditor. Encoding it immediately found six under-declared inputs the prose table had lost. **(3) The pipeline learns, with floors.** New `scripts/telemetry.py` aggregates loop history, phase timings, and the humanizer's per-pattern hit counts across runs — recurring patterns reach the next drafter brief as advisories behind a recurrence floor, and never touch a gate, a threshold, or a verdict. 22 skills · 27 scripts · 498 tests. [Release notes →](#release-notes) · [Full changelog →](CHANGELOG.md)
 
@@ -75,7 +75,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.3.0)
+## Supported surfaces (v4.3.1)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -603,10 +603,9 @@ Run `/plugin`, go to the **Marketplaces** tab, find `neels-plugins`, and toggle 
 
 ### If a version stays the same but content changed
 
-This happens during fast-iteration debugging. Clear the cached copy and reinstall:
+This happens during fast-iteration debugging. Delete the folder `~/.claude/plugins/cache/neels-plugins` (it holds only downloaded plugin copies), then reinstall:
 
 ```
-rm -rf ~/.claude/plugins/cache/neels-plugins
 /plugin install contentforge@neels-plugins
 /reload-plugins
 ```
@@ -789,6 +788,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.3.1 (2026-10-04)** — **Hermes can install it again.** Hermes Agent's install-time security scan rated ContentForge "dangerous" on harmless lines written the way an attack would be (recursive-delete one-liners aimed at the home folder, a realistic-looking example password, a description that matched a translate-then-execute pattern). Reworded; Hermes's own validator now passes; a new guard applies the scanner's patterns to every shipped file.
 
 **v4.3.0 (2026-10-04)** — **The quality contract, made checkable.** `docs/QUALITY-CONTRACT.md`, parsed against `config/` by a test. `run-audit.py` resolves the approve line per industry instead of a hardcoded 7.0, enforces dimension minimums, recomputes the weighted score, enforces loop budgets, and fingerprints the files it read so `finalize --status completed` refuses a stale audit. New `scripts/scorecard-html.py` (one self-contained page per run, publishable on the user's yes), `audit-library` workflow, `docs/ALWAYS-ON-RECIPES.md`, `evals/`, directory listing fields, `PRIVACY.md` with every network endpoint, `NOTICE.md` (the pattern catalog is CC BY-SA 4.0). Whole-word opener matching in the AI-tell scan. Real August run re-audited: CLEAN.
 

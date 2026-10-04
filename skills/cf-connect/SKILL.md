@@ -127,7 +127,7 @@ Setup pattern:
 4. **Set environment variables** (shell profile or `.env` loaded before Claude Code starts; on Windows: System Properties → Environment Variables, then restart the terminal):
    ```
    export WORDPRESS_SITE_URL="https://your-site.com"
-   export WORDPRESS_AUTH_TOKEN="your-application-password"
+   export WORDPRESS_AUTH_TOKEN="<your WordPress application password>"
    ```
 5. **Add the `.mcp.json` entry** (use the exact block from the setup-guide output):
    ```json

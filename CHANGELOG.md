@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.3.1] - 2026-10-04
+
+### Fixed — Hermes refused to install the plugin
+
+- **Hermes Agent's install-time security scan rated the plugin "dangerous"**
+  (`hermes plugins install` refuses that verdict), on harmless lines written
+  the way an attack would be: recursive-delete one-liners aimed at the home
+  folder in the README and testing guide, a realistic-looking example password
+  in `cf-connect`, and a `cf-translate` description whose wording matched
+  the scanner's translate-then-execute pattern. All reworded; the docs now say
+  to delete the cache folder, and to move brand data aside rather than delete
+  it before a fresh test. Hermes's own validator (main branch) now passes with
+  a "safe" scan.
+- New `tests/test_host_scanner_compat.py` applies the scanner's patterns to
+  every shipped text file.
+
 ## [4.3.0] - 2026-10-04
 
 ### The quality contract, made checkable
