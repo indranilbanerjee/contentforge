@@ -2,7 +2,7 @@
 
 🌐 **Read this in:** [English](README.md) · [हिन्दी](README.hi.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [العربية](README.ar.md) · [اردو](README.ur.md) · [தமிழ்](README.ta.md) · [বাংলা](README.bn.md) · [Русский](README.ru.md)
 
-> **Синхронизировано с английским README v4.1.2 (2026-08-17).** [Английский README](README.md) — источник истины: там находятся примечания к релизам, полный каталог навыков и команд, описание архитектуры, руководство по устранению неполадок и полный FAQ. Этот перевод покрывает всё необходимое, чтобы установить, запустить и обновлять ContentForge.
+> **Синхронизировано с английским README v4.2.0 (2026-08-17).** [Английский README](README.md) — источник истины: там находятся примечания к релизам, полный каталог навыков и команд, описание архитектуры, руководство по устранению неполадок и полный FAQ. Этот перевод покрывает всё необходимое, чтобы установить, запустить и обновлять ContentForge.
 
 > **Вам нужно выпустить за квартал 30 статей — таких, которые звучат по-человечески, ссылаются на реальные источники, встраиваются в вашу воронку и выдерживают проверку редактора, который действительно проверяет. В команде три человека. У вас девять недель. Прошлую партию «написанного ИИ» контента завернули за выдуманную статистику, а партия до неё тихо устарела — и никто этого не заметил.**
 
@@ -10,7 +10,7 @@
 
 Система производства контента корпоративного уровня с открытым исходным кодом — **22 навыка · 13 агентов-специалистов · 10 гейтов качества · хуманизатор с 43 паттернами против ИИ-детекции · аудитор прогонов, заново выводящий каждый гейт, прежде чем прогон получит право назвать себя завершённым · 28 Python-скриптов, только стандартная библиотека**. Автор — [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-**Версия 4.1.2** · [История изменений](CHANGELOG.md) · Лицензия MIT · [Поддержать проект ❤](https://github.com/sponsors/indranilbanerjee)
+**Версия 4.2.0** · [История изменений](CHANGELOG.md) · Лицензия MIT · [Поддержать проект ❤](https://github.com/sponsors/indranilbanerjee)
 
 ---
 
@@ -60,7 +60,7 @@
 
 ```bash
 codex plugin marketplace add indranilbanerjee/neels-plugins
-codex plugin install contentforge@neels-plugins
+codex plugin add contentforge@neels-plugins
 ```
 
 **Другие платформы:**
@@ -127,7 +127,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ---
 
-## Поддерживаемые платформы (v4.1.2)
+## Поддерживаемые платформы (v4.2.0)
 
 Девять нативных платформ + загрузки на claude.ai + 35+ клиентов Agent Skills:
 
@@ -135,7 +135,7 @@ grok plugin install indranilbanerjee/contentforge
 |---|---|
 | **Claude Code** (CLI + IDE) | `/plugin install contentforge@neels-plugins` |
 | **Anthropic Cowork** | Панель Plugins → Add marketplace → `indranilbanerjee/neels-plugins` |
-| **OpenAI Codex** | `codex plugin install contentforge@neels-plugins` |
+| **OpenAI Codex** | `codex plugin add contentforge@neels-plugins` |
 | **Cursor 2.5+** | `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` |
 | **GitHub Copilot CLI** | `copilot plugin install contentforge@neels-plugins` |
 | **Google Antigravity 2.0** | `agy plugin install https://github.com/indranilbanerjee/contentforge` |

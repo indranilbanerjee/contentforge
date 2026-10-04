@@ -108,13 +108,25 @@ Migration complete:
                         and ~/.claude-marketing/{brand}/outputs/{YYYY}/{MM}/
 ```
 
-### Step 4: Update Brand Profile
+### Step 4: Get explicit approval, then update the brand profile
 
-Update the brand profile JSON:
+**Do not write the brand profile until the user explicitly approves this exact change** — even when Step 3 had nothing to migrate and asked nothing. Show the change first:
+
+```
+About to switch {brand}'s tracking backend:
+  tracking.backend: {current} → {target}
+  New config: {backend-specific keys and values, secrets masked}
+  Existing data: preserved in place (never deleted)
+Type "yes" to apply, anything else to cancel.
+```
+
+Anything other than an explicit yes cancels the switch with no files changed. This gate is the safety boundary on every platform: Claude Code honours this skill's `disable-model-invocation: true`, but other hosts (Codex documents the field as unsupported) can invoke the skill without the user typing its command.
+
+On approval, update the brand profile JSON:
 - Set `tracking.backend` to the new backend value
 - Fill in backend-specific config (base_id, sheet_id, folder_id, etc.)
 
-### Step 5: Confirm
+### Step 5: Report
 
 ```
 Backend switched to Airtable.

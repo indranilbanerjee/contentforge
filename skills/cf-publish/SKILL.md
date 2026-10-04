@@ -216,9 +216,10 @@ Before pushing, check whether AI-generation disclosure applies:
 **If it applies:**
 
 1. **For .docx deliverables** — note that C2PA content provenance signing is available via `--c2pa-sign` (with `--c2pa-signing-cert` and `--c2pa-signing-key`) on `scripts/generate-docx.py` (see `docs/c2pa-production-cert.md` for certificate setup). If the piece was produced without signing and the user needs it, offer to regenerate the .docx with signing enabled.
-2. **For CMS publishes (Webflow/WordPress)** — offer to append a disclosure line to the article, e.g.:
+2. **For CMS publishes (Webflow/WordPress)** — offer to add a disclosure label to the article, e.g.:
    > "This article was produced with AI assistance and reviewed by [brand]'s editorial team."
-   Place it where the brand's guardrails specify (typically the footer or byline area). Record the user's choice in the tracking notes.
+   **Place it at the top — in the byline area or directly under the title — never only in the footer.** The European Commission's labelling rule is that the label must be "clearly perceivable and distinguishable at the latest at the time of first exposure" of a reader to the text, and must stay visible when the content is reshared or downloaded (so it belongs in the article body the CMS syndicates, not a site-template footer). Record the user's choice in the tracking notes.
+   **Which EU icon (optional to use; the label itself is not):** the Commission publishes three — **Basic** (AI was involved), **Fully AI-Generated** (no human-created elements or human editorial control), **Partially AI-Modified** (pre-existing human-made content partially modified with AI). Choose from this run's records: a `phase-6.5-authorship.json` with `may_claim_authored: true` → **Partially AI-Modified**; no source draft and no editorial review → **Fully AI-Generated**; anything unclear → **Basic**. Uncertainty never skips the label. Source: [EU icons for labelling AI-generated content](https://digital-strategy.ec.europa.eu/en/policies/eu-icons-labelling-ai-generated-content) (updated 24 Sep 2026).
 3. **For downstream social promotion** — remind the user that major platforms (LinkedIn, Meta, TikTok, YouTube) have AI-content labeling options/requirements; `/contentforge:cf-social-adapt` surfaces these per platform.
 
 **If it does not apply** (no EU targeting, no guardrail requirement): skip with a one-line note in the output — "AI-disclosure check: not required (no EU targeting configured)" — so the decision is auditable.

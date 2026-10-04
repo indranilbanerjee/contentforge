@@ -1,5 +1,18 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.1.x → 4.2.0 (freshness pass)
+
+**No breaking changes, nothing migrates.** Two behaviour changes to know:
+`cf-switch-backend` now asks for an explicit "yes" before it rewrites the brand
+profile, and `cf-publish` places the AI-disclosure label at the top of the
+article (Article 50 first-exposure rule) instead of suggesting the footer.
+**Codex users:** if you added the marketplace before October 2026 and it showed
+no plugins, run `codex plugin marketplace remove neels-marketing-plugins`, then
+`codex plugin marketplace add indranilbanerjee/neels-plugins` and
+`codex plugin add contentforge@neels-plugins`.
+
+---
+
 ## Upgrading 4.1.0 → 4.1.1 (docs release)
 
 **No functional changes.** 4.1.1 is documentation: 11 README translations

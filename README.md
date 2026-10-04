@@ -8,25 +8,27 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 28 Python scripts, stdlib-only**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.1.2-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.2.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-522%2F522%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v412)
+[![Tests](https://img.shields.io/badge/tests-524%2F524%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v420)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.1.2 (August 17, 2026): schema-clean hooks manifest.** Cowork's plugin validation rejects unknown top-level fields in `hooks.json`, and ours carried a `_readme` rationale field ([digital-marketing-pro#9](https://github.com/indranilbanerjee/digital-marketing-pro/issues/9) — the same defect shipped in all three suite plugins). The rationale now lives in [hooks/README.md](hooks/README.md), `hooks.json` is exactly `{"hooks": {}}`, and a new guard keeps it that way. Translations re-stamped. Previously —
+> 🆕 **Just shipped — v4.2.0 (October 4, 2026): the seven-week freshness pass.** **Codex installs were silently broken** — the shared marketplace's source shorthand made Codex list zero plugins — fixed and verified against a live Codex install; every README (all 12 languages) now gives the real command, `codex plugin add contentforge@neels-plugins`. **EU AI labels at first exposure:** `cf-publish` had told users to put the AI-disclosure line "typically [in] the footer" — Article 50 enforcement (live since Aug 2) requires the label be visible at first exposure and survive resharing; it now goes at the top, with the Commission's icon (Basic / Fully AI-Generated / Partially AI-Modified) chosen from the run's own authorship record. **`cf-switch-backend` now asks before it writes** — previously its only confirmation came after the brand profile was rewritten, which mattered because hosts like Codex ignore `disable-model-invocation`. **Model registry** re-verified against every vendor's official pages (Claude Opus 5.5 / Sonnet 5.5 / Fable 5.1, GPT-6 family, Gemini 3.8 Flash; shut-down Gemini/Imagen ids retired) — it had been last refreshed in July. Previously —
+>
+> **v4.1.2 (August 17, 2026): schema-clean hooks manifest.** Cowork's plugin validation rejects unknown top-level fields in `hooks.json`, and ours carried a `_readme` rationale field ([digital-marketing-pro#9](https://github.com/indranilbanerjee/digital-marketing-pro/issues/9) — the same defect shipped in all three suite plugins). The rationale now lives in [hooks/README.md](hooks/README.md), `hooks.json` is exactly `{"hooks": {}}`, and a new guard keeps it that way. Translations re-stamped. Previously —
 >
 > **v4.1.1 (August 17, 2026): the README goes global, and shows its receipts.** This README now reads in **12 languages** (हिन्दी, 中文, 日本語, 한국어, Español, Português, العربية, اردو, தமிழ், বাংলা, Русский — switcher at the top, every translation version-stamped and guard-checked), carries **the real artifacts from a real validated run** — the actual chart the pipeline rendered, the actual humanizer before/after edits, the actual 9.0/A scorecard and CLEAN audit verdict ([see them](#the-artifacts-themselves--real-output-you-can-inspect)) — and documents **running ContentForge on OpenAI surfaces** (Codex CLI/IDE/App and ChatGPT via Agent Plugins 1.0) with the same depth as the Claude surfaces, including [updating on all nine platforms](#updating). Previously —
 >
-> **v4.1.0 (August 17, 2026): two new surfaces.** ContentForge now installs natively on **Grok (xAI Build CLI)** — `grok plugin install indranilbanerjee/contentforge` — via a first-class `.grok-plugin/` manifest pair, version-locked to every other manifest by the release-consistency suite. And five **hero skills now ship as claude.ai-uploadable `.skill` release assets** (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`), built by a deterministic packager (`scripts/build-skill-assets.py`) that bundles each skill's config/template dependencies and *refuses to package* any skill whose prose references a file that wouldn't exist after upload — so a claude.ai user never downloads a skill with broken references. [Install for your platform →](#supported-surfaces-v412)
+> **v4.1.0 (August 17, 2026): two new surfaces.** ContentForge now installs natively on **Grok (xAI Build CLI)** — `grok plugin install indranilbanerjee/contentforge` — via a first-class `.grok-plugin/` manifest pair, version-locked to every other manifest by the release-consistency suite. And five **hero skills now ship as claude.ai-uploadable `.skill` release assets** (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`), built by a deterministic packager (`scripts/build-skill-assets.py`) that bundles each skill's config/template dependencies and *refuses to package* any skill whose prose references a file that wouldn't exist after upload — so a claude.ai user never downloads a skill with broken references. [Install for your platform →](#supported-surfaces-v420)
 >
 > **v4.0.0 (August 17, 2026): the lifecycle release.** ContentForge 3.x was a production pipeline; 4.0 makes it a content **system**. Three architectural changes, each grounded in a defect a real run exposed: **(1) The lifecycle loop closed.** `cf-audit` findings now land in a validated, canonical per-brand store (`scripts/audit-ledger.py`) that `cf-calendar` and `content-refresh` read across sessions; AI-visibility history (`aeo/checks.json`) feeds the freshness model; and each run's verified link inventory merges back into `brand_pages` automatically — conversion pages only ever *staged* for your confirmation, because a CTA is a commercial decision the system must not make for you. Before 4.0 every one of those handoffs was conversational, and worked only while one session held both ends. **(2) The pipeline contract is data.** `config/pipeline-graph.json` declares every phase's reads, writes, gates, and budgeted loop edges — drift-guarded both directions against the agent contracts, the checkpoint manager, and the run auditor. Encoding it immediately found six under-declared inputs the prose table had lost. **(3) The pipeline learns, with floors.** New `scripts/telemetry.py` aggregates loop history, phase timings, and the humanizer's per-pattern hit counts across runs — recurring patterns reach the next drafter brief as advisories behind a recurrence floor, and never touch a gate, a threshold, or a verdict. 22 skills · 27 scripts · 498 tests. [Release notes →](#release-notes) · [Full changelog →](CHANGELOG.md)
 
@@ -71,13 +73,13 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.1.2)
+## Supported surfaces (v4.2.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
 | **Claude Code** CLI + IDE extension | `/plugin install contentforge@neels-plugins` | `.claude-plugin/plugin.json` | Full support (canonical for solo devs) |
 | **Anthropic Cowork** | Plugins panel in UI → Add marketplace → `indranilbanerjee/neels-plugins` → Install ContentForge | same `.claude-plugin/` files | **Recommended for teams** — `/contentforge:cf-cowork-setup` wires Google Drive for team-shareable output (and, in 4.0, for the lifecycle stores that make the loop compound across sessions) |
-| **OpenAI Codex** CLI + IDE + App | `codex plugin marketplace add indranilbanerjee/neels-plugins` then `codex plugin install contentforge@neels-plugins` | `.codex-plugin/plugin.json` (published OpenAI schema) | Full skills + MCP support |
+| **OpenAI Codex** CLI + IDE + App | `codex plugin marketplace add indranilbanerjee/neels-plugins` then `codex plugin add contentforge@neels-plugins` | `.codex-plugin/plugin.json` (published OpenAI schema) | Full skills + MCP support |
 | **Cursor 2.5+** | In any Cursor Agent chat: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` | `.cursor-plugin/plugin.json` (verified Cursor 2.5+ JSON Schema) | Full skills + agents + commands support |
 | **GitHub Copilot CLI** | `copilot plugin marketplace add indranilbanerjee/neels-plugins` then `copilot plugin install contentforge@neels-plugins` | `.github/plugin/plugin.json` (Copilot also recognizes `.claude-plugin/plugin.json` as fallback) | Full skills + MCP support |
 | **Google Antigravity 2.0** CLI + IDE | `agy plugin install https://github.com/indranilbanerjee/contentforge` | `gemini-extension.json` (at repo root, per Google's reference pattern) | Full skills + hooks support |
@@ -673,7 +675,7 @@ The Claude surfaces get most of this README's screen time because they're where 
 
 ```bash
 codex plugin marketplace add indranilbanerjee/neels-plugins
-codex plugin install contentforge@neels-plugins
+codex plugin add contentforge@neels-plugins
 ```
 
 What happens after install, mechanically:
@@ -700,7 +702,7 @@ What that means in practice, stated honestly:
 Every remaining surface follows the same pattern — a native manifest wrapping the same `skills/` directory, the portable lane where subagent dispatch is missing:
 
 - **Cursor 2.5+**: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` — full skills + agents + commands.
-- **GitHub Copilot CLI**: `copilot plugin install contentforge@neels-plugins` — full skills + MCP; custom slash commands aren't supported by Copilot CLI yet (open issue), so invoke by natural language.
+- **GitHub Copilot CLI**: `copilot plugin install contentforge@neels-plugins` — full skills + MCP; skills run as `/skill-name` (Copilot CLI closed its custom-slash-command gap in March 2026) or by natural language.
 - **Google Antigravity 2.0**: `agy plugin install https://github.com/indranilbanerjee/contentforge` — full skills + hooks; subagents spawn via the `/agent` CLI.
 - **Grok (xAI Build CLI)**: `grok plugin install indranilbanerjee/contentforge` — native `.grok-plugin/` pair; Grok also reads the Claude manifests for compatibility.
 - **Hermes Agent / OpenClaw**: native adapters at repo root (`plugin.yaml` + `__init__.py`, `openclaw.plugin.json`) registering all 22 skills.
@@ -718,9 +720,9 @@ Whatever the surface, the invariants hold: same skills, same scripts, same artif
 | Claude Code CLI | ✅ Full local support | Reference environment for developers. Files land in `~/Documents/ContentForge/<brand>/...` on your host. Every feature tested here first. |
 | Claude Code IDE extension (VS Code / JetBrains) | ✅ Full local support | Same as CLI; uses host filesystem. |
 | Standard Claude chat (browser `claude.ai` OR installed Claude Desktop app) | ❌ `/plugin` slash commands not available | Plugins still install and run via the **Plugins** UI button at the bottom of the chat. Additionally (v4.1.0): five hero skills ship as [`.skill` release assets](https://github.com/indranilbanerjee/contentforge/releases/latest) you can upload directly — claude.ai → Settings → Capabilities (enable *Code execution and file creation*) → Customize → Skills → Upload skill. |
-| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin install contentforge@neels-plugins`. Same 22 skills, same scripts. On builds without subagent dispatch, the portable execution lane runs the full pipeline sequentially with every gate intact. |
+| **OpenAI Codex** CLI + IDE + App | ✅ Full skills + MCP support | `codex plugin add contentforge@neels-plugins`. Same 22 skills, same scripts. On builds without subagent dispatch, the portable execution lane runs the full pipeline sequentially with every gate intact. |
 | **Cursor 2.5+** | ✅ Full skills + agents + commands | `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` in any Cursor Agent chat. |
-| **GitHub Copilot CLI** | ✅ Full skills + MCP | `copilot plugin install contentforge@neels-plugins`. Custom slash commands not yet supported in Copilot CLI (open issue) — invoke skills by natural language. |
+| **GitHub Copilot CLI** | ✅ Full skills + MCP | `copilot plugin install contentforge@neels-plugins`. Skills run as `/skill-name` or by natural language; `copilot plugin enable/disable` manages the install. |
 | **Google Antigravity 2.0** CLI + IDE | ✅ Full skills + hooks | `agy plugin install https://github.com/indranilbanerjee/contentforge`. Subagents need `/agent` CLI spawning; slash commands fold into skills. |
 | **Grok** (xAI Build CLI) | ✅ Full skills | `grok plugin install indranilbanerjee/contentforge` (native `.grok-plugin/` pair; Grok also reads the Claude Code manifests for compatibility). Pipeline runs via the portable execution lane. |
 
@@ -783,6 +785,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.2.0 (2026-10-04)** — **The seven-week freshness pass.** Codex install repaired (marketplace source shorthand Codex silently dropped; README command corrected in all 12 languages and guarded). `cf-publish` disclosure placement fixed for Article 50's first-exposure rule, with EU icon selection from the authorship record. `cf-switch-backend` gained a confirm-before-write gate. Model registry re-verified and synced (Claude 5.5 / Fable 5.1, GPT-6 family, GPT Image 2.5, Gemini 3.8 Flash + Omni Flash; retired ids marked). Stale Copilot CLI slash-command claims corrected. New guards: plugin.json documented-fields, root `settings.json` well-formedness. **Tests 522 → 524.**
 
 **v4.1.2 (2026-08-17)** — **Schema-clean hooks manifest.** Cowork's plugin validation rejects unknown top-level fields in `hooks.json`; ours carried a `_readme` rationale field (reported as [digital-marketing-pro#9](https://github.com/indranilbanerjee/digital-marketing-pro/issues/9) — all three suite plugins shipped the same defect). Rationale moved to `hooks/README.md`, manifest reduced to exactly `{"hooks": {}}`, guarded by `TestHooksManifestSchemaClean`. Translations re-stamped. **Tests 520 → 522.**
 

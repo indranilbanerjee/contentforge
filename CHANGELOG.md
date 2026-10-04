@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.2.0] - 2026-10-04
+
+### The seven-week freshness pass
+
+**Fixed — install**
+
+- Codex could not see ContentForge: the shared marketplace's Codex manifest
+  used the `{"source": "github"}` shorthand, which Codex silently drops
+  (fixed in neels-plugins 3.52.0; reproduced and verified on a live codex-cli
+  0.145 install). The README's `codex plugin install …` command does not exist
+  — corrected to `codex plugin add contentforge@neels-plugins` in the English
+  README and all 11 translations; the install guard now asserts the old form
+  is absent.
+
+**Fixed — compliance and safety**
+
+- `cf-publish` Step 4.5 told users to place the AI-disclosure line "typically
+  [in] the footer". The Commission's Article 50 labelling rule (enforced since
+  2 Aug 2026) requires the label be visible "at the latest at the time of
+  first exposure" and when content is reshared or downloaded — it now goes in
+  the byline / under the title, with the EU icon (Basic / Fully AI-Generated /
+  Partially AI-Modified) chosen from `phase-6.5-authorship.json`; uncertainty
+  never skips the label.
+- `cf-switch-backend`: its only confirmation came AFTER rewriting the brand
+  profile. Step 4 now shows the exact change and requires an explicit "yes"
+  first. This matters beyond Claude Code: Codex documents
+  `disable-model-invocation` as unsupported, so on Codex this skill can run
+  without the user typing its command.
+
+**Changed — data**
+
+- `scripts/model_registry.json` synced from the canonical DMP registry
+  (re-verified 2026-10-04 against vendor models + deprecations pages; this copy
+  was last refreshed 2026-07-12): Claude Opus 5.5 / Sonnet 5.5 / Fable 5.1,
+  GPT-6 Astra / 6.1 Sol / 6 Luna, GPT Image 2.5, Gemini 3.8 Flash, Gemini Omni
+  Flash added; `gemini-2.5-flash-image` and `imagen-4` retired; Veo 3.1
+  previews deprecated ahead of their 2026-10-22 shutdown; all aliases resolve.
+- Copilot CLI: "custom slash commands not yet supported" was stale (GitHub
+  closed that gap in March 2026) — corrected.
+
+**New guards**
+
+- `TestClaudeManifestHasOnlyDocumentedFields` — plugin.json may carry only
+  fields Claude Code documents (unknown fields are stripped and fail
+  `--strict`).
+- `TestRootSettingsJsonIsWellFormed` — a plugin-root `settings.json` is
+  reserved by Claude Code; if present it may only name one of this plugin's
+  agents.
+
+Tests: 522 → 524.
+
+---
+
 ## [4.1.2] - 2026-08-17
 
 ### Schema-clean hooks manifest (suite-wide fix from digital-marketing-pro#9)
