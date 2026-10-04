@@ -17,7 +17,7 @@ Nothing connects on install: there are no hooks and `.mcp.json` ships empty. Web
 | What | When | Endpoint | Credential |
 |---|---|---|---|
 | `scripts/harvest-brand-pages.py` | when you harvest a brand's website | the site you name, and its robots.txt (it sends `ContentForge-BrandHarvester/1.0` with this repo's URL and skips disallowed paths) | none |
-| `scripts/backend-migrator.py` | when you migrate a tracking backend | the Airtable API and Google Sheets / Drive, plus the attachment URLs those return | `AIRTABLE_TOKEN`, or your Google credentials |
+| `scripts/drive-uploader.py`, `scripts/sheets-tracker.py`, `scripts/airtable-tracker.py`, `scripts/backend-migrator.py` (and `scripts/setup.py` when it checks those credentials) | only when you choose Google Drive / Sheets or Airtable as the publish or tracking backend | the Google Drive and Google Sheets APIs, the Airtable API, and the attachment URLs they return | the Google service-account JSON you save at `~/.claude-marketing/google-credentials.json`, or `AIRTABLE_TOKEN` |
 | `scripts/refresh_models.py` | when you refresh the model registry | the model-list endpoints of api.anthropic.com, api.openai.com and generativelanguage.googleapis.com | the matching key; a provider without one is skipped |
 | `scripts/_common.py` `pip_install` | when a backend you chose needs a package and you run its setup | PyPI | none |
 | Opt-in MCP connectors | only after you copy an entry into `.mcp.json` yourself | the provider's endpoint in `.mcp.json.connectors-reference` | OAuth or an API key with that provider |
