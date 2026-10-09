@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.2] - 2026-10-10
+
+### The never-do panel is exact, and no manifest names a file that does not ship
+
+Found by checking the README's new claims against the code.
+
+**Fixed**
+
+- The README's "never mark a run complete" line now says what the code does:
+  `finalize --status completed` refuses a missing, failed or stale audit, and the
+  `--skip-audit` escape stamps `audit_skipped: true` into the run. (The behaviour was already
+  right and tested; the sentence understated it.)
+- `.cursor-plugin/plugin.json` and `.github/plugin/plugin.json` pointed `mcpServers` at
+  `.mcp.json`, which never ships (it is gitignored). Cursor discovers `mcp.json` by default and
+  treats the field as an override of that; Copilot CLI discovers `.mcp.json` on its own, and
+  neither documents what a missing path does. The key is removed, matching the Digital Marketing
+  Pro manifests.
+
+**Added - tests**
+
+- `tests/test_manifest_paths.py`: every `./` or `../` path in every manifest must name a file
+  that ships (tracked in a checkout, present in an installed copy), and no manifest may name
+  `.mcp.json`. The two old references are planted and flagged; the test fails on 4.5.1's
+  manifests.
+- Tests 759 -> 762.
+
 ## [4.5.1] - 2026-10-10
 
 ### The docs now match what the plugin does

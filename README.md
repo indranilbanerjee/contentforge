@@ -8,21 +8,23 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 29 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.5.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.2-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-759%2F759%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v451)
+[![Tests](https://img.shields.io/badge/tests-762%2F762%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v452)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.1 (October 10, 2026): the docs now match what the plugin does.** A pass over every document found claims the code or the repo contradicted, and they are fixed: no `.mcp.json` ships (it is gitignored), so nothing is pre-wired; Python 3.10 is the one stated minimum, and `scripts/setup.py` now enforces it (it said 3.8) with a test that keeps the code and the docs equal; the three plugins share a marketplace, not brand profiles; and a made-up Drive/Sheets price in the Cowork guide is gone. The README gains a *Try this first* block, a *What ContentForge will never do* panel and a tip for 200k context windows, and the 11 translations are corrected on the two facts that were no longer true. The doc-count guard now also reads phrasings like “N Agent Skills” and “the N-connector catalog”, so those cannot rot unseen.
+> 🆕 **Just shipped — v4.5.2 (October 10, 2026): the never-do panel is exact, and no manifest names a file that does not ship.** Checking the README's new claims against the code, the line about marking a run complete now says what `finalize` really does (it refuses a missing, failed or stale audit, and `--skip-audit` stamps `audit_skipped: true` into the run), and the Cursor and Copilot CLI manifests no longer point `mcpServers` at a `.mcp.json` that never ships. A new test keeps every manifest path pointing at a file that ships.
+>
+> Previously — **v4.5.1 (October 10, 2026): the docs now match what the plugin does.** A pass over every document found claims the code or the repo contradicted, and they are fixed: no `.mcp.json` ships (it is gitignored), so nothing is pre-wired; Python 3.10 is the one stated minimum, and `scripts/setup.py` now enforces it (it said 3.8) with a test that keeps the code and the docs equal; the three plugins share a marketplace, not brand profiles; and a made-up Drive/Sheets price in the Cowork guide is gone. The README gains a *Try this first* block, a *What ContentForge will never do* panel and a tip for 200k context windows, and the 11 translations are corrected on the two facts that were no longer true. The doc-count guard now also reads phrasings like “N Agent Skills” and “the N-connector catalog”, so those cannot rot unseen.
 >
 > Previously — **v4.5.0 (October 10, 2026): nothing installs itself, and outside names no longer choose a path.** Reviewed for the Hermes Agent plugin catalog, ContentForge now never installs a Python package on its own (a missing one prints the exact pinned command; `CONTENTFORGE_INSTALL_DEPS=1` consents for one run), refuses file names, run ids and brand names that would leave their folder, deletes the throwaway signing key after each use, keeps the brand-site harvester on public addresses and on the site, and says where the scripts are on hosts that do not set `${CLAUDE_PLUGIN_ROOT}`. **If you relied on the first-run auto-install, run the command it prints once.**
 >
@@ -68,7 +70,7 @@ Install, then ask in plain words. Each of these kinds of request reached the rig
 
 - **Install a package on its own.** A missing one prints the exact pinned install command; `CONTENTFORGE_INSTALL_DEPS=1` consents for a single run.
 - **Publish, translate or post without your typed `yes`.** Each of those skills shows what it will do first; any other reply cancels.
-- **Mark a run complete that its own audit has not passed.** `finalize --status completed` refuses a stale or failed audit.
+- **Mark a run complete without its audit on the record.** `finalize --status completed` refuses a missing, failed or stale audit; the `--skip-audit` escape stamps `audit_skipped: true` into the run.
 - **Ask for an API key in the chat, or connect a service you did not set up.** Keys come from environment variables; no MCP server ships enabled and no hooks run.
 - **Remove or hide AI watermarks.** AI involvement is disclosed, with C2PA provenance (a sidecar manifest for `.docx`).
 
@@ -89,7 +91,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.5.1)
+## Supported surfaces (v4.5.2)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -806,6 +808,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.5.2 (2026-10-10)** — **The never-do panel is exact, and no manifest names a file that does not ship.** The README's "never mark a run complete" line now states the full behaviour (missing, failed or stale audit refused; `--skip-audit` is stamped into the run); the Cursor and Copilot CLI manifests drop a `mcpServers` path to a `.mcp.json` that is gitignored; `tests/test_manifest_paths.py` fails on any manifest path that does not ship. Tests 759 -> 762.
 
 **v4.5.1 (2026-10-10)** — **The docs now match what the plugin does.** A pass over every non-CHANGELOG document: no `.mcp.json` ships (gitignored), so "ships empty" was wrong in the AGENTS, CONNECTORS, PRIVACY, COWORK, TESTING, UPGRADE and USER guides and four skill bodies; Python 3.10 is the single stated minimum and `scripts/setup.py` enforces it (it said 3.8), guarded by tests that keep the code and the docs equal; the three plugins share a marketplace, not brand profiles; a made-up Drive/Sheets API price is removed; the lede no longer says "stdlib-only"; the 11 translations are corrected on those two facts. README: Try this first, a never-do panel, a 200k-window tip. The doc-count guard reads more phrasings ("N Agent Skills", "All N Commands", "the N-connector catalog", suite sizes). Tests 753 -> 759.
 
