@@ -1,5 +1,5 @@
 ---
-description: Resume a ContentForge pipeline run that was interrupted partway through
+description: "Resume an interrupted ContentForge pipeline run from its last checkpoint. \"pick up where the pipeline stopped\""
 argument-hint: "[run-id] (omit to pick the latest in-progress run for the active brand)"
 ---
 

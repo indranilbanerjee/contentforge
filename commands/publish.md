@@ -1,6 +1,7 @@
 ---
-description: Publish finished content to Webflow or WordPress with preview, verification, and HTML export fallback
+description: "Publish finished content to Webflow or WordPress with a preview first. \"publish to our CMS\""
 argument-hint: "<content source> --platform=<webflow|wordpress> [--status=draft|publish|schedule]"
+disable-model-invocation: true
 ---
 
 # Publish

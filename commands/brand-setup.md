@@ -1,5 +1,5 @@
 ---
-description: Configure brand voice, terminology, compliance guardrails, and style guide for content production
+description: "Set up brand voice, terminology and compliance rules by interview. \"set up a new brand\""
 argument-hint: "<brand name> [--source=url|document|manual]"
 ---
 

@@ -7,6 +7,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.4.0] - 2026-10-09
+
+### Skills that fit the listing budget, and one visible entry per purpose
+
+**Changed — descriptions**
+
+- **Every skill and command description now fits Claude Code's skill-listing
+  budget.** The budget is characters, not tokens: the context window x 4 x
+  `skillListingBudgetFraction` (default 1%), so 8,000 characters on a 200k
+  window and 40,000 on 1M. Every listed name counts and is never dropped.
+  ContentForge's visible listing was 14,846 characters, so on most windows
+  its descriptions were cut or dropped before the model saw them. It is now
+  3,646 (median description 110 characters, down from 740). Each description
+  says what the skill does, how it differs from its nearest sibling, and one
+  phrase a user would type. Slash aliases, "Triggers on" lists and output
+  inventories are gone from the listing; they remain in the skill bodies.
+- `tests/test_description_density.py` now enforces the new rule: 60-150
+  characters, median ≤ 120, one owner per quoted phrase, a registered
+  near-miss pair carrying a pointer on one side only, and the listing-cost
+  formula with a 4,800-character ceiling. Its docstring records why, because
+  v3.8.0 trimmed descriptions once before and an August guard pushed them back
+  out when nobody had written the reason down.
+
+**Fixed — five requests reached no skill**
+
+- `cf-publish`, `cf-translate`, `cf-social-adapt`, `cf-switch-backend` and
+  `cf-add-integration` were hidden from the model (v3.4.1 and v3.8.0), and the
+  wrapper commands for the first three were hidden too. "Translate this into
+  Spanish", "push this live" and "move tracking to Airtable" therefore routed
+  nowhere, and the model improvised the action without the skill's gate.
+  Hiding a side-effect skill is not a safety layer: Codex ignores the flag.
+  Each purpose now has exactly one visible entry, the skill. Each of these
+  skills asks for an explicit `yes` after showing the scope before it acts,
+  and any other reply cancels; gates were added where missing (translate,
+  social-adapt, add-integration). The wrapper commands stay as slash
+  shortcuts and are hidden from the model. New `tests/test_execution_gates.py`
+  guards both rules, with planted failures.
+
+**Measured with trigger evals** (claude plugin eval, listing budget pinned so
+the comparison measures wording rather than truncation, first action graded):
+every comparable case passes after as before (52/52), "should not trigger"
+cases stay quiet, and the cf-brief / cf-audit near-miss cases pass 5/5.
+Previously failing requests now route: cf-switch-backend 0/3 → 3/3,
+cf-translate 1/3 → 3/3. Differently worded follow-up cases pass 3/3 for five
+of the six fixes; a one-sentence "German and French editions" request is
+translated directly by the model rather than through the skill, which is
+reported as is rather than tuned away.
+
+- The five claude.ai `.skill` hero assets are rebuilt from the new skills and
+  attached to this release.
+
 ## [4.3.1] - 2026-10-04
 
 ### Fixed — Hermes refused to install the plugin

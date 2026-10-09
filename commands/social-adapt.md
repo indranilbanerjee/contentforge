@@ -1,6 +1,7 @@
 ---
-description: Repurpose articles into platform-specific social media posts for LinkedIn, Twitter/X, Instagram, Facebook, Threads, TikTok, Bluesky, and YouTube Shorts
+description: "Repurpose an article into social posts for 8 platforms. \"make social posts from this blog\""
 argument-hint: "<article source> [platforms: all|linkedin|twitter|instagram|facebook|threads|tiktok|bluesky|youtube-shorts]"
+disable-model-invocation: true
 ---
 
 # Social Adapt

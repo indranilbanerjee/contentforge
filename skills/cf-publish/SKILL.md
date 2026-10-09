@@ -1,7 +1,7 @@
 ---
 name: cf-publish
-description: "Execute CMS publishing: push a finished, reviewed piece (Phase 8 complete, quality score >=7.0) to Webflow or WordPress via MCP connectors as draft, scheduled, or live — always showing a full publish preview and waiting for your explicit yes/no/edit confirmation before anything is pushed. Runs the EU AI Act Article 50 disclosure check, verifies the live URL, meta tags, and images post-publish, and falls back to a standalone HTML export when no CMS connector is configured. Triggers on \"/contentforge:cf-publish\", \"publish this article to WordPress\", \"push this to Webflow\", \"schedule this post for next week\", \"export the article as HTML\". Refuses unreviewed content; pairs with /contentforge:cf-social-adapt for post-publish promotion."
-disable-model-invocation: true
+description: "Publish a reviewed piece to Webflow or WordPress as draft, scheduled or live. \"push this live to WordPress\""
+disable-model-invocation: false
 argument-hint: "[platform]"
 effort: low
 ---
@@ -9,6 +9,10 @@ effort: low
 # Publish Content — ContentForge CMS Publishing
 
 Push publication-ready content from the ContentForge pipeline directly to your CMS (Webflow or WordPress) via MCP connectors. Preview before publishing, verify post-publish, and fall back to HTML export when no connector is available.
+
+## Execution gate
+
+Nothing is sent to a CMS until the full publish preview (Step 4) has been shown and the user has typed `yes`. `edit` goes back to the draft; any other reply, including silence, cancels. A request such as "push this live" starts this flow; it never skips the preview.
 
 ## When to Use
 

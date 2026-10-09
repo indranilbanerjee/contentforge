@@ -1,6 +1,6 @@
 ---
 name: contentforge
-description: "Produce a publication-ready, fact-checked, brand-compliant, SEO-optimized content piece through the full 10-phase pipeline: every phase dispatched to a dedicated subagent (researcher, fact-checker, drafter, visual annotator, scientific validator, structurer, SEO/GEO optimizer, humanizer, reviewer, output manager) behind 10 orchestrator-verified quality gates — three-layer fact verification, the 43-pattern humanizer pass, and 5-dimension reviewer scoring (approve >=7.0) — ending in a .docx with scorecard appendices. Triggers on \"/contentforge:contentforge\", \"write an article about\", \"create a blog post\", \"produce a whitepaper\", \"I need a fact-checked, publication-ready piece\", \"run the content pipeline\". This is ContentForge's front door: reads the brand profile, then routes onward to /contentforge:publish, /contentforge:social-adapt, and /contentforge:translate."
+description: "Produce ONE fact-checked, brand-compliant article through the full ContentForge pipeline; several pieces -> batch-process. \"write a blog post on X\""
 argument-hint: "[topic]"
 effort: max
 ---

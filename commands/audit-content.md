@@ -1,6 +1,7 @@
 ---
-description: Audit your content library for freshness decay, coverage gaps, and optimization opportunities
+description: "Audit your content library for freshness decay and coverage gaps. \"audit my content library\""
 argument-hint: "<content source: drive folder|wordpress url|csv> [--scope=freshness|gaps|both]"
+disable-model-invocation: true
 ---
 
 # Audit Content

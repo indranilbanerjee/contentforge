@@ -1,6 +1,7 @@
 ---
-description: Generate a research-backed content brief with keyword data, competitor analysis, search intent, and SEO strategy
+description: "Generate a content brief for a keyword or topic: intent, competitors, outline. \"brief this keyword\""
 argument-hint: "<keyword or topic>"
+disable-model-invocation: true
 ---
 
 # Content Brief

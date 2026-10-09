@@ -1,5 +1,5 @@
 ---
-description: Print the absolute path to the user-visible ContentForge output folder and open it in the OS file manager
+description: "Print the path to the ContentForge output folder and open it. \"where is my output folder\""
 argument-hint: "[brand] (omit to use the active brand)"
 ---
 

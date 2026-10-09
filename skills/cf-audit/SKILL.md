@@ -1,6 +1,6 @@
 ---
 name: cf-audit
-description: "Audit an existing content library for freshness decay and coverage gaps — scores every piece 0-100 on age, statistic currency, link health, and citation recency, maps covered topics against target keywords, and produces a prioritized report: top refresh candidates, gap topics, retire candidates, and the exact follow-up commands. Triggers on \"/contentforge:cf-audit\", \"which content needs refreshing\", \"content health check\", \"what topics are we missing\", \"audit our blog library\". Reads inventory from a Google Drive folder, WordPress REST API, or CSV; pulls performance data only if Google Analytics/Search Console MCPs are connected. Audit only — refreshing happens via /contentforge:content-refresh and new pieces start at /contentforge:cf-brief."
+description: "Audit a content library for stale posts and topic gaps; ranks what to refresh or retire. \"which posts need refreshing\""
 argument-hint: "[content-path or URL]"
 effort: medium
 ---

@@ -1,7 +1,7 @@
 ---
 name: cf-translate
-description: "Translate publication-ready ContentForge content into any of 15 languages at three localization levels (literal, adapted, transcreated) — preserving brand voice, keeping citation URLs and DOIs untouched, and adapting SEO keyword placements for the target market — delivered as a translated .docx plus a quality report via the brand's tracking backend. Triggers on \"/contentforge:cf-translate\", \"translate this article to Spanish\", \"localize this for the German market\", \"make a French version of this post\", \"transcreate this for Japan\". Dispatches the contentforge:translator agent, maps voice via config/multilingual-patterns.json, then applies a target-language humanizer pass. Requires pipeline output scoring >=7.0 and a brand profile; pairs with /contentforge:create-content upstream."
-disable-model-invocation: true
+description: "Translate a finished piece into 15 languages, keeping brand voice and citations; literal, adapted or transcreated. \"translate this into Spanish\""
+disable-model-invocation: false
 argument-hint: "[target-language]"
 effort: high
 ---
@@ -9,6 +9,10 @@ effort: high
 # Content Translation — Multilingual Publishing
 
 Translate publication-ready ContentForge content into 15 languages while preserving brand voice integrity, citation accuracy, and SEO optimization. Three localization levels let you control the depth of cultural adaptation.
+
+## Execution gate
+
+Before the first translation call, state the scope: source piece, target languages, localization level, and what will be written (one translated .docx and quality report per language; more languages mean proportionally more work and cost). Proceed only on an explicit `yes`; any other reply cancels with nothing written. A request such as "translate this into Spanish" is a request, not the go-ahead.
 
 ## When to Use
 

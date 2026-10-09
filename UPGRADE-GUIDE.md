@@ -1,5 +1,15 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.3.x → 4.4.0 (skills that reach the model)
+
+**Nothing migrates.** Two behaviour changes: skill descriptions are short, so
+Claude routes to skills by what they do; and translate, publish, social-adapt,
+switch-backend and add-integration can now be started by Claude from a plain
+request. Each one shows its scope first and acts only on an explicit `yes`.
+The slash shortcuts (`/contentforge:translate` and the others) still work.
+
+---
+
 ## Upgrading 4.2.x → 4.3.0 (the quality contract)
 
 **Nothing migrates.** One behaviour change to know: the run auditor now

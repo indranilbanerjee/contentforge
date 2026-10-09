@@ -1,12 +1,16 @@
 ---
 name: cf-add-integration
-description: "Connect any external API or service to ContentForge as a custom MCP connector — walks non-technical users from finding a verified MCP package or HTTP endpoint to a ready-to-paste .mcp.json entry, credential setup instructions, and a post-restart verification check. Triggers on \"/contentforge:cf-add-integration\", \"connect our internal CMS\", \"add a custom integration\", \"hook up Google Analytics to ContentForge\", \"there is no connector for this service\". Reads .mcp.json.connectors-reference for verified endpoints and checks the registry via scripts/connector-status.py first; for connectors already in the registry, /contentforge:cf-connect is the shorter path. Configuration guidance only — never asks for secrets in chat and does not call the connected service itself."
-disable-model-invocation: true
+description: "Add a custom MCP connector for any external API or service. \"hook up our internal CMS\""
+disable-model-invocation: false
 argument-hint: "[service-name]"
 effort: medium
 ---
 
 # /contentforge:cf-add-integration
+
+## Execution gate
+
+This skill shows a ready-to-paste `.mcp.json` entry and the credential steps; it does not edit configuration files or store secrets, and it never asks for a secret in the conversation. If the user asks it to write the entry into a file, show the exact change first and write only after an explicit `yes`; any other reply cancels.
 
 ## Purpose
 

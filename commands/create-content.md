@@ -1,6 +1,7 @@
 ---
-description: Run the full 10-phase content production pipeline — research, draft, fact-check, humanize, and publish
+description: "Create a full content piece through the 10-phase pipeline. \"create content about X\""
 argument-hint: "<topic> [content type]"
+disable-model-invocation: true
 ---
 
 # Create Content

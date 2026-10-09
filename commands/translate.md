@@ -1,6 +1,7 @@
 ---
-description: Translate content into 15 languages while preserving brand voice, citations, and SEO optimization
+description: "Translate content into 15 languages, keeping brand voice and citations. \"localize this article\""
 argument-hint: "<content source> --language=<code> [--level=literal|adapted|transcreated]"
+disable-model-invocation: true
 ---
 
 # Translate

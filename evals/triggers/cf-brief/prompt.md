@@ -1,9 +1,10 @@
 ---
-description: Natural phrasing for cf-brief (the skill is never named) must route to it.
-tags: [trigger]
-max_turns: 4
+description: "Near-miss: natural phrasing for cf-brief (never named) must route to it, not to content-brief."
+tags: [trigger, near-miss]
+runs: 5
+max_turns: 1
 timeout_seconds: 240
 allowed_tools: [Read, Glob, Grep, Skill]
 ---
 
-Write a research-backed content brief for an article on zero-trust security for mid-size banks.
+Before we commission a writer for the zero-trust-for-mid-size-banks piece, put together the research package: what people search for, how the top-ranking pages cover it, and a section-by-section plan.

@@ -1,6 +1,6 @@
 ---
 name: batch-process
-description: "Produce multiple content pieces as a sequential, checkpointed queue — each piece runs the full 10-phase ContentForge pipeline with all 10 quality gates, sorted by priority and resumable after interruption. Intake from local JSON, Google Sheets, Airtable, or CSV; outputs per-piece .docx files plus a batch summary report. Triggers on \"/contentforge:batch-process\", \"produce these 15 blog posts\", \"run the whole content queue\", \"batch content production\", \"process my content spreadsheet\". Requires an existing brand profile per brand (create via /contentforge:brand-setup) and a pre-set title per piece — batch runs are non-interactive. Dispatches the batch-orchestrator agent; produces files, does not publish them."
+description: "Batch-produce many content pieces as one resumable queue, highest priority first. \"write these 15 posts\""
 argument-hint: "[sheet-url or topic-list]"
 effort: max
 ---

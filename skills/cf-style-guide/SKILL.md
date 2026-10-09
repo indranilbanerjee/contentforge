@@ -1,6 +1,6 @@
 ---
 name: cf-style-guide
-description: "Import a brand voice profile from an existing style guide — a .docx/.pdf document, a URL, or manual input — extracting tone, formality, personality, approved/banned terminology, compliance guardrails, and author profiles into a structured brand-profile JSON at ~/.claude-marketing/{brand-slug}/Brand-Guidelines/, then configure the tracking backend (Google Sheets + Drive, Airtable, or local). Triggers on \"/contentforge:cf-style-guide\", \"import our style guide\", \"set up a brand from this document\", \"update the brand profile with new guidelines\", \"extract our banned terms and disclaimers\". Deterministic parsing, no agent. The saved profile is read by every pipeline phase — drafting, brand compliance, humanizer; pairs with /contentforge:brand-setup and /contentforge:cf-switch-backend."
+description: "Import a brand voice profile from an existing style guide (PDF, docx, URL). \"import our brand guidelines\""
 argument-hint: "[brand-name or URL]"
 effort: medium
 ---
