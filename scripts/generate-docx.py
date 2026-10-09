@@ -13,7 +13,9 @@ Usage:
         --brand "Brand Name" \
         --content-type article
 
-If python-docx is not installed, it is auto-installed via pip.
+python-docx must be installed. If it is missing, the script prints the exact pinned install command
+and exits non-zero; it never installs anything on its own (set CONTENTFORGE_INSTALL_DEPS=1 for one run
+to let it run that same command).
 
 Output structure:
     1. Title page (brand, date, type, score)
@@ -957,7 +959,7 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
         try:
             import c2pa  # noqa: F401
         except ImportError:
-            err = _common.pip_install(["c2pa-python>=0.32", "cryptography"],
+            err = _common.pip_install(["c2pa-python", "cryptography"],
                                       label="c2pa-python")
             if err:
                 return {"c2pa_signed": False, "c2pa_error": err["error"],
@@ -988,6 +990,8 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
                         {
                             "action": "c2pa.created",
                             "when": created,
+                            # required on c2pa.created since c2pa-python 0.38; matches the intent set below
+                            "digitalSourceType": "http://cv.iptc.org/newscodes/digitalsourcetype/compositeWithTrainedAlgorithmicMedia",
                             "softwareAgent": {"name": "ContentForge 10-phase pipeline", "version": cf_version},
                         },
                         {
@@ -1017,6 +1021,7 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
         embed_status = "sidecar-only"
         embed_manifest_id = None
         using_dev_cert = False
+        tmpdir = None  # set only when we generate a throwaway dev key; removed in the finally below
         try:
             # Generate self-signed dev cert if user didn't supply one
             import tempfile
@@ -1092,6 +1097,12 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
                 embed_status = "sidecar-only (.docx MIME not in c2pa-python supported list)"
         except Exception as exc:
             embed_status = f"sidecar-only (embed failed: {type(exc).__name__}: {exc})"
+        finally:
+            # The dev signing key is unencrypted PKCS#8. It only exists to sign this one file,
+            # so it never outlives the call (Hermes review of 2026-10-04).
+            if tmpdir:
+                import shutil as _shutil
+                _shutil.rmtree(tmpdir, ignore_errors=True)
 
         return {
             "c2pa_signed": True,

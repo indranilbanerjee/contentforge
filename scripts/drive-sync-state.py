@@ -187,6 +187,8 @@ def profile_drive_state(brand: str) -> dict:
 
 def _run_pending_path(brand: str, run_id: str) -> Path:
     # Same path checkpoint-manager.py writes (_common.brand_dir keeps them aligned).
+    # The run id is validated first: a "../.." id must not select another directory.
+    _common.validate_run_id(run_id)
     return _common.brand_dir(brand) / "runs" / run_id / "_sync-pending.json"
 
 
@@ -311,6 +313,14 @@ def _write_pending(path: Path, data: dict):
 # CLI
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _guarded(fn, *a):
+    """Run an action that takes a run id; an invalid id (e.g. '../..') becomes a clean error, not a traceback."""
+    try:
+        return fn(*a)
+    except ValueError as exc:
+        return {"error": str(exc)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--action", required=True, choices=[
@@ -321,7 +331,7 @@ def main():
         "mark-uploaded", "list-runs-needing-sync",
     ])
     parser.add_argument("--brand", help="brand slug or name")
-    parser.add_argument("--run-id", help="run identifier")
+    parser.add_argument("--run-id", type=_common.run_id_arg, help="run identifier")
     parser.add_argument("--file", help="file path / name")
     parser.add_argument("--drive-file-id", help="Drive file ID from MCP response")
     parser.add_argument("--drive-url", help="Drive webViewLink")
@@ -357,17 +367,17 @@ def main():
         if not (args.brand and args.run_id and args.file):
             result = {"error": "--brand, --run-id, --file required"}
         else:
-            result = add_pending_upload(args.brand, args.run_id, args.file)
+            result = _guarded(add_pending_upload, args.brand, args.run_id, args.file)
     elif args.action == "list-pending-uploads":
         if not (args.brand and args.run_id):
             result = {"error": "--brand and --run-id required"}
         else:
-            result = list_pending_uploads(args.brand, args.run_id)
+            result = _guarded(list_pending_uploads, args.brand, args.run_id)
     elif args.action == "mark-uploaded":
         if not (args.brand and args.run_id and args.file and args.drive_file_id):
             result = {"error": "--brand, --run-id, --file, --drive-file-id required"}
         else:
-            result = mark_run_file_uploaded(args.brand, args.run_id, args.file, args.drive_file_id)
+            result = _guarded(mark_run_file_uploaded, args.brand, args.run_id, args.file, args.drive_file_id)
     elif args.action == "list-runs-needing-sync":
         result = list_runs_needing_sync(args.brand) if args.brand else {"error": "--brand required"}
     else:

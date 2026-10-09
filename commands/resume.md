@@ -5,6 +5,8 @@ argument-hint: "[run-id] (omit to pick the latest in-progress run for the active
 
 # Resume Interrupted Pipeline
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
+
 Pick up a `/contentforge:create-content` run that stopped before Phase 8 finished — instead of restarting from scratch, load the run manifest and continue from the next phase (or the pending rework target).
 
 ## Trigger

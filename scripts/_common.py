@@ -93,7 +93,10 @@ def brand_dir(brand: str) -> Path:
     """
     home = marketing_home()
     raw = (brand or "").strip()
-    if raw:
+    # The legacy branch is honoured only for a plain single-component name. A raw
+    # "--brand ../.." or an absolute path must never select a directory outside
+    # marketing_home() (Hermes review of 2026-10-04).
+    if raw and is_single_component(raw):
         try:
             legacy = home / raw
             if legacy.is_dir():
@@ -101,6 +104,63 @@ def brand_dir(brand: str) -> Path:
         except (OSError, ValueError):
             pass  # raw name not representable as a path component on this OS
     return home / slugify_brand(brand)
+
+
+# ── Path containment ────────────────────────────────────────────────
+
+# A run id is always generated as {YYYYMMDD}-{HHMMSS}-{topic-slug}; anything else
+# is rejected before it can be turned into a filesystem path. The slug is built from
+# word characters (so a Japanese or Arabic topic gives a legitimate Unicode slug) and
+# hyphens; no separator, dot or colon can appear in it.
+RUN_ID_RE = re.compile(r"^\d{8}-\d{6}-[\w-]+$")
+
+
+def is_single_component(name) -> bool:
+    """True iff `name` is one plain path component: not empty, not '.' or '..',
+    no separators (either kind), no drive or stream colon, no NUL, not absolute."""
+    s = str(name if name is not None else "")
+    if not s or s in (".", "..") or "\x00" in s:
+        return False
+    if "/" in s or "\\" in s or ":" in s:
+        return False
+    return Path(s).name == s and not Path(s).is_absolute()
+
+
+def safe_child(base, name) -> Path:
+    """`base / name`, resolved, guaranteed to stay directly inside `base`.
+
+    Raises ValueError for a name with separators, '..', an absolute path or a
+    drive/stream colon, or if the resolved result escapes `base` (a symlink
+    inside `base` pointing out of it counts as escaping). Use it for every path
+    built from a model-supplied or remote-supplied name before a read, write,
+    unlink or rmtree."""
+    if not is_single_component(name):
+        raise ValueError(f"unsafe path component: {name!r}")
+    base_resolved = Path(base).resolve()
+    child = (base_resolved / str(name)).resolve()
+    if child.parent != base_resolved:
+        raise ValueError(f"path escapes its directory: {name!r}")
+    return child
+
+
+def run_id_arg(value):
+    """argparse `type` for --run-id: one plain path component, or a clear usage error.
+
+    Containment only: pipeline-tracker keeps accepting free-form ids ("run-A"), so the strict generated
+    shape (YYYYMMDD-HHMMSS-slug) is enforced where ids are always generated - checkpoint-manager's
+    `_run_dir` and drive-sync-state call `validate_run_id`."""
+    import argparse
+    if not is_single_component(value):
+        raise argparse.ArgumentTypeError(
+            f"run id must be a single folder name, not a path (no '/', backslash, '..' or ':'): {value!r}")
+    return value
+
+
+def validate_run_id(run_id) -> str:
+    """Return `run_id` if it has the generated shape; raise ValueError otherwise."""
+    if not isinstance(run_id, str) or not RUN_ID_RE.match(run_id) or not is_single_component(run_id):
+        raise ValueError(f"invalid run id: {run_id!r} (expected YYYYMMDD-HHMMSS-topic-slug)")
+    return run_id
 
 
 # ── JSON persistence ────────────────────────────────────────────────
@@ -231,23 +291,79 @@ def next_req_id(records) -> str:
     return f"REQ-{max_num + 1:03d}"
 
 
+# Exact versions of every optional package a ContentForge script may ask for.
+# These are the versions the scripts were tested against. A new version reaches a
+# user only when this table is changed on purpose (and the tests are re-run), the
+# same exact-pin discipline Hermes asks of catalog plugins.
+PINNED_DEPENDENCIES = {
+    "python-docx": "1.2.0",
+    "c2pa-python": "0.38.0",
+    "cryptography": "46.0.6",
+    "pyairtable": "3.3.0",
+    "google-api-python-client": "2.192.0",
+    "google-auth": "2.49.1",
+    "gspread": "6.2.1",
+}
+
+# Setting this to "1" for a single run is the user's explicit consent to let
+# ContentForge run the pinned install command itself. Without it nothing is
+# ever installed: the script prints the exact command and exits non-zero.
+INSTALL_OPT_IN_ENV = "CONTENTFORGE_INSTALL_DEPS"
+
+
+def pinned_specs(packages):
+    """Map package names (any version specifier is ignored) to exact `name==x.y.z`
+    pins from PINNED_DEPENDENCIES. Raises ValueError for an unpinned package."""
+    out = []
+    for p in packages:
+        name = re.split(r"[<>=!~;\[ ]", str(p), maxsplit=1)[0].strip().lower().replace("_", "-")
+        if name not in PINNED_DEPENDENCIES:
+            raise ValueError(f"no pinned version for package {name!r}; add it to PINNED_DEPENDENCIES")
+        out.append(f"{name}=={PINNED_DEPENDENCIES[name]}")
+    return out
+
+
+def install_command(packages) -> str:
+    """The exact, pinned command a user would run to install `packages`."""
+    exe = sys.executable
+    if " " in exe:
+        exe = f'"{exe}"'
+    return f"{exe} -m pip install {' '.join(pinned_specs(packages))}"
+
+
 def pip_install(packages, label: str = None):
-    """Run `pip install -q <packages>`. Returns None on success, or an
-    error dict (with a manual-install hint) the caller should finish() with."""
+    """Install `packages` at their pinned versions ONLY when the user opted in.
+
+    Default (no opt-in): installs nothing and returns an error dict that carries
+    the exact pinned command, which the caller finish()es with (exit 1).
+    With CONTENTFORGE_INSTALL_DEPS=1 in the environment: runs that same command.
+    Returns None on success, or the error dict."""
     import subprocess
-    pkgs = list(packages)
-    print(f"Installing {label or ' '.join(pkgs)} (first run only)...", file=sys.stderr)
+    specs = pinned_specs(packages)
+    command = install_command(packages)
+    what = label or ", ".join(specs)
+    if os.environ.get(INSTALL_OPT_IN_ENV) != "1":
+        return {
+            "error": f"{what} is not installed, and ContentForge never installs packages on its own",
+            "recovery": (
+                f"Install it yourself, then re-run this command: {command}  "
+                f"(on externally-managed Pythons add --user or use a virtualenv). "
+                f"To let ContentForge run exactly that command once, set "
+                f"{INSTALL_OPT_IN_ENV}=1 for that run."
+            ),
+        }
+    print(f"Installing {what} ({INSTALL_OPT_IN_ENV}=1 was set)...", file=sys.stderr)
     try:
         subprocess.check_call(
-            [sys.executable, "-m", "pip", "install", "-q", *pkgs],
+            [sys.executable, "-m", "pip", "install", "-q", *specs],
             stdout=subprocess.DEVNULL,
         )
         return None
     except Exception as exc:
         return {
-            "error": f"automatic dependency install failed: {type(exc).__name__}: {exc}",
+            "error": f"dependency install failed: {type(exc).__name__}: {exc}",
             "recovery": (
-                f"Install manually: {sys.executable} -m pip install {' '.join(pkgs)} "
+                f"Install manually: {command} "
                 f"(on externally-managed Pythons add --user or use a virtualenv), "
                 f"then re-run this command."
             ),

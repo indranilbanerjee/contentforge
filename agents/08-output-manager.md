@@ -130,7 +130,7 @@ Before generating the .docx, decide whether the brand's disclosure block attache
 
 #### 2.0 PRIMARY METHOD — invoke generate-docx.py (REQUIRED)
 
-The `.docx` MUST be produced by calling the bundled script. Do NOT hand-craft the file or skip this step. The script handles formatting (title page, H1/H2/H3 hierarchy, tables, lists, code blocks, hyperlinks), embeds Appendix A/B/C from the reports JSON, and auto-installs `python-docx` on first run.
+The `.docx` MUST be produced by calling the bundled script. Do NOT hand-craft the file or skip this step. The script handles formatting (title page, H1/H2/H3 hierarchy, tables, lists, code blocks, hyperlinks), embeds Appendix A/B/C from the reports JSON, and needs `python-docx` installed (if it is missing the script prints the exact pinned install command and stops; it never installs anything on its own).
 
 **Step 2.0.a — assemble the reports JSON:**
 

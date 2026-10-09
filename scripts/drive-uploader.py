@@ -28,7 +28,7 @@ import _common  # noqa: E402
 
 _common.ensure_utf8_stdout()
 
-# ── Auto-install dependencies ───────────────────────────────────────
+# ── Dependencies (never installed automatically: a missing package prints the pinned command) ──
 try:
     from googleapiclient.discovery import build
     from googleapiclient.http import MediaFileUpload

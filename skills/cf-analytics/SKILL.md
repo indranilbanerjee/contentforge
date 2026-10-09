@@ -7,6 +7,8 @@ argument-hint: "[--period 7|30|90] [--brand <name>] [--type <content-type>] [--f
 
 # Content Analytics Dashboard
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
+
 Track ContentForge production quality, pipeline timing, brand-specific patterns, and compliance trends over configurable time periods with automated insights and alert flags.
 
 ## When to Use

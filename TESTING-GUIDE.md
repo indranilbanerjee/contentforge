@@ -423,7 +423,7 @@ Test each of the 22 skills individually.
 - [ ] requirement_id uses max existing ID (not row count) — handles deleted rows correctly
 - [ ] Priority clamped to 1-5 range
 - [ ] Crash-safe sort in get_pending()
-- [ ] Auto-installs gspread + google-auth on first run in Cowork VM
+- [ ] Missing gspread / google-auth: prints the pinned install command and exits non-zero (never installs on its own) in Cowork VM
 
 ### 6.4 drive-uploader.py (requires Google credentials)
 
@@ -472,7 +472,7 @@ Test each of the 22 skills individually.
 | `mark-complete` | Complete with file | Status updated, .docx attached to record |
 
 **Edge cases:**
-- [ ] Auto-installs pyairtable on first run
+- [ ] Missing pyairtable: prints the pinned install command and exits non-zero (never installs on its own)
 - [ ] File attachment works via `--attach-file` parameter
 - [ ] Numeric fields coerced correctly (priority, quality_score)
 - [ ] Missing AIRTABLE_TOKEN gives clear error message

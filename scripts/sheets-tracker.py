@@ -6,7 +6,7 @@ Google Sheets tracker for ContentForge content pipeline.
 
 Handles all tracking sheet operations: adding content requests,
 updating status, reading pending items, and marking completions.
-Works in Cowork VM (auto-installs dependencies on first run).
+Works in Cowork VM (if a package is missing it prints the pinned install command; nothing installs itself).
 
 Usage:
     python sheets-tracker.py --action init --sheet-id SHEET_ID
@@ -32,7 +32,7 @@ import _common  # noqa: E402
 
 _common.ensure_utf8_stdout()
 
-# ── Auto-install dependencies ───────────────────────────────────────
+# ── Dependencies (never installed automatically: a missing package prints the pinned command) ──
 try:
     import gspread
     from google.oauth2.service_account import Credentials

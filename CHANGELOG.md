@@ -7,6 +7,110 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.0] - 2026-10-10
+
+### Nothing installs itself, and outside names no longer choose a path
+
+A Hermes Agent maintainer reviewed ContentForge 4.3.1 for the Hermes plugin catalog
+(NousResearch/hermes-agent#132572) and asked for changes. Each point is below with how it
+was fixed. This is a minor release because install behaviour changes.
+
+**Changed - installs (review point: pipeline steps `pip install` packages implicitly, mostly unpinned)**
+
+- **ContentForge no longer installs packages on its own.** `_common.pip_install` used to run
+  `pip install` whenever `python-docx`, `c2pa-python`, or a Google or Airtable client was
+  missing, with a version floor at best. It now installs nothing by default: the script
+  prints the exact pinned command and exits non-zero. Every package has an exact version in
+  `_common.PINNED_DEPENDENCIES` (python-docx 1.2.0, c2pa-python 0.38.0, cryptography 46.0.6,
+  pyairtable 3.3.0, google-api-python-client 2.192.0, google-auth 2.49.1, gspread 6.2.1;
+  the versions the scripts were tested against). Setting `CONTENTFORGE_INSTALL_DEPS=1` for a
+  single run is the explicit consent to let it run that same pinned command. **If you relied
+  on the first-run auto-install, run the printed command once, or set that variable.**
+- PRIVACY.md now says this; the script docstrings, the output-manager agent, the testing
+  guide and the submission bundle no longer claim an automatic install.
+
+**Fixed - paths built from outside names (review points: attachment file name, `--run-id`, raw `--brand`)**
+
+- **Airtable attachment name** (`backend-migrator.py`): a remote file name such as `../../x`
+  or an absolute path was joined onto the temp folder and the download written there. The
+  name is now reduced to its last component (either separator style), falls back to
+  `attachment.docx`, and passes through the new `_common.safe_child`, which rejects anything
+  that would leave the folder. The attachment URL must be https (it was passed to `urlopen`,
+  which also opens `file://`). The temp folder is now removed after each record (it was
+  never cleaned up).
+- **`--run-id`** (`checkpoint-manager.py`, `drive-sync-state.py`): every action now validates
+  the id (`YYYYMMDD-HHMMSS-slug`, one path component) before it becomes a path, so `../..`
+  or an absolute id can no longer name a directory for save, load, status, finalize, resume
+  or discard. A bad id returns an error and touches nothing. The Unicode slug a non-Latin
+  topic produces (Japanese, Arabic) stays valid.
+- **Raw `--brand`** (`_common.brand_dir`): the legacy raw-name directory is honoured only when
+  the name is a single plain path component; `../..` or an absolute path now falls through
+  to the slug directory.
+- New `_common.safe_child(base, name)` and `_common.is_single_component(name)` are the one
+  containment helper.
+
+- **Every `--run-id` is checked at the command line.** `checkpoint-manager`, `drive-sync-state`,
+  `pipeline-tracker` and `run-audit` take it through `_common.run_id_arg` (one plain folder name,
+  else a usage error). `pipeline-tracker` and `run-audit` had joined the id into a path unchecked;
+  `pipeline-tracker`'s library function now goes through `safe_child` too. `--brand` reaches a path
+  only through `_common.brand_dir()` (slugified, tested), or never reaches one (a row filter, a Drive
+  folder name, document text); a test classifies every script that declares `--brand` and fails if a
+  new one is not accounted for.
+
+**Fixed - the harvester stays on public addresses and on the site (review note on `harvest-brand-pages.py`)**
+
+- Fetches are limited to http(s) URLs whose host resolves only to public addresses (loopback,
+  private, link-local, reserved and multicast addresses, and cloud metadata endpoints, are
+  refused), every redirect hop is re-checked, and sitemaps declared in robots.txt are used
+  only when they are on the crawled site (a sitemap index's children too).
+
+**Fixed - the throwaway signing key (review note on `--c2pa-sign`)**
+
+- With no certificate of your own, `generate-docx.py` creates a throwaway self-signed key in
+  a temporary folder. That folder is now deleted in a `finally`, so the unencrypted key never
+  outlives the call.
+
+**Fixed - `${CLAUDE_PLUGIN_ROOT}` (review note: Hermes never defines it)**
+
+- Every skill and command that uses `${CLAUDE_PLUGIN_ROOT}` (cf-analytics, cf-audit,
+  cf-calendar, content-refresh, contentforge, resume) now carries one sentence: "If your host
+  does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder,
+  next to `skills/`." A test keeps it that way.
+
+**Fixed - PRIVACY.md (review point: it understated what runs)**
+
+- Added the C2PA timestamp request (`http://timestamp.digicert.com`, plain HTTP, carrying a
+  hash of the signature, not your file), the opt-in pinned install, the harvester's limits
+  and the attachment cleanup. The python-docx install is no longer described as something
+  that happens only when a backend needs a package.
+
+**Changed - C2PA pinned to c2pa-python 0.38.0, checked end to end**
+
+- The pin is 0.38.0, the version an unpinned install pulls today. Checked in a scratch
+  environment with the exact pin: a real PNG signed with this plugin's manifest reads back
+  `Valid`, and a real `.docx` went through `generate-docx.py --c2pa-sign`. 0.38 refuses a
+  `c2pa.created` action without its own `digitalSourceType`, so the manifest now carries one
+  (IPTC `compositeWithTrainedAlgorithmicMedia`, matching the intent it sets). On the build we
+  tested the library lists the .docx MIME type but cannot read a deflate-compressed .docx
+  (`could not read the ZIP: compression method not supported: 8`), so the result reports
+  `sidecar-only` with that reason and the sidecar manifest, as it did on 0.32.6.
+
+**Declared - credentials (review note: `requires_env: []` under-declared them)**
+
+- `plugin.yaml` now lists the credentials the scripts read under `optional_env` (AIRTABLE_TOKEN;
+  ANTHROPIC_API_KEY, OPENAI_API_KEY and GEMINI_API_KEY for the model-registry refresh), each marked
+  secret and described. They are optional, so `requires_env` stays empty. A test fails when a script
+  reads a credential that plugin.yaml does not list.
+
+**Tests**
+
+- New `tests/test_hermes_review_fixes.py`: `safe_child` rejects `../`, absolute,
+  backslash, drive-letter and NUL names; run ids and brand names; the attachment download in a
+  sandbox (so a regression cannot write outside it); no install without consent and exact pins;
+  the signing-key folder is gone; the harvester refuses private addresses and internal
+  redirects; the script-location sentence; PRIVACY rows. Each fix was checked by putting the
+  old behaviour back and confirming a test fails (12 of 12 caught).
+
 ## [4.4.1] - 2026-10-10
 
 ### The listing figures now count the workflow

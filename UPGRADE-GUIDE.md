@@ -1,5 +1,20 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.4.x → 4.5.0 (nothing installs itself)
+
+**Nothing migrates, but one thing you may notice:** ContentForge no longer installs Python
+packages on its own. The first time a step needs `python-docx` (every `.docx`), `c2pa-python`
+and `cryptography` (`--c2pa-sign`), or the Google or Airtable packages for a backend you chose,
+the script prints the exact pinned install command and exits with an error. Run that command
+once, or set `CONTENTFORGE_INSTALL_DEPS=1` for a single run to let ContentForge run the same
+command for you. The versions are exact (`PINNED_DEPENDENCIES` in `scripts/_common.py`).
+
+Also: a `--run-id` that is not a generated run id, or a `--brand` that is a path, is refused
+instead of being used; the Airtable migrator only downloads https attachments and removes its
+temporary files; the brand-site harvester refuses private addresses.
+
+---
+
 ## Upgrading 4.3.x → 4.4.0 (skills that reach the model)
 
 **Nothing migrates.** Two behaviour changes: skill descriptions are short, so

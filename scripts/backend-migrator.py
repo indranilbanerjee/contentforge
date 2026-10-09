@@ -53,7 +53,7 @@ def default_credentials() -> Path:
 # ── Lazy dependency installers ─────────────────────────────────────
 
 def _ensure_pyairtable():
-    """Auto-install pyairtable on first use."""
+    """Import pyairtable; if missing, print the pinned install command and stop (no automatic install)."""
     try:
         from pyairtable import Api
         return Api
@@ -66,7 +66,7 @@ def _ensure_pyairtable():
 
 
 def _ensure_google():
-    """Auto-install gspread + google-auth + google-api-python-client on first use."""
+    """Import the Google packages; if missing, print the pinned install command and stop (no automatic install)."""
     try:
         import gspread
         from google.oauth2.service_account import Credentials
@@ -218,16 +218,40 @@ def download_airtable_attachment(record):
     if not url:
         return None, "No attachment URL"
 
-    filename = first.get("filename", "attachment.docx") if isinstance(first, dict) else "attachment.docx"
-    tmp_dir = Path(tempfile.mkdtemp(prefix="cf_migrate_"))
-    dest = tmp_dir / filename
+    # The URL is remote-controlled data: https only (urlopen would also follow file:// and ftp://).
+    if not str(url).lower().startswith("https://"):
+        return None, "Attachment URL is not https; skipped"
 
+    # So is the file name. Keep only its last component (either separator style), fall back to a
+    # fixed name when nothing safe is left, and let safe_child() refuse anything that would land
+    # outside the temp directory (Hermes review of 2026-10-04: a "../.." or absolute name wrote
+    # the downloaded bytes anywhere the user could write).
+    raw_name = first.get("filename") if isinstance(first, dict) else None
+    filename = Path(str(raw_name or "").replace("\\", "/")).name
+    if not _common.is_single_component(filename):
+        filename = "attachment.docx"
+    tmp_dir = Path(tempfile.mkdtemp(prefix="cf_migrate_"))
     try:
+        dest = _common.safe_child(tmp_dir, filename)
         with urlopen(url, timeout=DOWNLOAD_TIMEOUT_SECONDS) as resp, open(dest, "wb") as fh:
             shutil.copyfileobj(resp, fh)
         return str(dest), None
     except Exception as e:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
         return None, f"Download failed: {e}"
+
+
+def _cleanup_download(local_file, backend):
+    """Remove the temp directory a remote download created (the migrator made it, so it removes it).
+    Only directories this module created (cf_migrate_*) under the system temp dir are touched."""
+    if backend != "airtable" or not local_file:
+        return
+    d = Path(local_file).parent
+    try:
+        if d.name.startswith("cf_migrate_") and d.resolve().parent == Path(tempfile.gettempdir()).resolve():
+            shutil.rmtree(d, ignore_errors=True)
+    except OSError:
+        pass
 
 
 # ── Google Sheets/Drive backend ───────────────────────────────────
@@ -441,6 +465,7 @@ def migrate_records(args):
 
         elif tgt == "airtable":
             if not args.base_id:
+                _cleanup_download(local_file, src)
                 return {"error": "--base-id required for airtable target"}
             write_err, record_written = write_airtable_record(
                 args.base_id, args.table, record,
@@ -453,6 +478,7 @@ def migrate_records(args):
 
         elif tgt == "google_sheets":
             if not args.sheet_id:
+                _cleanup_download(local_file, src)
                 return {"error": "--sheet-id required for google_sheets target"}
             write_err = write_google_record(
                 args.sheet_id, args.credentials, record,
@@ -474,6 +500,7 @@ def migrate_records(args):
             migrated += 1
             if rid:
                 existing_ids.add(rid)
+        _cleanup_download(local_file, src)
 
     return {
         "status": "completed",

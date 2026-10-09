@@ -672,7 +672,7 @@ def setup_guide(name):
                     "Uses Python scripts with Google API (no npx/Node.js required).",
                     "Works in both Claude Code and Cowork.",
                     "Credentials are stored locally, never in the plugin repository.",
-                    "Dependencies (gspread, google-api-python-client) auto-install on first run.",
+                    "Dependencies (gspread, google-api-python-client) are pinned; if missing, the script prints the exact install command.",
                 ]
             elif conn["transport"] == "manual":
                 # No verified package exists — never emit an npx/install line here.

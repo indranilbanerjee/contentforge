@@ -28,7 +28,7 @@ python3 scripts/generate-docx.py \
     --c2pa-signing-key /secure/c2pa-prod-key.pem
 ```
 
-The script writes both the .docx and a `.c2pa.json` sidecar (c2pa-python 0.32 doesn't yet support .docx MIME for inline embedding — when that lands the script will auto-embed inline AND keep producing the sidecar).
+The script writes both the .docx and a `.c2pa.json` sidecar. With the pinned c2pa-python 0.38.0 the library lists the .docx MIME type, but on the build we tested embedding still failed (`could not read the ZIP: compression method not supported: 8`), so the result reports `sidecar-only` together with the reason; where the library can embed, the script embeds inline AND keeps producing the sidecar.
 
 ## Important — ContentForge editorial-responsibility claim
 

@@ -34,8 +34,10 @@ are atomic via _common.
 from __future__ import annotations
 
 import argparse
+import ipaddress
 import json
 import re
+import socket
 import sys
 import time
 import urllib.error
@@ -158,10 +160,56 @@ def parse_page(html_text: str, base_url: str) -> dict:
     return {"title": p.title, "h1": p.h1, "meta_description": p.meta_description, "links": p.links}
 
 
+def host_is_public(host: str) -> bool:
+    """False when `host` is empty, does not resolve, or resolves (on ANY address) to a loopback,
+    private, link-local, reserved, multicast or otherwise non-global address (cloud metadata
+    endpoints included). A brand crawler must never be steerable at internal services."""
+    if not host:
+        return False
+    try:
+        infos = socket.getaddrinfo(host, None)
+    except OSError:
+        return False
+    for info in infos:
+        try:
+            ip = ipaddress.ip_address(info[4][0].split("%")[0])
+        except ValueError:
+            return False
+        if ip.is_multicast or not ip.is_global:
+            return False
+    return True
+
+
+def url_is_fetchable(url: str) -> bool:
+    """http(s) only, with a public host. file://, ftp:// and the like are never fetched."""
+    p = urllib.parse.urlparse(url or "")
+    return p.scheme in ("http", "https") and bool(p.hostname) and host_is_public(p.hostname)
+
+
+class _GuardedRedirect(urllib.request.HTTPRedirectHandler):
+    """Re-checks every redirect hop with url_is_fetchable (a public page can 302 to an internal one)."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        target = urllib.parse.urljoin(req.full_url, newurl)
+        if not url_is_fetchable(target):
+            raise urllib.error.URLError(f"redirect to a non-public or non-http(s) address refused: {target}")
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
+_OPENER = urllib.request.build_opener(_GuardedRedirect)
+
+
+def same_site(root: str, url: str) -> bool:
+    """True when `url` is on the crawled site's host (a leading www. is ignored)."""
+    return _strip_www(urllib.parse.urlparse(url or "").netloc) == _strip_www(urllib.parse.urlparse(root).netloc)
+
+
 def fetch(url: str, timeout: float) -> tuple[int, str]:
+    if not url_is_fetchable(url):
+        return 0, ""
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml"})
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
+        with _OPENER.open(req, timeout=timeout) as r:
             body = r.read(1_500_000)
             return r.status, body.decode("utf-8", errors="ignore")
     except urllib.error.HTTPError as e:
@@ -310,14 +358,17 @@ def main() -> int:
         rp.parse([])  # no robots -> everything allowed
 
     candidates: list[str] = []
-    sitemap_urls = result["robots"]["sitemaps_declared"] or [root + "/sitemap.xml"]
+    declared = result["robots"]["sitemaps_declared"]
+    on_site = [u for u in declared if same_site(root, u)]
+    result["robots"]["sitemaps_off_host_skipped"] = len(declared) - len(on_site)
+    sitemap_urls = on_site or [root + "/sitemap.xml"]
     for sm in sitemap_urls[:5]:
         s_status, s_body = fetch(sm, args.timeout)
         if s_status != 200 or "<" not in s_body:
             continue
         locs = parse_sitemap_locs(s_body)
         if is_sitemap_index(s_body):
-            for child in locs[:10]:
+            for child in [c for c in locs if same_site(root, c)][:10]:
                 c_status, c_body = fetch(child, args.timeout)
                 if c_status == 200:
                     candidates.extend(parse_sitemap_locs(c_body))

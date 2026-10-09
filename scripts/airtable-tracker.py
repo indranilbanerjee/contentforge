@@ -31,7 +31,7 @@ import _common  # noqa: E402
 
 _common.ensure_utf8_stdout()
 
-# ── Auto-install dependencies ───────────────────────────────────────
+# ── Dependencies (never installed automatically: a missing package prints the pinned command) ──
 try:
     from pyairtable import Api
     from pyairtable.formulas import match

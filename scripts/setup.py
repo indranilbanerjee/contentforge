@@ -98,7 +98,7 @@ def main():
     if google["packages"]:
         print("GOOGLE_PACKAGES=installed")
     else:
-        print("GOOGLE_PACKAGES=not_installed (will auto-install on first script run)")
+        print("GOOGLE_PACKAGES=not_installed (the Google scripts print the exact pinned install command; nothing installs itself)")
 
     # Report persistent data directory
     print(f"PLUGIN_DATA={PLUGIN_DATA}")

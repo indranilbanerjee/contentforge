@@ -27,7 +27,7 @@ If your platform has **no subagent/Task dispatch**, the pipeline still runs — 
 2. **Same artifacts, same names, same gates.** Write every phase artifact to the run directory exactly as the Pipeline Contract specifies, checkpoint after each phase, and run every gate script. The auditability of a run must not depend on which platform produced it.
 3. **What changes:** ignore per-agent `maxTurns` (they bound subagent sessions, not you); "return as your final output" means "write the artifact, then continue"; Progress Updates print inline. What does **not** change: the phase order, the loop budgets, the gate criteria, and the rule that a needs-user-decision moment stops for the user.
 4. **Context discipline replaces context isolation.** Subagents exist to give each phase a clean context. Without them, do not carry a phase's working notes forward — after checkpointing a phase, work only from the artifacts on disk, exactly as a fresh subagent would.
-5. **Environment names:** on Agent Plugins 1.0 hosts the plugin root is `${PLUGIN_ROOT}` and persistent data is `${PLUGIN_DATA}`; where a command below says `${CLAUDE_PLUGIN_ROOT}`, use whichever of the two names your host defines. The scripts themselves accept both data-dir spellings.
+5. **Environment names:** on Agent Plugins 1.0 hosts the plugin root is `${PLUGIN_ROOT}` and persistent data is `${PLUGIN_DATA}`; where a command below says `${CLAUDE_PLUGIN_ROOT}`, use whichever of the two names your host defines. The scripts themselves accept both data-dir spellings. If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
 
 ### Step 0 — Initialize the run (orchestrator only, before Step 0.5)
 

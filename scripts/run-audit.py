@@ -592,7 +592,7 @@ def main():
     ap = argparse.ArgumentParser(
         description="Re-derive every gate of a run from its artifacts.")
     ap.add_argument("--brand")
-    ap.add_argument("--run-id")
+    ap.add_argument("--run-id", type=_common.run_id_arg)
     ap.add_argument("--run-dir")
     ap.add_argument("--strict", action="store_true",
                     help="N/A checks also fail the verdict")

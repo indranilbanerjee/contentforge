@@ -86,7 +86,8 @@ def get_run_file(brand, run_id=None):
     """Path to the pipeline-run.json for a brand (and optionally a run)."""
     bd = _common.brand_dir(brand)
     if run_id:
-        return bd / "runs" / run_id / "pipeline-run.json"
+        # safe_child: a "../.." or absolute run id must not select a folder outside runs/
+        return _common.safe_child(bd / "runs", run_id) / "pipeline-run.json"
     return bd / "pipeline-run.json"
 
 
@@ -322,7 +323,7 @@ def main():
     parser.add_argument("--action", required=True,
                         choices=["init", "phase-start", "phase-end", "get-report"])
     parser.add_argument("--brand", required=True, help="Brand name")
-    parser.add_argument("--run-id", default=None,
+    parser.add_argument("--run-id", type=_common.run_id_arg, default=None,
                         help="Checkpoint run id. Stores timing per-run under <brand>/runs/{run_id}/ "
                              "(recommended; required for parallel batch pipelines). "
                              "Omit for the legacy per-brand file.")
