@@ -122,7 +122,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py --section all-with-envir
 - [ ] `config/` — 7 config files + `industries/` subdirectory with 10 JSON packs
 - [ ] `templates/` — 14 template files
 - [ ] `utilities/` — 6 utility files
-- [ ] `.mcp.json` — ships **empty** on purpose (zero auto-connecting servers); the opt-in catalog is `.mcp.json.connectors-reference`
+- [ ] No `.mcp.json` ships (it is gitignored), on purpose: zero auto-connecting servers; the opt-in catalog is `.mcp.json.connectors-reference`
 - [ ] `hooks/hooks.json` — `"hooks": {}` (zero active hooks by design)
 
 ---

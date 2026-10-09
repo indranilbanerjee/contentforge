@@ -8,7 +8,7 @@
 
 对每个选题运行 `/contentforge:create-content`。10 阶段流水线会产出一份可直接发布的 `.docx`：内置 43 模式人性化引擎、事实核查子代理、三类内部链接，以及满足 EU AI Act 合规要求的 C2PA 内容溯源——每篇仅需 30–60 分钟。接下来是任何单发式工具都不具备的部分：**生命周期闭环。** 每一篇已发布的内容都会被持续度量、接受内容衰减审计，并回馈到下一期内容日历与下一份内容简报中——一切通过持久化的文件契约实现，因此系统对你品牌的认知不会随着学到它的那次会话结束而消失。
 
-开源企业级内容生产系统——**22 个技能 · 13 个专家代理 · 10 道质量门 · 43 模式 AI 痕迹人性化引擎 · 一个在流水线宣告完成之前重新推导每道质量门的运行审计器 · 29 个纯标准库 Python 脚本**。由 [Indranil Banerjee](https://indranil.in) 创建 · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)。
+开源企业级内容生产系统——**22 个技能 · 13 个专家代理 · 10 道质量门 · 43 模式 AI 痕迹人性化引擎 · 一个在流水线宣告完成之前重新推导每道质量门的运行审计器 · 29 个 Python 脚本（标准库；少数可选包已固定版本，绝不自动安装）**。由 [Indranil Banerjee](https://indranil.in) 创建 · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow)。
 
 **版本 4.5.0** · [更新日志](CHANGELOG.md) · MIT 许可证 · [赞助本项目 ❤](https://github.com/sponsors/indranilbanerjee)
 
@@ -163,7 +163,7 @@ grok plugin install indranilbanerjee/contentforge
 
 **我的数据存放在哪里？**一切都在本地：品牌档案与运行产物位于 `~/.claude-marketing/<brand>/`，交付物位于 `~/Documents/ContentForge/`。除了你所在平台自身发起的模型调用之外，不会向任何地方发送任何数据。
 
-**需要连接 MCP/集成吗？**不需要。随附的 `.mcp.json` 是有意留空的——零自动连接服务器。连接器是一个按需启用的目录（`/contentforge:cf-connect`）。
+**需要连接 MCP/集成吗？**不需要。有意不随附 `.mcp.json`（已加入 .gitignore）——零自动连接服务器。连接器是一个按需启用的目录（`/contentforge:cf-connect`）。
 
 **它符合 EU AI Act 吗？**符合——提供带第 50 条 AI 披露声明的 C2PA 内容溯源签名，外加可按品牌配置的披露层（不确定 ⇒ 一律披露的故障安全策略）。
 

@@ -788,7 +788,7 @@ PRs welcome — especially on the 43-pattern AI-detection catalog, industry-spec
 
 ## Neelverse Marketing Suite
 
-ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indranil.in) that share the same brand profiles and marketplace. **Each plugin is fully standalone** — install any one by itself and every capability it documents works; the others simply add more tools:
+ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indranil.in) that share a marketplace but not brand profiles: each plugin keeps its own brand setup, so set the brand up once in each plugin you use. **Each plugin is fully standalone** — install any one by itself and every capability it documents works; the others simply add more tools:
 
 | Plugin | What it does |
 |---|---|

@@ -11,7 +11,7 @@ Show the complete integration status for your ContentForge installation — conf
 
 ## The ground truth about connectors
 
-ContentForge ships with an **empty `.mcp.json`** (`"mcpServers": {}`) by design (v3.9.0 Cowork-safety decision). On a fresh install, expect **0 connectors configured** (or 1-2 if the platform injects its own integrations). Nothing is pre-wired.
+ContentForge ships **no `.mcp.json`** by design (v3.9.0 Cowork-safety decision). On a fresh install, expect **0 connectors configured** (or 1-2 if the platform injects its own integrations). Nothing is pre-wired.
 
 **Every number in the dashboard must come from the live script output.** Never render counts, percentages, or connected/available labels that are not present in the JSON returned by `scripts/connector-status.py`. Do not copy numbers from the example in this file.
 
@@ -117,7 +117,7 @@ HTTP connectors work in both Cowork and Claude Code once the user adds them to `
 ## Troubleshooting
 
 ### "0 connectors connected" on a fresh install
-- This is the expected shipped state — `.mcp.json` starts empty. Use `/contentforge:cf-connect <name>` to add your first connector.
+- This is the expected shipped state — no `.mcp.json` exists until you add a connector. Use `/contentforge:cf-connect <name>` to add your first connector.
 
 ### Dashboard shows an HTTP connector as "available" after you added it
 - The key name in `.mcp.json` must match the registry name exactly (e.g., `notion`, not `Notion` or `notion-mcp`)

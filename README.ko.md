@@ -8,7 +8,7 @@
 
 각 주제에 대해 `/contentforge:create-content`를 실행하십시오. 10단계 파이프라인이 43가지 패턴의 휴머나이저, 팩트체커 서브에이전트, 3가지 범주의 내부 링크, EU AI Act 준수를 위한 C2PA 출처 증명을 갖춘, 즉시 게재 가능한 `.docx`를 편당 30–60분 만에 만들어 냅니다. 그리고 어떤 원샷 도구도 갖지 못한 것이 이어집니다: **라이프사이클 루프.** 게재된 모든 콘텐츠는 성과가 측정되고, 노후화 여부가 감사되며, 다음 캘린더와 다음 브리프에 다시 반영됩니다 — 지속되는 파일 계약을 통해서입니다. 시스템이 브랜드에 대해 학습한 내용은 학습이 이루어진 세션이 끝나도 살아남습니다.
 
-오픈소스 엔터프라이즈 콘텐츠 프로덕션 시스템 — **22개 스킬 · 13개 전문 에이전트 · 10개 품질 게이트 · 43가지 패턴의 AI 탐지 휴머나이저 · 실행이 스스로 완료를 선언하기 전에 모든 게이트를 재검증하는 런 오디터 · 표준 라이브러리만 사용하는 29개 Python 스크립트**. 제작자: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+오픈소스 엔터프라이즈 콘텐츠 프로덕션 시스템 — **22개 스킬 · 13개 전문 에이전트 · 10개 품질 게이트 · 43가지 패턴의 AI 탐지 휴머나이저 · 실행이 스스로 완료를 선언하기 전에 모든 게이트를 재검증하는 런 오디터 · 29개 Python 스크립트(표준 라이브러리 기반. 선택 패키지는 버전이 고정되어 있으며 자동으로 설치되지 않습니다)**. 제작자: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
 **버전 4.5.0** · [체인지로그](CHANGELOG.md) · MIT 라이선스 · [이 프로젝트 후원하기 ❤](https://github.com/sponsors/indranilbanerjee)
 
@@ -163,7 +163,7 @@ grok plugin install indranilbanerjee/contentforge
 
 **내 데이터는 어디에 저장됩니까?** 모든 것이 로컬에 있습니다: 브랜드 프로필과 실행 아티팩트는 `~/.claude-marketing/<brand>/` 아래에, 결과물은 `~/Documents/ContentForge/` 아래에 저장됩니다. 사용 중인 플랫폼이 직접 수행하는 모델 호출 외에는 어떤 것도 외부로 전송되지 않습니다.
 
-**MCP나 통합을 연결해야 합니까?** 아니요. 기본 제공되는 `.mcp.json`은 의도적으로 비어 있습니다 — 자동 연결되는 서버가 하나도 없습니다. 커넥터는 옵트인 카탈로그로 제공됩니다(`/contentforge:cf-connect`).
+**MCP나 통합을 연결해야 합니까?** 아니요. `.mcp.json`은 의도적으로 포함되어 있지 않습니다(.gitignore 대상) — 자동 연결되는 서버가 하나도 없습니다. 커넥터는 옵트인 카탈로그로 제공됩니다(`/contentforge:cf-connect`).
 
 **EU AI Act에 대비되어 있습니까?** 예 — Article 50의 AI 공개 어설션을 포함한 C2PA 콘텐츠 출처 서명에, 브랜드별로 구성 가능한 공개 레이어(불확실하면 공개하는 페일세이프)까지 갖추고 있습니다.
 

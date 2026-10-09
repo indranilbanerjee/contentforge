@@ -4,7 +4,7 @@
 
 Plugin files use `~~category` as a placeholder for whatever tool the user connects in that category. For example, `~~knowledge base` might mean Notion, Confluence, or any other knowledge management tool with an MCP server.
 
-Plugins are **tool-agnostic** — they describe workflows in terms of categories (knowledge base, design, CMS, etc.) rather than specific products. As of v3.9.0, no MCP servers are pre-configured: `.mcp.json` ships empty and the catalog of supported HTTP connectors lives in `.mcp.json.connectors-reference`. This is an opt-in model — see "Connectors for this plugin" and "Enabling connectors" below.
+Plugins are **tool-agnostic** — they describe workflows in terms of categories (knowledge base, design, CMS, etc.) rather than specific products. As of v3.9.0, no MCP servers are pre-configured: no `.mcp.json` ships and the catalog of supported HTTP connectors lives in `.mcp.json.connectors-reference`. This is an opt-in model — see "Connectors for this plugin" and "Enabling connectors" below.
 
 ## Connectors for this plugin
 
@@ -93,7 +93,7 @@ Use these skills to discover and manage your integrations:
 
 The former `google-sheets` and `google-drive` npx entries were **removed in July 2026** — the package names were unverifiable. Use the HTTP equivalents in `.mcp.json.connectors-reference` instead (`pipedream-google-sheets`, `pipedream-google-drive`, `composio-google-sheets`), or the platform-level Google Drive integration in Cowork.
 
-To enable an npx server, **merge** its entry into `.mcp.json` (do not overwrite — that would discard the empty default + readme):
+To enable an npx server, **merge** its entry into your `.mcp.json` (create the file if you have none; never overwrite one you already use):
 
 ```bash
 # Inspect the npx connector catalog

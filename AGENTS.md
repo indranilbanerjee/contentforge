@@ -43,7 +43,7 @@ ContentForge is an open-source content lifecycle system — turn a one-line topi
 - `commands/<name>.md` — Claude Code slash commands (`/contentforge:<name>`).
 - `scripts/*.py` — Python helpers. Key: `generate-docx.py`, `checkpoint-manager.py`, `drive-sync-state.py`, `detect-drive-mcp.py`, `plugin-metadata.py`, `connector-status.py`, `harvest-brand-pages.py`, `text-metrics.py`.
 - `hooks/hooks.json` — `{"hooks":{}}` (zero global hooks).
-- `.mcp.json` — `{"mcpServers":{}}` (zero auto-connecting MCPs).
+- `.mcp.json` — not shipped (gitignored): zero auto-connecting MCPs. The opt-in catalog is `.mcp.json.connectors-reference`.
 - `templates/` + `config/` — pipeline configuration, content-type structures, voice patterns, brand profile template, humanization catalogue (43-pattern catalog).
 - `references/ai-detection-signals.md` — internalized AI-detector knowledge base (what detectors measure, why grounding beats tricks, the two hard guardrails).
 
@@ -56,7 +56,7 @@ When running in Anthropic Cowork AND a Google Drive MCP is connected (Settings �
 - **Skills are the universal interface.** Open standard (agentskills.io). Same SKILL.md works on Claude Code, Codex, Antigravity, Cursor, Copilot CLI.
 - **Subagents are Claude-only as `agents/*.md`.** On Codex convert to `~/.codex/agents/*.toml`. On Antigravity use `/agent` for ad-hoc.
 - **Slash commands `commands/*.md` are Claude-only.** On other surfaces invoke skills by name.
-- **MCP env-var syntax differs.** Our `.mcp.json` ships empty so neither syntax bites.
+- **MCP env-var syntax differs.** No `.mcp.json` ships, so neither syntax bites.
 
 ## Identity / authority
 

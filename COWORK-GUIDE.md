@@ -122,7 +122,7 @@ It lists what is connected and what each connector unlocks.
 
 ### Optional: other connectors
 
-A fresh install ships an **empty** `.mcp.json` — zero connectors auto-connect. The full opt-in catalog of 16 HTTP connectors lives in `.mcp.json.connectors-reference` in the plugin repo (Notion, Canva, Webflow, Slack, Gmail, Google Calendar, Figma, fal.ai, Replicate, plus aggregator options — Pipedream, Composio, Zapier, Make).
+A fresh install ships no `.mcp.json` — zero connectors auto-connect. The full opt-in catalog of 16 HTTP connectors lives in `.mcp.json.connectors-reference` in the plugin repo (Notion, Canva, Webflow, Slack, Gmail, Google Calendar, Figma, fal.ai, Replicate, plus aggregator options — Pipedream, Composio, Zapier, Make).
 
 Add one interactively:
 ```

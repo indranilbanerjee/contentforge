@@ -11,7 +11,7 @@ Set up a specific MCP integration for ContentForge with step-by-step instruction
 
 ## The ground truth about connectors
 
-ContentForge ships with an **empty `.mcp.json`** (`"mcpServers": {}`). This is deliberate (v3.9.0 Cowork-safety decision): no connector auto-connects when the plugin is installed. **Every connector is opt-in** — the user adds it to `.mcp.json` (or connects it at the platform level in Cowork/Desktop Settings → Integrations).
+ContentForge ships **no `.mcp.json`** (it is gitignored). This is deliberate (v3.9.0 Cowork-safety decision): no connector auto-connects when the plugin is installed. **Every connector is opt-in** — the user adds it to their own `.mcp.json` (or connects it at the platform level in Cowork/Desktop Settings → Integrations).
 
 Never claim a connector is pre-wired or already connected. All status claims must come from running `python scripts/connector-status.py` — never from this file or from memory.
 

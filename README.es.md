@@ -8,7 +8,7 @@
 
 Ejecuta `/contentforge:create-content` con cada tema. El pipeline de 10 fases produce un `.docx` listo para publicar, con un humanizador de 43 patrones, un subagente verificador de datos, enlazado interno de tres categorías y procedencia C2PA para cumplir con la EU AI Act — en 30–60 minutos por pieza. Y después, lo que ninguna herramienta de un solo disparo ofrece: **el ciclo de vida completo.** Cada pieza publicada se mide, se audita en busca de deterioro y alimenta el siguiente calendario y el siguiente brief — mediante contratos de archivos duraderos, de modo que lo que el sistema aprende sobre tu marca sobrevive a la sesión en la que lo aprendió.
 
-Sistema de producción de contenido empresarial de código abierto — **22 skills · 13 agentes especialistas · 10 puertas de calidad · humanizador anti-detección de IA de 43 patrones · un auditor de ejecución que rederiva cada puerta antes de que una ejecución pueda darse por terminada · 29 scripts de Python, solo con la biblioteca estándar**. Creado por [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Sistema de producción de contenido empresarial de código abierto — **22 skills · 13 agentes especialistas · 10 puertas de calidad · humanizador anti-detección de IA de 43 patrones · un auditor de ejecución que rederiva cada puerta antes de que una ejecución pueda darse por terminada · 29 scripts de Python (biblioteca estándar; los pocos paquetes opcionales van fijados a una versión y nunca se instalan solos)**. Creado por [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
 **Versión 4.5.0** · [Registro de cambios](CHANGELOG.md) · Licencia MIT · [Patrocina este proyecto ❤](https://github.com/sponsors/indranilbanerjee)
 
@@ -163,7 +163,7 @@ Los 22 archivos SKILL.md son portables entre plataformas gracias al estándar ab
 
 **¿Dónde residen mis datos?** Todo es local: los perfiles de marca y los artefactos de ejecución en `~/.claude-marketing/<brand>/`, los entregables en `~/Documents/ContentForge/`. No se envía nada a ninguna parte, salvo las llamadas al modelo que hace tu propia plataforma.
 
-**¿Necesito conectar MCPs o integraciones?** No. El `.mcp.json` incluido está vacío por diseño — cero servidores de conexión automática. Los conectores son un catálogo opcional (`/contentforge:cf-connect`).
+**¿Necesito conectar MCPs o integraciones?** No. No se incluye ningún `.mcp.json` (está en .gitignore), por diseño — cero servidores de conexión automática. Los conectores son un catálogo opcional (`/contentforge:cf-connect`).
 
 **¿Está preparado para la EU AI Act?** Sí — firma de procedencia de contenido C2PA con la aserción de divulgación de IA del Artículo 50, más una capa de divulgación configurable por marca (ante la duda ⇒ divulgar, a prueba de fallos).
 

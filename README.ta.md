@@ -8,7 +8,7 @@
 
 ஒவ்வொரு தலைப்புக்கும் `/contentforge:create-content` ஐ இயக்குங்கள். 10-கட்டப் பைப்லைன், 43-வடிவ humanizer, ஒரு fact-checker subagent, மூன்று-வகை உள் இணைப்பு (internal linking), EU AI Act இணக்கத்திற்கான C2PA provenance ஆகியவற்றுடன் வெளியீட்டுக்குத் தயாரான `.docx`-ஐ உருவாக்கித் தருகிறது — ஒரு கட்டுரைக்கு 30–60 நிமிடங்களில். அதன் பிறகு, வேறு எந்த single-shot கருவியிடமும் இல்லாத அம்சம்: **lifecycle loop.** வெளியிடப்பட்ட ஒவ்வொரு கட்டுரையும் அளவிடப்பட்டு, தேய்மானத்திற்காக (decay) தணிக்கை செய்யப்பட்டு, அடுத்த calendar-க்கும் அடுத்த brief-க்கும் மீண்டும் ஊட்டப்படுகிறது — நிலைத்து நிற்கும் file contracts வழியாக; எனவே உங்கள் brand பற்றி அமைப்பு கற்றுக்கொண்டவை, அவற்றைக் கற்ற session முடிந்த பிறகும் நிலைத்திருக்கும்.
 
-திறந்த மூல, நிறுவனத் தரத்திலான உள்ளடக்க உற்பத்தி அமைப்பு — **22 skills · 13 specialist agents · 10 quality gates · 43-வடிவ AI-கண்டறிதல் humanizer · ஓர் ஓட்டம் தன்னை முடிந்ததாக அறிவிக்கும் முன் ஒவ்வொரு gate-ஐயும் மீண்டும் தருவித்துச் சரிபார்க்கும் run auditor · 29 Python scripts, stdlib-மட்டுமே**. உருவாக்கியவர்: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+திறந்த மூல, நிறுவனத் தரத்திலான உள்ளடக்க உற்பத்தி அமைப்பு — **22 skills · 13 specialist agents · 10 quality gates · 43-வடிவ AI-கண்டறிதல் humanizer · ஓர் ஓட்டம் தன்னை முடிந்ததாக அறிவிக்கும் முன் ஒவ்வொரு gate-ஐயும் மீண்டும் தருவித்துச் சரிபார்க்கும் run auditor · 29 Python scripts (stdlib; சில விருப்பத் தொகுப்புகள் பதிப்பு பின் செய்யப்பட்டவை, தானாக ஒருபோதும் நிறுவப்படாது)**. உருவாக்கியவர்: [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
 **பதிப்பு 4.5.0** · [Changelog](CHANGELOG.md) · MIT உரிமம் · [இந்தத் திட்டத்தை ஆதரியுங்கள் ❤](https://github.com/sponsors/indranilbanerjee)
 
@@ -163,7 +163,7 @@ Content type, brand, தலைப்பு, சொல் எண்ணிக்�
 
 **என் தரவு எங்கே இருக்கிறது?** அனைத்தும் உங்கள் கணினியிலேயே: brand profiles-உம் run artifacts-உம் `~/.claude-marketing/<brand>/`-இன் கீழ், deliverables `~/Documents/ContentForge/`-இன் கீழ். உங்கள் சொந்தத் தளம் செய்யும் model அழைப்புகளைத் தவிர, வேறு எதுவும் எங்கும் அனுப்பப்படுவதில்லை.
 
-**MCP-கள்/integrations இணைக்க வேண்டுமா?** தேவையில்லை. வழங்கப்படும் `.mcp.json` வேண்டுமென்றே காலியாக உள்ளது — தானாக இணையும் servers எதுவுமில்லை. Connectors ஒரு opt-in பட்டியல் (`/contentforge:cf-connect`).
+**MCP-கள்/integrations இணைக்க வேண்டுமா?** தேவையில்லை. `.mcp.json` எதுவும் வழங்கப்படுவதில்லை (அது .gitignore-இல் உள்ளது), வேண்டுமென்றே — தானாக இணையும் servers எதுவுமில்லை. Connectors ஒரு opt-in பட்டியல் (`/contentforge:cf-connect`).
 
 **இது EU AI Act-க்குத் தயாரா?** ஆம் — Article 50 AI-disclosure assertion-உடன் கூடிய C2PA content provenance கையொப்பம், அத்துடன் brand-அளவில் கட்டமைக்கக்கூடிய disclosure அடுக்கு (உறுதியில்லை என்றால் ⇒ வெளிப்படுத்து என்ற fail-safe).
 

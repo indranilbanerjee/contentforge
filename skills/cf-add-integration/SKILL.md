@@ -50,7 +50,7 @@ Run `python scripts/connector-status.py --action check <name>` to see if the con
 
 Search for an existing MCP server package that provides the desired integration.
 
-Note: ContentForge ships with an empty `.mcp.json` (`"mcpServers": {}`) by design — every connector is opt-in and user-added. Nothing is pre-wired.
+Note: ContentForge ships no `.mcp.json` by design — every connector is opt-in and user-added. Nothing is pre-wired.
 
 1. **Check verified HTTP endpoints first** — hosted HTTP MCP servers are the easiest (work in both Cowork and Claude Code, no API keys for OAuth-based ones). The plugin's catalog of verified HTTP endpoints lives in **`.mcp.json.connectors-reference`** — use the URL from that file. If the service isn't listed there, check the vendor's official documentation for an MCP endpoint before guessing. Do not use endpoint URLs from memory: unverified URLs waste the user's setup time.
 

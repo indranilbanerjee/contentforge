@@ -128,7 +128,7 @@ Run immediately after install:
 /contentforge:cf-integrations
 ```
 
-This shows which connectors are active and what they unlock. **Out of the box, zero connectors are active** — `.mcp.json` ships empty on purpose. The opt-in catalog lives in `.mcp.json.connectors-reference` (16 HTTP entries: Notion, Canva, Webflow, Slack, Gmail, Google Calendar, Figma, fal.ai, Replicate, plus Pipedream/Composio/Zapier/Make aggregators). Enable the ones you need with `/contentforge:cf-connect`.
+This shows which connectors are active and what they unlock. **Out of the box, zero connectors are active** — no `.mcp.json` ships, on purpose. The opt-in catalog lives in `.mcp.json.connectors-reference` (16 HTTP entries: Notion, Canva, Webflow, Slack, Gmail, Google Calendar, Figma, fal.ai, Replicate, plus Pipedream/Composio/Zapier/Make aggregators). Enable the ones you need with `/contentforge:cf-connect`.
 
 ---
 
@@ -149,8 +149,8 @@ This tells you:
 - **Version** — Read from `.claude-plugin/plugin.json`, not hardcoded in any doc.
 - **PLUGIN_ROOT** — Where the plugin is installed. All scripts reference this path.
 - **SCRIPTS_DIR** — Where Python scripts live.
-- **Python version** — Must be 3.8+. Cowork VM has 3.10.12.
-- **Connectors active** — How many entries are in `.mcp.json` (empty by default).
+- **Python version** — Must be 3.10+. Cowork VM has 3.10.12.
+- **Connectors active** — How many entries are in your `.mcp.json` (none by default; the file does not exist until you add a connector).
 
 If you see errors here, check the [Troubleshooting](#21-troubleshooting) section.
 
@@ -1318,7 +1318,7 @@ All 5 articles scored ≥7.0 → APPROVED.
 ```
 contentforge/
 ├── .claude-plugin/plugin.json     # Manifest (name, version, description, author)
-├── .mcp.json                      # Empty by design — zero MCP servers auto-connect
+├── .mcp.json                      # Not shipped (gitignored) — zero MCP servers auto-connect
 ├── .mcp.json.connectors-reference # Opt-in catalog: 16 HTTP connectors (Notion, Canva, Webflow, Slack, Gmail, Calendar, Figma, fal.ai, Replicate + Pipedream/Composio/Zapier/Make)
 ├── .mcp.json.example              # 3 npx image-gen servers (Stability AI, nanobanana, imagenate) — CLI only
 ├── CONNECTORS.md                  # Full connector reference

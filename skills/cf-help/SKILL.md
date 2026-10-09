@@ -166,7 +166,7 @@ table below references the user-visible behaviors.
 | `docs/USER-GUIDE.md` | Comprehensive end-to-end guide |
 | `CHANGELOG.md` | Full version history (the canonical record of what's in your install) |
 | `CONNECTORS.md` | Connector categories and setup paths |
-| `.mcp.json.connectors-reference` | The opt-in connector catalog -- copy entries into `.mcp.json` to enable them (shipped `.mcp.json` is empty by design) |
+| `.mcp.json.connectors-reference` | The opt-in connector catalog -- copy entries into `.mcp.json` to enable them (no `.mcp.json` ships, by design) |
 | `docs/MODEL-CURATOR.md` | Model registry, aliases, and refresh workflow |
 | `config/brand-registry-template.json` | Brand profile JSON template |
 
