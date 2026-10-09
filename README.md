@@ -54,7 +54,7 @@ grok plugin install indranilbanerjee/contentforge
 
 ## Try this first
 
-Install, then type any of these in plain words. Each phrase is one our trigger tests confirmed reaches the right skill.
+Install, then ask in plain words. Each of these kinds of request reached the right skill in our trigger tests.
 
 | You type | What happens |
 |---|---|
