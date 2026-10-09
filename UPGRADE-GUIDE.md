@@ -4,8 +4,10 @@
 
 **Nothing migrates.** Two behaviour changes: skill descriptions are short, so
 Claude routes to skills by what they do; and translate, publish, social-adapt,
-switch-backend and add-integration can now be started by Claude from a plain
-request. Each one shows its scope first and acts only on an explicit `yes`.
+switch-backend and add-integration are now skills Claude can start directly
+from a plain request (before, the first three went through a wrapper command
+and the last two could not be started at all). Each one shows its scope first
+and acts only on an explicit `yes`.
 The slash shortcuts (`/contentforge:translate` and the others) still work.
 
 ---

@@ -64,13 +64,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   v3.8.0 trimmed descriptions once before and an August guard pushed them back
   out when nobody had written the reason down.
 
-**Fixed — five requests reached no skill**
+**Fixed — five side-effect skills were hidden from the model**
 
 - `cf-publish`, `cf-translate`, `cf-social-adapt`, `cf-switch-backend` and
-  `cf-add-integration` were hidden from the model (v3.4.1 and v3.8.0), and the
-  wrapper commands for the first three were hidden too. "Translate this into
-  Spanish", "push this live" and "move tracking to Airtable" therefore routed
-  nowhere, and the model improvised the action without the skill's gate.
+  `cf-add-integration` were hidden from the model (v3.4.1 and v3.8.0). The
+  first three were reachable only through their wrapper commands (`publish`,
+  `translate`, `social-adapt`); "move tracking to Airtable" and "add an
+  integration" reached nothing, and the model improvised the action without
+  the skill's gate. (Corrected 2026-10-10: this note first said the wrapper
+  commands were hidden too; in 4.3.1 they were visible.)
   Hiding a side-effect skill is not a safety layer: Codex ignores the flag.
   Each purpose now has exactly one visible entry, the skill. Each of these
   skills asks for an explicit `yes` after showing the scope before it acts,
