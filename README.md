@@ -26,17 +26,7 @@ Open-source enterprise content production system — **22 skills · 13 specialis
 >
 > Previously — **v4.4.1 (October 10, 2026): the listing figures now count the workflow.** v4.4.0's numbers left out the `audit-library` workflow, which Claude Code lists to the model like a skill; counted, ContentForge's listing went from 15,061 to 3,824 characters (not 14,846 to 3,646). `audit-library` now follows the same 60-150 character rule, and the guard reads workflows. **v4.4.0 (October 9, 2026): every skill now reaches the model, and every risky one asks first.** Claude Code lists skills in a budget measured in characters (1% of the context window), and ContentForge's descriptions were 15,061 characters (14,846 before the workflow was counted), so most were cut or dropped before the model saw them. They are now 3,824 (3,646 before the workflow was counted): each says what the skill does, how it differs from its neighbour, and one phrase you would type. Five side-effect skills (translate, publish, adapt for social, switch the tracking backend, add an integration) were hidden from the model: three were reachable only through a wrapper command and two not at all; each now has one visible entry that shows the scope and waits for your `yes`. Measured with trigger evals: nothing that worked before stopped working, and the broken requests now route.
 >
-> **v4.3.1 / v4.3.0 (October 4, 2026): the quality contract, made checkable.** The run auditor resolves the approve line per industry and refuses a stale audit; Hermes installs the plugin again.
->
-> **v4.2.0 (October 4, 2026): the seven-week freshness pass.** Codex installs repaired (the shared marketplace's source shorthand made Codex list zero plugins), the model registry re-verified, and `cf-publish` now places the AI-disclosure label at first exposure, as Article 50 requires.
->
-> **v4.1.2 (August 17, 2026): schema-clean hooks manifest.** Cowork's plugin validation rejects unknown top-level fields in `hooks.json`, and ours carried a `_readme` rationale field ([digital-marketing-pro#9](https://github.com/indranilbanerjee/digital-marketing-pro/issues/9) — the same defect shipped in all three suite plugins). The rationale now lives in [hooks/README.md](hooks/README.md), `hooks.json` is exactly `{"hooks": {}}`, and a new guard keeps it that way. Translations re-stamped. Previously —
->
-> **v4.1.1 (August 17, 2026): the README goes global, and shows its receipts.** This README now reads in **12 languages** (हिन्दी, 中文, 日本語, 한국어, Español, Português, العربية, اردو, தமிழ், বাংলা, Русский — switcher at the top, every translation version-stamped and guard-checked), carries **the real artifacts from a real validated run** — the actual chart the pipeline rendered, the actual humanizer before/after edits, the actual 9.0/A scorecard and CLEAN audit verdict ([see them](#the-artifacts-themselves--real-output-you-can-inspect)) — and documents **running ContentForge on OpenAI surfaces** (Codex CLI/IDE/App and ChatGPT via Agent Plugins 1.0) with the same depth as the Claude surfaces, including [updating on all nine platforms](#updating). Previously —
->
-> **v4.1.0 (August 17, 2026): two new surfaces.** ContentForge now installs natively on **Grok (xAI Build CLI)** — `grok plugin install indranilbanerjee/contentforge` — via a first-class `.grok-plugin/` manifest pair, version-locked to every other manifest by the release-consistency suite. And five **hero skills now ship as claude.ai-uploadable `.skill` release assets** (`cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`), built by a deterministic packager (`scripts/build-skill-assets.py`) that bundles each skill's config/template dependencies and *refuses to package* any skill whose prose references a file that wouldn't exist after upload — so a claude.ai user never downloads a skill with broken references. [Install for your platform →](#supported-surfaces-v450)
->
-> **v4.0.0 (August 17, 2026): the lifecycle release.** ContentForge 3.x was a production pipeline; 4.0 makes it a content **system**. Three architectural changes, each grounded in a defect a real run exposed: **(1) The lifecycle loop closed.** `cf-audit` findings now land in a validated, canonical per-brand store (`scripts/audit-ledger.py`) that `cf-calendar` and `content-refresh` read across sessions; AI-visibility history (`aeo/checks.json`) feeds the freshness model; and each run's verified link inventory merges back into `brand_pages` automatically — conversion pages only ever *staged* for your confirmation, because a CTA is a commercial decision the system must not make for you. Before 4.0 every one of those handoffs was conversational, and worked only while one session held both ends. **(2) The pipeline contract is data.** `config/pipeline-graph.json` declares every phase's reads, writes, gates, and budgeted loop edges — drift-guarded both directions against the agent contracts, the checkpoint manager, and the run auditor. Encoding it immediately found six under-declared inputs the prose table had lost. **(3) The pipeline learns, with floors.** New `scripts/telemetry.py` aggregates loop history, phase timings, and the humanizer's per-pattern hit counts across runs — recurring patterns reach the next drafter brief as advisories behind a recurrence floor, and never touch a gate, a threshold, or a verdict. 22 skills · 27 scripts · 498 tests. [Release notes →](#release-notes) · [Full changelog →](CHANGELOG.md)
+> Older releases: [Release notes](#release-notes) · [CHANGELOG.md](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -61,6 +51,26 @@ grok plugin install indranilbanerjee/contentforge
 > If ContentForge saves your team time, [give it a star ⭐](https://github.com/indranilbanerjee/contentforge/stargazers) — it's the single thing that helps other marketing teams find it.
 
 ---
+
+## Try this first
+
+Install, then type any of these in plain words. Each phrase is one our trigger tests confirmed reaches the right skill.
+
+| You type | What happens |
+|---|---|
+| "write a blog post on *your topic*" | One fact-checked, brand-compliant article through the full pipeline, delivered as a real `.docx` with its scorecard |
+| "brief me on this topic" | A research-backed content brief: search intent, competitors, outline |
+| "which posts need refreshing" | An audit of your library: what is stale, what to refresh, what to retire |
+| "turn this article into LinkedIn posts" | Platform-native social posts from a finished piece; it shows the scope and waits for your `yes` |
+| "translate this into Spanish" | A translation that keeps brand voice and citations; it shows the scope and waits for your `yes` |
+
+### What ContentForge will never do
+
+- **Install a package on its own.** A missing one prints the exact pinned install command; `CONTENTFORGE_INSTALL_DEPS=1` consents for a single run.
+- **Publish, translate or post without your typed `yes`.** Each of those skills shows what it will do first; any other reply cancels.
+- **Mark a run complete that its own audit has not passed.** `finalize --status completed` refuses a stale or failed audit.
+- **Ask for an API key in the chat, or connect a service you did not set up.** Keys come from environment variables; no MCP server ships enabled and no hooks run.
+- **Remove or hide AI watermarks.** AI involvement is disclosed, with C2PA provenance (a sidecar manifest for `.docx`).
 
 ## Why ContentForge
 
@@ -527,6 +537,10 @@ See [CONNECTORS.md](CONNECTORS.md) for the full reference.
 ---
 
 ## Troubleshooting
+
+### Claude answers in chat instead of using a ContentForge skill
+
+Claude Code lists every installed skill in a budget of 1% of the context window. On a 200k window with several plugins installed, only skill names fit, so Claude can't see what each skill does. Add `"skillListingBudgetFraction": 0.05` to your Claude Code `settings.json`. On a 1M window the full list already fits. You can also name the skill: `/contentforge:contentforge`.
 
 ### Pipeline stops early in `--print` / one-shot mode
 
