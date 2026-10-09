@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.4.1] - 2026-10-10
+
+### The listing figures now count the workflow
+
+**Fixed**
+
+- **4.4.0's listing figures left out the plugin's one workflow.** Claude Code lists
+  plugin workflows (`workflows/*.js`, `meta.description`) to the model next to skills
+  and commands, and neither our listing formula nor the description-rule guard read
+  them. `audit-library` shipped with a 184-character description (a listing entry of
+  215 characters), over the 60-150 rule. The corrected totals, in the same
+  characters-per-listing unit: visible listing 15,061 before 4.4.0 (4.4.0 said
+  14,846), 3,861 as 4.4.0 shipped (it said 3,646), 3,824 now, against the 4,800
+  ceiling. Median description 112 characters including the workflow.
+- `audit-library` rewritten to the rule: 147 characters, freshness-only over a list
+  of URLs you give it, with a one-sided pointer to `cf-audit` for topic gaps and
+  retire calls (a registered near-miss pair). A reviewer pass corrected the first
+  draft, which sent "a single page" to `cf-audit`, a scope `cf-audit` does not
+  have; the pointer now names `cf-audit`'s real exclusives.
+- `tests/test_description_density.py` now reads `workflows/*.js`: workflows count
+  toward the listing cost, follow the per-description rule and the phrase-owner and
+  pair checks, and a workflow whose description cannot be parsed fails the test.
+  A planted test puts the old 184-character text back and requires the guard to
+  fail. The pointer check also recognises the unicode arrow, so a stray one cannot
+  hide a pointer.
+
+**Evals**
+
+- New near-miss case `audit-library` (a list of URLs to score in parallel) next to
+  `cf-audit`, each with a must-not-fire grader for the other. Listing budget pinned,
+  first action graded, 5 runs each: 5/5 and 5/5 on the old text and 5/5 and 5/5 on
+  the new text, and both stay-quiet cases 3/3. The old text did not misroute on
+  these prompts, so this is a no-regression result, not a measured improvement.
+
 ## [4.4.0] - 2026-10-09
 
 ### Skills that fit the listing budget, and one visible entry per purpose

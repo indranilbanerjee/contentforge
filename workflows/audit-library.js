@@ -1,6 +1,6 @@
 export const meta = {
   name: 'audit-library',
-  description: 'Freshness-audit many published pages in parallel against the cf-audit rubric, then record one schema-valid audit through the audit ledger so cf-calendar and content-refresh can read it',
+  description: 'Freshness-audit a library from given URLs in parallel; records one audit to the ledger. Topic gaps, retire calls -> cf-audit. "audit these 20 URLs"',
   phases: ['Score each page', 'Record the audit'],
 }
 
