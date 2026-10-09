@@ -267,6 +267,48 @@ class TestPythonMinimum(unittest.TestCase):
         self.assertGreater(seen, 0, "no Python-minimum statement found; the guard is vacuous")
         self.assertEqual(wrong, [], "Python minimum disagrees:\n  " + "\n  ".join(wrong))
 
+    # scripts/setup.py is the one place the floor is enforced in code (`MIN_PYTHON = (3, N)`).
+    SETUP_FLOOR_RE = re.compile(r"^MIN_PYTHON\s*=\s*\(3,\s*(\d+)\)", re.M)
+
+    def test_setup_script_enforces_the_documented_minimum(self):
+        src = (REPO / "scripts" / "setup.py").read_text(encoding="utf-8")
+        m = self.SETUP_FLOOR_RE.search(src)
+        self.assertIsNotNone(m, "scripts/setup.py lost its MIN_PYTHON constant")
+        self.assertEqual(int(m.group(1)), self.FLOOR_MINOR,
+                         "scripts/setup.py enforces Python 3.%s but the docs say 3.%d"
+                         % (m.group(1), self.FLOOR_MINOR))
+
+    def test_setup_script_refuses_an_older_python(self):
+        """Behavioural: one minor below the floor, setup.py exits 1 and says 3.N+ required."""
+        import contextlib
+        import importlib.util
+        import io
+        import sys
+        from unittest import mock
+        spec = importlib.util.spec_from_file_location("cf_setup_floor_check", REPO / "scripts" / "setup.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        import collections
+        version_info = collections.namedtuple("version_info", "major minor micro releaselevel serial")
+        older = version_info(3, self.FLOOR_MINOR - 1, 0, "final", 0)
+        out, err = io.StringIO(), io.StringIO()
+        # The Google probe imports google.auth, which reads sys.version_info.major; stub it out so
+        # the test exercises the version check and nothing else.
+        stub = {"credentials": False, "packages": False}
+        with mock.patch.object(sys, "version_info", older), \
+                mock.patch.object(mod, "check_google_integration", return_value=stub), \
+                contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            with self.assertRaises(SystemExit) as cm:
+                mod.main()
+        self.assertEqual(cm.exception.code, 1)
+        self.assertIn("Python 3.%d+ required" % self.FLOOR_MINOR, err.getvalue())
+
+    def test_setup_floor_guard_can_fail(self):
+        """Plant-check: a script still saying 3.8 must read as a different floor."""
+        planted = self.SETUP_FLOOR_RE.search("MIN_PYTHON = (3, 8)\n")
+        self.assertIsNotNone(planted)
+        self.assertNotEqual(int(planted.group(1)), self.FLOOR_MINOR)
+
     def test_guard_can_fail(self):
         """Plant-check: the old wrong forms must be seen and rejected."""
         for planted in ("Requires Python 3.8+ with optional dependencies",

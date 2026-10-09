@@ -5,7 +5,7 @@ setup.py
 ContentForge environment validation script.
 
 Validates the plugin environment:
-- Checks Python version (3.8+ required)
+- Checks Python version (3.10+ required)
 - Reports plugin root and scripts directory paths
 - Validates .mcp.json exists and is valid JSON
 - Reports connector count
@@ -26,6 +26,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import _common  # noqa: E402
 
 _common.ensure_utf8_stdout()
+
+# The documented minimum (the highest requires_python among the pinned packages: c2pa-python
+# 0.38.0 needs 3.10). tests/test_doc_counts.py keeps this equal to what the docs say.
+MIN_PYTHON = (3, 10)
 
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 MCP_JSON = PLUGIN_ROOT / ".mcp.json"
@@ -70,8 +74,8 @@ def main():
     errors = []
 
     # Check Python version
-    if sys.version_info < (3, 8):
-        errors.append(f"Python 3.8+ required (found {sys.version})")
+    if sys.version_info < MIN_PYTHON:
+        errors.append(f"Python {MIN_PYTHON[0]}.{MIN_PYTHON[1]}+ required (found {sys.version})")
 
     # Report paths
     print(f"PLUGIN_ROOT={PLUGIN_ROOT}")

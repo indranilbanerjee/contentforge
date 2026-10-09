@@ -8,23 +8,23 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 29 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.5.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.1-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
 [![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
 [![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
 [![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
-[![Tests](https://img.shields.io/badge/tests-756%2F756%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v450)
+[![Tests](https://img.shields.io/badge/tests-759%2F759%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v451)
 [![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.0 (October 10, 2026): nothing installs itself, and outside names no longer choose a path.** Reviewed for the Hermes Agent plugin catalog, ContentForge now never installs a Python package on its own (a missing one prints the exact pinned command; `CONTENTFORGE_INSTALL_DEPS=1` consents for one run), refuses file names, run ids and brand names that would leave their folder, deletes the throwaway signing key after each use, keeps the brand-site harvester on public addresses and on the site, and says where the scripts are on hosts that do not set `${CLAUDE_PLUGIN_ROOT}`. **If you relied on the first-run auto-install, run the command it prints once.**
+> 🆕 **Just shipped — v4.5.1 (October 10, 2026): the docs now match what the plugin does.** A pass over every document found claims the code or the repo contradicted, and they are fixed: no `.mcp.json` ships (it is gitignored), so nothing is pre-wired; Python 3.10 is the one stated minimum, and `scripts/setup.py` now enforces it (it said 3.8) with a test that keeps the code and the docs equal; the three plugins share a marketplace, not brand profiles; and a made-up Drive/Sheets price in the Cowork guide is gone. The README gains a *Try this first* block, a *What ContentForge will never do* panel and a tip for 200k context windows, and the 11 translations are corrected on the two facts that were no longer true. The doc-count guard now also reads phrasings like “N Agent Skills” and “the N-connector catalog”, so those cannot rot unseen.
 >
-> Previously — **v4.4.1 (October 10, 2026): the listing figures now count the workflow.** v4.4.0's numbers left out the `audit-library` workflow, which Claude Code lists to the model like a skill; counted, ContentForge's listing went from 15,061 to 3,824 characters (not 14,846 to 3,646). `audit-library` now follows the same 60-150 character rule, and the guard reads workflows. **v4.4.0 (October 9, 2026): every skill now reaches the model, and every risky one asks first.** Claude Code lists skills in a budget measured in characters (1% of the context window), and ContentForge's descriptions were 15,061 characters (14,846 before the workflow was counted), so most were cut or dropped before the model saw them. They are now 3,824 (3,646 before the workflow was counted): each says what the skill does, how it differs from its neighbour, and one phrase you would type. Five side-effect skills (translate, publish, adapt for social, switch the tracking backend, add an integration) were hidden from the model: three were reachable only through a wrapper command and two not at all; each now has one visible entry that shows the scope and waits for your `yes`. Measured with trigger evals: nothing that worked before stopped working, and the broken requests now route.
+> Previously — **v4.5.0 (October 10, 2026): nothing installs itself, and outside names no longer choose a path.** Reviewed for the Hermes Agent plugin catalog, ContentForge now never installs a Python package on its own (a missing one prints the exact pinned command; `CONTENTFORGE_INSTALL_DEPS=1` consents for one run), refuses file names, run ids and brand names that would leave their folder, deletes the throwaway signing key after each use, keeps the brand-site harvester on public addresses and on the site, and says where the scripts are on hosts that do not set `${CLAUDE_PLUGIN_ROOT}`. **If you relied on the first-run auto-install, run the command it prints once.**
 >
 > Older releases: [Release notes](#release-notes) · [CHANGELOG.md](CHANGELOG.md)
 
@@ -89,7 +89,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.5.0)
+## Supported surfaces (v4.5.1)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -806,6 +806,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.5.1 (2026-10-10)** — **The docs now match what the plugin does.** A pass over every non-CHANGELOG document: no `.mcp.json` ships (gitignored), so "ships empty" was wrong in the AGENTS, CONNECTORS, PRIVACY, COWORK, TESTING, UPGRADE and USER guides and four skill bodies; Python 3.10 is the single stated minimum and `scripts/setup.py` enforces it (it said 3.8), guarded by tests that keep the code and the docs equal; the three plugins share a marketplace, not brand profiles; a made-up Drive/Sheets API price is removed; the lede no longer says "stdlib-only"; the 11 translations are corrected on those two facts. README: Try this first, a never-do panel, a 200k-window tip. The doc-count guard reads more phrasings ("N Agent Skills", "All N Commands", "the N-connector catalog", suite sizes). Tests 753 -> 759.
 
 **v4.5.0 (2026-10-10)** — **Nothing installs itself, and outside names no longer choose a path.** Fixes every point of a Hermes Agent catalog review: no automatic `pip install` (a missing package prints its pinned command; `CONTENTFORGE_INSTALL_DEPS=1` consents for one run); an Airtable attachment name, a `--run-id` or a raw `--brand` can no longer name a path outside its folder (`_common.safe_child`); the migrator's temp download folder and the throwaway C2PA signing key are deleted; the harvester refuses private addresses and internal redirects; skills say where the scripts are when `${CLAUDE_PLUGIN_ROOT}` is unset; PRIVACY.md lists the timestamp request and the opt-in install.
 

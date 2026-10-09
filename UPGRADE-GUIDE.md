@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.0 → 4.5.1 (docs release)
+
+**No breaking changes, nothing migrates.** 4.5.1 corrects documentation and raises the Python check in `scripts/setup.py` from 3.8 to 3.10, the minimum the pinned packages already needed (c2pa-python 0.38.0). Run on Python 3.8 or 3.9, `python scripts/setup.py` now reports "Python 3.10+ required" and exits 1; the pipeline itself is unchanged.
+
+---
+
 ## Upgrading 4.4.x → 4.5.0 (nothing installs itself)
 
 **Nothing migrates, but one thing you may notice:** ContentForge no longer installs Python

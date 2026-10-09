@@ -137,7 +137,7 @@ This shows which connectors are active and what they unlock. **Out of the box, z
 `plugin-metadata.py` is the single source of truth for "what's in this install right now" — every count it prints is read from the filesystem, so it never drifts from the shipped plugin:
 
 ```
-Version: 4.5.0
+Version: X.Y.Z
 PLUGIN_ROOT=/home/user/.claude/plugins/contentforge
 SCRIPTS_DIR=/home/user/.claude/plugins/contentforge/scripts
 Python: 3.10.12

@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.1] - 2026-10-10
+
+### The docs now match what the plugin does
+
+A pass over every non-CHANGELOG document, plus one small code change. The only behaviour change
+is the Python version check in `scripts/setup.py`.
+
+**Changed - code**
+
+- `scripts/setup.py` now requires Python 3.10, not 3.8, and says so ("Python 3.10+ required").
+  3.10 is the highest `requires_python` among the pinned packages (c2pa-python 0.38.0 needs it).
+  The floor is one constant, `MIN_PYTHON`, and `tests/test_doc_counts.py` checks that it equals
+  the minimum the docs state and that the script refuses an older interpreter. Checked by
+  putting 3.8 back: two tests fail.
+
+**Fixed - docs**
+
+- **No `.mcp.json` ships** (it is gitignored and untracked), so "ships empty" and
+  `{"mcpServers":{}}` were wrong. Corrected in AGENTS, CONNECTORS, PRIVACY, COWORK-GUIDE,
+  TESTING-GUIDE, UPGRADE-GUIDE, USER-GUIDE and the bodies of cf-connect, cf-integrations,
+  cf-add-integration and cf-help (skill descriptions untouched). The connector scripts already
+  treated a missing file as "nothing connected".
+- **Python 3.10 is the one stated minimum.** UPGRADE-GUIDE and USER-GUIDE said 3.8.
+- **The three plugins share a marketplace, not brand profiles.** The README said they share
+  profiles. ContentForge keeps `~/.claude-marketing/<slug>`, Digital Marketing Pro
+  `~/.claude-marketing/brands/<slug>`, SocialForge its own brand kit.
+- **A made-up price is gone.** COWORK-GUIDE quoted a per-request price for the Drive and Sheets
+  APIs; they are quota-limited, not billed.
+- The README lede no longer calls the 29 scripts "stdlib-only" (python-docx is needed for every
+  `.docx`; the other optional packages are pinned and never installed automatically).
+  `docs/MODEL-CURATOR.md` no longer carries a stale alias-to-id table, and stale version stamps
+  and counts in TESTING-GUIDE and USER-GUIDE are gone (the sample `plugin-metadata` output no
+  longer pins a version).
+- **The 11 README translations** were corrected on the two facts above (the lede said
+  stdlib-only; the FAQ said an empty `.mcp.json` ships). Facts only, no restructuring; the
+  Bengali, Tamil and Urdu phrases deserve a native read.
+
+**Added - README**
+
+- A **Try this first** block, a **What ContentForge will never do** panel, and a tip for 200k
+  context windows (raise `skillListingBudgetFraction` so Claude can see what each skill does).
+
+**Changed - tests**
+
+- The doc-count guard now reads phrasings it missed: "16 Agent Skills", "25 Claude Code slash
+  commands", "22 Python helpers", "All 25 Commands", "the 10-connector catalog" and suite
+  sizes, each checked against the filesystem, the connector catalog or the README badge.
+  Markdown anchors, zero, ranges and singular nouns are not claims. Every new phrasing has a
+  planted wrong number that must be reported.
+- New `TestPythonMinimum`: every "Python 3.N+" in the live docs must say 3.10, and
+  `scripts/setup.py` must enforce the same number.
+- Tests 753 -> 759.
+
 ## [4.5.0] - 2026-10-10
 
 ### Nothing installs itself, and outside names no longer choose a path
