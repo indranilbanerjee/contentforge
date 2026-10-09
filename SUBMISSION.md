@@ -86,7 +86,7 @@ Processes 10–50+ pieces in parallel across multiple brands with queue manageme
 
 ## 6. Testing account / sample data
 
-**Testing account:** Reviewers install from the public marketplace at `indranilbanerjee/neels-plugins` and use `config/brand-registry-template.json` as sample brand input. Knowledge-only mode (default) runs all 22 skills + 13 agents + 10 industry knowledge packs with zero external API keys beyond Claude. Optional Python deps: `python-docx` (auto-installed on first .docx generation), `c2pa-python` + `cryptography` (auto-installed on first `--c2pa-sign` invocation).
+**Testing account:** Reviewers install from the public marketplace at `indranilbanerjee/neels-plugins` and use `config/brand-registry-template.json` as sample brand input. Knowledge-only mode (default) runs all 22 skills + 13 agents + 10 industry knowledge packs with zero external API keys beyond Claude. Optional Python deps: `python-docx` (needed for every .docx), `c2pa-python` + `cryptography` (only for `--c2pa-sign`). Nothing installs itself: when one is missing, the script prints the exact pinned `pip install` command and exits non-zero; setting `CONTENTFORGE_INSTALL_DEPS=1` for one run is the only consent that lets it run that same command.
 
 **Sample worked output:** the pharma whitepaper described in Use Case 1 above demonstrates the full pipeline output shape (humanized.md + reports.json + .docx with 4 appendices). Reviewers can reproduce by running `/contentforge:create-content` with the same topic.
 

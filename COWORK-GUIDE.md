@@ -1562,9 +1562,7 @@ If detected, loops back to Phase 3 for rewrite.
 ### MCP & Integrations
 
 **Q: Do I need to pay for Google Cloud?**
-**A:** Free tier covers ~100 pieces/month. If you exceed:
-- Drive API: $0.004 per 1,000 requests (very cheap)
-- Sheets API: $0.004 per 1,000 requests
+**A:** Not for the volumes ContentForge uses. The Drive and Sheets APIs carry no per-request charge; Google limits them by quota instead, and a run that hits the quota is slowed or stopped, not billed. The current limits are listed in your Google Cloud console.
 
 **Q: Can I use Dropbox instead of Google Drive?**
 **A:** Google Drive is the only file-storage integration with a dedicated MCP path. But you don't need one: set `CONTENTFORGE_PUBLISH_DIR` to a folder your Dropbox (or OneDrive, or any sync client) already watches, and finished files land there via normal local output.

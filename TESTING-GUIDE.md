@@ -118,7 +118,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py --section all-with-envir
 - [ ] `agents/` — 13 files (01 through 11 + 03.5 + 06.5)
 - [ ] `commands/` — 9 files
 - [ ] `skills/` — 22 skill directories, each with SKILL.md
-- [ ] `scripts/` — 18 Python files (no `setup.py`; it was removed with the hooks in v3.9.0)
+- [ ] `scripts/` — 29 Python files, including `_common.py` (no `setup.py`; it was removed with the hooks in v3.9.0)
 - [ ] `config/` — 7 config files + `industries/` subdirectory with 10 JSON packs
 - [ ] `templates/` — 14 template files
 - [ ] `utilities/` — 6 utility files
@@ -368,7 +368,7 @@ Test each of the 22 skills individually.
 | 16 | `/contentforge:cf-style-guide` | "Import style guide from [URL]" | Extracts voice, terminology, guardrails |
 | 17 | `/contentforge:cf-template` | "Create a case study template" | Custom content type beyond built-in 5 |
 | 18 | `/contentforge:cf-switch-backend` | `/contentforge:cf-switch-backend airtable` | Validates target, offers migration, updates brand profile |
-| 19 | `/contentforge:cf-help` | (no argument) | Shows v3.19.2, 13 agents, 22 skills, 9 connectors, 10-phase pipeline |
+| 19 | `/contentforge:cf-help` | (no argument) | Shows the current version (matches `plugin.json`), 13 agents, 22 skills, 9 connectors, 10-phase pipeline |
 
 **`/contentforge:cf-help` Argument Tests:**
 
@@ -867,7 +867,7 @@ Run this after any changes to verify nothing is broken.
 - [ ] `/contentforge:cf-help` shows complete, accurate information
 - [ ] `/contentforge:cf-integrations` shows 9 HTTP connectors with correct status
 - [ ] Argument hints show in Skills UI when typing `/contentforge:` (spot check 3-5 skills)
-- [ ] `/contentforge:publish` cannot be triggered by Claude without explicit user invocation (disable-model-invocation)
+- [ ] `/contentforge:publish` is hidden from the model (`disable-model-invocation`) and runs only when you type it; the `cf-publish` skill can be started by Claude but shows a preview and publishes nothing until you type `yes`
 - [ ] `/contentforge:cf-help` has `name: cf-help` in frontmatter
 - [ ] `skills/contentforge/evals/evals.json` exists and is valid JSON with 3 test cases
 - [ ] `skills/cf-brief/evals/evals.json` exists and is valid JSON with 2 test cases

@@ -137,7 +137,7 @@ This shows which connectors are active and what they unlock. **Out of the box, z
 `plugin-metadata.py` is the single source of truth for "what's in this install right now" — every count it prints is read from the filesystem, so it never drifts from the shipped plugin:
 
 ```
-Version: 4.0.0
+Version: 4.5.0
 PLUGIN_ROOT=/home/user/.claude/plugins/contentforge
 SCRIPTS_DIR=/home/user/.claude/plugins/contentforge/scripts
 Python: 3.10.12
@@ -1411,7 +1411,7 @@ contentforge/
 │   ├── drive-folder-manager.md    # Drive folder layout conventions
 │   └── loop-tracker.md            # Loop accounting rules
 │
-├── scripts/                       # 29 Python scripts (stdlib only)
+├── scripts/                       # 29 Python scripts (stdlib; optional pinned packages are never auto-installed)
 │   ├── _common.py                 # Shared storage-root/brand-dir/atomic-write helpers
 │   ├── checkpoint-manager.py      # Per-phase run checkpoints (powers resume)
 │   ├── pipeline-tracker.py        # Phase start/end events + progress
@@ -1443,4 +1443,4 @@ contentforge/
 
 ---
 
-**ContentForge v3.22.0** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, 43-pattern AI-detection humanizer, three-layer fact verification.
+**ContentForge** — 13 agents, 22 skills, 8 built-in content types, 10 industry knowledge packs, 43-pattern AI-detection humanizer, three-layer fact verification.

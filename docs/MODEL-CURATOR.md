@@ -36,7 +36,7 @@ Hardcoding model strings like `claude-sonnet-4-5-20250929`, `gemini-2.0-flash`, 
 ```bash
 # Resolve an alias to a concrete id
 python scripts/resolve_model.py --alias latest-text-anthropic
-# -> claude-opus-5
+# -> the id the registry names for that alias today
 
 # Check the status of a specific id (exit code 1 if deprecated/retired)
 python scripts/resolve_model.py --check gemini-2.0-flash
@@ -64,40 +64,24 @@ Other flags: `--aliases` (list every alias and its resolution), `--registry-path
 
 ## Aliases (the public API for "give me the latest X")
 
-Registry `last_updated`: **2026-07-12** (`next_review_due`: 2026-09-10).
+An alias names a capability kind, never a model id: `latest-<kind>-<vendor>`. Kinds in the registry today: `text`, `balanced`, `fast`, `vision`, `multimodal`, `image`, `image-balanced`, `image-edit`, `image-photoreal`, `image-character` and `video`, each under the vendors that offer one. Which id an alias resolves to changes every few weeks, so this page does not list the ids (a table of them was stale within a month). Run:
 
-| Alias | Resolves to | Model |
-|---|---|---|
-| `latest-text-anthropic` | `claude-opus-5` | Claude Opus 5 |
-| `latest-balanced-anthropic` | `claude-sonnet-4-6` | Claude Sonnet 4.6 |
-| `latest-fast-anthropic` | `claude-haiku-4-5-20251001` | Claude Haiku 4.5 |
-| `latest-text-openai` | `gpt-5.6-sol` | GPT-5.6 Sol |
-| `latest-balanced-openai` | `gpt-5.4-mini` | GPT-5.4 mini |
-| `latest-fast-openai` | `gpt-5.4-nano` | GPT-5.4 nano |
-| `latest-image-openai` | `gpt-image-2` | GPT Image 2 |
-| `latest-text-google` | `gemini-3-pro` | Gemini 3 Pro |
-| `latest-balanced-google` | `gemini-3.5-flash` | Gemini 3.5 Flash |
-| `latest-vision-google` | `gemini-3.5-flash` | Gemini 3.5 Flash |
-| `latest-multimodal-google` | `gemini-omni` | Gemini Omni |
-| `latest-image-google` | `gemini-3-pro-image` | Nano Banana Pro (Gemini 3 Pro Image) |
-| `latest-image-balanced-google` | `gemini-3.1-flash-image` | Nano Banana 2 (Gemini 3.1 Flash Image) |
-| `latest-image-edit-google` | `gemini-3-pro-image` | Nano Banana Pro (higher-fidelity edits) |
-| `latest-image-photoreal-google` | `gemini-3-pro-image` | Nano Banana Pro |
-| `latest-video-google` | `veo-3.1-generate-preview` | Veo 3.1 (preview) |
-| `latest-video-wavespeed` | `kwaivgi/kling-v3.0-pro/image-to-video` | Kling v3.0 Pro (image-to-video) |
-| `latest-image-character-higgsfield` | `higgsfield-soul-v2` | Higgsfield Soul v2 |
+```bash
+python scripts/resolve_model.py --aliases      # every alias and the id it resolves to now
+python scripts/resolve_model.py --registry-age # days since the registry was reviewed
+```
 
-This table is a snapshot. Run `python scripts/resolve_model.py --aliases` for the live mappings — that command is the source of truth, this table is not.
+That command is the source of truth; nothing in the docs or skills should name the id.
 
 ---
 
-## ⚠ Parameter compatibility — Claude Opus 4.7 through Opus 5
+## ⚠ Parameter compatibility — Claude Opus 4.7 and later
 
 **Claude Opus 4.7 and later reject `temperature`, `top_p`, and `top_k` with HTTP 400** when set to a non-default value. The Anthropic SDK still accepts these parameters in its request types (for type-check compatibility), but the runtime returns a 400.
 
 If a script calls Opus 4.7+ via the SDK, **omit** these parameters entirely — let the system default apply. Use prompting to guide model behavior instead.
 
-`latest-text-anthropic` now resolves to **Claude Opus 5**, so any code path going through that alias is in scope. Scan a file before shipping it:
+`latest-text-anthropic` resolves to a model in that range, so any code path going through that alias is in scope. Scan a file before shipping it:
 
 ```bash
 python scripts/resolve_model.py --check-params scripts/some_script.py
@@ -170,5 +154,5 @@ Verify the result:
 
 ```bash
 python scripts/resolve_model.py --check claude-opus-4-1-20250805
-# -> claude-opus-4-1-20250805: deprecated (use claude-opus-5)
+# -> claude-opus-4-1-20250805: deprecated (use the replacement_id you set)
 ```
