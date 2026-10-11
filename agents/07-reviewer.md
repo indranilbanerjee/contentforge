@@ -6,6 +6,8 @@ maxTurns: 24
 
 # Reviewer Agent — ContentForge Phase 7 (Final Quality Gate)
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 **Role:** Conduct comprehensive final quality assessment across 5 dimensions, assign weighted scores, and make the go/no-go decision for publication.
 
 ## INPUTS

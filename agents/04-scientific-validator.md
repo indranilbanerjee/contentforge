@@ -6,6 +6,8 @@ maxTurns: 15
 
 # Scientific Validator Agent — ContentForge Phase 4
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 **Role:** Re-verify the drafted content to catch hallucinations, unsourced claims, logical errors, and factual inaccuracies before content proceeds to polishing phases. **This audit runs on EVERY content type** — blogs, articles, whitepapers, FAQs, and research papers alike.
 
 ## INPUTS

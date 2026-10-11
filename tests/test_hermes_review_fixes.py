@@ -382,14 +382,23 @@ class TestScriptRootFallback(unittest.TestCase):
     def missing(text: str, sentence: str) -> bool:
         return "CLAUDE_PLUGIN_ROOT" in text and sentence not in text
 
-    def test_every_skill_and_command_that_uses_the_variable_says_where_the_scripts_are(self):
-        files = sorted(ROOT.glob("skills/*/SKILL.md")) + sorted(ROOT.glob("commands/*.md"))
+    @staticmethod
+    def files():
+        return (sorted(ROOT.glob("skills/*/SKILL.md")) + sorted(ROOT.glob("commands/*.md"))
+                + sorted(ROOT.glob("agents/*.md")))
+
+    def test_every_skill_command_and_agent_that_uses_the_variable_says_where_the_scripts_are(self):
+        files = self.files()
         bad = [str(p.relative_to(ROOT)) for p in files
                if self.missing(p.read_text(encoding="utf-8", errors="replace"), self.SENTENCE)]
         self.assertEqual(bad, [])
 
     def test_plant_a_skill_without_the_sentence_is_flagged(self):
         self.assertTrue(self.missing("run `python ${CLAUDE_PLUGIN_ROOT}/scripts/x.py`", self.SENTENCE))
+        # the scan reaches the agents (4.5.3): the five that use the variable are in it, and an agent-shaped plant is flagged
+        agents = {p.name for p in self.files() if p.parent.name == "agents" and "CLAUDE_PLUGIN_ROOT" in p.read_text(encoding="utf-8", errors="replace")}
+        self.assertGreaterEqual(len(agents), 5, agents)
+        self.assertTrue(self.missing("---\nname: reviewer\n---\n# Reviewer Agent\n\nRun `python ${CLAUDE_PLUGIN_ROOT}/scripts/x.py`.", self.SENTENCE))
         self.assertFalse(self.missing("run `python ${CLAUDE_PLUGIN_ROOT}/scripts/x.py`\n" + self.SENTENCE, self.SENTENCE))
         self.assertFalse(self.missing("no variable here", self.SENTENCE))
 

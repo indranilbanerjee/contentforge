@@ -823,7 +823,7 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v4.5.3 (2026-10-12)** — **The script-location line says which Python to run.** Found by a fresh-install smoke test. The line in the six skills and commands that carry it now ends "Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems)", because `python3` often does not resolve on Windows; three documents that told the reader to run `python3` say `python`. Two guards keep both true. Tests 762 -> 765.
+**v4.5.3 (2026-10-12)** — **The script-location line says which Python to run.** Found by a fresh-install smoke test. The line in the six skills and commands that carry it, and now in the five agents that use `${CLAUDE_PLUGIN_ROOT}`, ends "Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems)", because `python3` often does not resolve on Windows; three documents that told the reader to run `python3` say `python`. Two guards keep both true. Tests 762 -> 765.
 
 **v4.5.2 (2026-10-10)** — **The never-do panel is exact, and no manifest names a file that does not ship.** The README's "never mark a run complete" line now states the full behaviour (missing, failed or stale audit refused; `--skip-audit` is stamped into the run); the Cursor and Copilot CLI manifests drop a `mcpServers` path to a `.mcp.json` that is gitignored; `tests/test_manifest_paths.py` fails on any manifest path that does not ship. Tests 759 -> 762.
 

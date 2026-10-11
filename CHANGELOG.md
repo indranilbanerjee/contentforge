@@ -20,14 +20,16 @@ Found by a fresh-install smoke test.
   `${CLAUDE_PLUGIN_ROOT}` where the scripts are, and nothing else. It now ends with the interpreter to use:
   "Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux
   systems)." `python3` often does not resolve on Windows, so the scripts are called as `python`, as the commands
-  already were.
+  already were. The five agents that use `${CLAUDE_PLUGIN_ROOT}` (visual-asset-annotator, scientific-validator,
+  humanizer, reviewer, output-manager) had no such line at all; they carry it now.
 - Three documents still told the reader to run `python3 scripts/...` (SUBMISSION.md, docs/c2pa-production-cert.md and
   the pull-request template). They say `python`.
 
 **Added - tests**
 
-- `TestScriptRootFallback` checks the extended sentence in every skill and command that names the variable, and a
-  new test plants the 4.5.2 one-line sentence and confirms it is flagged.
+- `TestScriptRootFallback` checks the extended sentence in every skill, command and agent that names the variable, and a
+  new test plants the 4.5.2 one-line sentence and confirms it is flagged; the existing plant test also checks that the
+  scan reaches the five agents and flags an agent-shaped plant.
 - `TestNoPython3AsTheCommand` (2 tests): no skill, command, agent, README, SUBMISSION, pull-request template or
   `docs/*.md` file runs `python3` as the command (the fallback sentence is allowed); the old commands are planted and
   flagged.

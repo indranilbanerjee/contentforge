@@ -2,7 +2,7 @@
 
 ## Upgrading 4.5.2 → 4.5.3 (which Python)
 
-**No breaking changes, nothing migrates.** The "Script location" line in the pipeline skill and five other files now says to run the scripts with `python`, or `python3` where `python` is not found; three documents that said `python3 scripts/...` now say `python`. Nothing in the scripts changed.
+**No breaking changes, nothing migrates.** The "Script location" line in the pipeline skill, five other skills and commands, and the five agents that use `${CLAUDE_PLUGIN_ROOT}` now says to run the scripts with `python`, or `python3` where `python` is not found; three documents that said `python3 scripts/...` now say `python`. Nothing in the scripts changed.
 
 ---
 
