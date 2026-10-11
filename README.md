@@ -11,7 +11,7 @@ Open-source enterprise content production system — **22 skills · 13 specialis
 [![Version](https://img.shields.io/badge/version-4.5.6-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-784%2F784%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-786%2F786%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v456)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
@@ -823,7 +823,7 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 
 ## Release notes
 
-**v4.5.6 (2026-10-12)** — **A printed command works pasted into Git Bash and PowerShell.** Found by a fresh-install smoke test. The command a script prints (`_common.script_command`) now uses forward slashes, a double-quoted script path and an interpreter that is quoted only when its path has a space, so it runs in Git Bash (backslashes were dropped, exit 127) and in PowerShell. `utils/loop-tracker.md`, which the guard's globs did not reach, ran a script by a relative path; the guard now covers every markdown file outside contributor docs and keeps `docs/` quoted. `text-metrics.py --file` no longer echoes a byte-order mark into the first flagged sentence. Tests 779 -> 784.
+**v4.5.6 (2026-10-12)** — **A printed command works pasted into Git Bash and PowerShell.** Found by a fresh-install smoke test. The command a script prints (`_common.script_command`) now uses forward slashes, a double-quoted script path and an interpreter that is quoted only when its path has a space, so it runs in Git Bash (backslashes were dropped, exit 127) and in PowerShell. `utils/loop-tracker.md`, which the guard's globs did not reach, ran a script by a relative path; the guard now covers every markdown file outside contributor docs and keeps `docs/` quoted. `text-metrics.py --file` no longer echoes a byte-order mark into the first flagged sentence. Tests 779 -> 786.
 
 **v4.5.5 (2026-10-12)** — **A byte-order mark no longer breaks an input an agent or a user writes.** Found by a fresh-install smoke test. PowerShell 5.1 and Notepad write a UTF-8 byte-order mark; the shared JSON loader refused it (`audit-ledger.py validate` and `record` stopped with "cannot read"), and `authorship.py` read a draft saved with one as a rewritten first sentence, a false violation that blocks the run. Those inputs, and the draft, content, reports and config files handed to other scripts, now read as `utf-8-sig` (plain UTF-8 reads the same; hashed artifacts and the plugin's own files are untouched), and the three recovery messages in `checkpoint-manager.py` print the absolute interpreter and script path instead of a relative one. Tests 770 -> 779.
 

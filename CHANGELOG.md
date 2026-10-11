@@ -19,7 +19,7 @@ Found by a fresh-install smoke test (its re-check).
   script path unquoted. Pasted into Git Bash (Claude Code's Bash tool on Windows) bash dropped the backslashes
   (`C:Python313python.exe: command not found`, exit 127). It now prints forward slashes, the script path always
   double-quoted, and the interpreter unquoted unless its path has a space (then quoted, and the command ends with
-  "(in PowerShell, put & before it)", because a quoted first token is a string literal in PowerShell).
+  a trailing comment, "# in PowerShell, put & before it", because a quoted first token is a string literal in PowerShell).
 - `utils/loop-tracker.md` ran `python scripts/checkpoint-manager.py loop ...` by a relative path with no
   "Script location" line, and two agents (`04-scientific-validator`, `09-batch-orchestrator`) send the model there.
   The guard's file globs did not include `utils/`. The file is fixed, and discovery is inverted: every markdown file
@@ -31,6 +31,7 @@ Found by a fresh-install smoke test (its re-check).
   echoed U+FEFF into the first flagged sentence, and that sentence no longer opened with its connective. It reads
   `utf-8-sig` (still replacing undecodable bytes). The `contentforge-humanizer` hero's command line (file and stdin)
   is changed the same way.
+- The PowerShell note on a command whose interpreter path has a space is a trailing comment (`  # in PowerShell, put & before it`) and not a parenthetical: a `( ... )` after the arguments is a syntax error in bash (`syntax error near unexpected token '('`), while bash and PowerShell both ignore a comment. Found in review. Tests: `bash -n` on the space-case line (planted with the parenthetical form, which fails), and the line run through PowerShell with `&` (and, planted, without it, which fails).
 
 **Checked, not changed**
 
@@ -43,7 +44,7 @@ Found by a fresh-install smoke test (its re-check).
   through real Git Bash and PowerShell from another folder (skipped where the shell is not installed).
 - The invocation guard discovers every markdown file outside contributor docs; `utils/loop-tracker.md` is the plant.
 - `docs/` must quote the plugin-root script path. A BOM test for `text-metrics.py` (planted: the 4.5.5 script echoes the
-  mark). The recipes and wiring tests read a quoted call as the call it names. Tests 779 -> 784.
+  mark). The recipes and wiring tests read a quoted call as the call it names. Tests 779 -> 786.
 
 ## [4.5.5] - 2026-10-12
 
