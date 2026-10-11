@@ -6,7 +6,7 @@
 
 > **Você precisa entregar 30 artigos neste trimestre que soem humanos, citem fontes reais, se conectem ao seu funil e sobrevivam a um editor que confere tudo. Sua equipe tem três pessoas. Você tem nove semanas. Seu último lote "escrito por IA" foi sinalizado por estatísticas alucinadas — e o lote anterior envelheceu em silêncio sem que ninguém percebesse.**
 
-Execute `/contentforge:create-content` para cada tema. O pipeline de 10 fases produz um `.docx` pronto para publicação, com um humanizador de 43 padrões, um subagente de checagem de fatos, links internos em três categorias e proveniência C2PA para conformidade com o EU AI Act — em 30 a 60 minutos por peça. E então vem a parte que nenhuma ferramenta de resposta única tem: **o loop de ciclo de vida.** Cada peça publicada é medida, auditada quanto ao desgaste e realimenta o próximo calendário e o próximo briefing — por meio de contratos de arquivo duráveis, para que o que o sistema aprende sobre a sua marca sobreviva à sessão em que foi aprendido.
+Execute `/contentforge:create-content` para cada tema. O pipeline de 10 fases produz um `.docx` pronto para publicação, com um humanizador de 43 padrões, um subagente de checagem de fatos, links internos em três categorias e proveniência C2PA para conformidade com o EU AI Act — em 30 a 60 minutos por peça. E então vem a parte que as ferramentas de resposta única deixam de fora: **o loop de ciclo de vida.** Cada peça publicada é medida, auditada quanto ao desgaste e realimenta o próximo calendário e o próximo briefing — por meio de contratos de arquivo duráveis, para que o que o sistema aprende sobre a sua marca sobreviva à sessão em que foi aprendido.
 
 Sistema open-source de produção de conteúdo de nível corporativo — **22 skills · 13 agentes especialistas · 10 gates de qualidade · humanizador anti-detecção de IA com 43 padrões · um auditor de execução que rederiva cada gate antes que uma execução possa se declarar concluída · 29 scripts Python (stdlib; os poucos pacotes opcionais têm versão fixa e nunca são instalados sozinhos)**. Criado por [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
@@ -21,7 +21,7 @@ A maioria das ferramentas de escrita com IA produz um único rascunho, em um ún
 | Capacidade | Por que importa |
 |---|---|
 | **Pipeline de 10 fases com um gate de qualidade após cada fase** | Saídas ruins são capturadas e reexecutadas antes de se propagarem para as fases seguintes |
-| **Humanizador anti-detecção de IA com 43 padrões** + meta-passada de autocrítica | O texto soa humano, não IA — medido, não no achismo |
+| **Humanizador anti-detecção de IA com 43 padrões** + meta-passada de autocrítica | Menos hábitos de redação típicos de IA, medidos por uma varredura offline de 43 padrões |
 | **Subagente de checagem de fatos** verifica URLs e cruza referências das alegações | As citações funcionam e não são alucinadas — cada estatística remonta a uma entrada do registro verificado |
 | **Links internos em três categorias** (temática / comercial / autoridade) | O conteúdo vira funil, não uma página isolada |
 | **Saída real em `.docx`** com apêndices de SEO + Qualidade + Produção + Links internos | Seu editor recebe um arquivo Word funcional, não markdown |

@@ -6,7 +6,7 @@
 
 > **Tienes que publicar 30 artículos este trimestre que suenen humanos, citen fuentes reales, enlacen con tu embudo y superen la revisión de un editor exigente. Tu equipo es de tres personas. Tienes nueve semanas. Tu último lote «escrito con IA» fue señalado por estadísticas alucinadas — y el lote anterior quedó desactualizado sin que nadie se diera cuenta.**
 
-Ejecuta `/contentforge:create-content` con cada tema. El pipeline de 10 fases produce un `.docx` listo para publicar, con un humanizador de 43 patrones, un subagente verificador de datos, enlazado interno de tres categorías y procedencia C2PA para cumplir con la EU AI Act — en 30–60 minutos por pieza. Y después, lo que ninguna herramienta de un solo disparo ofrece: **el ciclo de vida completo.** Cada pieza publicada se mide, se audita en busca de deterioro y alimenta el siguiente calendario y el siguiente brief — mediante contratos de archivos duraderos, de modo que lo que el sistema aprende sobre tu marca sobrevive a la sesión en la que lo aprendió.
+Ejecuta `/contentforge:create-content` con cada tema. El pipeline de 10 fases produce un `.docx` listo para publicar, con un humanizador de 43 patrones, un subagente verificador de datos, enlazado interno de tres categorías y procedencia C2PA para cumplir con la EU AI Act — en 30–60 minutos por pieza. Y después, lo que las herramientas de un solo disparo se saltan: **el ciclo de vida completo.** Cada pieza publicada se mide, se audita en busca de deterioro y alimenta el siguiente calendario y el siguiente brief — mediante contratos de archivos duraderos, de modo que lo que el sistema aprende sobre tu marca sobrevive a la sesión en la que lo aprendió.
 
 Sistema de producción de contenido empresarial de código abierto — **22 skills · 13 agentes especialistas · 10 puertas de calidad · humanizador anti-detección de IA de 43 patrones · un auditor de ejecución que rederiva cada puerta antes de que una ejecución pueda darse por terminada · 29 scripts de Python (biblioteca estándar; los pocos paquetes opcionales van fijados a una versión y nunca se instalan solos)**. Creado por [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
@@ -21,7 +21,7 @@ La mayoría de las herramientas de escritura con IA producen un solo borrador, e
 | Capacidad | Por qué importa |
 |---|---|
 | **Pipeline de 10 fases con una puerta de calidad tras cada fase** | Los resultados deficientes se detectan y se reejecutan antes de propagarse a las fases siguientes |
-| **Humanizador anti-detección de IA de 43 patrones** + metapase de autocrítica | El texto se lee humano, no como IA — medido con datos, no con sensaciones |
+| **Humanizador anti-detección de IA de 43 patrones** + metapase de autocrítica | Menos hábitos de redacción propios de la IA, medidos con un escaneo sin conexión de 43 patrones |
 | **Subagente verificador de datos** que valida URLs y contrasta las afirmaciones | Las citas funcionan y no son alucinadas — cada estadística se remonta a una entrada verificada del registro |
 | **Enlazado interno de tres categorías** (temático / comercial / de autoridad) | El contenido se convierte en un embudo, no en una página huérfana |
 | **Salida real en `.docx`** con apéndices de SEO + Calidad + Producción + Enlaces internos | Tu editor recibe un archivo de Word funcional, no markdown |
