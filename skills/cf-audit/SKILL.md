@@ -7,7 +7,7 @@ effort: medium
 
 # Content Library Audit
 
-> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
 
 Audit your existing content library for freshness decay, coverage gaps, and optimization opportunities. The audit scores every piece for freshness, identifies content that needs refreshing, maps coverage gaps against keyword opportunities, and produces a prioritized action list with projected impact.
 

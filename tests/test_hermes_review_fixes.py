@@ -375,7 +375,8 @@ class TestHarvesterStaysPublicAndOnSite(unittest.TestCase):
 
 class TestScriptRootFallback(unittest.TestCase):
     SENTENCE = ("If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's "
-                "`scripts/` folder, next to `skills/`.")
+                "`scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or "
+                "`python3` where `python` is not found (macOS, many Linux systems).")
 
     @staticmethod
     def missing(text: str, sentence: str) -> bool:
@@ -391,6 +392,40 @@ class TestScriptRootFallback(unittest.TestCase):
         self.assertTrue(self.missing("run `python ${CLAUDE_PLUGIN_ROOT}/scripts/x.py`", self.SENTENCE))
         self.assertFalse(self.missing("run `python ${CLAUDE_PLUGIN_ROOT}/scripts/x.py`\n" + self.SENTENCE, self.SENTENCE))
         self.assertFalse(self.missing("no variable here", self.SENTENCE))
+
+    def test_plant_the_one_line_sentence_of_4_5_2_is_flagged(self):
+        """Before 4.5.3 the line stopped at the folder and said nothing about which Python to run."""
+        old = "If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`."
+        self.assertTrue(self.missing("run `python ${CLAUDE_PLUGIN_ROOT}/scripts/x.py`\n" + old, self.SENTENCE))
+        self.assertIn("`python`", self.SENTENCE)
+
+
+class TestNoPython3AsTheCommand(unittest.TestCase):
+    """4.5.3: `python3` often does not resolve on Windows, so a skill, command, agent or doc that tells the host to run it
+    fails there. They run Python as `python`; the script-location line says to fall back to `python3` where `python` is
+    not found. (SocialForge had 28 uses until its 1.29.3.)"""
+    COMMAND = re.compile(r"(?<![\w/.-])python3(?=\s+[\w\"'$./-])")
+
+    @classmethod
+    def files(cls):
+        out = sorted(ROOT.glob("skills/*/SKILL.md")) + sorted(ROOT.glob("commands/*.md")) + sorted(ROOT.glob("agents/*.md"))
+        return out + [ROOT / "README.md", ROOT / "SUBMISSION.md", ROOT / ".github" / "PULL_REQUEST_TEMPLATE.md"] + sorted(ROOT.glob("docs/*.md"))
+
+    def test_no_instruction_file_or_doc_runs_python3(self):
+        files = self.files()
+        self.assertGreater(len(files), 40, "the scan found too few files; the guard is vacuous")
+        bad = []
+        for p in files:
+            for i, line in enumerate(p.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+                if self.COMMAND.search(line):
+                    bad.append("%s:%d" % (p.relative_to(ROOT).as_posix(), i))
+        self.assertEqual(bad, [])
+
+    def test_plant_the_old_commands_are_flagged_and_the_fallback_sentence_is_not(self):
+        self.assertTrue(self.COMMAND.search("python3 scripts/generate-docx.py --brand acme"))
+        self.assertTrue(self.COMMAND.search("`python3 scripts/<script>.py --help` exits 0"))
+        self.assertFalse(self.COMMAND.search("python scripts/generate-docx.py --brand acme"))
+        self.assertFalse(self.COMMAND.search(TestScriptRootFallback.SENTENCE))
 
 
 class TestPrivacyListsWhatRuns(unittest.TestCase):

@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.2 → 4.5.3 (which Python)
+
+**No breaking changes, nothing migrates.** The "Script location" line in the pipeline skill and five other files now says to run the scripts with `python`, or `python3` where `python` is not found; three documents that said `python3 scripts/...` now say `python`. Nothing in the scripts changed.
+
+---
+
 ## Upgrading 4.5.1 → 4.5.2 (manifest cleanup)
 
 **No breaking changes, nothing migrates.** The Cursor and Copilot CLI manifests no longer carry a `mcpServers` key pointing at `.mcp.json` (which never ships); both hosts keep discovering their own default MCP file if you add one.

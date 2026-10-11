@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.3] - 2026-10-12
+
+### The script-location line says which Python to run
+
+Found by a fresh-install smoke test.
+
+**Fixed**
+
+- The "Script location" line in the six skills and commands that carry it (the pipeline skill, `cf-analytics`,
+  `cf-audit`, `cf-calendar`, `content-refresh` and `/contentforge:resume`) told a host that does not set
+  `${CLAUDE_PLUGIN_ROOT}` where the scripts are, and nothing else. It now ends with the interpreter to use:
+  "Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux
+  systems)." `python3` often does not resolve on Windows, so the scripts are called as `python`, as the commands
+  already were.
+- Three documents still told the reader to run `python3 scripts/...` (SUBMISSION.md, docs/c2pa-production-cert.md and
+  the pull-request template). They say `python`.
+
+**Added - tests**
+
+- `TestScriptRootFallback` checks the extended sentence in every skill and command that names the variable, and a
+  new test plants the 4.5.2 one-line sentence and confirms it is flagged.
+- `TestNoPython3AsTheCommand` (2 tests): no skill, command, agent, README, SUBMISSION, pull-request template or
+  `docs/*.md` file runs `python3` as the command (the fallback sentence is allowed); the old commands are planted and
+  flagged.
+
+**Checked, not changed**
+
+- `text-metrics.py --ai-tell-scan` does not count "In conclusion," as a connective opener because it is not in
+  `detector_lexicon.connective_openers`; it is in the humanizer's `overused_transitions` list and in the structure
+  scan's moralizing-closer phrases. No calibration set was on hand to decide whether it belongs in the opener list,
+  so scoring is unchanged.
+
 ## [4.5.2] - 2026-10-10
 
 ### The never-do panel is exact, and no manifest names a file that does not ship

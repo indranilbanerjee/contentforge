@@ -7,7 +7,7 @@ argument-hint: "[--period 7|30|90] [--brand <name>] [--type <content-type>] [--f
 
 # Content Analytics Dashboard
 
-> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
 
 Track ContentForge production quality, pipeline timing, brand-specific patterns, and compliance trends over configurable time periods with automated insights and alert flags.
 

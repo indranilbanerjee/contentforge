@@ -7,7 +7,7 @@ effort: low
 
 # Content Calendar Planner
 
-> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`.
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
 
 Plan and manage content production calendars with intelligent scheduling, deadline tracking, team assignments, and optional Google Calendar event creation. The calendar works backward from publish dates to calculate production start times, identifies bottlenecks, and generates a visual text-based Gantt chart timeline.
 

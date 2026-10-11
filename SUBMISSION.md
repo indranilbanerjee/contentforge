@@ -59,7 +59,7 @@ Empirically tested on a pharma whitepaper ("Antibody-Drug Conjugates in HER2-Low
 ```
 /contentforge:create-content
 # pipeline runs ...
-python3 scripts/generate-docx.py \
+python scripts/generate-docx.py \
     --content output/humanized.md --output output/article.docx \
     --reports output/reports.json --brand "Acme Corp" \
     --content-type article \

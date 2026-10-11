@@ -24,7 +24,7 @@
 - [ ] I read [`CONTRIBUTING.md`](../CONTRIBUTING.md)
 - [ ] I read [`CODE_OF_CONDUCT.md`](../CODE_OF_CONDUCT.md)
 - [ ] My change does not break any existing skill, script, or command
-- [ ] I ran the relevant smoke test (e.g., `python3 scripts/<script>.py --help` exits 0 for any modified script)
+- [ ] I ran the relevant smoke test (e.g., `python scripts/<script>.py --help` exits 0 for any modified script)
 - [ ] I updated the matching docs / SKILL.md / CHANGELOG.md entry if behavior changed
 - [ ] I bumped the version in `.claude-plugin/plugin.json` if this is a release
 - [ ] I updated the README badge + "Current version" + "Release notes" if this is a release

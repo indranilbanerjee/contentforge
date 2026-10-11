@@ -18,7 +18,7 @@
 ## Using a production cert with ContentForge
 
 ```bash
-python3 scripts/generate-docx.py \
+python scripts/generate-docx.py \
     --content output/humanized.md \
     --output output/article.docx \
     --reports output/reports.json \
