@@ -74,6 +74,12 @@ Install, then ask in plain words. Each of these kinds of request reached the rig
 - **Ask for an API key in the chat, or connect a service you did not set up.** Keys come from environment variables; no MCP server ships enabled and no hooks run.
 - **Remove or hide AI watermarks.** AI involvement is disclosed, with C2PA provenance (a sidecar manifest for `.docx`).
 
+### What it costs
+
+- **The plugin is free** (MIT-licensed).
+- **Model usage (tokens).** On a subscription (Claude Pro, Max, Team or Enterprise in Claude Code or Cowork; a ChatGPT plan in Codex; a Cursor or Copilot plan; the same goes for other hosts' plans) the tokens count against your plan's usage limits instead of being billed per token; check your plan for any optional extra-usage billing. Only pay-as-you-go API-key users pay per token. Context (the skill listing, the pipeline's prompts) uses context window and usage allowance for everyone, and money only for API users.
+- **Services you connect with your own keys** (Google Drive and Sheets, Airtable, an image tool) are billed by those providers, whatever plan you are on. ContentForge charges for none of it.
+
 ## Why ContentForge
 
 Most AI writing tools produce one draft, in one tone, with no quality gates, and forget the piece the moment it ships. The output reads like AI, factual claims are unverified, internal links don't exist, brand voice drifts, the file format is markdown when the editor wants Word — and six months later nobody knows which pieces went stale. ContentForge fixes this end to end:
@@ -668,7 +674,7 @@ A single prompt produces a draft in seconds, with nothing checking its claims ag
 Yes. Three tracking backends: Google Sheets + Drive, Airtable, or local filesystem. Local works zero-config. Switch any time with `/contentforge:cf-switch-backend`.
 
 **Q: How much does it cost to run?**
-Plugin is MIT-licensed and free. Claude API costs are typically $1–4 per piece depending on length and how many quality-gate loops are needed.
+The plugin is free (MIT-licensed). The cost is model usage, and it depends on how you run it: on a subscription it counts against your plan's usage limits, and only pay-as-you-go API-key users are billed per token. A longer piece, or more quality-gate loops, uses more. Services you connect with your own keys (Google Drive and Sheets, Airtable) are billed by those providers. See [What it costs](#what-it-costs).
 
 **Q: What content types are supported?**
 8 built-in: articles (1,500–2,000 words), blog posts (800–1,500), whitepapers (2,500–5,000), FAQs (600–1,200), research papers (4,000–8,000), video scripts (duration-driven, 15s–10min), case studies (case_study, 1,200–2,000, with a client-data provenance rule), and newsletters (500–1,200, subject-line package + one-CTA rule). Use `/contentforge:cf-template` to add custom types.

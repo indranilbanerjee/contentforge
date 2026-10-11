@@ -1509,9 +1509,9 @@ Phase 3 (Content Drafter) took 18 minutes (expected 5-7 min)
 - Integrations: 0 min — none are required; add Drive later if your team needs shared persistence
 
 **Q: Can I use ContentForge for free?**
-**A:** Yes! ContentForge is free and open-source (MIT License). You only pay for:
-- Your Claude Cowork subscription (if not already subscribed)
-- Google Cloud API usage — only if you opt into the Drive/Sheets backend (free tier covers ~100 pieces/month)
+**A:** The plugin is free and open-source (MIT License). What it uses is yours:
+- Model usage, which counts against your Claude Cowork plan's usage limits (only pay-as-you-go API-key users are billed per token)
+- Google Drive and Sheets API usage, only if you opt into that backend (no per-request charge; Google limits it by quota)
 
 **Q: How many brands can I manage?**
 **A:** Unlimited. Agencies manage 50-200 brands. Each brand is a separate profile.
@@ -1579,8 +1579,8 @@ If detected, loops back to Phase 3 for rewrite.
 
 **Q: Is there a limit to how much content I can generate?**
 **A:** Only limited by:
-- Google Cloud API quotas (free tier: ~100 pieces/month)
-- Claude Cowork usage (depends on your plan)
+- Google's Drive and Sheets API quotas (only if you use that backend)
+- Your Claude Cowork plan's usage limits
 
 **Q: Does batch processing cost more?**
 **A:** No. Batch processing runs the same pipeline, the same number of times — it just does the queueing for you.
