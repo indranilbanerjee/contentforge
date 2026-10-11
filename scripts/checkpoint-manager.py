@@ -503,10 +503,10 @@ def finalize_run(brand: str, run_id: str, status: str = "completed",
         if not isinstance(audit, dict) or "verdict" not in audit:
             return {"error": "cannot finalize as completed: no run-audit.json "
                              "in the run directory",
-                    "recovery": "Run: " + _common.script_command("run-audit.py") + " --brand "
-                                f"{brand} --run-id {run_id}  — then finalize. "
-                                "Or finalize with --skip-audit to record that "
-                                "the run was closed unverified."}
+                    "recovery": "Run the audit, then finalize (or finalize with "
+                                "--skip-audit to record that the run was closed "
+                                "unverified): "
+                                + _common.script_command("run-audit.py", "--brand", brand, "--run-id", run_id)}
         if audit.get("verdict") != "CLEAN":
             fails = [c["name"] for c in audit.get("checks", [])
                      if c.get("result") == "FAIL"]
@@ -526,16 +526,16 @@ def finalize_run(brand: str, run_id: str, status: str = "completed",
             return {"error": "cannot finalize as completed: run-audit.json "
                              "carries no artifact fingerprint, so it cannot "
                              "be shown to describe the run as it stands now",
-                    "recovery": "Re-run: " + _common.script_command("run-audit.py") + " --brand "
-                                f"{brand} --run-id {run_id}  — then finalize."}
+                    "recovery": "Re-run the audit, then finalize: "
+                                + _common.script_command("run-audit.py", "--brand", brand, "--run-id", run_id)}
         drift = _common.fingerprint_drift(
             recorded_fp, _common.run_artifact_fingerprint(_run_dir(brand, run_id)))
         if drift:
             return {"error": "cannot finalize as completed: the run changed "
                              f"after it was audited ({len(drift)} file(s))",
                     "changed_since_audit": drift[:10],
-                    "recovery": "Re-run: " + _common.script_command("run-audit.py") + " --brand "
-                                f"{brand} --run-id {run_id}  — then finalize."}
+                    "recovery": "Re-run the audit, then finalize: "
+                                + _common.script_command("run-audit.py", "--brand", brand, "--run-id", run_id)}
         manifest["audit_verdict"] = "CLEAN"
     elif status == "completed" and skip_audit:
         manifest["audit_skipped"] = True

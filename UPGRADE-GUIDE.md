@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.6 → 4.5.7 (printed commands, again)
+
+**No breaking changes, nothing migrates.** The audit recovery command that `checkpoint-manager.py` prints, and the pip install hint, paste into Git Bash and PowerShell as written, including when the Python path has a space. Nothing is executed differently.
+
+---
+
 ## Upgrading 4.5.5 → 4.5.6 (printed commands)
 
 **No breaking changes, nothing migrates.** The commands that scripts print (a recovery step, an install hint) now paste into Git Bash and PowerShell as written. `utils/loop-tracker.md` and the always-on recipes call scripts through a quoted `${CLAUDE_PLUGIN_ROOT}` path.

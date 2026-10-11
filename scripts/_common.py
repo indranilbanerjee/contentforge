@@ -324,26 +324,36 @@ def pinned_specs(packages):
     return out
 
 
-def script_command(script: str, *args: str) -> str:
-    """The exact command that runs one of this plugin's scripts, ready to paste into Git Bash or PowerShell: the interpreter that
-    is running now and the script's absolute path, with FORWARD slashes (bash drops a backslash, so `C:\\Python313\\python.exe`
-    arrives as `C:Python313python.exe`) and the script path always double-quoted. The interpreter is quoted only when its path
-    has a space, because a quoted first token is a string literal in PowerShell; then the command ends with a trailing comment (bash
-    and PowerShell both ignore it) saying to put `&` before it. A parenthetical there is a syntax error in bash. A printed `python scripts/x.py` is relative to the host's working folder (the user's project), which is the
-    wrong place, so every command a script tells someone to run comes from here."""
+def printed_command(*tokens: str) -> str:
+    """A command to PRINT, ready to paste into Git Bash or PowerShell: the interpreter that is running now, then `tokens`. The
+    interpreter path uses FORWARD slashes (bash drops a backslash, so `C:\\Python313\\python.exe` arrives as `C:Python313python.exe`)
+    and is quoted only when it has a space, because a quoted first token is a string literal in PowerShell; then the line ends with
+    a trailing comment (bash and PowerShell both ignore it) saying to put `&` before it. A parenthetical there is a syntax error in
+    bash, and anything appended after the line lands inside the comment, so a caller puts prose BEFORE the command and passes every
+    argument as a token. Code that RUNS something passes an argv list to subprocess instead and never uses this."""
     exe = sys.executable.replace("\\", "/")
-    path = str(Path(__file__).resolve().parent / script).replace("\\", "/")
     spaced = " " in exe
-    command = " ".join(['"%s"' % exe if spaced else exe, '"%s"' % path, *args])
-    return command + "  # in PowerShell, put & before it" if spaced else command
+    line = " ".join(['"%s"' % exe if spaced else exe, *tokens])
+    return line + "  # in PowerShell, put & before it" if spaced else line
+
+
+def _quote_arg(arg: str) -> str:
+    return '"%s"' % arg if any(c.isspace() for c in arg) and '"' not in arg else arg
+
+
+def script_command(script: str, *args: str) -> str:
+    """The exact command that runs one of this plugin's scripts (see printed_command): the script's absolute path with forward
+    slashes, always double-quoted, then the arguments (quoted when they contain a space). A printed `python scripts/x.py` is relative
+    to the host's working folder (the user's project), which is the wrong place, so every command a script tells someone to run
+    comes from here."""
+    path = str(Path(__file__).resolve().parent / script).replace("\\", "/")
+    return printed_command('"%s"' % path, *[_quote_arg(a) for a in args])
 
 
 def install_command(packages) -> str:
-    """The exact, pinned command a user would run to install `packages`."""
-    exe = sys.executable
-    if " " in exe:
-        exe = f'"{exe}"'
-    return f"{exe} -m pip install {' '.join(pinned_specs(packages))}"
+    """The exact, pinned command a user would run to install `packages`, in the printed shape (see printed_command). It is only
+    ever PRINTED: pip_install runs an argv list."""
+    return printed_command("-m", "pip", "install", *pinned_specs(packages))
 
 
 def pip_install(packages, label: str = None):
@@ -361,10 +371,10 @@ def pip_install(packages, label: str = None):
         return {
             "error": f"{what} is not installed, and ContentForge never installs packages on its own",
             "recovery": (
-                f"Install it yourself, then re-run this command: {command}  "
-                f"(on externally-managed Pythons add --user or use a virtualenv). "
+                f"On externally-managed Pythons add --user or use a virtualenv. "
                 f"To let ContentForge run exactly that command once, set "
-                f"{INSTALL_OPT_IN_ENV}=1 for that run."
+                f"{INSTALL_OPT_IN_ENV}=1 for that run. "
+                f"Or install it yourself, then re-run this command: {command}"
             ),
         }
     print(f"Installing {what} ({INSTALL_OPT_IN_ENV}=1 was set)...", file=sys.stderr)
@@ -378,8 +388,7 @@ def pip_install(packages, label: str = None):
         return {
             "error": f"dependency install failed: {type(exc).__name__}: {exc}",
             "recovery": (
-                f"Install manually: {command} "
-                f"(on externally-managed Pythons add --user or use a virtualenv), "
-                f"then re-run this command."
+                f"On externally-managed Pythons add --user or use a virtualenv, then re-run this command. "
+                f"Install manually: {command}"
             ),
         }

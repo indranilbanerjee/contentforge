@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.7] - 2026-10-12
+
+### The audit recovery command keeps its arguments, and the install hint pastes into Git Bash and PowerShell
+
+Found by a fresh-install smoke test (its re-check).
+
+**Fixed**
+
+- `checkpoint-manager.py` built its three audit recovery commands as `script_command("run-audit.py") + " --brand ..."`.
+  When the interpreter path has a space the printed command ends in a trailing PowerShell comment, so those arguments
+  landed inside the comment: pasted into either shell the command ran with none and exited 2 ("need --run-dir, or
+  --brand and --run-id"). Every argument is now passed to `script_command` (a brand name with a space is quoted), and the
+  command ends the message, with the prose before it.
+- `_common.install_command`, the pip hint printed when a package is missing, printed `sys.executable` with backslashes
+  (Git Bash: `C:Python313python.exe: command not found`, exit 127), and with no PowerShell note when the path has a
+  space. What is printed and what is executed are now separate: execution still runs an argv list with no shell, and
+  the printed line comes from one function, `printed_command`, shared with `script_command`: forward slashes, the
+  interpreter quoted only when its path has a space, and a trailing comment saying to put `&` before it. The two
+  recovery messages that carried it put their prose before the command.
+
+**Checked, not changed**
+
+- No ContentForge script reads stdin or prompts: a static sweep finds none (`getpass.getuser()` in
+  `plugin-metadata.py` is the user name, not a read).
+
+**Added - tests**
+
+- `TestRecoveryCommandRunsWithASpacedInterpreter` runs the real message end to end: a run is started for a brand with a
+  space in its name, `finalize` is refused for lack of an audit, and the command it prints (with an interpreter in a
+  folder with a space) is pasted into Git Bash and into PowerShell with `&`. Planted with the 4.5.6 script: the
+  arguments sit inside the comment and PowerShell prints "need --run-dir, or --brand and --run-id".
+- `TestPrintedCommandsAreLastOnTheLine` (an AST check that no printed command is followed by appended arguments, with
+  the 4.5.6 forms as plants), `TestInstallHintsUseThePrintedShape` (both interpreter cases, `bash -n`, and the printed
+  line run through both shells) and `TestNoImplicitStdinReads` (no script reads stdin or prompts). Tests 786 -> 794.
+
 ## [4.5.6] - 2026-10-12
 
 ### A printed command works pasted into Git Bash and PowerShell, and the script-location guard covers every folder

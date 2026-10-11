@@ -8,16 +8,16 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 29 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.5.6-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.7-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-786%2F786%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v456)
+[![Tests](https://img.shields.io/badge/tests-794%2F794%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v457)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.6 (October 12, 2026): a printed command works pasted into Git Bash and PowerShell.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
+> 🆕 **Just shipped — v4.5.7 (October 12, 2026): the audit recovery command keeps its arguments, and the install hint pastes into Git Bash and PowerShell.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -199,7 +199,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.5.6)
+## Supported surfaces (v4.5.7)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -822,6 +822,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.5.7 (2026-10-12)** — **The audit recovery command keeps its arguments, and the install hint pastes into Git Bash and PowerShell.** Found by a fresh-install smoke test. `checkpoint-manager.py` appended the audit command's arguments after the command, which an interpreter path with a space turned into part of a trailing comment (the pasted command exited 2); every argument is now part of the command and the prose comes first. The pip hint printed with backslashes (Git Bash: exit 127); what is printed and what is executed are separate now, and the printed line shares one shape with every other printed command. A new end-to-end test pastes the real message into both shells. Tests 786 -> 794.
 
 **v4.5.6 (2026-10-12)** — **A printed command works pasted into Git Bash and PowerShell.** Found by a fresh-install smoke test. The command a script prints (`_common.script_command`) now uses forward slashes, a double-quoted script path and an interpreter that is quoted only when its path has a space, so it runs in Git Bash (backslashes were dropped, exit 127) and in PowerShell. `utils/loop-tracker.md`, which the guard's globs did not reach, ran a script by a relative path; the guard now covers every markdown file outside contributor docs and keeps `docs/` quoted. `text-metrics.py --file` no longer echoes a byte-order mark into the first flagged sentence. Tests 779 -> 786.
 

@@ -763,6 +763,229 @@ class TestAgentWrittenInputsAcceptABom(unittest.TestCase):
         self.assertEqual(json.loads(b.stdout)["counts"], json.loads(a.stdout)["counts"])
 
 
+class TestRecoveryCommandRunsWithASpacedInterpreter(unittest.TestCase):
+    """4.5.7: checkpoint-manager.py built its audit recovery as `script_command("run-audit.py") + " --brand ..."`. With an interpreter path that
+    has a space the command ends in a trailing comment, so the arguments landed inside it and the pasted command exited 2 ("need --run-dir,
+    or --brand and --run-id") in both shells. This runs the REAL message end to end: a run is started for a brand whose name has a space,
+    `finalize` is refused for lack of an audit, and the command it prints is pasted into Git Bash and into PowerShell (with `&`)."""
+
+    def _shims(self, d):
+        shim_dir = Path(d) / "dir with space"
+        shim_dir.mkdir()
+        cmd = shim_dir / "pyshim.cmd"
+        cmd.write_text('@echo off\r\n"%s" %%*\r\n' % sys.executable, encoding="ascii")
+        sh = shim_dir / "pyshim"
+        sh.write_bytes(('#!/usr/bin/env bash\nexec "%s" "$@"\n' % sys.executable.replace("\\", "/")).encode("ascii"))
+        return cmd, sh
+
+    def _new_run(self, env: dict, topic: str) -> str:
+        # the topic is part of the run id (a timestamp plus the topic slug), so two runs in the same second need different topics
+        init = subprocess.run([sys.executable, str(SCRIPTS / "checkpoint-manager.py"), "init", "--brand", "Acme Corp", "--topic", topic,
+                               "--content-type", "article"], capture_output=True, text=True, env=env, timeout=120)
+        self.assertEqual(init.returncode, 0, init.stdout + init.stderr)
+        return json.loads(init.stdout)["run_id"]
+
+    def _recovery_for(self, interpreter: str, env: dict) -> str:
+        """The `recovery` text `finalize` prints when sys.executable is `interpreter`."""
+        code = ("import sys, runpy; sys.executable = %r; sys.argv = [%r, 'finalize', '--brand', 'Acme Corp', '--run-id', %r]; "
+                "runpy.run_path(%r, run_name='__main__')" % (interpreter, str(SCRIPTS / "checkpoint-manager.py"), self.run_id,
+                                                          str(SCRIPTS / "checkpoint-manager.py")))
+        r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, env=env, timeout=120)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        return json.loads(r.stdout)["recovery"]
+
+    def test_the_printed_audit_command_carries_its_arguments_and_runs_in_both_shells(self):
+        import shutil
+        bash, ps = shutil.which("bash"), shutil.which("powershell")
+        git_bash = bool(bash) and (sys.platform != "win32" or any(
+            k in subprocess.run([bash, "-c", "uname -s"], capture_output=True, text=True).stdout for k in ("MINGW", "MSYS", "CYGWIN")))
+        if not git_bash and not (ps and sys.platform == "win32"):
+            self.skipTest("neither Git Bash nor Windows PowerShell is installed")
+        with tempfile.TemporaryDirectory() as home, tempfile.TemporaryDirectory() as d:
+            # hermetic: other tests leave plugin-data variables in the process environment, so start from none of them
+            env = {k: v for k, v in os.environ.items() if k not in ("PLUGIN_DATA", "CLAUDE_PLUGIN_DATA", "PLUGIN_ROOT", "CLAUDE_PLUGIN_ROOT")}
+            env.update(CLAUDE_MARKETING_HOME=home, HOME=home, USERPROFILE=home, PYTHONIOENCODING="utf-8")
+            cmd_shim, sh_shim = self._shims(d)
+            for shell, shim in (("bash", sh_shim), ("powershell", cmd_shim)):
+                if shell == "bash" and not git_bash or shell == "powershell" and not (ps and sys.platform == "win32"):
+                    continue
+                self.run_id = self._new_run(env, "audit via " + shell)   # a fresh run per shell: the first audit leaves a verdict in the run
+                interpreter = str(shim).replace("\\", "/")
+                recovery = self._recovery_for(interpreter, env)
+                line = recovery[recovery.index('"' + interpreter + '"'):]
+                self.assertIn("--brand", line.split("  # in PowerShell")[0], recovery)       # the arguments are INSIDE the command
+                self.assertIn('"Acme Corp"', line.split("  # in PowerShell")[0], recovery)   # a brand with a space is quoted
+                self.assertTrue(line.endswith("  # in PowerShell, put & before it"), recovery)
+                with self.subTest(shell=shell):
+                    argv = [bash, "-c", line] if shell == "bash" else [ps, "-NoProfile", "-NonInteractive", "-Command", "& " + line]
+                    r = subprocess.run(argv, capture_output=True, text=True, env=env, cwd=d, timeout=180)
+                    combined = r.stdout + r.stderr
+                    self.assertNotIn("need --run-dir", combined, "the arguments were swallowed by the trailing comment:\n" + line)
+                    self.assertTrue(r.stdout.strip().startswith("{"), combined)   # run-audit ran and answered with its JSON
+
+    def test_plant_the_old_concatenation_loses_its_arguments_in_a_comment(self):
+        """The 4.5.6 shape: command, then arguments appended. In the spaced case the arguments sit after the comment marker."""
+        sys.path.insert(0, str(SCRIPTS))
+        import _common
+        from unittest import mock
+        with mock.patch.object(sys, "executable", "C:\\Program Files\\Python313\\python.exe"):
+            old = _common.script_command("run-audit.py") + " --brand Acme --run-id R1"
+            new = _common.script_command("run-audit.py", "--brand", "Acme", "--run-id", "R1")
+        self.assertGreater(old.index("# in PowerShell"), old.index("run-audit.py"))
+        self.assertLess(old.index("# in PowerShell"), old.index("--brand"))      # the arguments are inside the comment
+        self.assertLess(new.index("--brand"), new.index("# in PowerShell"))      # now they are not
+
+
+class TestNoImplicitStdinReads(unittest.TestCase):
+    """1.29.7: `credential_manager.py setup-wavespeed` with no key blocked forever on Windows. The Bash tool's stdin is an open pipe, so
+    readline() never returns, and `stdin < NUL` reports isatty() True, so getpass blocks on the console. A script never reads stdin or
+    prompts unless the caller passed an explicit flag; `getpass.getuser()` (the user NAME) is not a read."""
+    CALLS = {"input", "getpass.getpass"}
+    ATTRS = {"sys.stdin.read", "sys.stdin.readline", "sys.stdin.readlines", "sys.stdin.buffer.read", "sys.stdin.buffer.readline"}
+    # Where an explicit flag gates the read; every other script has none.
+    ALLOWED = set()
+
+    @classmethod
+    def findings(cls, source: str, name: str = "x.py") -> list:
+        import ast
+        out = []
+        for node in ast.walk(ast.parse(source)):
+            if isinstance(node, ast.Call) and ast.unparse(node.func) in cls.CALLS:
+                out.append("%s:%d: %s()" % (name, node.lineno, ast.unparse(node.func)))
+            if isinstance(node, ast.Attribute) and ast.unparse(node) in cls.ATTRS:
+                out.append("%s:%d: %s" % (name, node.lineno, ast.unparse(node)))
+        return out
+
+    def test_only_the_flag_gated_readers_touch_stdin_or_prompt(self):
+        scripts = sorted((ROOT / "scripts").glob("*.py"))
+        self.assertGreater(len(scripts), 20, "the scan found too few scripts; the guard is vacuous")
+        bad = [f for p in scripts if p.name not in self.ALLOWED for f in self.findings(p.read_text(encoding="utf-8"), p.name)]
+        self.assertEqual(bad, [])
+        for name in self.ALLOWED:
+            self.assertIn(name, [p.name for p in scripts])
+
+    def test_plant_each_kind_of_implicit_read_is_flagged_and_getuser_is_not(self):
+        for source in ("x = input('key: ')\n", "import getpass\nk = getpass.getpass('k')\n", "import sys\nk = sys.stdin.readline()\n",
+                       "import sys\nk = sys.stdin.read()\n", "import sys\nit = iter(sys.stdin.readline, '')\n"):
+            with self.subTest(source=source):
+                self.assertTrue(self.findings(source), source)
+        self.assertEqual(self.findings("import getpass\nuser = getpass.getuser()\n"), [])
+
+
+class TestPrintedCommandsAreLastOnTheLine(unittest.TestCase):
+    """4.5.6 / 1.29.6 as first built: three recovery messages did `script_command("run-audit.py") + " --brand ..."`. With an interpreter
+    path that has a space the command ends in a trailing comment, so those arguments became part of the comment and the pasted command
+    ran with none (exit 2). A printed command is built with every argument as a token and nothing is appended after it."""
+    FUNCS = {"script_command", "install_command", "browser_command", "printed_command"}
+
+    @classmethod
+    def _is_command(cls, node) -> bool:
+        import ast
+        return isinstance(node, ast.Call) and (getattr(node.func, "attr", None) or getattr(node.func, "id", None)) in cls.FUNCS
+
+    @classmethod
+    def _flag_text(cls, node) -> bool:
+        import ast
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return node.value.startswith(" -")
+        if isinstance(node, ast.JoinedStr) and node.values and isinstance(node.values[0], ast.Constant):
+            return str(node.values[0].value).startswith(" -")
+        return False
+
+    @classmethod
+    def findings(cls, source: str, name: str = "x.py") -> list:
+        import ast
+        out = []
+        for node in ast.walk(ast.parse(source)):
+            if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+                left = node.left
+                while isinstance(left, ast.BinOp) and isinstance(left.op, ast.Add):
+                    left = left.right
+                if cls._is_command(left) and cls._flag_text(node.right):
+                    out.append("%s:%d" % (name, node.lineno))
+            if isinstance(node, ast.JoinedStr):
+                for here, after in zip(node.values, node.values[1:]):
+                    if isinstance(here, ast.FormattedValue) and cls._is_command(here.value) and cls._flag_text(after):
+                        out.append("%s:%d" % (name, node.lineno))
+        return out
+
+    def test_no_script_appends_arguments_after_a_printed_command(self):
+        scripts = sorted((ROOT / "scripts").glob("*.py"))
+        self.assertGreater(len(scripts), 20, "the scan found too few scripts; the guard is vacuous")
+        bad = [f for p in scripts for f in self.findings(p.read_text(encoding="utf-8"), p.name)]
+        self.assertEqual(bad, [])
+
+    def test_plant_the_old_forms_are_flagged_and_the_good_forms_are_not(self):
+        concat = '_common.script_command("run-audit.py") + " --brand " + brand\n'
+        chained = '"Run: " + _common.script_command("run-audit.py") + " --brand " f"{brand} --run-id {rid}" "  then finalize"\n'
+        fstring = 'm = f"{_common.script_command(\'run-audit.py\')} --brand {brand}"\n'
+        for source in (concat, chained, fstring):
+            with self.subTest(source=source):
+                self.assertEqual(len(self.findings(source)), 1, source)
+        good = '"Re-run the audit: " + _common.script_command("run-audit.py", "--brand", brand, "--run-id", rid)\n'
+        prose_after = '"Run: " + install_command(["Pillow"]) + " (it prints the pinned command)"\n'
+        self.assertEqual(self.findings(good), [])
+        self.assertEqual(self.findings(prose_after), [])   # prose after a command is harmless (a comment); an argument is not
+
+
+class TestInstallHintsUseThePrintedShape(unittest.TestCase):
+    """What is PRINTED for someone to paste is a shell line in the printed shape; what is EXECUTED is an argv list and never a string."""
+
+    def _both(self, make):
+        from unittest import mock
+        with mock.patch.object(sys, "executable", "C:\\Python313\\python.exe"):
+            plain = make()
+        with mock.patch.object(sys, "executable", "C:\\Program Files\\Python313\\python.exe"):
+            spaced = make()
+        return plain, spaced
+
+    def test_the_pip_hint_has_forward_slashes_and_the_note_only_when_the_path_has_a_space(self):
+        sys.path.insert(0, str(SCRIPTS))
+        import _common
+        plain, spaced = self._both(lambda: _common.install_command(["python-docx"]))
+        self.assertTrue(plain.startswith("C:/Python313/python.exe -m pip install "), plain)
+        self.assertNotIn("PowerShell", plain)
+        self.assertTrue(spaced.startswith('"C:/Program Files/Python313/python.exe" -m pip install '), spaced)
+        self.assertTrue(spaced.endswith("  # in PowerShell, put & before it"), spaced)
+        self.assertNotIn("\\", plain + spaced)
+
+    def test_the_printed_install_line_works_in_both_shells(self):
+        """Git Bash gave exit 127 for the backslash form, and PowerShell a parse error for a quoted first token."""
+        import shutil
+        sys.path.insert(0, str(SCRIPTS))
+        import _common
+        from unittest import mock
+        bash = shutil.which("bash")
+        if bash and (sys.platform != "win32" or any(k in subprocess.run([bash, "-c", "uname -s"], capture_output=True, text=True).stdout
+                                                     for k in ("MINGW", "MSYS", "CYGWIN"))):
+            line = _common.printed_command("-m", "pip", "--version")
+            with tempfile.TemporaryDirectory() as d:
+                r = subprocess.run([bash, "-c", line], capture_output=True, text=True, cwd=d, timeout=120)
+            self.assertEqual(r.returncode, 0, line + "\n" + r.stdout + r.stderr)
+            self.assertIn("pip", r.stdout)
+            with mock.patch.object(sys, "executable", "C:\\Program Files\\Python313\\python.exe"):
+                spaced = _common.printed_command("-m", "pip", "install", "x==1")
+            self.assertEqual(subprocess.run([bash, "-n", "-c", spaced], capture_output=True, text=True).returncode, 0, spaced)
+        ps = shutil.which("powershell") or shutil.which("pwsh")
+        if ps and sys.platform == "win32":
+            line = _common.printed_command("-m", "pip", "--version")
+            with tempfile.TemporaryDirectory() as d:
+                shim_dir = Path(d) / "dir with space"
+                shim_dir.mkdir()
+                shim = shim_dir / "pyshim.cmd"
+                shim.write_text('@echo off\r\n"%s" %%*\r\n' % sys.executable, encoding="ascii")
+                with mock.patch.object(sys, "executable", str(shim).replace("\\", "/")):
+                    spaced = _common.printed_command("-m", "pip", "--version")
+                run = lambda command: subprocess.run([ps, "-NoProfile", "-NonInteractive", "-Command", command],
+                                                     capture_output=True, text=True, cwd=d, timeout=180)
+                plain_run, with_amp, without = run(line), run("& " + spaced), run(spaced)
+            self.assertEqual(plain_run.returncode, 0, plain_run.stdout + plain_run.stderr)
+            self.assertEqual(with_amp.returncode, 0, with_amp.stdout + with_amp.stderr)
+            self.assertNotEqual(without.returncode, 0, "without `&` PowerShell reads the quoted path as a string")
+        if not bash and not ps:
+            self.skipTest("neither bash nor PowerShell is installed")
+
+
 class TestNoTmpPathsInInstructions(unittest.TestCase):
     """/tmp is not one folder on Windows: Git Bash maps it to the user's temp folder while Python resolves it elsewhere, so a
     file the shell wrote was not found by the script and the command stopped. Instructions use a folder the plugin knows."""
