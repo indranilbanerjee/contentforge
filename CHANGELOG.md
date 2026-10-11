@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.6] - 2026-10-12
+
+### A printed command works pasted into Git Bash and PowerShell, and the script-location guard covers every folder
+
+Found by a fresh-install smoke test (its re-check).
+
+**Fixed**
+
+- `_common.script_command()`, which builds every command a script tells someone to run, printed backslashes and left the
+  script path unquoted. Pasted into Git Bash (Claude Code's Bash tool on Windows) bash dropped the backslashes
+  (`C:Python313python.exe: command not found`, exit 127). It now prints forward slashes, the script path always
+  double-quoted, and the interpreter unquoted unless its path has a space (then quoted, and the command ends with
+  "(in PowerShell, put & before it)", because a quoted first token is a string literal in PowerShell).
+- `utils/loop-tracker.md` ran `python scripts/checkpoint-manager.py loop ...` by a relative path with no
+  "Script location" line, and two agents (`04-scientific-validator`, `09-batch-orchestrator`) send the model there.
+  The guard's file globs did not include `utils/`. The file is fixed, and discovery is inverted: every markdown file
+  is scanned unless it is contributor documentation (`docs/`, `README*`, `CONTRIBUTING`, `TESTING-GUIDE`, `SUBMISSION`,
+  `UPGRADE-GUIDE`, `CHANGELOG`, `.github/`, `tests/`), so a folder added tomorrow is covered by default.
+- `docs/ALWAYS-ON-RECIPES.md` (three commands) and `docs/USER-GUIDE.md` ran scripts through an unquoted
+  `${CLAUDE_PLUGIN_ROOT}`; they are quoted, and a guard keeps `docs/` quoted.
+- `text-metrics.py --file` read the draft as UTF-8 with `errors="replace"`, so a draft saved with a byte-order mark
+  echoed U+FEFF into the first flagged sentence, and that sentence no longer opened with its connective. It reads
+  `utf-8-sig` (still replacing undecodable bytes). The `contentforge-humanizer` hero's command line (file and stdin)
+  is changed the same way.
+
+**Checked, not changed**
+
+- No ContentForge script prints an error and exits 0: 22 offline scripts were run with input that must fail, and none
+  exits 0 on an error.
+
+**Added - tests**
+
+- `script_command` shape in both cases (interpreter path without and with a space), and the produced command run
+  through real Git Bash and PowerShell from another folder (skipped where the shell is not installed).
+- The invocation guard discovers every markdown file outside contributor docs; `utils/loop-tracker.md` is the plant.
+- `docs/` must quote the plugin-root script path. A BOM test for `text-metrics.py` (planted: the 4.5.5 script echoes the
+  mark). The recipes and wiring tests read a quoted call as the call it names. Tests 779 -> 784.
+
 ## [4.5.5] - 2026-10-12
 
 ### A byte-order mark no longer breaks an agent- or user-written input, and printed commands are absolute

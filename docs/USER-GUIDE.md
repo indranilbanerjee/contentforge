@@ -111,7 +111,7 @@ That prints the user guide plus live version, agent, skill, and command counts r
 For a raw report you can paste into a bug ticket, run the metadata script directly:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py --section all-with-environment --format text
+python "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py" --section all-with-environment --format text
 ```
 
 It reports the installed version, plugin root, scripts directory, Python version, agent/skill/command counts, and which connectors are currently wired.

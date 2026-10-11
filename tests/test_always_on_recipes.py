@@ -220,7 +220,8 @@ def check_recipes(text: str) -> list[str]:
     return problems
 
 
-DOC = read(DOC_PATH) if DOC_PATH.is_file() else ""
+# The recipes quote their script paths (4.5.6): drop the closing quote so "audit-ledger.py list" still reads as the call it names.
+DOC = re.sub(r'(scripts/[\w.-]+\.py)"', r"\1", read(DOC_PATH)) if DOC_PATH.is_file() else ""
 
 
 class TestAlwaysOnRecipes(unittest.TestCase):

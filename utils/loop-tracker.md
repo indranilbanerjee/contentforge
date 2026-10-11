@@ -1,5 +1,7 @@
 # Loop Tracker — ContentForge Utility
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 > REFERENCE DOC — pseudocode/algorithm guidance for agents; not an executable module.
 
 ## Purpose
@@ -22,7 +24,7 @@ Track feedback loops to prevent infinite iterations and enforce max loop limits.
 Record the reason, always:
 
 ```bash
-python scripts/checkpoint-manager.py loop --brand {brand} --run-id {run_id} \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" loop --brand {brand} --run-id {run_id} \
   --edge phase_4_to_3 --reason "unsourced claims in section 2"
 ```
 

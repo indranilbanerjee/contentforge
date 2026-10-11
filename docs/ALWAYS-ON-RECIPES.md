@@ -25,7 +25,7 @@ Everything above lives under one directory per brand. ContentForge resolves it i
 A scheduled session is a fresh session. If it cannot see that directory it will not find your brand profile, will have no AEO history to compare against, and will find no audit for the calendar to read. To print the directory a session will actually use:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py --section environment
+python "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py" --section environment
 python -c "import sys; sys.path.insert(0, '${CLAUDE_PLUGIN_ROOT}/scripts'); import _common; print(_common.brand_dir('<slug>'))"
 ```
 
@@ -59,10 +59,10 @@ The routines documentation says it plainly: a green status "does not mean the ta
 
 ```bash
 # A new audit-<stamp>.json with this run's stamp should be listed (count rises by one)
-python ${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py list --brand <slug>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py" list --brand <slug>
 
 # Exit 1 means no audit is recorded yet, which is what the quarterly calendar would also see
-python ${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py latest --brand <slug>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py" latest --brand <slug>
 ```
 
 Open `aeo/checks.json` in the brand directory and look for today's `checked_at` entries.

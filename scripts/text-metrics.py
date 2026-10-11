@@ -871,7 +871,8 @@ def main():
         _common.finish({"error": f"file not found: {path}",
                         "recovery": "Pass the path to the phase artifact, e.g. the Phase 6.5 humanized draft."})
     try:
-        text = path.read_text(encoding="utf-8", errors="replace")
+        # utf-8-sig: a draft saved with a byte-order mark (PowerShell 5.1, Notepad) must not echo U+FEFF into the first flagged sentence
+        text = path.read_text(encoding="utf-8-sig", errors="replace")
     except OSError as exc:
         _common.finish({"error": f"could not read {path}: {exc}"})
 

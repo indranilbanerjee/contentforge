@@ -449,11 +449,27 @@ class TestScriptInvocationsAreRobust(unittest.TestCase):
     UNQUOTED = re.compile(r"(?<![\w/.-])python\s+(?:-\w+\s+)*\$\{CLAUDE_PLUGIN_ROOT\}/")
     EXEMPT = {}
 
+    # Discovery is inverted: every markdown file is covered unless it is contributor documentation that runs from a repository
+    # clone (where a relative `python scripts/x.py` is right). A folder added tomorrow (the way utils/ was missed) is covered by default.
+    EXCLUDED_DIRS = {"docs", "tests", "research", "evals", "node_modules", "hermes", "heroes", "__pycache__"}
+    EXCLUDED_FILES = {"CHANGELOG.md", "CONTRIBUTING.md", "TESTING-GUIDE.md", "TESTING.md", "SUBMISSION.md", "UPGRADE-GUIDE.md"}
+
     @classmethod
     def files(cls) -> dict:
-        paths = (sorted(ROOT.glob("skills/**/*.md")) + sorted(ROOT.glob("commands/*.md"))
-                 + sorted(ROOT.glob("agents/*.md")) + sorted(ROOT.glob("references/**/*.md")))
-        return {p.relative_to(ROOT).as_posix(): p.read_text(encoding="utf-8", errors="replace") for p in paths}
+        out = {}
+        for dirpath, dirs, names in os.walk(ROOT):
+            dirs[:] = [d for d in dirs if d not in cls.EXCLUDED_DIRS and not d.startswith(".")]
+            for name in sorted(names):
+                if name.endswith(".md") and name not in cls.EXCLUDED_FILES and not name.startswith("README"):
+                    p = Path(dirpath) / name
+                    out[p.relative_to(ROOT).as_posix()] = p.read_text(encoding="utf-8", errors="replace")
+        return out
+
+    @classmethod
+    def docs_files(cls) -> dict:
+        """docs/ is excluded above (maintainer scripts run from a clone), but a command a person or a model copies from it must still
+        survive a plugin folder with a space in its name."""
+        return {p.relative_to(ROOT).as_posix(): p.read_text(encoding="utf-8", errors="replace") for p in sorted((ROOT / "docs").glob("**/*.md"))}
 
     @classmethod
     def problems(cls, files: dict, exempt: dict = None) -> list:
@@ -477,6 +493,13 @@ class TestScriptInvocationsAreRobust(unittest.TestCase):
         running = [r for r, t in files.items() if any(self.RUN.search(l) for l in t.splitlines())]
         self.assertGreaterEqual(len(running), 10, "the discovery found too few files; the guard is vacuous")
         self.assertEqual(self.problems(files), [])
+
+    def test_docs_quote_the_plugin_root_script_path(self):
+        bad = ["%s:%d" % (rel, n) for rel, text in self.docs_files().items() for n, line in enumerate(text.splitlines(), 1)
+               if self.UNQUOTED.search(line)]
+        self.assertEqual(bad, [])
+        self.assertTrue(self.UNQUOTED.search("python ${CLAUDE_PLUGIN_ROOT}/scripts/x.py --a"))   # the plant
+        self.assertFalse(self.UNQUOTED.search('python "${CLAUDE_PLUGIN_ROOT}/scripts/x.py" --a'))
 
     def test_every_exemption_is_a_real_file_with_a_reason(self):
         files = self.files()
@@ -503,11 +526,15 @@ class TestScriptInvocationsAreRobust(unittest.TestCase):
     def test_discovery_reaches_a_supporting_file_inside_a_skill_folder(self):
         """A supporting file that sits directly in a skill folder (not SKILL.md, not references/) is a file too: a SocialForge
         one ran `python scripts/install_deps.py` by a relative path with no location line and the narrower scan could not see it."""
-        planted = {"skills/t/notes.md": "# Notes\n\nRun `python scripts/x.py --help`.\n"}
-        found = self.problems(planted, exempt={})
+        old_loop_tracker = ("# Loop tracker\n\n- On each loop run `python scripts/checkpoint-manager.py loop --brand {brand} --run-id {run_id}`.\n")
+        found = self.problems({"utils/loop-tracker.md": old_loop_tracker}, exempt={})
         self.assertTrue(any("relative path" in f for f in found) and any("no script-location line" in f for f in found), found)
-        # the glob covers a skill folder recursively, not only SKILL.md and references/
-        self.assertTrue(any(p.name == "SKILL.md" for p in ROOT.glob("skills/**/*.md")))
+        # inverted discovery: the folders the old globs missed are scanned, and so is the repository root
+        files = self.files()
+        self.assertIn("utils/loop-tracker.md", files)
+        self.assertIn("AGENTS.md", files)
+        self.assertNotIn("CHANGELOG.md", files)
+        self.assertFalse(any(rel.startswith("docs/") for rel in files))
 
 
 class TestScriptsPrintAbsoluteCommands(unittest.TestCase):
@@ -548,13 +575,56 @@ class TestScriptsPrintAbsoluteCommands(unittest.TestCase):
     def test_script_command_is_the_running_interpreter_and_the_absolute_script(self):
         sys.path.insert(0, str(SCRIPTS))
         import _common
-        cmd = _common.script_command("run-audit.py", "--strict")
-        target = SCRIPTS / "run-audit.py"
-        self.assertTrue(target.exists())
-        self.assertIn(str(target), cmd)
-        self.assertIn(sys.executable, cmd)
-        self.assertTrue(cmd.endswith("--strict"))
+        cmd = _common.script_command("plugin-metadata.py", "--section", "version")
+        self.assertTrue((SCRIPTS / "plugin-metadata.py").exists())
+        self.assertIn('"%s"' % (SCRIPTS / "plugin-metadata.py").as_posix(), cmd)   # forward slashes, double-quoted
+        self.assertNotIn("\\", cmd)                                         # bash drops a backslash
         self.assertNotIn("python scripts/", cmd)
+
+    def test_the_command_shape_without_and_with_a_space_in_the_interpreter_path(self):
+        """Pasted into Git Bash a backslash path arrived as `C:Python313python.exe` (exit 127), and a quoted first token is a string
+        literal in PowerShell: forward slashes, the script always double-quoted, the interpreter quoted only when it has a space."""
+        sys.path.insert(0, str(SCRIPTS))
+        import _common
+        from unittest import mock
+        with mock.patch.object(sys, "executable", "C:\\Python313\\python.exe"):
+            plain = _common.script_command("x.py", "--a", "1")
+        self.assertTrue(plain.startswith('C:/Python313/python.exe "'), plain)
+        self.assertTrue(plain.endswith('/scripts/x.py" --a 1'), plain)
+        self.assertNotIn("PowerShell", plain)
+        with mock.patch.object(sys, "executable", "C:\\Program Files\\Python313\\python.exe"):
+            spaced = _common.script_command("x.py", "--a", "1")
+        self.assertTrue(spaced.startswith('"C:/Program Files/Python313/python.exe" "'), spaced)
+        self.assertTrue(spaced.endswith("--a 1 (in PowerShell, put & before it)"), spaced)
+        self.assertNotIn("\\", plain + spaced)
+
+    def _runnable(self):
+        sys.path.insert(0, str(SCRIPTS))
+        import _common
+        return _common.script_command("plugin-metadata.py", "--section", "version").split(" (in PowerShell")[0]
+
+    def test_the_command_runs_pasted_into_git_bash_from_another_folder(self):
+        import shutil
+        bash = shutil.which("bash")
+        if not bash:
+            self.skipTest("no bash on PATH")
+        kernel = subprocess.run([bash, "-c", "uname -s"], capture_output=True, text=True).stdout
+        if sys.platform == "win32" and not any(k in kernel for k in ("MINGW", "MSYS", "CYGWIN")):
+            self.skipTest("this bash is not Git Bash (WSL cannot run a Windows interpreter path)")
+        with tempfile.TemporaryDirectory() as d:
+            r = subprocess.run([bash, "-c", self._runnable()], capture_output=True, text=True, cwd=d, timeout=120)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("version", r.stdout)
+
+    def test_the_command_runs_pasted_into_powershell_from_another_folder(self):
+        import shutil
+        ps = shutil.which("powershell") or shutil.which("pwsh")
+        if not ps:
+            self.skipTest("no PowerShell on PATH")
+        with tempfile.TemporaryDirectory() as d:
+            r = subprocess.run([ps, "-NoProfile", "-NonInteractive", "-Command", self._runnable()], capture_output=True, text=True, cwd=d, timeout=180)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("version", r.stdout)
 
 
 class TestAgentWrittenInputsAcceptABom(unittest.TestCase):
@@ -603,6 +673,33 @@ class TestAgentWrittenInputsAcceptABom(unittest.TestCase):
             b = self._run(str(SCRIPTS / "audit-ledger.py"), "validate", "--file", str(bom))
         self.assertEqual(a.returncode, 1, a.stdout + a.stderr)      # the file is read and fails validation, as it should
         self.assertEqual((b.returncode, b.stdout), (a.returncode, a.stdout), b.stdout + b.stderr)
+
+    def test_text_metrics_flags_the_same_sentences_with_a_bom(self):
+        """The mark used to be echoed into the first flagged sentence, and a sentence that starts with it no longer opens with its connective."""
+        text = "Moreover, the numbers improved across the board. We shipped the new flow in March.\n\nFurthermore, support tickets fell."
+        with tempfile.TemporaryDirectory() as d:
+            plain, bom = Path(d) / "plain.md", Path(d) / "bom.md"
+            plain.write_bytes(text.encode("utf-8"))
+            bom.write_bytes(b"\xef\xbb\xbf" + text.encode("utf-8"))
+            a = self._run(str(SCRIPTS / "text-metrics.py"), "--file", str(plain), "--ai-tell-scan")
+            b = self._run(str(SCRIPTS / "text-metrics.py"), "--file", str(bom), "--ai-tell-scan")
+        self.assertEqual((a.returncode, b.returncode), (0, 0), a.stderr + b.stderr)
+
+        def flagged(out):
+            def walk(o):
+                if isinstance(o, dict):
+                    if "flagged_sentences" in o:
+                        return o["flagged_sentences"]
+                    for v in o.values():
+                        r = walk(v)
+                        if r is not None:
+                            return r
+                return None
+            return [s["text"] for s in walk(json.loads(out))]
+        fa, fb = flagged(a.stdout), flagged(b.stdout)
+        self.assertTrue(fa, "the sample must flag a sentence for the comparison to mean anything")
+        self.assertEqual(fb, fa)
+        self.assertFalse(any("\ufeff" in s for s in fb))
 
     def test_a_bom_on_the_authors_draft_is_not_a_rewritten_sentence(self):
         author = "We shipped the new onboarding flow in March and activation rose from 31 to 38 percent. The team credits the clearer checklist.\n\nSupport tickets fell by a fifth."

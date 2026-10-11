@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.5 → 4.5.6 (printed commands)
+
+**No breaking changes, nothing migrates.** The commands that scripts print (a recovery step, an install hint) now paste into Git Bash and PowerShell as written. `utils/loop-tracker.md` and the always-on recipes call scripts through a quoted `${CLAUDE_PLUGIN_ROOT}` path.
+
+---
+
 ## Upgrading 4.5.4 → 4.5.5 (byte-order marks)
 
 **No breaking changes, nothing migrates.** Files an agent or you hand to a script (an audit record, your own source draft, a content or reports file, a `.mcp.json`) can start with a UTF-8 byte-order mark, as PowerShell 5.1 and Notepad write them, and are read as before. The recovery messages from `checkpoint-manager.py` now print an absolute command.
