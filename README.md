@@ -4,31 +4,20 @@
 
 > **You need to ship 30 articles this quarter that sound human, cite real sources, link into your funnel, and survive an editor who checks. Your team is three people. You have nine weeks. Your last "AI-written" batch got flagged for hallucinated stats — and the batch before that quietly went stale and nobody noticed.**
 
-Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with a 43-pattern humanizer, a fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece. Then the part no single-shot tool has: **the lifecycle loop.** Every published piece is measured (`cf-aeo-check`), audited for decay (`cf-audit`), and fed back into the next calendar and the next brief — through durable file contracts, so what the system learns about your brand survives the session that learned it.
+Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with a 43-pattern humanizer, a fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece. Then the part single-shot tools skip: **the lifecycle loop.** Every published piece is measured (`cf-aeo-check`), audited for decay (`cf-audit`), and fed back into the next calendar and the next brief — through durable file contracts, so what the system learns about your brand survives the session that learned it.
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 29 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
 [![Version](https://img.shields.io/badge/version-4.5.2-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Forks](https://img.shields.io/github/forks/indranilbanerjee/contentforge?style=flat&logo=github&color=blue)](https://github.com/indranilbanerjee/contentforge/network/members)
-[![Issues](https://img.shields.io/github/issues/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/issues)
-[![Last commit](https://img.shields.io/github/last-commit/indranilbanerjee/contentforge?logo=github)](https://github.com/indranilbanerjee/contentforge/commits/master)
 [![Tests](https://img.shields.io/badge/tests-762%2F762%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v452)
-[![Cowork](https://img.shields.io/badge/cowork-compatible-purple.svg)](#cross-platform-compatibility)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
-[![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/indranilbanerjee)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.2 (October 10, 2026): the never-do panel is exact, and no manifest names a file that does not ship.** Checking the README's new claims against the code, the line about marking a run complete now says what `finalize` really does (it refuses a missing, failed or stale audit, and `--skip-audit` stamps `audit_skipped: true` into the run), and the Cursor and Copilot CLI manifests no longer point `mcpServers` at a `.mcp.json` that never ships. A new test keeps every manifest path pointing at a file that ships.
->
-> Previously — **v4.5.1 (October 10, 2026): the docs now match what the plugin does.** A pass over every document found claims the code or the repo contradicted, and they are fixed: no `.mcp.json` ships (it is gitignored), so nothing is pre-wired; Python 3.10 is the one stated minimum, and `scripts/setup.py` now enforces it (it said 3.8) with a test that keeps the code and the docs equal; the three plugins share a marketplace, not brand profiles; and a made-up Drive/Sheets price in the Cowork guide is gone. The README gains a *Try this first* block, a *What ContentForge will never do* panel and a tip for 200k context windows, and the 11 translations are corrected on the two facts that were no longer true. The doc-count guard now also reads phrasings like “N Agent Skills” and “the N-connector catalog”, so those cannot rot unseen.
->
-> Previously — **v4.5.0 (October 10, 2026): nothing installs itself, and outside names no longer choose a path.** Reviewed for the Hermes Agent plugin catalog, ContentForge now never installs a Python package on its own (a missing one prints the exact pinned command; `CONTENTFORGE_INSTALL_DEPS=1` consents for one run), refuses file names, run ids and brand names that would leave their folder, deletes the throwaway signing key after each use, keeps the brand-site harvester on public addresses and on the site, and says where the scripts are on hosts that do not set `${CLAUDE_PLUGIN_ROOT}`. **If you relied on the first-run auto-install, run the command it prints once.**
->
-> Older releases: [Release notes](#release-notes) · [CHANGELOG.md](CHANGELOG.md)
+> 🆕 **Just shipped — v4.5.2 (October 10, 2026): the never-do panel is exact, and no manifest names a file that does not ship.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -80,42 +69,13 @@ Install, then ask in plain words. Each of these kinds of request reached the rig
 - **Model usage (tokens).** On a subscription (Claude Pro, Max, Team or Enterprise in Claude Code or Cowork; a ChatGPT plan in Codex; a Cursor or Copilot plan; the same goes for other hosts' plans) the tokens count against your plan's usage limits instead of being billed per token; check your plan for any optional extra-usage billing. Only pay-as-you-go API-key users pay per token. Context (the skill listing, the pipeline's prompts) uses context window and usage allowance for everyone, and money only for API users.
 - **Services you connect with your own keys** (Google Drive and Sheets, Airtable, an image tool) are billed by those providers, whatever plan you are on. ContentForge charges for none of it.
 
-## Why ContentForge
-
-Most AI writing tools produce one draft, in one tone, with no quality gates, and forget the piece the moment it ships. The output reads like AI, factual claims are unverified, internal links don't exist, brand voice drifts, the file format is markdown when the editor wants Word — and six months later nobody knows which pieces went stale. ContentForge fixes this end to end:
-
-| Capability | Why it matters |
-|---|---|
-| **10-phase pipeline with a quality gate after every phase** | Bad output is caught and re-run before it propagates downstream |
-| **43-pattern AI-detection humanizer** + self-critique meta-pass | Output reads human, not AI — measured advisory tell-scan + burstiness metrics (`text-metrics.py --ai-tell-scan`) |
-| **Fact-checker subagent** verifies URLs and cross-references claims | Citations work and aren't hallucinated — every statistic traces to a verified ledger entry |
-| **Three-category internal linking** (topical / commercial / authority) | Content becomes a funnel, not a stranded page |
-| **Real `.docx` output** with embedded SEO + Quality + Production + Internal-Link appendices | Editor / design team gets a working Word file, not markdown |
-| **A run auditor that re-derives every gate from the artifacts** | "The pipeline says it finished" and "the artifacts prove it finished" can never drift apart silently — `finalize --status completed` refuses without a fresh CLEAN verdict |
-| **The lifecycle loop (v4.0)** — audit → refresh → measure → plan, joined by file contracts | Published content stops being fire-and-forget: decay is detected, refreshes are prioritized from data, and what the pipeline learns about your brand compounds |
-| **C2PA content provenance signing** for EU AI Act Article 50 compliance | Long-form AI-assisted content distributed in EU markets needs provenance from 2 Aug 2026 |
-
 ---
 
-## Supported surfaces (v4.5.2)
+## How it works
 
-| Platform | Install command | Manifest path | Status |
-|---|---|---|---|
-| **Claude Code** CLI + IDE extension | `/plugin install contentforge@neels-plugins` | `.claude-plugin/plugin.json` | Full support (canonical for solo devs) |
-| **Anthropic Cowork** | Plugins panel in UI → Add marketplace → `indranilbanerjee/neels-plugins` → Install ContentForge | same `.claude-plugin/` files | **Recommended for teams** — `/contentforge:cf-cowork-setup` wires Google Drive for team-shareable output (and, in 4.0, for the lifecycle stores that make the loop compound across sessions) |
-| **OpenAI Codex** CLI + IDE + App | `codex plugin marketplace add indranilbanerjee/neels-plugins` then `codex plugin add contentforge@neels-plugins` | `.codex-plugin/plugin.json` (published OpenAI schema) | Full skills + MCP support |
-| **Cursor 2.5+** | In any Cursor Agent chat: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` | `.cursor-plugin/plugin.json` (verified Cursor 2.5+ JSON Schema) | Full skills + agents + commands support |
-| **GitHub Copilot CLI** | `copilot plugin marketplace add indranilbanerjee/neels-plugins` then `copilot plugin install contentforge@neels-plugins` | `.github/plugin/plugin.json` (Copilot also recognizes `.claude-plugin/plugin.json` as fallback) | Full skills + MCP support |
-| **Google Antigravity 2.0** CLI + IDE | `agy plugin install https://github.com/indranilbanerjee/contentforge` | `gemini-extension.json` (at repo root, per Google's reference pattern) | Full skills + hooks support |
-| **Hermes Agent** (Nous Research) — Desktop + CLI on macOS / Windows / Linux | `hermes plugins install indranilbanerjee/contentforge` | `plugin.yaml` + `__init__.py` at repo root (Hermes native spec) | Native plugin — adapter walks `skills/` at register time and exposes all 22 skills via `ctx.register_skill()`. Targets Hermes Desktop v0.15.2+ (public preview June 2 2026). |
-| **OpenClaw** (formerly Clawdbot / Moltbot) | `openclaw plugins install git:github.com/indranilbanerjee/contentforge` | `openclaw.plugin.json` at repo root (also auto-detects `.claude-plugin/plugin.json` as Claude-compatible bundle) | Native plugin via `openclaw.plugin.json`; `skills` field points at `./skills`. |
-| **Grok** (xAI Build CLI) | `grok plugin install indranilbanerjee/contentforge` — or add the marketplace: `grok plugin marketplace add indranilbanerjee/neels-plugins` then `grok plugin install contentforge` (append `--trust` to skip the install confirmation) | `.grok-plugin/plugin.json` + `.grok-plugin/marketplace.json` ([Grok Build](https://docs.x.ai/build/features/skills-plugins-marketplaces) also reads the `.claude-plugin/` manifests for compatibility; the native pair is the first-class lane) | Full skills support; the pipeline runs via the portable execution lane |
-| **claude.ai (web)** | Download a hero skill from [the latest release](https://github.com/indranilbanerjee/contentforge/releases/latest) (e.g. [`cf-brief.skill`](https://github.com/indranilbanerjee/contentforge/releases/latest/download/cf-brief.skill)) → claude.ai → **Settings → Capabilities** (enable *Code execution and file creation*) → **Customize → Skills → Upload skill** | built from `config/skill-assets.json` by `scripts/build-skill-assets.py` | **Hero skills only** — `cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`. The full pipeline needs subagent dispatch, which claude.ai uploads don't have |
-| **Agent Plugins 1.0 hosts** (ChatGPT, Kiro, VS Code, and other adopters of OpenAI's vendor-neutral standard) | via the root `plugin.json` (closed AP1.0 schema) | `plugin.json` at repo root | Skills-only package; `${PLUGIN_ROOT}` / `${PLUGIN_DATA}` accepted everywhere; the **portable execution lane** runs the full pipeline on hosts without subagent dispatch |
+![The 10-phase ContentForge pipeline: title curation, research, fact-check, draft, visual assets, scientific validation, structure and proofread, SEO/GEO, humanizer, reviewer, and output manager — with budgeted gate-fail loop edges](docs/assets/pipeline-dag.svg)
 
-**Why this works:** Agent Skills became an open standard in December 2025 (41+ agent products by June 2026). All 22 SKILL.md files in ContentForge are platform-portable as written. The sibling manifests are thin platform-specific wrappers around the same `skills/` directory — no skill duplication.
-
-**Works on 35+ additional Agent Skills platforms** without per-platform manifests — Goose (Block), OpenHands, OpenCode (sst), Junie (JetBrains), Gemini CLI, Roo Code, Cline/Windsurf, Kiro, Amp, Letta, Mux, Factory, Workshop, Tabnine, Mistral Vibe, and more. Point any Agent-Skills-compatible client at `https://github.com/indranilbanerjee/contentforge/tree/master/skills` and all 22 ContentForge skills are immediately discoverable.
+Ten phases, each ending in a quality gate that the orchestrator checks with scripts, never from an agent's self-report. A failed gate loops back to the offending phase, with a budget: at most 2 loops per edge and 5 per run. Every phase, in order, is under [What ContentForge does](#what-contentforge-does-the-10-phase-pipeline).
 
 ---
 
@@ -197,7 +157,7 @@ The 10-phase pipeline runs 20–60 minutes end to end. If the session terminates
 
 The resumer reloads the saved Phase 1..N outputs and continues from Phase N+1 — no re-running phases that already completed. It also reports **orphaned artifacts** (a phase whose artifact exists but was never checkpointed — precisely the window a crash creates), so finished work is verified rather than re-run blind or trusted blind.
 
-### 7. Close the loop (the v4.0 habit)
+### 7. Close the loop
 
 After you've published a few pieces, three commands turn production into a lifecycle:
 
@@ -207,13 +167,61 @@ After you've published a few pieces, three commands turn production into a lifec
 /contentforge:cf-calendar --from-audit=latest   # next period's plan, fed from the recorded audit
 ```
 
-Each one writes or reads a durable per-brand file — the loop works across sessions, across weeks, and (with Cowork + Drive) across your whole team. Details in [The content lifecycle loop](#the-content-lifecycle-loop-v40).
+Each one writes or reads a durable per-brand file — the loop works across sessions, across weeks, and (with Cowork + Drive) across your whole team. Details in [The content lifecycle loop](#the-content-lifecycle-loop).
+
+---
+
+## Who this is for
+
+| If you're a... | Run this | What you get |
+|---|---|---|
+| **Content team shipping long-form at volume** | `/contentforge:brand-setup` once, then `/contentforge:create-content` per topic | Fact-checked, brand-compliant pieces as real `.docx` files, each with its scorecards and internal-link map |
+| **Content lead with a published library** | `/contentforge:audit-content`, `/contentforge:cf-aeo-check`, then `/contentforge:cf-calendar --from-audit=latest` | The library scored for decay, AI-engine citations tracked over time, and the next period's plan built from the recorded audit |
+| **Agency or consultancy with several clients** | `/contentforge:brand-setup` per client, `/contentforge:cf-cowork-setup` for a shared Drive | Each brand keeps its own voice, terminology and link inventory; on Cowork with Drive, the output and the lifecycle stores are team-shareable |
+| **Social or international marketer** | `/contentforge:cf-social-adapt`, `/contentforge:cf-translate` | A finished piece turned into platform-native posts, or translated with voice and citations kept; each shows its scope and waits for your `yes` |
+
+---
+
+## Why ContentForge
+
+Most AI writing tools produce one draft, in one tone, with no quality gates, and forget the piece the moment it ships. The output reads like AI, factual claims are unverified, internal links don't exist, brand voice drifts, the file format is markdown when the editor wants Word — and six months later nobody knows which pieces went stale. ContentForge fixes this end to end:
+
+| Capability | Why it matters |
+|---|---|
+| **10-phase pipeline with a quality gate after every phase** | Bad output is caught and re-run before it propagates downstream |
+| **43-pattern AI-detection humanizer** + self-critique meta-pass | Fewer AI-drafting habits, measured by an offline scan of 43 patterns (`text-metrics.py --ai-tell-scan`, advisory) plus burstiness metrics |
+| **Fact-checker subagent** verifies URLs and cross-references claims | Citations work and aren't hallucinated — every statistic traces to a verified ledger entry |
+| **Three-category internal linking** (topical / commercial / authority) | Content becomes a funnel, not a stranded page |
+| **Real `.docx` output** with embedded SEO + Quality + Production + Internal-Link appendices | Editor / design team gets a working Word file, not markdown |
+| **A run auditor that re-derives every gate from the artifacts** | "The pipeline says it finished" and "the artifacts prove it finished" can never drift apart silently — `finalize --status completed` refuses without a fresh CLEAN verdict |
+| **The lifecycle loop (v4.0)** — audit → refresh → measure → plan, joined by file contracts | Published content stops being fire-and-forget: decay is detected, refreshes are prioritized from data, and what the pipeline learns about your brand compounds |
+| **C2PA content provenance signing** for EU AI Act Article 50 compliance | Long-form AI-assisted content distributed in EU markets needs provenance from 2 Aug 2026 |
+
+---
+
+## Supported surfaces (v4.5.2)
+
+| Platform | Install command | Manifest path | Status |
+|---|---|---|---|
+| **Claude Code** CLI + IDE extension | `/plugin install contentforge@neels-plugins` | `.claude-plugin/plugin.json` | Full support (canonical for solo devs) |
+| **Anthropic Cowork** | Plugins panel in UI → Add marketplace → `indranilbanerjee/neels-plugins` → Install ContentForge | same `.claude-plugin/` files | **Recommended for teams** — `/contentforge:cf-cowork-setup` wires Google Drive for team-shareable output (and, in 4.0, for the lifecycle stores that make the loop compound across sessions) |
+| **OpenAI Codex** CLI + IDE + App | `codex plugin marketplace add indranilbanerjee/neels-plugins` then `codex plugin add contentforge@neels-plugins` | `.codex-plugin/plugin.json` (published OpenAI schema) | Full skills + MCP support |
+| **Cursor 2.5+** | In any Cursor Agent chat: `/add-plugin contentforge@https://github.com/indranilbanerjee/contentforge` | `.cursor-plugin/plugin.json` (verified Cursor 2.5+ JSON Schema) | Full skills + agents + commands support |
+| **GitHub Copilot CLI** | `copilot plugin marketplace add indranilbanerjee/neels-plugins` then `copilot plugin install contentforge@neels-plugins` | `.github/plugin/plugin.json` (Copilot also recognizes `.claude-plugin/plugin.json` as fallback) | Full skills + MCP support |
+| **Google Antigravity 2.0** CLI + IDE | `agy plugin install https://github.com/indranilbanerjee/contentforge` | `gemini-extension.json` (at repo root, per Google's reference pattern) | Full skills + hooks support |
+| **Hermes Agent** (Nous Research) — Desktop + CLI on macOS / Windows / Linux | `hermes plugins install indranilbanerjee/contentforge` | `plugin.yaml` + `__init__.py` at repo root (Hermes native spec) | Native plugin — adapter walks `skills/` at register time and exposes all 22 skills via `ctx.register_skill()`. Targets Hermes Desktop v0.15.2+ (public preview June 2 2026). |
+| **OpenClaw** (formerly Clawdbot / Moltbot) | `openclaw plugins install git:github.com/indranilbanerjee/contentforge` | `openclaw.plugin.json` at repo root (also auto-detects `.claude-plugin/plugin.json` as Claude-compatible bundle) | Native plugin via `openclaw.plugin.json`; `skills` field points at `./skills`. |
+| **Grok** (xAI Build CLI) | `grok plugin install indranilbanerjee/contentforge` — or add the marketplace: `grok plugin marketplace add indranilbanerjee/neels-plugins` then `grok plugin install contentforge` (append `--trust` to skip the install confirmation) | `.grok-plugin/plugin.json` + `.grok-plugin/marketplace.json` ([Grok Build](https://docs.x.ai/build/features/skills-plugins-marketplaces) also reads the `.claude-plugin/` manifests for compatibility; the native pair is the first-class lane) | Full skills support; the pipeline runs via the portable execution lane |
+| **claude.ai (web)** | Download a hero skill from [the latest release](https://github.com/indranilbanerjee/contentforge/releases/latest) (e.g. [`cf-brief.skill`](https://github.com/indranilbanerjee/contentforge/releases/latest/download/cf-brief.skill)) → claude.ai → **Settings → Capabilities** (enable *Code execution and file creation*) → **Customize → Skills → Upload skill** | built from `config/skill-assets.json` by `scripts/build-skill-assets.py` | **Hero skills only** — `cf-brief`, `cf-social-adapt`, `cf-translate`, `cf-video-script`, `cf-aeo-check`. The full pipeline needs subagent dispatch, which claude.ai uploads don't have |
+| **Agent Plugins 1.0 hosts** (ChatGPT, Kiro, VS Code, and other adopters of OpenAI's vendor-neutral standard) | via the root `plugin.json` (closed AP1.0 schema) | `plugin.json` at repo root | Skills-only package; `${PLUGIN_ROOT}` / `${PLUGIN_DATA}` accepted everywhere; the **portable execution lane** runs the full pipeline on hosts without subagent dispatch |
+
+**Why this works:** Agent Skills became an open standard in December 2025 (41+ agent products by June 2026). All 22 SKILL.md files in ContentForge are platform-portable as written. The sibling manifests are thin platform-specific wrappers around the same `skills/` directory — no skill duplication.
+
+**Works on 35+ additional Agent Skills platforms** without per-platform manifests — Goose (Block), OpenHands, OpenCode (sst), Junie (JetBrains), Gemini CLI, Roo Code, Cline/Windsurf, Kiro, Amp, Letta, Mux, Factory, Workshop, Tabnine, Mistral Vibe, and more. Point any Agent-Skills-compatible client at `https://github.com/indranilbanerjee/contentforge/tree/master/skills` and all 22 ContentForge skills are immediately discoverable.
 
 ---
 
 ## What ContentForge does (the 10-phase pipeline)
-
-![The 10-phase ContentForge pipeline: title curation, research, fact-check, draft, visual assets, scientific validation, structure and proofread, SEO/GEO, humanizer, reviewer, and output manager — with budgeted gate-fail loop edges](docs/assets/pipeline-dag.svg)
 
 ```
 0.5  Title Curation        → 4-5 SERP-aware title options; user selects
@@ -239,7 +247,7 @@ The pipeline's shape — every phase's inputs, outputs, gate, and loop target �
 
 ---
 
-## The content lifecycle loop (v4.0)
+## The content lifecycle loop
 
 ![The v4.0 content lifecycle loop: plan, produce, publish, measure, audit — joined by durable per-brand file contracts](docs/assets/lifecycle-loop.svg)
 
@@ -463,7 +471,7 @@ These 9 commands are the user-facing entry points:
 | 10 | Social Adapter | Platform-specific repurposing | post-pipeline |
 | 11 | Translator | Brand voice mapping, cultural adaptation | post-pipeline |
 
-### The pipeline graph (v4.0)
+### The pipeline graph
 
 `config/pipeline-graph.json` is the machine-readable form of the pipeline contract: nodes are phases, edges are the file-based handoffs, loop targets carry their budgets. `tests/test_pipeline_contract_graph.py` fails the build if the graph, the agent contracts, the orchestrator's table, `checkpoint-manager.py`, or `run-audit.py` ever disagree — in either direction. Encoding the contract as data immediately surfaced six inputs the prose table had under-declared (including one the agent file itself annotated as "was missing from this list" after a previous drift incident). The portable execution lane and the resumer walk this graph rather than re-deriving the order from prose.
 
