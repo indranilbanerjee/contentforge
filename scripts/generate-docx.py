@@ -1148,7 +1148,7 @@ def main():
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    md_text = content_path.read_text(encoding="utf-8")
+    md_text = content_path.read_text(encoding="utf-8-sig")
     link_markers = collect_internal_link_markers(md_text)
     blocks = parse_markdown_to_blocks(md_text)
 
@@ -1164,7 +1164,7 @@ def main():
     reports = {}
     if args.reports and Path(args.reports).exists():
         try:
-            reports = json.loads(Path(args.reports).read_text(encoding="utf-8"))
+            reports = json.loads(Path(args.reports).read_text(encoding="utf-8-sig"))
         except Exception as e:
             print(f"Warning: could not parse reports JSON: {e}", file=sys.stderr)
 

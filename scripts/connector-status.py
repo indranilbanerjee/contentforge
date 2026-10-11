@@ -408,7 +408,7 @@ def _load_mcp_json():
     if not MCP_JSON.exists():
         return {}
     try:
-        data = json.loads(MCP_JSON.read_text(encoding="utf-8"))
+        data = json.loads(MCP_JSON.read_text(encoding="utf-8-sig"))
         return data.get("mcpServers", {})
     except (json.JSONDecodeError, KeyError):
         return {}

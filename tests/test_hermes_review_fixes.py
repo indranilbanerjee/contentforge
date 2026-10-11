@@ -451,8 +451,8 @@ class TestScriptInvocationsAreRobust(unittest.TestCase):
 
     @classmethod
     def files(cls) -> dict:
-        paths = (sorted(ROOT.glob("skills/*/SKILL.md")) + sorted(ROOT.glob("skills/*/references/**/*.md"))
-                 + sorted(ROOT.glob("commands/*.md")) + sorted(ROOT.glob("agents/*.md")) + sorted(ROOT.glob("references/**/*.md")))
+        paths = (sorted(ROOT.glob("skills/**/*.md")) + sorted(ROOT.glob("commands/*.md"))
+                 + sorted(ROOT.glob("agents/*.md")) + sorted(ROOT.glob("references/**/*.md")))
         return {p.relative_to(ROOT).as_posix(): p.read_text(encoding="utf-8", errors="replace") for p in paths}
 
     @classmethod
@@ -499,6 +499,123 @@ class TestScriptInvocationsAreRobust(unittest.TestCase):
             with self.subTest(defect=name):
                 found = self.problems({"skills/t/SKILL.md": text}, exempt={})
                 self.assertTrue(any(needle in f for f in found), found)
+
+    def test_discovery_reaches_a_supporting_file_inside_a_skill_folder(self):
+        """A supporting file that sits directly in a skill folder (not SKILL.md, not references/) is a file too: a SocialForge
+        one ran `python scripts/install_deps.py` by a relative path with no location line and the narrower scan could not see it."""
+        planted = {"skills/t/notes.md": "# Notes\n\nRun `python scripts/x.py --help`.\n"}
+        found = self.problems(planted, exempt={})
+        self.assertTrue(any("relative path" in f for f in found) and any("no script-location line" in f for f in found), found)
+        # the glob covers a skill folder recursively, not only SKILL.md and references/
+        self.assertTrue(any(p.name == "SKILL.md" for p in ROOT.glob("skills/**/*.md")))
+
+
+class TestScriptsPrintAbsoluteCommands(unittest.TestCase):
+    """4.5.5: checkpoint-manager.py printed "Run: python scripts/run-audit.py ...", which is relative to the host's working folder,
+    not the plugin. A command a script tells someone to run comes from _common.script_command: the running interpreter and the
+    script's absolute path. Docstrings (usage text) are not output and are left alone."""
+    HINT = re.compile(r"\bpython3?\s+(?:\./)?scripts/")
+
+    @classmethod
+    def findings(cls, source: str, name: str = "x.py") -> list:
+        import ast
+        tree = ast.parse(source)
+        docstrings = set()
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body:
+                first = node.body[0]
+                if isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and isinstance(first.value.value, str):
+                    docstrings.add(id(first.value))
+        return ["%s:%d" % (name, n.lineno) for n in ast.walk(tree)
+                if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docstrings and cls.HINT.search(n.value)]
+
+    def test_no_script_prints_a_relative_python_scripts_command(self):
+        scripts = sorted((ROOT / "scripts").glob("*.py"))
+        self.assertGreater(len(scripts), 20, "the scan found too few scripts; the guard is vacuous")
+        bad = [f for p in scripts for f in self.findings(p.read_text(encoding="utf-8"), p.name)]
+        self.assertEqual(bad, [])
+
+    def test_plant_the_old_hints_are_flagged_and_usage_text_and_the_helper_are_not(self):
+        old = 'def f():\n    return {"recovery": "Run: python scripts/run-audit.py --brand " f"{brand}"}\n'
+        old_fstring = 'def g(brand):\n    return f"Re-run: python scripts/run-audit.py --brand {brand}"\n'
+        usage = '"""Usage:\n    python scripts/setup.py\n"""\n\ndef h():\n    """Run python scripts/x.py"""\n    return 1\n'
+        fixed = 'def f():\n    return {"recovery": "Run: " + _common.script_command("run-audit.py")}\n'
+        self.assertEqual(len(self.findings(old)), 1)
+        self.assertEqual(len(self.findings(old_fstring)), 1)
+        self.assertEqual(self.findings(usage), [])
+        self.assertEqual(self.findings(fixed), [])
+
+    def test_script_command_is_the_running_interpreter_and_the_absolute_script(self):
+        sys.path.insert(0, str(SCRIPTS))
+        import _common
+        cmd = _common.script_command("run-audit.py", "--strict")
+        target = SCRIPTS / "run-audit.py"
+        self.assertTrue(target.exists())
+        self.assertIn(str(target), cmd)
+        self.assertIn(sys.executable, cmd)
+        self.assertTrue(cmd.endswith("--strict"))
+        self.assertNotIn("python scripts/", cmd)
+
+
+class TestAgentWrittenInputsAcceptABom(unittest.TestCase):
+    """4.5.5: PowerShell 5.1 writes a UTF-8 byte-order mark by default (Out-File, Set-Content -Encoding utf8), and Notepad often does.
+    A BOM made `audit-ledger.py validate --file` fail with "cannot read" before it reached validation, and made `authorship.py` report
+    the author's first sentence as rewritten (a false violation that blocks the run). Inputs an agent or a user writes are read with
+    utf-8-sig, which reads plain UTF-8 unchanged; the shared JSON loader included. Files whose bytes are hashed on purpose
+    (fix-ledger, run-audit, checkpoint content) and files the plugin writes and reads itself are not touched."""
+    EXTERNAL = re.compile(r"\b(?:src_path|draft_path|content_path|MCP_JSON|mcp_path|creds_file|GOOGLE_CREDS_DEFAULT|Path\(args\.reports\))\.read_text\(encoding=\"utf-8\"")
+
+    def test_no_script_reads_an_agent_or_user_written_input_without_allowing_a_bom(self):
+        scripts = sorted((ROOT / "scripts").glob("*.py"))
+        bad = ["%s:%d" % (p.name, n) for p in scripts for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1)
+               if self.EXTERNAL.search(line)]
+        self.assertEqual(bad, [])
+        self.assertIn("utf-8-sig", (SCRIPTS / "_common.py").read_text(encoding="utf-8"))   # the shared loader
+
+    def test_plant_the_old_reads_are_flagged_and_the_fix_is_not(self):
+        self.assertTrue(self.EXTERNAL.search('result = classify(src_path.read_text(encoding="utf-8"),'))
+        self.assertTrue(self.EXTERNAL.search('md_text = content_path.read_text(encoding="utf-8")'))
+        self.assertFalse(self.EXTERNAL.search('md_text = content_path.read_text(encoding="utf-8-sig")'))
+        self.assertFalse(self.EXTERNAL.search('text = artifact.read_text(encoding="utf-8")'))
+
+    def test_the_shared_loader_reads_a_bom_file_like_the_plain_one(self):
+        sys.path.insert(0, str(SCRIPTS))
+        import _common
+        body = '{"brand": "acme", "pieces": []}'
+        with tempfile.TemporaryDirectory() as d:
+            plain, bom = Path(d) / "plain.json", Path(d) / "bom.json"
+            plain.write_text(body, encoding="utf-8")
+            bom.write_bytes(b"\xef\xbb\xbf" + body.encode("utf-8"))
+            self.assertNotIn("error", _common.load_json_safe(plain))
+            self.assertEqual(_common.load_json_safe(bom), _common.load_json_safe(plain))
+
+    def _run(self, *args):
+        with tempfile.TemporaryDirectory() as home:
+            env = dict(os.environ, HOME=home, USERPROFILE=home, CLAUDE_PLUGIN_DATA=home, CLAUDE_MARKETING_HOME=home)
+            return subprocess.run([sys.executable, *args], capture_output=True, text=True, env=env, timeout=120)
+
+    def test_audit_ledger_validate_reaches_validation_with_a_bom(self):
+        with tempfile.TemporaryDirectory() as d:
+            plain, bom = Path(d) / "plain.json", Path(d) / "bom.json"
+            plain.write_text('{"brand": "acme"}', encoding="utf-8")
+            bom.write_bytes(b"\xef\xbb\xbf" + b'{"brand": "acme"}')
+            a = self._run(str(SCRIPTS / "audit-ledger.py"), "validate", "--file", str(plain))
+            b = self._run(str(SCRIPTS / "audit-ledger.py"), "validate", "--file", str(bom))
+        self.assertEqual(a.returncode, 1, a.stdout + a.stderr)      # the file is read and fails validation, as it should
+        self.assertEqual((b.returncode, b.stdout), (a.returncode, a.stdout), b.stdout + b.stderr)
+
+    def test_a_bom_on_the_authors_draft_is_not_a_rewritten_sentence(self):
+        author = "We shipped the new onboarding flow in March and activation rose from 31 to 38 percent. The team credits the clearer checklist.\n\nSupport tickets fell by a fifth."
+        with tempfile.TemporaryDirectory() as d:
+            plain, bom, draft = Path(d) / "src-plain.md", Path(d) / "src-bom.md", Path(d) / "draft.md"
+            plain.write_bytes(author.encode("utf-8"))
+            bom.write_bytes(b"\xef\xbb\xbf" + author.encode("utf-8"))
+            draft.write_bytes(author.encode("utf-8"))
+            a = self._run(str(SCRIPTS / "authorship.py"), "--source", str(plain), "--draft", str(draft))
+            b = self._run(str(SCRIPTS / "authorship.py"), "--source", str(bom), "--draft", str(draft))
+        self.assertEqual(a.returncode, 0, a.stdout + a.stderr)
+        self.assertEqual(b.returncode, 0, "a BOM on the author's draft was read as a rewritten sentence:\n" + b.stdout[:600] + b.stderr[:300])
+        self.assertEqual(json.loads(b.stdout)["counts"], json.loads(a.stdout)["counts"])
 
 
 class TestNoTmpPathsInInstructions(unittest.TestCase):

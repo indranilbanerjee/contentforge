@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.4 → 4.5.5 (byte-order marks)
+
+**No breaking changes, nothing migrates.** Files an agent or you hand to a script (an audit record, your own source draft, a content or reports file, a `.mcp.json`) can start with a UTF-8 byte-order mark, as PowerShell 5.1 and Notepad write them, and are read as before. The recovery messages from `checkpoint-manager.py` now print an absolute command.
+
+---
+
 ## Upgrading 4.5.3 → 4.5.4 (scripts run from any folder)
 
 **No breaking changes, nothing migrates.** Skills, commands and agents now call every script as `python "${CLAUDE_PLUGIN_ROOT}/scripts/..."` (quoted, and never relative to the working folder), so ContentForge works when your project is not the plugin folder and when the plugin lives under a path with a space. Nothing in the scripts changed.

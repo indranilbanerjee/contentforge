@@ -150,7 +150,7 @@ def main():
     if not draft_path.is_file():
         print(json.dumps({"error": f"draft not found: {draft_path}"}))
         sys.exit(1)
-    text = draft_path.read_text(encoding="utf-8", errors="replace")
+    text = draft_path.read_text(encoding="utf-8-sig", errors="replace")
 
     tm = _load_text_metrics()
     tier1 = tm.ai_tell_scan(text)

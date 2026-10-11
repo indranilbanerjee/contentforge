@@ -51,7 +51,7 @@ def check_google_integration():
     # Check credentials file
     if GOOGLE_CREDS_DEFAULT.exists():
         try:
-            data = json.loads(GOOGLE_CREDS_DEFAULT.read_text(encoding="utf-8"))
+            data = json.loads(GOOGLE_CREDS_DEFAULT.read_text(encoding="utf-8-sig"))
             if "client_email" in data:
                 status["credentials"] = True
                 status["service_account_email"] = data["client_email"]
@@ -84,7 +84,7 @@ def main():
     # Validate .mcp.json
     if MCP_JSON.exists():
         try:
-            data = json.loads(MCP_JSON.read_text(encoding="utf-8"))
+            data = json.loads(MCP_JSON.read_text(encoding="utf-8-sig"))
             servers = data.get("mcpServers", {})
             print(f"CONNECTORS={len(servers)} HTTP connectors loaded")
         except json.JSONDecodeError as e:

@@ -85,7 +85,7 @@ def probe_mcp_json(plugin_root: Path) -> dict:
     if not mcp_path.exists():
         return {"present": False, "configured_drive_mcps": [], "raw_servers": []}
     try:
-        data = json.loads(mcp_path.read_text(encoding="utf-8"))
+        data = json.loads(mcp_path.read_text(encoding="utf-8-sig"))
     except (json.JSONDecodeError, OSError) as e:
         return {"present": True, "error": f"{type(e).__name__}: {e}",
                 "configured_drive_mcps": [], "raw_servers": []}
@@ -130,7 +130,7 @@ def probe_service_account() -> dict:
     result = {"path": str(creds_file), "exists": exists}
     if exists:
         try:
-            data = json.loads(creds_file.read_text(encoding="utf-8"))
+            data = json.loads(creds_file.read_text(encoding="utf-8-sig"))
             result["client_email"] = data.get("client_email", "unknown")
             result["project_id"] = data.get("project_id", "unknown")
         except (json.JSONDecodeError, OSError):

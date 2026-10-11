@@ -261,8 +261,8 @@ def main():
                              "the run simply has no authorship record."),
             })
 
-    result = classify(src_path.read_text(encoding="utf-8"),
-                      draft_path.read_text(encoding="utf-8"))
+    result = classify(src_path.read_text(encoding="utf-8-sig"),
+                      draft_path.read_text(encoding="utf-8-sig"))
     result["source_file"] = str(src_path)
     result["draft_file"] = str(draft_path)
 

@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.5] - 2026-10-12
+
+### A byte-order mark no longer breaks an agent- or user-written input, and printed commands are absolute
+
+Found by a fresh-install smoke test (its final pass).
+
+**Fixed**
+
+- `_common.load_json_safe`, the loader behind every read of agent-written JSON, refused a file that starts with a
+  byte-order mark: `audit-ledger.py validate --file` and `record --file` exited 2 with "cannot read" and never reached
+  validation. PowerShell 5.1 writes that mark by default (`Out-File`, `Set-Content -Encoding utf8`). It reads
+  `utf-8-sig` now, which reads plain UTF-8 unchanged.
+- `authorship.py` read the author's own draft as plain UTF-8, so a draft saved with a mark (Notepad does this) made
+  the first sentence look rewritten: a false violation, exit 3, that blocks the run. Both inputs read `utf-8-sig`, and
+  so do the other inputs a person or an agent hands to a script: `build_review_sheet.py --draft`, the content and
+  reports files of `generate-docx.py`, and the user's `.mcp.json` and credential JSON in `connector-status.py`,
+  `detect-drive-mcp.py` and `setup.py` (10 reads). A mark is never written.
+- `checkpoint-manager.py` printed "Run: python scripts/run-audit.py ..." in three recovery messages, a path relative
+  to the host's working folder (the user's project), not the plugin. They print the running interpreter and the
+  script's absolute path (`_common.script_command`).
+
+**Not changed**
+
+- Files whose bytes are hashed on purpose (`fix-ledger.py`, `run-audit.py`, the artifact content that
+  `checkpoint-manager.py` saves) and files the plugin writes and reads itself. `text-metrics.py --file` already gives
+  the same counts with or without the mark.
+
+**Added - tests**
+
+- `TestAgentWrittenInputsAcceptABom` (5 tests): the shared loader, `audit-ledger.py validate` and `authorship.py` give
+  the same result for a plain file and a BOM file, and a source guard keeps the direct reads on `utf-8-sig`. Planted
+  with the 4.5.4 scripts: `audit-ledger.py validate` exits 2 "cannot read" and `authorship.py` exits 3 on the BOM
+  copy, and 10 direct reads are flagged.
+- `TestScriptsPrintAbsoluteCommands` (3 tests): an AST scan finds no printed `python scripts/...` command in any
+  script (docstrings are usage text and are skipped). Planted: the 3 old recovery messages are flagged.
+- The invocation guard now scans `skills/**/*.md`, so a supporting file inside a skill folder is covered (a
+  SocialForge one was missed by the narrower scan). Tests 770 -> 779.
+
 ## [4.5.4] - 2026-10-12
 
 ### Every script runs from any folder

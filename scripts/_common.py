@@ -187,7 +187,8 @@ def load_json_safe(path: Path):
             "recovery": "Initialise it first (e.g. --action init) or check the brand name.",
         }
     try:
-        return json.loads(path.read_text(encoding="utf-8"))
+        # utf-8-sig: PowerShell 5.1 writes a BOM by default (Out-File, Set-Content -Encoding utf8); plain UTF-8 reads the same
+        return json.loads(path.read_text(encoding="utf-8-sig"))
     except (json.JSONDecodeError, OSError) as exc:
         return {
             "error": f"corrupt or unreadable JSON at {path}: {type(exc).__name__}: {exc}",
@@ -321,6 +322,15 @@ def pinned_specs(packages):
             raise ValueError(f"no pinned version for package {name!r}; add it to PINNED_DEPENDENCIES")
         out.append(f"{name}=={PINNED_DEPENDENCIES[name]}")
     return out
+
+
+def script_command(script: str, *args: str) -> str:
+    """The exact command that runs one of this plugin's scripts: the interpreter that is running now and the script's
+    absolute path, quoted when either contains a space. A printed `python scripts/x.py` is relative to the host's working
+    folder (the user's project), which is the wrong place, so every command a script tells someone to run comes from here."""
+    def quote(part: str) -> str:
+        return '"%s"' % part if " " in part else part
+    return " ".join([quote(sys.executable), quote(str(Path(__file__).resolve().parent / script)), *args])
 
 
 def install_command(packages) -> str:
