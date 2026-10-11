@@ -33,7 +33,12 @@ SCRIPT = REPO / "scripts" / "scorecard-html.py"
 AUDIT = REPO / "scripts" / "run-audit.py"
 SCORING = json.loads((REPO / "config" / "scoring-thresholds.json").read_text(encoding="utf-8"))
 
-REAL_RUN = (Path.home() / ".claude-marketing" / "e2e-preservation" / "runs"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _isolation  # noqa: E402
+
+# The one test that READS the user's real folder (a preserved real run, copied and never written into). The suite's HOME is a temporary
+# folder, so it asks the isolation module for the real one; the guard then proves the read left the folder untouched.
+REAL_RUN = (_isolation.real_home() / ".claude-marketing" / "e2e-preservation" / "runs"
             / "20260816-131632-link-rot-in-2026-why-organizational-web-")
 REAL_BRAND = REAL_RUN.parent.parent
 

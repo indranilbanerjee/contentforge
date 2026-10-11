@@ -27,6 +27,16 @@ Found by a fresh-install smoke test (its re-check).
   interpreter quoted only when its path has a space, and a trailing comment saying to put `&` before it. The two
   recovery messages that carried it put their prose before the command.
 
+- The test suite could reach the user's real folders if one test forgot to isolate. The SocialForge suite was found
+  doing exactly that (four entries appended to the customer's real failure log on every run). The ContentForge suite
+  does not today: every test file was run alone against a temporary home and wrote nothing outside it.
+  `tests/_isolation.py` keeps it so, in two layers: it points HOME and USERPROFILE at a temporary folder and unsets
+  `CLAUDE_MARKETING_HOME`, `CLAUDE_PLUGIN_DATA`, `PLUGIN_DATA` and `CONTENTFORGE_PUBLISH_DIR` before any test is
+  imported, so every default folder resolves inside it (pytest through `tests/__init__.py` and `conftest.py`, the
+  stdlib runner through `run_all.py`, a direct run through an exit hook), and it snapshots the real
+  `~/.claude-marketing`, `~/Documents/ContentForge` and any real folder those variables name, so a single added,
+  changed or removed file there fails the whole session.
+
 **Checked, not changed**
 
 - No ContentForge script reads stdin or prompts: a static sweep finds none (`getpass.getuser()` in
@@ -40,7 +50,12 @@ Found by a fresh-install smoke test (its re-check).
   arguments sit inside the comment and PowerShell prints "need --run-dir, or --brand and --run-id".
 - `TestPrintedCommandsAreLastOnTheLine` (an AST check that no printed command is followed by appended arguments, with
   the 4.5.6 forms as plants), `TestInstallHintsUseThePrintedShape` (both interpreter cases, `bash -n`, and the printed
-  line run through both shells) and `TestNoImplicitStdinReads` (no script reads stdin or prompts). Tests 786 -> 794.
+  line run through both shells) and `TestNoImplicitStdinReads` (no script reads stdin or prompts).
+- `tests/test_test_isolation.py` (9 tests): the session is redirected and every default resolves inside the temporary
+  home, the snapshot sees added, changed, removed, new-folder and appearing-root changes, and three plants run the
+  real `checkpoint-manager.py init` in a child process against a FAKE home: with no fixture it reaches the home
+  folder, with only the guard the leak is reported as `added: .../.claude-marketing/...`, with only the redirect it
+  stays out, and an unwrapped run exits 1. Tests 786 -> 803.
 
 ## [4.5.6] - 2026-10-12
 
