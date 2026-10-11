@@ -16,6 +16,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -300,7 +301,9 @@ class TestLifecycleWiring(unittest.TestCase):
     conversational joint the contract closed."""
 
     def _text(self, rel):
-        return (REPO / rel).read_text(encoding="utf-8")
+        # Skills run scripts as python "${CLAUDE_PLUGIN_ROOT}/scripts/x.py" sub-command (4.5.4: quoted, so a plugin path with a
+        # space works). Drop the closing quote so "x.py sub-command" still reads as the call it names.
+        return re.sub(r'(scripts/[\w.-]+\.py)"', r"\1", (REPO / rel).read_text(encoding="utf-8"))
 
     def test_cf_audit_records_and_reads_aeo(self):
         t = self._text("skills/cf-audit/SKILL.md")

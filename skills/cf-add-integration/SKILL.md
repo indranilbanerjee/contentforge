@@ -8,6 +8,8 @@ effort: medium
 
 # /contentforge:cf-add-integration
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 ## Execution gate
 
 This skill shows a ready-to-paste `.mcp.json` entry and the credential steps; it does not edit configuration files or store secrets, and it never asks for a secret in the conversation. If the user asks it to write the entry into a file, show the exact change first and write only after an explicit `yes`; any other reply cancels.
@@ -40,10 +42,10 @@ Ask the user what service they want to connect and what they want it to do withi
 
 ### Step 2: Check if a connector already exists
 
-Run `python scripts/connector-status.py --action check <name>` to see if the connector is already in the registry.
+Run `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action check <name>` to see if the connector is already in the registry.
 
 - **If it exists and is connected**: Tell the user it's already active and which skills use it.
-- **If it exists but not connected**: Run `python scripts/connector-status.py --action setup-guide <name>` and walk through the guided setup.
+- **If it exists but not connected**: Run `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action setup-guide <name>` and walk through the guided setup.
 - **If it doesn't exist**: Proceed to Step 3.
 
 ### Step 3: Find an MCP package

@@ -582,7 +582,8 @@ class TestUnusableInput(unittest.TestCase):
 # ---------------------------------------------------------------- wiring
 
 class TestWiring(unittest.TestCase):
-    SKILL = (REPO / "skills" / "contentforge" / "SKILL.md").read_text(encoding="utf-8")
+    # the skill quotes its script paths (4.5.4); drop the closing quote so "x.py sub-command" still reads as the call it names
+    SKILL = re.sub(r'(scripts/[\w.-]+\.py)"', r"\1", (REPO / "skills" / "contentforge" / "SKILL.md").read_text(encoding="utf-8"))
 
     def test_skill_builds_the_scorecard_after_finalize(self):
         self.assertIn("scorecard-html.py", self.SKILL)

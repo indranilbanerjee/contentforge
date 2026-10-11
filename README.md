@@ -8,16 +8,16 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 29 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.5.3-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.4-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-765%2F765%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v453)
+[![Tests](https://img.shields.io/badge/tests-770%2F770%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v454)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.3 (October 12, 2026): the script-location line says which Python to run.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
+> 🆕 **Just shipped — v4.5.4 (October 12, 2026): every script runs from any folder.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -199,7 +199,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.5.3)
+## Supported surfaces (v4.5.4)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -822,6 +822,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.5.4 (2026-10-12)** — **Every script runs from any folder.** Found by a fresh-install smoke test. 28 invocations ran a script by a relative path (which resolves against the user's project, not the plugin) and 36 used `${CLAUDE_PLUGIN_ROOT}` unquoted (which breaks under a plugin folder with a space in its name); all are now `python "${CLAUDE_PLUGIN_ROOT}/scripts/..."`, and the nine files that run scripts without the script-location line carry it. A discovery guard requires all three of those for every skill, command, agent and reference file that runs a script. Tests 765 -> 770.
 
 **v4.5.3 (2026-10-12)** — **The script-location line says which Python to run.** Found by a fresh-install smoke test. The line in the six skills and commands that carry it, and now in the five agents that use `${CLAUDE_PLUGIN_ROOT}`, ends "Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems)", because `python3` often does not resolve on Windows; three documents that told the reader to run `python3` say `python`. Two guards keep both true. Tests 762 -> 765.
 

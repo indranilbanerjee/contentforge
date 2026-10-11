@@ -6,6 +6,8 @@ maxTurns: 15
 
 # Structurer & Proofreader Agent — ContentForge Phase 5
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 **Role:** Transform validated draft into polished, publication-ready content through structural optimization, meticulous proofreading, readability enhancement, and brand compliance verification.
 
 ---
@@ -52,7 +54,7 @@ Apply them with the script and do not re-argue them. If a correction looks wrong
 Run this first. Doing it after your structural pass means applying find/replace strings to text you have already rewritten, and they will not match.
 
 ```bash
-python scripts/fix-ledger.py apply \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py" apply \
   --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id} \
   --target phase-3.5-visuals.md \
   --source-draft source-draft.md \
@@ -75,13 +77,13 @@ Read the JSON it returns. Exit 0 means every blocking correction is applied. Exi
 
 ```bash
 # You made the correction by hand because the find string had moved:
-python scripts/fix-ledger.py resolve --run-dir <run dir> --target <body file> \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py" resolve --run-dir <run dir> --target <body file> \
   --id MIN-2 --replaced-with "the exact text that is now in the body" \
   --note "find string had drifted" --phase 5
 
 # Or: an earlier phase had already made this correction in different words,
 # and you changed nothing:
-python scripts/fix-ledger.py resolve --run-dir <run dir> --target <body file> \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py" resolve --run-dir <run dir> --target <body file> \
   --id MOD-2a --already-satisfied --note "body already reads '<current wording>'"
 ```
 

@@ -24,7 +24,7 @@ ContentForge's 10-phase pipeline is long-running. If the underlying agent sessio
 Before listing local runs, check if we're in Cowork+Drive mode — if so, the user might be resuming from a DIFFERENT Cowork session (different sandbox), and the local FS has no record of the run. Pull the run's checkpoint state from Drive first.
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/drive-sync-state.py --action read-config
+python "${CLAUDE_PLUGIN_ROOT}/scripts/drive-sync-state.py" --action read-config
 ```
 
 If `configured: false` OR `environment != "cowork-sandbox"`, skip to Step 1 (local-mode flow).
@@ -47,13 +47,13 @@ If the user supplied a `run-id`, use it directly. Otherwise list the in-progress
 
 ```bash
 # Auto-pick the most recent in-progress run for the active brand
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py resume --brand "{active_brand}"
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" resume --brand "{active_brand}"
 
 # Or with an explicit run id
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py resume --brand "{active_brand}" --run-id "{run_id}"
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" resume --brand "{active_brand}" --run-id "{run_id}"
 
 # List all runs (use when the user wants to choose among several)
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py list --brand "{active_brand}"
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" list --brand "{active_brand}"
 ```
 
 The `resume` action returns the status of the selected run, including `completed_phases`, `remaining_phases`, `next_phase`, `pending_rework` (if a reviewer-ordered loop was interrupted), the run `meta` (keyword, audience, word-count target, tone), and the absolute paths of every saved artifact.
@@ -70,9 +70,9 @@ If there are no in-progress runs, say so and offer to start a fresh `/contentfor
 
 ```bash
 # Example: resuming at Phase 4 — load only its contracted inputs
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py load \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" load \
     --brand "{active_brand}" --run-id "{run_id}" --phase 3
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py load \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" load \
     --brand "{active_brand}" --run-id "{run_id}" --phase 2
 ```
 
@@ -83,7 +83,7 @@ Do not re-execute earlier phases, and do not reload every artifact "just in case
 Re-enter the contentforge skill's **Required Per-Phase Workflow** at the target phase: invoke the phase's qualified subagent (see the Pipeline Contract table for `subagent_type`, inputs, and gate), passing artifact paths + the ≤10-line summary + brand-profile path + requirements block. After the orchestrator verifies the gate:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" save \
     --brand "{active_brand}" --run-id "{run_id}" \
     --phase {phase_id} --content-file {tmp_output_path} --extension {md|json|txt}
 ```
@@ -91,7 +91,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
 Then move to the next remaining phase. Continue until the pipeline finishes Phase 8 (Gate 8: .docx generated + Appendices A/B/C present + delivery location verified), at which point:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" finalize \
     --brand "{active_brand}" --run-id "{run_id}" --status completed
 ```
 

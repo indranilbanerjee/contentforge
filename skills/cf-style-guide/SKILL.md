@@ -7,6 +7,8 @@ effort: medium
 
 # Brand Style Guide Importer
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 Import brand voice profiles from existing style guide documents, URLs, or manual input. Extracts tone, formality, personality traits, writing style, approved/banned terminology, and compliance guardrails into a structured brand profile JSON that the ContentForge pipeline uses for every piece of content it produces.
 
 ## When to Use
@@ -260,8 +262,8 @@ Choose where ContentForge tracks quality scores and delivers output files. This 
 Before offering the three-option menu, run two probes (same flow as `commands/brand-setup.md`, which is the canonical brand-setup document):
 
 ```bash
-python scripts/plugin-metadata.py --section environment
-python scripts/detect-drive-mcp.py
+python "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py" --section environment
+python "${CLAUDE_PLUGIN_ROOT}/scripts/detect-drive-mcp.py"
 ```
 
 - **If `environment == "cowork-sandbox"`:** the "Local" backend writes to the ephemeral Linux sandbox — files vanish at session end. A Drive route (Anthropic platform integration or a Pipedream/Composio/Zapier/Make Drive aggregator MCP) is effectively REQUIRED for persistent output. If a Drive MCP is visible in your tool list, confirm and use it (skip the menu). If not, warn the user and point them to Cowork → Settings → Integrations → Google Drive, or `/contentforge:cf-cowork-setup`.

@@ -7,6 +7,8 @@ effort: low
 
 # /contentforge:cf-environment
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 Detect where ContentForge is running and report which of its capabilities work in that environment. ContentForge has different real-world behavior on each surface because filesystem access, MCP transports, and subprocess invocation all differ.
 
 ## When to use this skill
@@ -22,7 +24,7 @@ Detect where ContentForge is running and report which of its capabilities work i
 ### Step 1 — Run the environment probe
 
 ```bash
-python scripts/plugin-metadata.py --section environment
+python "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py" --section environment
 ```
 
 This returns JSON with `environment` (one of `cowork-sandbox`,

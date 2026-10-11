@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.3 → 4.5.4 (scripts run from any folder)
+
+**No breaking changes, nothing migrates.** Skills, commands and agents now call every script as `python "${CLAUDE_PLUGIN_ROOT}/scripts/..."` (quoted, and never relative to the working folder), so ContentForge works when your project is not the plugin folder and when the plugin lives under a path with a space. Nothing in the scripts changed.
+
+---
+
 ## Upgrading 4.5.2 → 4.5.3 (which Python)
 
 **No breaking changes, nothing migrates.** The "Script location" line in the pipeline skill, five other skills and commands, and the five agents that use `${CLAUDE_PLUGIN_ROOT}` now says to run the scripts with `python`, or `python3` where `python` is not found; three documents that said `python3 scripts/...` now say `python`. Nothing in the scripts changed.

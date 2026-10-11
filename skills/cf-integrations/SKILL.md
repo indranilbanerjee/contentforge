@@ -7,6 +7,8 @@ argument-hint: "[--category <name>]"
 
 # /contentforge:cf-integrations — Integration Status Dashboard
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 Show the complete integration status for your ContentForge installation — configured vs available connectors, grouped by category, with workflow impact analysis and quick-win recommendations.
 
 ## The ground truth about connectors
@@ -44,7 +46,7 @@ Use `/contentforge:cf-integrations` when:
 ### Step 1: Connector Status Check
 
 ```
-python scripts/connector-status.py --action status
+python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action status
 ```
 
 This checks:
@@ -144,5 +146,5 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ---
 
-**Script:** `python scripts/connector-status.py --action status`
+**Script:** `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action status`
 **Network Required:** No (reads local config only)

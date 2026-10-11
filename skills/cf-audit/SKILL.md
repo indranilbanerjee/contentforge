@@ -407,7 +407,7 @@ recommended_scope / reasons, plus gap_topics, retire_candidates,
 aeo_history_considered) and record it:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py record --brand <slug> --file <report.json>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py" record --brand <slug> --file <report.json>
 ```
 
 The script validates the schema (exit 1 lists every problem — fix the record,

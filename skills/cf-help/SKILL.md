@@ -7,6 +7,8 @@ effort: low
 
 # /contentforge:cf-help
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 Show the ContentForge user guide with live plugin state (version, asset counts, connector counts, runtime environment) pulled from disk — not hardcoded — plus pipeline overview, available skills, usage examples, and troubleshooting.
 
 ## CRITICAL: never hardcode version, asset counts, or connector counts
@@ -28,7 +30,7 @@ from this skill body.**
 Run **first**, every time this skill is invoked (any argument or none):
 
 ```bash
-python scripts/plugin-metadata.py --section all-with-environment
+python "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py" --section all-with-environment
 ```
 
 This returns JSON with `version`, `assets` (agent/skill/command/script counts),
@@ -155,7 +157,7 @@ table below references the user-visible behaviors.
 | Files don't appear in ~/Documents/ContentForge/ | Check Cowork sandbox warning above. In local Claude Code: `/contentforge:output-folder` shows the resolved path; verify `CONTENTFORGE_PUBLISH_DIR` env var if you've customized it |
 | Headers in .docx aren't semantic Heading 1/2/3 | Verified fixed in v3.12.4 -- if you see this, you're on an older version; run `/plugin update contentforge@neels-plugins` |
 | Pipeline interrupted, lost work | Use `/contentforge:resume` to pick up from the last completed phase (v3.12.3+) |
-| Google Drive connector ignored at brand-setup | Fixed in v3.12.7. Run `python scripts/detect-drive-mcp.py` to verify the autodetect can see your MCP |
+| Google Drive connector ignored at brand-setup | Fixed in v3.12.7. Run `python "${CLAUDE_PLUGIN_ROOT}/scripts/detect-drive-mcp.py"` to verify the autodetect can see your MCP |
 | Quality score below 5.0 | Content flagged for human review -- check topic complexity, source availability, and brand profile completeness |
 | Pipeline taking too long | Normal: 20-30 min for articles. batch-process queues many pieces unattended (sequential, checkpointed) — it survives interruption, it does not run them concurrently |
 

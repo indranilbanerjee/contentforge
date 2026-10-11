@@ -66,7 +66,7 @@ Deliver the finished content to the client by:
 A score decides whether the piece is *good*. This decides whether it is *finished*. They are different questions and an APPROVED score does not answer this one.
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py verify \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py" verify \
   --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id} \
   --target phase-6.5-humanized.md
 ```
@@ -113,7 +113,7 @@ This gate exists because a real run reached here with eight mandatory correction
 Before generating the .docx, decide whether the brand's disclosure block attaches — and record the decision either way.
 
 1. Read `ai_disclosure` from the brand profile: `{"mode": "claude-surfaces"|"always"|"off", "text": null|string, "author": null|string}`. A missing block means the default: `{"mode": "claude-surfaces", "text": null, "author": null}`.
-2. Run `python ${CLAUDE_PLUGIN_ROOT}/scripts/detect_surface.py --mode {mode}` — its `disclosure_applies` field IS the decision. The fail-safe is deliberate: an `uncertain` surface applies the disclosure in claude-surfaces mode, because over-disclosure is harmless and under-disclosure is the compliance risk. Never override the script's answer by guessing the surface yourself.
+2. Run `python "${CLAUDE_PLUGIN_ROOT}/scripts/detect_surface.py" --mode {mode}` — its `disclosure_applies` field IS the decision. The fail-safe is deliberate: an `uncertain` surface applies the disclosure in claude-surfaces mode, because over-disclosure is harmless and under-disclosure is the compliance risk. Never override the script's answer by guessing the surface yourself.
 3. When it applies, append the disclosure as the final content block of the deliverable BODY (inside the article markdown, before the appendices) so it survives `/contentforge:publish` to Webflow/WordPress and the .docx export:
    - No custom text, no author: `*Created with AI assistance and reviewed by our editorial team.*`
    - No custom text, author set: `*Created with AI assistance; researched, fact-checked, and edited by {author}.*`
@@ -196,7 +196,7 @@ MD
 **Step 2.0.c — run the docx generator:**
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py" \
     --content ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}.md \
     --output ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}.docx \
     --reports ~/.claude-marketing/{brand-slug}/runs/{run_id}/{slug}-reports.json \

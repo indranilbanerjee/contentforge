@@ -34,7 +34,7 @@ If your platform has **no subagent/Task dispatch**, the pipeline still runs — 
 ```bash
 # 1. Create the checkpoint run (returns run_id). Capture run metadata so a
 #    cross-session resume can recover keyword, audience, word count, and tone.
-RUN_RESULT=$(python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py init \
+RUN_RESULT=$(python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" init \
     --brand <brand-slug> --topic "<topic>" --content-type <type> \
     --keyword "<primary keyword>" --audience "<audience>" \
     --word-count <n> --tone "<tone>")
@@ -43,7 +43,7 @@ RUN_RESULT=$(python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py init \
 # Parse RUN_ID from the JSON result's "run_id" field.
 
 # 2. Initialize the performance tracker for this run.
-python ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action init \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py" --action init \
     --brand <brand-slug> --run-id "$RUN_ID" --content-type <type> --topic "<topic>"
 ```
 
@@ -58,7 +58,7 @@ For every numbered phase:
 
 1. **Mark phase start** (orchestrator):
    ```bash
-   python ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-start --brand <slug> --run-id "$RUN_ID" --phase <N>
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py" --action phase-start --brand <slug> --run-id "$RUN_ID" --phase <N>
    ```
 2. **Call `Task` with the phase's qualified `subagent_type`** (e.g. `contentforge:researcher`). The Task prompt contains ONLY:
    - the artifact **file paths** the phase reads (per the Pipeline Contract table),
@@ -67,20 +67,20 @@ For every numbered phase:
    - the **original-requirements block** (topic, confirmed title, content type, audience, primary keyword, word-count target, tone).
 
    Subagents `Read` what they need from those paths. **Never inline a full draft into a Task prompt.**
-3. **Verify the quality gate yourself.** Gate ownership belongs to the **orchestrator**: check the returned artifact against the gate criteria in the Pipeline Contract table — count sources, check word count and citation density, and run `python ${CLAUDE_PLUGIN_ROOT}/scripts/text-metrics.py --file <artifact-path> [--keyword "<primary keyword>"]` for burstiness, Flesch-Kincaid grade, and keyword-placement checks (`--file` is required). A subagent's self-reported "PASS" alone is **not** a gate pass.
+3. **Verify the quality gate yourself.** Gate ownership belongs to the **orchestrator**: check the returned artifact against the gate criteria in the Pipeline Contract table — count sources, check word count and citation density, and run `python "${CLAUDE_PLUGIN_ROOT}/scripts/text-metrics.py" --file <artifact-path> [--keyword "<primary keyword>"]` for burstiness, Flesch-Kincaid grade, and keyword-placement checks (`--file` is required). A subagent's self-reported "PASS" alone is **not** a gate pass.
 
    **If a subagent returns nothing, or stops mid-sentence: audit the disk before you re-run it.** A live run had its output-manager complete the .docx, all four delivery copies and the tracking update, then return only "Now generating the .docx with the real script." — no report, and its contracted `phase-8-output.json` unwritten. Re-running it blind would have regenerated finished work; declaring the phase failed would have been false. The principle above already implies the remedy — disk state is the authority, not the message — so make it the procedure: list the run directory, check which contracted artifacts exist, verify those against the gate, and ask the SAME agent for the missing piece rather than starting a new one. Only treat a phase as un-run when its artifacts are genuinely absent.
 
    The same rule applies on resume: `checkpoint-manager.py status` reports `orphaned_artifacts` for phases whose artifact exists but was never checkpointed. **Never re-run a phase listed there without looking at what is already on disk** — but never checkpoint it unverified either. An unverified artifact is a claim, not a pass.
 4. **On gate PASS, checkpoint the artifact** so the run is resumable:
    ```bash
-   python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py save \
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" save \
        --brand <slug> --run-id "$RUN_ID" --phase <N> --content-file <artifact-path> --extension <md|json|txt>
    ```
    Phases 3.5 and 6 also produce a companion manifest (`phase-3.5-visual-manifest.json`, `phase-6-structure-manifest.json`) — place it at its canonical path inside the same run directory.
 5. **Mark phase end** with the output word count:
    ```bash
-   python ${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py --action phase-end --brand <slug> --run-id "$RUN_ID" --phase <N> --content-words <count>
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/pipeline-tracker.py" --action phase-end --brand <slug> --run-id "$RUN_ID" --phase <N> --content-words <count>
    ```
 6. **Emit the audit line** (so users can see real-time progress):
    ```
@@ -88,7 +88,7 @@ For every numbered phase:
    ```
 7. **On gate FAIL, loop per the contract table's loop-target column.** Before looping, record the loop and check limits:
    ```bash
-   python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py loop --brand <slug> --run-id "$RUN_ID" --edge phase_<N>_to_<target>
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" loop --brand <slug> --run-id "$RUN_ID" --edge phase_<N>_to_<target>
    ```
    **Limits: max 2 loops per edge, max 5 loops total per run.** If a limit is reached: do NOT loop — mark the run for human review, `finalize --status failed`, and halt. When Phase 7 orders rework, the `pending_rework` field in `run.json` records the target phase and the reviewer's feedback so `/contentforge:resume` continues the rework instead of skipping it. Do not overwrite the saved checkpoint of an upstream phase that already passed — re-save only the looped phase when it passes.
 
@@ -100,7 +100,7 @@ are honest about missing inputs, and neither ever blocks a run:
 1. **After Gate 1 passes** — merge the run's verified link inventory into the
    brand profile, so the reconnaissance stops evaporating with the run:
    ```bash
-   python ${CLAUDE_PLUGIN_ROOT}/scripts/harvest-brand-pages.py \
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/harvest-brand-pages.py" \
        --merge-inventory <run_dir>/phase-1-link-inventory.json --brand <slug>
    ```
    Service/product and authority rows upsert (existing manual curation is never
@@ -111,7 +111,7 @@ are honest about missing inputs, and neither ever blocks a run:
 
 2. **Before dispatching Phase 3** — ask telemetry for drafter advisories:
    ```bash
-   python ${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py advisories --brand <slug>
+   python "${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py" advisories --brand <slug>
    ```
    When `status` is `ok` and advisories exist, append their `brief_line`s to the
    Phase 3 Task prompt's requirements block. When `insufficient_history`, append
@@ -164,7 +164,7 @@ That is **10 quality gates** — one for each of phases 1, 2, 3, 3.5, 4, 5, 6, 6
 
 After Phase 8 completes, the output-manager subagent **must produce a Microsoft Word `.docx` file** by calling:
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py" \
     --content <article.md> \
     --output <local-path>.docx \
     --reports <reports.json> \
@@ -180,10 +180,10 @@ Then audit, and only then finalize:
 ```bash
 # 1. Re-derive every gate from the artifacts. This is not optional ceremony:
 #    finalize --status completed REFUSES without a fresh CLEAN verdict on disk.
-python ${CLAUDE_PLUGIN_ROOT}/scripts/run-audit.py --brand <slug> --run-id "$RUN_ID"
+python "${CLAUDE_PLUGIN_ROOT}/scripts/run-audit.py" --brand <slug> --run-id "$RUN_ID"
 
 # 2. Close the run.
-python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize --brand <slug> --run-id "$RUN_ID" --status completed
+python "${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py" finalize --brand <slug> --run-id "$RUN_ID" --status completed
 ```
 
 **What the audit is.** `run-audit.py` re-checks the finished run the way an outside auditor would: every completed phase has its artifact, no orphaned artifacts in a finalized run, the delivered body carries no production scaffolding and anchors every generated asset, the authorship record matches a fresh measurement, no fix-ledger correction was lost or undone, an APPROVED decision is backed by its own score, and no `completed` status hides a blocked publication. Every one of those is a failure that actually happened in a real run while every individual artifact looked healthy. It also resolves the approve line, weights and dimension minimums from config for the review's industry (and the brand profile's, whichever is stricter) and fails a review that disagrees with them, recomputes the composite from the review's own dimension scores, and holds the recorded loop counts to the config's caps (the smaller cap governs). The verdict lands in `run-audit.json` inside the run directory, together with a content fingerprint of the files it read: `finalize --status completed` refuses if any of them changed after the audit.
@@ -192,7 +192,7 @@ python ${CLAUDE_PLUGIN_ROOT}/scripts/checkpoint-manager.py finalize --brand <slu
 
 **Scorecard page (after `finalize`, completed or blocked).** Always build the one-page local scorecard — it is the fallback and the source of truth. Skip it only if the script exits 2 (no review to show):
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/scorecard-html.py --run-dir ~/.claude-marketing/<slug>/runs/"$RUN_ID"
+python "${CLAUDE_PLUGIN_ROOT}/scripts/scorecard-html.py" --run-dir ~/.claude-marketing/<slug>/runs/"$RUN_ID"
 ```
 It reads only the run's own files, says so on the page when the audit is missing or stale, and never invalidates the audit. Give the user the local path from its JSON result. Then, only if this session has a tool that publishes an HTML page, offer to publish it as a private page and publish only on the user's explicit yes; never say it is shared. With no such tool, say so in one line and give the local path.
 

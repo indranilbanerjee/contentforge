@@ -287,7 +287,7 @@ Rules:
 Validate before finishing:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py validate   --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id}   --target phase-3.5-visuals.md
+python "${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py" validate   --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id}   --target phase-3.5-visuals.md
 ```
 
 `--target` is the draft body your corrections apply to. With it, `validate` also confirms every `find` string resolves to exactly one place in that draft — which is the only thing that makes "the ledger is valid" mean anything. Line endings are handled for you: a `find` composed with `

@@ -7,6 +7,8 @@ effort: low
 
 # /contentforge:cf-cowork-setup
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 The one-time setup that makes ContentForge usable in Cowork by a team. Wires up the Cowork → Drive routing so generated `.docx` files, brand profiles, and run records actually persist somewhere the team can reach.
 
 ## Why this skill exists
@@ -20,7 +22,7 @@ v3.12.9 fixed this with environment-aware routing: when Cowork is detected AND a
 ### Step 1 — Verify Cowork environment
 
 ```bash
-python scripts/plugin-metadata.py --section environment
+python "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py" --section environment
 ```
 
 Parse the JSON. Four branches:
@@ -95,7 +97,7 @@ Don't create empty brand subfolders yet — those are auto-created by the output
 Then write the config via the canonical script (NOT a hand-written JSON file — use the script so the format stays in sync with the rest of the toolchain):
 
 ```bash
-python scripts/drive-sync-state.py --action write-config --data '{
+python "${CLAUDE_PLUGIN_ROOT}/scripts/drive-sync-state.py" --action write-config --data '{
   "environment": "cowork-sandbox",
   "drive_root_folder_name": "<team folder name chosen>",
   "drive_root_folder_id": "<id from Step 3>",
@@ -110,7 +112,7 @@ Future Cowork sessions: every ContentForge operation (`brand-setup`, `create-con
 
 To verify it was written correctly:
 ```bash
-python scripts/drive-sync-state.py --action read-config
+python "${CLAUDE_PLUGIN_ROOT}/scripts/drive-sync-state.py" --action read-config
 ```
 
 ### Step 5 — Set the user's expectations

@@ -5,6 +5,8 @@ argument-hint: "<brand name> [--source=url|document|manual]"
 
 # Brand Setup
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 > If you see unfamiliar placeholders or need to check which tools are connected, see [CONNECTORS.md](../CONNECTORS.md).
 
 ## Quick Start (5 minutes)
@@ -124,7 +126,7 @@ After setting up voice, terminology, compliance, and key files, **choose where C
 **First, detect the runtime environment:**
 
 ```bash
-python scripts/plugin-metadata.py --section environment
+python "${CLAUDE_PLUGIN_ROOT}/scripts/plugin-metadata.py" --section environment
 ```
 
 If `environment == "cowork-sandbox"`, this changes the default backend logic significantly. In Cowork:
@@ -135,7 +137,7 @@ If `environment == "cowork-sandbox"`, this changes the default backend logic sig
 **Then, run the connector autodetect:**
 
 ```bash
-python scripts/detect-drive-mcp.py
+python "${CLAUDE_PLUGIN_ROOT}/scripts/detect-drive-mcp.py"
 ```
 
 The script probes both `.mcp.json` (for MCP-based Drive routes — Anthropic platform integration, Pipedream / Composio / Zapier / Make Drive aggregators) AND `~/.claude-marketing/google-credentials.json` (for the legacy service-account route). It returns a JSON `recommendation.recommended_path` of one of: `mcp`, `service_account`, `mcp_or_service_account`, `none`.
@@ -284,7 +286,7 @@ Then parse the response to check for the 3 expected subfolders (`Brand-Guideline
 
 **Route B — Service-account path** (use if Step G.0 found `~/.claude-marketing/google-credentials.json`):
 ```
-python scripts/drive-uploader.py \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/drive-uploader.py" \
   --action verify-structure \
   --folder-id {brand_folder_id} \
   --brand "{brand_name}" \
@@ -415,7 +417,7 @@ Generate a complete brand profile following the `config/brand-registry-template.
 
 **Site Harvest (required when the brand has a website):**
 
-1. **Crawl.** Run: `python scripts/harvest-brand-pages.py --url {website} --max-pages 75 --output {tmp}/harvest.json`. The script is sitemap-first with homepage-nav fallback, honors robots.txt, and HTTP-verifies every page it returns.
+1. **Crawl.** Run: `python "${CLAUDE_PLUGIN_ROOT}/scripts/harvest-brand-pages.py" --url {website} --max-pages 75 --output {tmp}/harvest.json`. The script is sitemap-first with homepage-nav fallback, honors robots.txt, and HTTP-verifies every page it returns.
 2. **Extract brand facts.** Fetch the homepage, about page, and top 3 service pages from the harvest (WebFetch). Extract capability facts **verbatim** — copy the site's exact wording with the page URL per fact. NEVER strengthen a claim while extracting ("USFDA-inspected" must not become "USFDA-approved"). Where two pages disagree (different counts, different phrasing of the same capability), record BOTH with an `inconsistency_note` — do not silently pick one.
 3. **Present ONE confirmation to the user** before saving anything:
    - the page inventory grouped by category (service/product, conversion, authority, informational) with counts,

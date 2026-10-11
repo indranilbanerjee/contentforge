@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.4] - 2026-10-12
+
+### Every script runs from any folder
+
+Found by a fresh-install smoke test (its re-test).
+
+**Fixed**
+
+- 28 invocations ran a script by a relative path (`python scripts/plugin-metadata.py`, `python scripts/connector-status.py`,
+  `python scripts/fix-ledger.py` and others) in ten files: `cf-help`, `cf-environment`, `cf-style-guide`,
+  `cf-cowork-setup`, `cf-connect`, `cf-integrations`, `cf-add-integration`, `/contentforge:brand-setup`, and the
+  structurer-proofreader and humanizer agents. A relative path resolves against the host's working directory, which is
+  the user's project, not the plugin, so the script was not found. They now say
+  `python "${CLAUDE_PLUGIN_ROOT}/scripts/..."`.
+- 36 invocations used `${CLAUDE_PLUGIN_ROOT}` unquoted (the pipeline skill, `/contentforge:resume`, `cf-analytics`,
+  `cf-audit`, `cf-calendar`, `content-refresh` and five agents). An unquoted path breaks when the plugin is installed
+  under a folder whose name has a space. All are quoted.
+- Nine files that run scripts had no "Script location" line (seven of the skills above, `/contentforge:brand-setup` and
+  the structurer-proofreader agent); they carry the extended one now.
+
+**Added - tests**
+
+- `TestScriptInvocationsAreRobust` (3 tests) discovers every skill, command, agent and reference file that runs a
+  script and requires the script-location line, no relative `scripts/` invocation, and every `${CLAUDE_PLUGIN_ROOT}`
+  script path quoted. Planted with the 4.5.3 text of all of them: 28 relative, 36 unquoted and 9 missing-line
+  findings; each defect is also planted on its own.
+- `TestNoTmpPathsInInstructions` (2 tests): no instruction file uses a `/tmp/` path (none does today; ContentForge
+  keeps its working files in the run folder). Windows resolves `/tmp` differently for the shell and for Python.
+- The lifecycle and scorecard wiring tests read a quoted script call as the call it names.
+
 ## [4.5.3] - 2026-10-12
 
 ### The script-location line says which Python to run

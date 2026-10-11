@@ -99,7 +99,7 @@ where w_* are the applicable row's weights ÷ 100
 ### Step 0: Fix-Ledger Check — run this before scoring anything
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py verify \
+python "${CLAUDE_PLUGIN_ROOT}/scripts/fix-ledger.py" verify \
   --run-dir ~/.claude-marketing/{brand-slug}/runs/{run_id} \
   --target phase-6.5-humanized.md \
   --out ~/.claude-marketing/{brand-slug}/runs/{run_id}/phase-7-fix-ledger.json
@@ -409,7 +409,7 @@ Return TWO things as your final output:
 | **OVERALL** | **100%** | **[X.X]** | **[X.XX]** | **[decision]** |
 
 **AI-detectability (advisory):** {LOW|MODERATE|HIGH} — {n} signals flagged (per Phase 6.5 tell-scan §8; advisory, never a gate)
-**Structural tells (advisory):** {OK|NOTE|ATTENTION} — {m} structural findings, where **m is the number of proxies that fired, not the number of spans they matched** (`text-metrics.py --structure-scan`; one proxy firing on nine sentences is 1, not 9). Stated because two reviews of the same article reported 17 and 1 without either being wrong; review sheet: {phase-6.5-review-sheet.html path} (Tier-2 structure scan; advisory, never a gate. If the lane skipped Phase 6.5, generate the sheet yourself from the latest draft artifact: `python ${CLAUDE_PLUGIN_ROOT}/scripts/build_review_sheet.py --draft {latest artifact} --out {run_dir}/phase-6.5-review-sheet.html` — the sheet must exist in every lane)
+**Structural tells (advisory):** {OK|NOTE|ATTENTION} — {m} structural findings, where **m is the number of proxies that fired, not the number of spans they matched** (`text-metrics.py --structure-scan`; one proxy firing on nine sentences is 1, not 9). Stated because two reviews of the same article reported 17 and 1 without either being wrong; review sheet: {phase-6.5-review-sheet.html path} (Tier-2 structure scan; advisory, never a gate. If the lane skipped Phase 6.5, generate the sheet yourself from the latest draft artifact: `python "${CLAUDE_PLUGIN_ROOT}/scripts/build_review_sheet.py" --draft {latest artifact} --out {run_dir}/phase-6.5-review-sheet.html` — the sheet must exist in every lane)
 
 **Author sentences (NOT advisory; omit this line when the run has no `source-draft.md`):** {k} kept verbatim, {r} rewritten, {d} dropped — author word share {X.XXX}. Any rewritten or dropped sentence BLOCKS approval until Phase 6.5 restores it verbatim.
 

@@ -144,8 +144,8 @@ cross-run telemetry so the dashboard can show where the pipeline itself works
 hard for this brand:
 
 ```bash
-python ${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py loops --brand <slug>
-python ${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py patterns --brand <slug>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py" loops --brand <slug>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/telemetry.py" patterns --brand <slug>
 ```
 
 Render two additional panels from the output: **Loop edges fired** (by edge and

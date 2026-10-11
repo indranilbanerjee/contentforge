@@ -7,13 +7,15 @@ effort: low
 
 # /contentforge:cf-connect — Guided Connector Setup
 
+> **Script location.** If your host does not set `${CLAUDE_PLUGIN_ROOT}`, the scripts are in this plugin's `scripts/` folder, next to `skills/`. Run them with Python 3.10 or newer: `python`, or `python3` where `python` is not found (macOS, many Linux systems).
+
 Set up a specific MCP integration for ContentForge with step-by-step instructions tailored to the connector's transport type. Handles HTTP connectors (OAuth-based), npx connectors (API keys, environment variables, `.mcp.json` entry), unknown connector names (fuzzy matching), and post-setup verification.
 
 ## The ground truth about connectors
 
 ContentForge ships **no `.mcp.json`** (it is gitignored). This is deliberate (v3.9.0 Cowork-safety decision): no connector auto-connects when the plugin is installed. **Every connector is opt-in** — the user adds it to their own `.mcp.json` (or connects it at the platform level in Cowork/Desktop Settings → Integrations).
 
-Never claim a connector is pre-wired or already connected. All status claims must come from running `python scripts/connector-status.py` — never from this file or from memory.
+Never claim a connector is pre-wired or already connected. All status claims must come from running `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py"` — never from this file or from memory.
 
 ## When to Use
 
@@ -49,7 +51,7 @@ Use `/contentforge:cf-connect <name>` when:
 Run the setup guide lookup:
 
 ```
-python scripts/connector-status.py --action setup-guide --name <connector>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action setup-guide --name <connector>
 ```
 
 This returns:
@@ -75,12 +77,12 @@ This returns:
 | `hs`, `hubspot` | `hubspot-cms` |
 | `sarvam` | `sarvam-ai` |
 
-If no match is found after alias lookup, run `python scripts/connector-status.py --action list-available` and present the actual list.
+If no match is found after alias lookup, run `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action list-available` and present the actual list.
 
 ### Step 2: Check Current Status (Instant)
 
 ```
-python scripts/connector-status.py --action check --name <connector>
+python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action check --name <connector>
 ```
 
 This returns `connected` or `not_connected`, plus (for npx connectors) which env vars are set vs missing. Render exactly what the script reports.
@@ -117,7 +119,7 @@ npx connectors require environment variables and a `.mcp.json` entry. They work 
 
 Setup pattern:
 
-1. **Get the package name and env vars** from `python scripts/connector-status.py --action setup-guide --name <connector>`.
+1. **Get the package name and env vars** from `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action setup-guide --name <connector>`.
 2. **Verify the npm package actually exists before recommending it:**
    ```
    npm view <package-name> version
@@ -158,7 +160,7 @@ When a connector name is not in the registry and no fuzzy match exists:
 
 For npx connectors, after the user follows the setup steps:
 
-1. Re-run `python scripts/connector-status.py --action check --name <connector>` and render the result (env vars set/missing, `.mcp.json` entry found).
+1. Re-run `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action check --name <connector>` and render the result (env vars set/missing, `.mcp.json` entry found).
 2. Remind the user to restart Claude Code — `.mcp.json` is read at startup only.
 3. Suggest a first test, e.g. `/contentforge:cf-publish --platform=wordpress --status=draft` for WordPress.
 
@@ -184,7 +186,7 @@ The complete setup guide includes:
 ### "Unknown connector" even though you typed the right name
 - Connector names use lowercase kebab-case: `google-sheets`, not `Google Sheets` or `googlesheets`
 - Try the fuzzy match: the skill checks common aliases automatically
-- Run `python scripts/connector-status.py --action list-available` to see all valid names
+- Run `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action list-available` to see all valid names
 
 ### npx connector configured but skills still can't use it
 - Restart Claude Code after modifying `.mcp.json` — changes are read at startup only
@@ -259,5 +261,5 @@ None. This skill is entirely script-driven using `scripts/connector-status.py`.
 
 ---
 
-**Script:** `python scripts/connector-status.py --action setup-guide --name <connector>`
+**Script:** `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action setup-guide --name <connector>`
 **Network Required:** No for status checks (reads local config and env vars); yes only for `npm view` package verification
