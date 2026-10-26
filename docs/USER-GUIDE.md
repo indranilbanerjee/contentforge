@@ -82,7 +82,12 @@
 
 In Claude Cowork, go to Settings > Plugins > Marketplace and search for "ContentForge" from the `neels-plugins` marketplace.
 
-Or, if using CLI:
+Or, if using CLI (Claude Code 2.1.292 or newer, one command):
+```
+claude plugin install contentforge --marketplace indranilbanerjee/neels-plugins
+```
+
+On an older version:
 ```
 claude plugin marketplace add indranilbanerjee/neels-plugins
 claude plugin install contentforge@neels-plugins
@@ -149,7 +154,7 @@ This tells you:
 - **Version** — Read from `.claude-plugin/plugin.json`, not hardcoded in any doc.
 - **PLUGIN_ROOT** — Where the plugin is installed. All scripts reference this path.
 - **SCRIPTS_DIR** — Where Python scripts live.
-- **Python version** — Must be 3.10+. Cowork VM has 3.10.12.
+- **Python version** — Must be 3.10+ today. Python 3.10 reached end-of-life on 2026-10-01 and ContentForge will require 3.11 from the next minor release; this line warns when it runs on 3.10. Cowork VM has 3.10.12.
 - **Connectors active** — How many entries are in your `.mcp.json` (none by default; the file does not exist until you add a connector).
 
 If you see errors here, check the [Troubleshooting](#21-troubleshooting) section.
@@ -764,11 +769,11 @@ Takes any ContentForge article and generates posts for:
 
 | Platform | Format |
 |----------|--------|
-| **LinkedIn** | Professional post, 1,300 char max, 3-5 hashtags |
+| **LinkedIn** | Professional post, 3,000 char max, 3-5 hashtags |
 | **Twitter/X** | Thread of 3-5 tweets, 280 char each, 2-3 hashtags |
-| **Instagram** | Caption with line breaks, 2,200 char max, 20-30 hashtags |
+| **Instagram** | Caption with line breaks, 2,200 char max, up to 5 hashtags |
 | **Facebook** | Engaging post, 500-1,000 chars, 1-2 hashtags |
-| **Threads** | Conversational post, 500 char max, 3-5 hashtags |
+| **Threads** | Conversational post, 500 char max, 1 topic tag |
 
 **How to use:**
 ```

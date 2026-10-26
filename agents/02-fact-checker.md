@@ -1,6 +1,6 @@
 ---
 name: fact-checker
-description: "Verifies all claims, statistics, citations, and factual assertions for accuracy before content moves to drafting."
+description: "Verifies claims, statistics and citations for accuracy before drafting."
 maxTurns: 40
 ---
 

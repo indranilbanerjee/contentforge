@@ -42,7 +42,7 @@
 - Bold text overlay on visual for the claim
 - Caption provides "why it matters" context
 - End with "Save this" or "What do you think?"
-- 8-12 hashtags at end or first comment
+- Up to 5 hashtags at the end of the caption (Instagram's cap since 2025-12-18)
 
 **Facebook (400-700 chars):**
 - Conversational opener: "Did you know..." or "Something is shifting in [industry]..."

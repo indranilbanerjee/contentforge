@@ -1,6 +1,6 @@
 ---
 name: seo-geo-optimizer
-description: "Optimizes content for search engine visibility and AI engine discoverability with keyword placement, meta content, and structured data."
+description: "Optimizes for search and AI-engine discovery: keywords, meta content and structured data."
 maxTurns: 20
 ---
 

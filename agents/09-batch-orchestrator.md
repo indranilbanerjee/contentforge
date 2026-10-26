@@ -1,6 +1,6 @@
 ---
 name: batch-orchestrator
-description: "Orchestrates multi-content production as a sequential, checkpointed queue of full ContentForge pipeline runs."
+description: "Runs many pieces as a checkpointed queue of full ContentForge pipeline runs."
 maxTurns: 200
 ---
 

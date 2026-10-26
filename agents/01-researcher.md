@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: "Conducts deep research using web search, academic databases, and industry sources to build the knowledge foundation for content creation."
+description: "Deep research from web, academic and industry sources to build the knowledge base for content."
 maxTurns: 35
 ---
 

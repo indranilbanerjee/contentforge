@@ -76,6 +76,9 @@ def main():
     # Check Python version
     if sys.version_info < MIN_PYTHON:
         errors.append(f"Python {MIN_PYTHON[0]}.{MIN_PYTHON[1]}+ required (found {sys.version})")
+    python_warning = _common.python_floor_warning()
+    if python_warning:
+        print(f"PYTHON_WARNING={python_warning}")
 
     # Report paths
     print(f"PLUGIN_ROOT={PLUGIN_ROOT}")

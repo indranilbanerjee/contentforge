@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: "Reviews content against quality standards, brief requirements, and brand guidelines before final output."
+description: "Reviews content against quality standards, the brief and brand guidelines before output."
 maxTurns: 24
 ---
 

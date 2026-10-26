@@ -1,5 +1,5 @@
 {
-  "_description": "ContentForge Social Platform Specifications — Character limits, hashtag norms, voice guidelines, image/video specs, AI-disclosure requirements, and supported post types per platform. Used by the Social Adapter Agent (10-social-adapter) and cf-social-adapt skill. Platform limits verified July 2026.",
+  "_description": "ContentForge Social Platform Specifications — Character limits, hashtag norms, voice guidelines, image/video specs, AI-disclosure requirements, and supported post types per platform. Used by the Social Adapter Agent (10-social-adapter) and cf-social-adapt skill. Platform limits verified July 2026; the Instagram hashtag cap re-checked 2026-10-27.",
   "_posting_times_note": "Posting-time folklore removed (July 2026); the old best_times/worst_times tables were unsourced and timezone-free. Use the brand's own platform analytics to determine posting windows.",
   "linkedin": {
     "character_limit": 3000,
@@ -127,17 +127,17 @@
       "sweet_spot": 500
     },
     "hashtags": {
-      "count_min": 8,
-      "count_max": 12,
+      "count_min": 3,
+      "count_max": 5,
       "style": "mixed_tiers",
-      "placement": "end_of_caption_or_first_comment",
+      "placement": "end_of_caption",
       "tier_mix": {
-        "broad": 2,
-        "specific": 4,
-        "niche": 4,
-        "branded": 2
+        "broad": 1,
+        "specific": 2,
+        "niche": 1,
+        "branded": 1
       },
-      "notes": "Mix broad reach hashtags with niche discovery hashtags. Avoid banned hashtags. Can go in first comment to keep caption clean."
+      "notes": "Instagram allows up to 5 hashtags in a reel or post: announced by Instagram's verified @creators account on Threads, 2025-12-18 (\"Starting today, Instagram will allow up to 5 hashtags in a reel or post\"); the Help Center page could not be read, so treat 5 as the cap. Mix one broad reach tag with specific and niche discovery tags. Avoid banned hashtags. Put them at the end of the caption: whether hashtags in a first comment count toward the cap is not documented."
     },
     "voice": {
       "tone": "conversational",
@@ -285,10 +285,10 @@
     },
     "hashtags": {
       "count_min": 1,
-      "count_max": 3,
+      "count_max": 1,
       "style": "casual",
       "placement": "end_of_post",
-      "notes": "Threads culture is less hashtag-driven. Keep it natural. 1-3 relevant tags max (Threads 'topic tags' render without the # symbol)."
+      "notes": "Threads allows ONE topic tag per post (Meta's Threads API page, read 2026-10-27: \"Only one topic tag is allowed per post\"). Threads culture is less hashtag-driven. Keep it natural. Topic tags render without the # symbol."
     },
     "voice": {
       "tone": "casual",

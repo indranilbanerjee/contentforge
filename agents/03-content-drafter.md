@@ -1,6 +1,6 @@
 ---
 name: content-drafter
-description: "Creates initial content drafts from research findings and content brief, establishing structure and narrative flow."
+description: "Drafts content from the research and brief, setting structure and narrative flow."
 maxTurns: 30
 ---
 

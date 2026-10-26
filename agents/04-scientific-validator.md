@@ -1,6 +1,6 @@
 ---
 name: scientific-validator
-description: "Universal draft-vs-research hallucination and citation-integrity audit — runs on ALL content types, not just scientific or technical pieces. Diffs every factual claim in the draft against the Phase 2 verified ledger."
+description: "Audits every factual claim in the draft against the verified research ledger, for all content types."
 maxTurns: 15
 ---
 
