@@ -51,7 +51,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action status
 
 This checks:
 - `.mcp.json` for HTTP connector entries the user has added
-- Environment variables for npx connectors (WordPress, Google Sheets, Semrush, DeepL, etc.)
+- Environment variables for the vendor-published npx connector (DeepL)
 - Returns JSON with configured/available status per connector, grouped by category, plus summary totals
 
 ### Step 2: Format Dashboard by Category

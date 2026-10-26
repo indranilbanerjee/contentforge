@@ -421,7 +421,7 @@ recorded did not happen, as far as the rest of the lifecycle is concerned.
 - **Google Analytics** — Traffic, engagement, and conversion data per content URL. Enables performance-based prioritization.
 - **Google Search Console** — Ranking positions, impressions, CTR. Identifies declining content for urgent refresh.
 
-### Optional (npx)
+### Optional (HTTP aggregator, `.mcp.json.connectors-reference`)
 - **Google Sheets** — Export audit results to a shared Google Sheet for team review and tracking
 - **Google Drive** — Read content inventory directly from Drive folders
 

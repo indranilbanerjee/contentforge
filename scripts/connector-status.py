@@ -36,7 +36,13 @@ CONNECTORS_REFERENCE = PLUGIN_ROOT / ".mcp.json.connectors-reference"
 # "http"   = HTTP MCP endpoint (works in Cowork + Claude Code). ContentForge
 #            ships an EMPTY .mcp.json, so an http connector is only live once
 #            the user copies its entry out of .mcp.json.connectors-reference.
-# "npx"    = requires a local npx server (Claude Code only)
+# "npx"    = a package the service's VENDOR publishes, listed in config/verified-npx-packages.json
+#            (package name, the expected npm publisher, the vendor's repository). Requires a local npx
+#            server (Claude Code only). No other package is ever given a command: `npx -y <name>` runs
+#            whatever is published under that name with the user's API keys in its environment, and a
+#            name nobody has registered can be registered by anyone. A community package is
+#            "manual" here, and a registry entry that says "npx" for an unlisted package is treated as
+#            "manual" too (see _tx).
 # "script" = bundled Python script + service-account credentials
 # "manual" = no verified MCP package or endpoint exists; reach the service
 #            through an aggregator (Pipedream/Composio/Zapier/Make) or a
@@ -45,6 +51,26 @@ CONNECTORS_REFERENCE = PLUGIN_ROOT / ".mcp.json.connectors-reference"
 # "reference_key" points at the entry in .mcp.json.connectors-reference the
 # user should copy; connectors without one are not in that catalog and must be
 # wired manually.
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))  # scripts/ holds npm_allowlist.py
+import npm_allowlist  # noqa: E402
+
+VERIFIED_PACKAGES = npm_allowlist.load()
+
+# Said for every connector that has no vendor-published npm package. It names no package and gives no command.
+NO_VERIFIED = ("No verified connector: the only npm package for this service is a third-party community package, and "
+               "ContentForge gives no command or credential setup for it. Use the vendor's own MCP server if it publishes one, "
+               "an aggregator (pipedream-generic / composio-generic / zapier / make-com), or skip it.")
+
+
+def _tx(conn):
+    """The transport a connector is actually offered with. An "npx" entry whose package is not in the vendor-verified
+    allowlist is "manual": no command, no environment variables."""
+    transport = conn["transport"]
+    if transport == "npx" and conn.get("package") not in VERIFIED_PACKAGES:
+        return "manual"
+    return transport
+
 
 CONNECTOR_REGISTRY = {
     "knowledge-base": {
@@ -61,10 +87,10 @@ CONNECTOR_REGISTRY = {
                 ],
             },
             "confluence": {
-                "transport": "npx",
-                "package": "mcp-confluence",
+                "transport": "manual",
                 "description": "Confluence — team wikis, brand guidelines, knowledge bases",
-                "env_vars": ["CONFLUENCE_URL", "CONFLUENCE_TOKEN"],
+                "env_vars": [],
+                "note": NO_VERIFIED + " Atlassian publishes its own remote MCP server for Confluence; see Atlassian's documentation for the current address.",
                 "skills_unlocked": [
                     "contentforge", "cf-style-guide",
                 ],
@@ -107,19 +133,19 @@ CONNECTOR_REGISTRY = {
                 ],
             },
             "wordpress": {
-                "transport": "npx",
-                "package": "mcp-wordpress",
+                "transport": "manual",
                 "description": "WordPress — publish posts, pages, manage categories and metadata",
-                "env_vars": ["WORDPRESS_SITE_URL", "WORDPRESS_AUTH_TOKEN"],
+                "env_vars": [],
+                "note": NO_VERIFIED + " WordPress.com offers an official MCP connector for sites hosted there; for a self-hosted site use an aggregator or the WordPress REST API.",
                 "skills_unlocked": [
                     "cf-publish", "contentforge", "batch-process",
                 ],
             },
             "hubspot-cms": {
-                "transport": "npx",
-                "package": "mcp-hubspot-cms",
+                "transport": "manual",
                 "description": "HubSpot CMS — blog posts, landing pages, email content",
-                "env_vars": ["HUBSPOT_ACCESS_TOKEN"],
+                "env_vars": [],
+                "note": NO_VERIFIED + " HubSpot publishes an official remote MCP server (https://mcp.hubspot.com, HTTP with OAuth); check that it covers blog and CMS content before relying on it.",
                 "skills_unlocked": [
                     "cf-publish",
                 ],
@@ -224,10 +250,10 @@ CONNECTOR_REGISTRY = {
                 "note": "No verified Similarweb MCP endpoint or package — reach the API through an aggregator (pipedream-generic / composio-generic / zapier) or a custom server.",
             },
             "semrush": {
-                "transport": "npx",
-                "package": "mcp-semrush",
+                "transport": "manual",
                 "description": "SEMrush — keyword research, site audit, position tracking",
-                "env_vars": ["SEMRUSH_API_KEY"],
+                "env_vars": [],
+                "note": NO_VERIFIED,
                 "skills_unlocked": [
                     "cf-brief", "cf-audit",
                 ],
@@ -247,10 +273,10 @@ CONNECTOR_REGISTRY = {
                 ],
             },
             "sarvam-ai": {
-                "transport": "npx",
-                "package": "sarvam-mcp-server",
+                "transport": "manual",
                 "description": "Sarvam AI — 22 Indian languages specialist",
-                "env_vars": ["SARVAM_API_KEY"],
+                "env_vars": [],
+                "note": NO_VERIFIED,
                 "skills_unlocked": [
                     "cf-translate",
                 ],
@@ -261,30 +287,24 @@ CONNECTOR_REGISTRY = {
         "description": "Social media publishing — post adapted content directly to platforms",
         "connectors": {
             "twitter-x": {
-                "transport": "npx",
-                "package": "mcp-twitter",
+                "transport": "manual",
                 "description": "Twitter/X — post tweets, threads, media uploads",
-                "env_vars": [
-                    "TWITTER_API_KEY", "TWITTER_API_SECRET",
-                    "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_SECRET",
-                ],
+                "env_vars": [],
+                "note": NO_VERIFIED,
                 "skills_unlocked": ["cf-social-adapt"],
             },
             "linkedin-publishing": {
-                "transport": "npx",
-                "package": "mcp-linkedin-publishing",
+                "transport": "manual",
                 "description": "LinkedIn — post articles, share updates, company pages",
-                "env_vars": ["LINKEDIN_ACCESS_TOKEN"],
+                "env_vars": [],
+                "note": NO_VERIFIED,
                 "skills_unlocked": ["cf-social-adapt"],
             },
             "instagram": {
-                "transport": "npx",
-                "package": "mcp-instagram",
+                "transport": "manual",
                 "description": "Instagram — publish images/carousels, insights",
-                "env_vars": [
-                    "INSTAGRAM_ACCESS_TOKEN",
-                    "INSTAGRAM_BUSINESS_ACCOUNT_ID",
-                ],
+                "env_vars": [],
+                "note": NO_VERIFIED,
                 "skills_unlocked": ["cf-social-adapt"],
             },
         },
@@ -447,14 +467,14 @@ def _is_configured(name, connector_info, active_servers):
     if name in active_servers:
         return True
     # Script-based connectors — check if credentials file exists
-    if connector_info["transport"] == "script":
+    if _tx(connector_info) == "script":
         creds_path = connector_info.get("credentials", "")
         if creds_path:
             resolved = _resolve_credentials(creds_path)
             return resolved.exists()
         return True  # No credentials needed
     # Check env vars for npx connectors
-    if connector_info["transport"] == "npx" and connector_info.get("env_vars"):
+    if _tx(connector_info) == "npx" and connector_info.get("env_vars"):
         return all(os.environ.get(v) for v in connector_info["env_vars"])
     return False
 
@@ -476,7 +496,7 @@ def status_dashboard():
             entry = {
                 "name": name,
                 "description": conn["description"],
-                "transport": conn["transport"],
+                "transport": _tx(conn),
                 "skills_unlocked": conn["skills_unlocked"],
             }
 
@@ -486,13 +506,13 @@ def status_dashboard():
                 total_connected += 1
             else:
                 entry["status"] = "available"
-                if conn["transport"] == "npx":
+                if _tx(conn) == "npx":
                     entry["env_vars_needed"] = conn["env_vars"]
                     entry["note"] = "Claude Code only (requires npx)"
-                elif conn["transport"] == "script":
+                elif _tx(conn) == "script":
                     entry["credentials_needed"] = conn.get("credentials", "")
                     entry["note"] = "Python script — works in Cowork + Claude Code (needs service account)"
-                elif conn["transport"] == "manual":
+                elif _tx(conn) == "manual":
                     entry["note"] = "No verified MCP package — configure via an aggregator or a custom server"
                 else:
                     entry["note"] = ("HTTP connector — works in Cowork + Claude Code once you "
@@ -534,10 +554,10 @@ def list_available():
                     "name": name,
                     "category": cat_key,
                     "description": conn["description"],
-                    "transport": conn["transport"],
+                    "transport": _tx(conn),
                     "skills_unlocked": conn["skills_unlocked"],
                 }
-                if conn["transport"] == "npx":
+                if _tx(conn) == "npx":
                     entry["env_vars_needed"] = conn["env_vars"]
                 available.append(entry)
 
@@ -557,19 +577,19 @@ def check_connector(name):
                 "name": name,
                 "category": cat_key,
                 "description": conn["description"],
-                "transport": conn["transport"],
+                "transport": _tx(conn),
                 "status": "connected" if configured else "not_connected",
                 "skills_unlocked": conn["skills_unlocked"],
             }
 
-            if conn["transport"] == "http":
+            if _tx(conn) == "http":
                 result["url"] = conn.get("url", "")
                 result["setup"] = (
                     "HTTP connector. ContentForge ships an EMPTY .mcp.json, so this "
                     "connector is not wired until you add it. " + _reference_hint(name)
                     + " Authorization (OAuth or API key) is then handled on first use."
                 )
-            elif conn["transport"] == "script":
+            elif _tx(conn) == "script":
                 result["script"] = conn.get("script", "")
                 result["credentials"] = conn.get("credentials", "")
                 creds = _resolve_credentials(conn.get("credentials", ""))
@@ -582,7 +602,7 @@ def check_connector(name):
                         f"{creds} and share the target Sheet/folder with the service "
                         f"account email. No npx or Node.js required."
                     )
-            elif conn["transport"] == "manual":
+            elif _tx(conn) == "manual":
                 result["env_vars"] = conn.get("env_vars", [])
                 result["setup"] = (
                     "No verified MCP package or endpoint exists for this service. "
@@ -628,7 +648,7 @@ def setup_guide(name):
                 "skills_unlocked": conn["skills_unlocked"],
             }
 
-            if conn["transport"] == "http":
+            if _tx(conn) == "http":
                 guide["transport"] = "http"
                 guide["url"] = conn.get("url", "")
                 guide["steps"] = [
@@ -648,7 +668,7 @@ def setup_guide(name):
                         f"{name} is configured. Use any of these skills to activate it: "
                         + ", ".join(f"/contentforge:{s}" for s in conn["skills_unlocked"])
                     )
-            elif conn["transport"] == "script":
+            elif _tx(conn) == "script":
                 guide["transport"] = "script"
                 guide["script"] = conn.get("script", "")
                 guide["credentials"] = conn.get("credentials", "")
@@ -674,20 +694,22 @@ def setup_guide(name):
                     "Credentials are stored locally, never in the plugin repository.",
                     "Dependencies (gspread, google-api-python-client) are pinned; if missing, the script prints the exact install command.",
                 ]
-            elif conn["transport"] == "manual":
+            elif _tx(conn) == "manual":
                 # No verified package exists — never emit an npx/install line here.
                 guide["transport"] = "manual"
                 guide["env_vars"] = conn.get("env_vars", [])
                 guide["steps"] = [
                     f"1. There is no verified MCP package or endpoint for {name}.",
-                    f"2. Pick an aggregator that already supports it — pipedream-generic, "
+                    f"2. If {name}'s vendor publishes its own MCP server (an HTTP address in the vendor's documentation), use that. "
+                    f"Otherwise pick an aggregator that already supports it — pipedream-generic, "
                     f"composio-generic, zapier or make-com — and copy that entry from "
                     f".mcp.json.connectors-reference into .mcp.json.",
                     f"3. Authorize the {name} account inside that aggregator's dashboard.",
                     f"4. Alternatively, point a custom MCP server at the service's own API.",
                 ]
                 guide["notes"] = [
-                    "ContentForge does not ship or recommend an npm package for this service.",
+                    "ContentForge does not ship or recommend an npm package for this service, and writes no command or credentials for one. "
+                    "Community packages may exist: they are unverified third parties, so read the source and check the publisher before you run one.",
                     "Aggregator gateways are HTTP MCPs, so they work in Cowork as well as Claude Code.",
                 ]
                 if conn.get("env_vars"):

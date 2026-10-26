@@ -113,36 +113,31 @@ Setup pattern to walk the user through:
 3. **Restart the session** so the new entry is picked up.
 4. **Authorize on first use.** The first time a skill accesses the connector, the platform shows an OAuth prompt. Sign in and grant permissions. The token is managed by the platform afterward.
 
-#### npx Connectors (e.g., WordPress, Google Sheets, Semrush, DeepL)
+#### npx Connectors (vendor-published packages only)
 
-npx connectors require environment variables and a `.mcp.json` entry. They work in **Claude Code only** (Cowork cannot run local Node.js servers).
+ContentForge gives a runnable `npx` command only for a package the service's **vendor** publishes, and the list is `config/verified-npx-packages.json` (the package name, the npm account expected on it, the vendor's repository). Today that is DeepL. `npx -y <name>` downloads and runs whatever is published under that name with the user's API keys in its environment, so a community package, or a name nobody has registered, is never offered.
 
-Setup pattern:
+Every other connector whose `setup-guide` says `"transport": "manual"` has **no verified connector**. For those, relay the guide's options and stop there: the vendor's own MCP server if it publishes one (an HTTP address from the vendor's documentation), an aggregator entry from `.mcp.json.connectors-reference`, or skip it. Do **not** search npm for a package, guess a package name, suggest `npx -y` for it, or write environment variables for it. If the user mentions a community package themselves, say it is an unverified third party and that they should read its source and check its publisher before running it; give no command for it.
+
+For a connector whose guide says `"transport": "npx"` (a verified package), the pattern is:
 
 1. **Get the package name and env vars** from `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action setup-guide --name <connector>`.
-2. **Verify the npm package actually exists before recommending it:**
+2. **Obtain credentials** from the service (for DeepL: an API key from the DeepL account page).
+3. **Set environment variables** (shell profile or `.env` loaded before Claude Code starts; on Windows: System Properties → Environment Variables, then restart the terminal):
    ```
-   npm view <package-name> version
+   export DEEPL_API_KEY="<your DeepL API key>"
    ```
-   If the package doesn't exist or looks abandoned (no updates in 12+ months, negligible downloads), tell the user and search npm for a maintained alternative rather than proceeding.
-3. **Obtain credentials** from the service (e.g., WordPress: admin panel → Users → Profile → Application Passwords; create one named "ContentForge" and note the site URL).
-4. **Set environment variables** (shell profile or `.env` loaded before Claude Code starts; on Windows: System Properties → Environment Variables, then restart the terminal):
-   ```
-   export WORDPRESS_SITE_URL="https://your-site.com"
-   export WORDPRESS_AUTH_TOKEN="<your WordPress application password>"
-   ```
-5. **Add the `.mcp.json` entry** (use the exact block from the setup-guide output):
+4. **Add the `.mcp.json` entry** (use the exact block from the setup-guide output):
    ```json
-   "wordpress": {
+   "deepl": {
      "command": "npx",
-     "args": ["-y", "<verified-package-name>"],
+     "args": ["-y", "deepl-mcp-server"],
      "env": {
-       "WORDPRESS_SITE_URL": "${WORDPRESS_SITE_URL}",
-       "WORDPRESS_AUTH_TOKEN": "${WORDPRESS_AUTH_TOKEN}"
+       "DEEPL_API_KEY": "${DEEPL_API_KEY}"
      }
    }
    ```
-6. **Restart Claude Code** and verify (Step 5).
+5. **Restart Claude Code** and verify (Step 5).
 
 Never hardcode credentials in `.mcp.json` or plugin files — always reference environment variables.
 
@@ -152,7 +147,7 @@ When a connector name is not in the registry and no fuzzy match exists:
 
 1. Say clearly it's not in the registry.
 2. Suggest the closest same-category connectors from `--action list-available` output.
-3. Offer manual configuration: an HTTP entry (`"type": "http", "url": ...`) if the service publishes an MCP endpoint, or an npx entry if a maintained npm MCP package exists (verify with `npm view` first).
+3. Offer manual configuration: an HTTP entry (`"type": "http", "url": ...`) if the service publishes an MCP endpoint. Do not offer an npx entry: ContentForge gives a command only for the vendor-published packages in `config/verified-npx-packages.json`.
 4. Note: manually added connectors work with Claude but won't appear in `/contentforge:cf-integrations` until added to the registry.
 5. For a fully guided custom flow, hand off to `/contentforge:cf-add-integration`.
 
@@ -162,7 +157,7 @@ For npx connectors, after the user follows the setup steps:
 
 1. Re-run `python "${CLAUDE_PLUGIN_ROOT}/scripts/connector-status.py" --action check --name <connector>` and render the result (env vars set/missing, `.mcp.json` entry found).
 2. Remind the user to restart Claude Code — `.mcp.json` is read at startup only.
-3. Suggest a first test, e.g. `/contentforge:cf-publish --platform=wordpress --status=draft` for WordPress.
+3. Suggest a first test, e.g. `/contentforge:cf-translate` on a short paragraph for DeepL.
 
 For HTTP connectors, verification happens implicitly: the OAuth prompt appears on first real use.
 

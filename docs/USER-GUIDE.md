@@ -365,11 +365,10 @@ Create a Google Sheet with these columns:
 /contentforge:cf-connect google-sheets
 ```
 
-This walks you through the setup. Google Sheets uses npx MCP (not HTTP), so you'll need:
+This walks you through the setup. Google Sheets tracking runs through a bundled Python script (not an MCP server), so you'll need:
 1. A Google Cloud Project
 2. Service Account with Sheets API enabled
 3. Credentials JSON file
-4. Add the npx server to `.mcp.json`
 
 See [CONNECTORS.md](../CONNECTORS.md) for detailed instructions.
 
@@ -747,7 +746,7 @@ Strategic Actions:
 
 **Supported platforms:**
 - **Webflow** (via HTTP MCP) — Direct publishing
-- **WordPress** (via npx MCP) — Direct publishing
+- **WordPress** — no verified connector: use WordPress.com's official MCP connector for sites hosted there, or an aggregator entry; ContentForge does not run a community package for it
 - **HTML export** (fallback) — Copy HTML to any CMS manually
 
 **What happens:**
@@ -1129,11 +1128,13 @@ Quick wins: Google Sheets, Google Drive (unlock tracking + knowledge vault)
 2. Authorize in your browser
 3. Done — connector is active
 
-**For npx connectors (Google Sheets, Google Drive, WordPress, etc.):**
-1. Set up required credentials (API keys, service accounts)
-2. Add environment variables to `.env`
+**For the npx connector (DeepL, the one package ContentForge gives a command for, because DeepL publishes it):**
+1. Set up the API key
+2. Add the environment variable to `.env`
 3. Add the npx server config to `.mcp.json`
 4. Restart Claude session
+
+Services with no vendor-published package (WordPress, HubSpot CMS, Semrush, Confluence, Sarvam AI, Twitter/X, LinkedIn, Instagram) are reported as "no verified connector": `/contentforge:cf-connect` prints the options and writes no command or credentials for them.
 
 `/contentforge:cf-connect` walks you through every step with copy-paste commands.
 
@@ -1320,7 +1321,7 @@ contentforge/
 ├── .claude-plugin/plugin.json     # Manifest (name, version, description, author)
 ├── .mcp.json                      # Not shipped (gitignored) — zero MCP servers auto-connect
 ├── .mcp.json.connectors-reference # Opt-in catalog: 16 HTTP connectors (Notion, Canva, Webflow, Slack, Gmail, Calendar, Figma, fal.ai, Replicate + Pipedream/Composio/Zapier/Make)
-├── .mcp.json.example              # 3 npx image-gen servers (Stability AI, nanobanana, imagenate) — CLI only
+├── .mcp.json.example              # 1 npx server (DeepL, published by DeepL) — CLI only
 ├── CONNECTORS.md                  # Full connector reference
 ├── README.md                      # Project overview
 ├── CHANGELOG.md                   # Release history
@@ -1411,7 +1412,7 @@ contentforge/
 │   ├── drive-folder-manager.md    # Drive folder layout conventions
 │   └── loop-tracker.md            # Loop accounting rules
 │
-├── scripts/                       # 29 Python scripts (stdlib; optional pinned packages are never auto-installed)
+├── scripts/                       # 30 Python scripts (stdlib; optional pinned packages are never auto-installed)
 │   ├── _common.py                 # Shared storage-root/brand-dir/atomic-write helpers
 │   ├── checkpoint-manager.py      # Per-phase run checkpoints (powers resume)
 │   ├── pipeline-tracker.py        # Phase start/end events + progress

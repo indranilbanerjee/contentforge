@@ -1,35 +1,14 @@
 {
-  "_readme": "ContentForge MCP examples — ALL OPTIONAL (the pipeline runs with zero MCP servers; local file tracking is the fallback). These are CLI-only stdio/npx servers. For verified, Cowork-compatible HTTP equivalents — including Google Sheets and Google Drive via Pipedream/Composio, and image generation via fal.ai or Replicate — see '.mcp.json.connectors-reference'. Prefer those. SECURITY NOTE: 'npx -y' downloads and executes remote code. Verify each package exists on npm and is the package you intend (check publisher, downloads, repository link) before enabling any entry below.",
-  "_google_sheets_and_drive": "The former 'google-sheets' and 'google-drive' npx entries were removed (July 2026): the package names were unverifiable, and Cowork cannot run stdio servers at all. Use the HTTP equivalents in '.mcp.json.connectors-reference' instead ('pipedream-google-sheets', 'pipedream-google-drive', or the Composio equivalents), or the Anthropic platform-level Google Drive integration in Cowork (Settings → Integrations).",
+  "_readme": "ContentForge MCP examples — ALL OPTIONAL (the pipeline runs with zero MCP servers; local file tracking is the fallback). This file holds the one local stdio/npx server ContentForge offers a command for, because the vendor of the service publishes it: DeepL (translation). Every other service is either an HTTP entry in '.mcp.json.connectors-reference' (Cowork-compatible; prefer those) or has no verified connector: ContentForge writes no command and no credentials setup for a community npm package. SECURITY NOTE: 'npx -y' downloads and executes remote code with your API keys in its environment. config/verified-npx-packages.json lists the only packages ContentForge offers a command for (name, expected npm publisher, vendor repository), and a weekly check confirms they still match.",
+  "_removed": "The former google-sheets and google-drive entries were removed in July 2026, and the stability-ai, nanobanana and imagenate entries in October 2026: those packages are published by third parties, not by the vendors of the services. Use the HTTP equivalents in '.mcp.json.connectors-reference' instead ('pipedream-google-sheets', 'pipedream-google-drive', the Composio equivalents, or 'fal-ai' / 'replicate' for image generation), or the Anthropic platform-level Google Drive integration in Cowork (Settings → Integrations).",
   "mcpServers": {
-    "stability-ai": {
+    "deepl": {
       "command": "npx",
-      "args": ["-y", "mcp-server-stability-ai"],
+      "args": ["-y", "deepl-mcp-server"],
       "env": {
-        "STABILITY_AI_API_KEY": "${STABILITY_AI_API_KEY}"
+        "DEEPL_API_KEY": "${DEEPL_API_KEY}"
       },
-      "_warning": "Verify this package exists on npm before use; npx executes remote code. Cowork-compatible alternative: 'fal-ai' HTTP entry in .mcp.json.connectors-reference.",
-      "description": "Optional: Stability AI — generate, edit, upscale images, remove backgrounds, outpaint."
-    },
-    "nanobanana": {
-      "command": "npx",
-      "args": ["-y", "gemini-nanobanana-mcp"],
-      "env": {
-        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
-      },
-      "_warning": "Verify this package exists on npm before use; npx executes remote code. Cowork-compatible alternative: 'fal-ai' or 'replicate' HTTP entries in .mcp.json.connectors-reference.",
-      "description": "Optional: Gemini-powered image generation and editing via Google AI Studio. Free tier available."
-    },
-    "imagenate": {
-      "command": "npx",
-      "args": ["-y", "mcp-imagenate"],
-      "env": {
-        "GEMINI_API_KEY": "${GEMINI_API_KEY}",
-        "OPENAI_API_KEY": "${OPENAI_API_KEY}",
-        "BFL_API_KEY": "${BFL_API_KEY}"
-      },
-      "_warning": "Verify this package exists on npm before use; npx executes remote code. Cowork-compatible alternative: 'fal-ai' or 'replicate' HTTP entries in .mcp.json.connectors-reference.",
-      "description": "Optional: Multi-provider image generation — Gemini, OpenAI gpt-image, Flux 2. Configure one or more API keys."
+      "description": "Optional: DeepL translation, published by DeepL (github.com/DeepL/deepl-mcp-server). Claude Code only."
     }
   }
 }

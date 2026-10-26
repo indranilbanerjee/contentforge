@@ -1,5 +1,5 @@
 {
-  "_readme": "REFERENCE catalog of HTTP MCP connectors that integrate with the ContentForge pipeline. Copy any entry you want into '.mcp.json' under 'mcpServers' to enable it. Most require platform-side authentication (OAuth or API key) the first time. The 'cf-connect' and 'cf-add-integration' skills can walk you through enabling individual connectors interactively. PLATFORM NOTE (May 2026): Plugin-bundled MCP servers auto-start when the plugin is enabled with no per-server opt-in toggle. ContentForge therefore ships an empty .mcp.json by default to avoid forcing connection attempts on first install. COWORK COMPATIBILITY: All entries below are HTTP MCPs and work in both Claude Code CLI and Anthropic Cowork. Cowork does NOT support stdio/npx MCPs — see .mcp.json.example for those, which are CLI-only. Endpoints verified May 2026.",
+  "_readme": "REFERENCE catalog of HTTP MCP connectors that integrate with the ContentForge pipeline. Copy any entry you want into '.mcp.json' under 'mcpServers' to enable it. Most require platform-side authentication (OAuth or API key) the first time. The 'cf-connect' and 'cf-add-integration' skills can walk you through enabling individual connectors interactively. PLATFORM NOTE (May 2026): Plugin-bundled MCP servers auto-start when the plugin is enabled with no per-server opt-in toggle. ContentForge therefore ships an empty .mcp.json by default to avoid forcing connection attempts on first install. COWORK COMPATIBILITY: All entries below are HTTP MCPs and work in both Claude Code CLI and Anthropic Cowork. Cowork does NOT support stdio/npx MCPs — .mcp.json.example holds the one CLI-only server ContentForge offers a command for (the vendor-published DeepL package). Endpoints verified May 2026.",
   "mcpServers_reference": {
     "_section_first_party_saas": "Direct first-party HTTP MCPs from the SaaS providers themselves (best when available)",
     "notion": {
@@ -45,12 +45,12 @@
       "_purpose": "Pull design assets, brand visual reference"
     },
 
-    "_section_image_video_generation": "HTTP MCPs for image and video generation. Replace the npx/stdio Stability/Gemini/Imagenate entries from .mcp.json.example which do NOT work in Cowork.",
+    "_section_image_video_generation": "HTTP MCPs for image and video generation. They replace the third-party npx/stdio image entries that .mcp.json.example no longer ships, which did NOT work in Cowork.",
     "fal-ai": {
       "type": "http",
       "url": "https://mcp.fal.ai/mcp",
       "_auth": "Authorization: Bearer $FAL_KEY header (free fal.ai account required)",
-      "_purpose": "Image/video/audio generation — covers Stability SD3.5/SDXL/FLUX, Gemini Imagen, Recraft, and 100+ models. Use as Cowork-compatible replacement for stability-ai npx, nanobanana npx, and imagenate npx servers."
+      "_purpose": "Image/video/audio generation — covers Stability SD3.5/SDXL/FLUX, Gemini Imagen, Recraft, and 100+ models. Cowork-compatible, and the vendor's own hosted endpoint rather than a community package."
     },
     "replicate": {
       "type": "http",
@@ -65,13 +65,13 @@
       "type": "http",
       "url": "https://mcp.pipedream.com/app/google_sheets",
       "_auth": "OAuth on first connect (free Pipedream account required)",
-      "_purpose": "Cowork-compatible Google Sheets. Replaces the @anthropic/mcp-google-sheets npx server in .mcp.json.example. Powers ContentForge requirement intake and Phase 8 status tracking on Cowork."
+      "_purpose": "Cowork-compatible Google Sheets. Replaces the npx Google Sheets entry that is no longer shipped. Powers ContentForge requirement intake and Phase 8 status tracking on Cowork."
     },
     "pipedream-google-drive": {
       "type": "http",
       "url": "https://mcp.pipedream.com/app/google_drive",
       "_auth": "OAuth on first connect (free Pipedream account required)",
-      "_purpose": "Cowork-compatible Google Drive. Replaces the mcp-google-drive npx server. Powers brand knowledge vault and output file delivery on Cowork. Note: Anthropic also offers a platform-level Google Drive integration in Cowork (Settings → Integrations) that does not require an MCP — prefer that if available to your team."
+      "_purpose": "Cowork-compatible Google Drive. Replaces the npx Google Drive entry that is no longer shipped. Powers brand knowledge vault and output file delivery on Cowork. Note: Anthropic also offers a platform-level Google Drive integration in Cowork (Settings → Integrations) that does not require an MCP — prefer that if available to your team."
     },
     "pipedream-generic": {
       "type": "http",

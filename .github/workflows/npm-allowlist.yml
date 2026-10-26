@@ -1,0 +1,44 @@
+name: npm allowlist
+
+# ContentForge gives a runnable `npx -y <package>` command only for a package the service's vendor
+# publishes (config/verified-npx-packages.json). A quiet repo never runs push-only tests, so this
+# runs every week: it checks that nothing runnable is outside the allowlist, then asks npm whether each
+# allowlisted package still exists, still has versions, and still has the expected publisher and
+# repository. On any failure it opens an issue naming the package.
+
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Every runnable package is in the allowlist (offline)
+        run: python scripts/npm_allowlist.py --check
+
+      - name: Every allowlisted package is still the vendor's (npm)
+        run: python scripts/npm_allowlist.py --online --report npm-allowlist-report
+
+      - name: Open an issue when a check fails
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ ! -f npm-allowlist-report.md ]; then
+            echo "The npm allowlist check failed before it wrote a report. See the run log: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" > npm-allowlist-report.md
+          fi
+          gh issue create --repo "${GITHUB_REPOSITORY}" \
+            --title "Vendor-verified npm package check failed ($(date -u +%F))" \
+            --body-file npm-allowlist-report.md

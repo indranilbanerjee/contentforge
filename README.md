@@ -6,18 +6,18 @@
 
 Run `/contentforge:create-content` against each topic. The 10-phase pipeline produces a publication-ready `.docx` with a 43-pattern humanizer, a fact-checker subagent, three-category internal linking, and C2PA provenance for EU AI Act compliance — in 30–60 minutes per piece. Then the part single-shot tools skip: **the lifecycle loop.** Every published piece is measured (`cf-aeo-check`), audited for decay (`cf-audit`), and fed back into the next calendar and the next brief — through durable file contracts, so what the system learns about your brand survives the session that learned it.
 
-Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 29 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
+Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 30 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.5.7-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.8-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-803%2F803%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v457)
+[![Tests](https://img.shields.io/badge/tests-828%2F828%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v458)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.7 (October 12, 2026): the audit recovery command keeps its arguments, and the install hint pastes into Git Bash and PowerShell.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
+> 🆕 **Just shipped — v4.5.8 (October 27, 2026): connector setup only offers vendor-verified packages.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code (CLI or VS Code/JetBrains extension):
@@ -199,7 +199,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.5.7)
+## Supported surfaces (v4.5.8)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -822,6 +822,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.5.8 (2026-10-27)** — **Connector setup only offers vendor-verified packages.** `npx -y <name>` runs whatever is published under that name with your API keys in its environment, so ContentForge now gives a runnable command only for a package the service's own vendor publishes (today, DeepL's). Every other connector says "no verified connector" and offers the vendor's own MCP server, an aggregator, or skipping it, and writes no command or credentials for a community package. The three community image-generation entries are gone from `.mcp.json.example`, a test checks that nothing runnable is outside the list, and a weekly workflow confirms each listed package still exists and still has the expected publisher.
 
 **v4.5.7 (2026-10-12)** — **The audit recovery command keeps its arguments, and the install hint pastes into Git Bash and PowerShell.** Found by a fresh-install smoke test. `checkpoint-manager.py` appended the audit command's arguments after the command, which an interpreter path with a space turned into part of a trailing comment (the pasted command exited 2); every argument is now part of the command and the prose comes first. The pip hint printed with backslashes (Git Bash: exit 127); what is printed and what is executed are separate now, and the printed line shares one shape with every other printed command. A new end-to-end test pastes the real message into both shells, and the suite can no longer write to your real folders without failing. Tests 786 -> 803.
 

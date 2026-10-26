@@ -18,7 +18,7 @@ The HTTP connector catalog (opt-in via `.mcp.json.connectors-reference`):
 | Chat | `~~chat` | Slack | Microsoft Teams | Batch status notifications, content approval alerts |
 | Email | `~~email` | Gmail | Outlook | Draft delivery, review notifications |
 | Calendar | `~~calendar` | Google Calendar | Outlook Calendar | Content calendar events |
-| Image generation | `~~image gen` | fal.ai, Replicate | Stability AI (npx), Gemini/nanobanana (npx) | Feature images, contextual illustrations, social graphics — enables Phase 3.5 AI generation |
+| Image generation | `~~image gen` | fal.ai, Replicate | — | Feature images, contextual illustrations, social graphics — enables Phase 3.5 AI generation |
 
 ## Enabling connectors (opt-in model, v3.9.0+)
 
@@ -66,10 +66,10 @@ ContentForge ships no connector for the categories below — they are not in the
 | Spreadsheets | Google Sheets | `pipedream-google-sheets` or `composio-google-sheets` (HTTP, in connectors-reference) | Batch requirement intake — critical for `/batch-process` |
 | File storage | Google Drive | `pipedream-google-drive` (HTTP), or the platform-level Drive integration in Cowork | Brand knowledge vault, reference docs, output delivery |
 | SEO | Ahrefs, Similarweb, Semrush | Ahrefs: registry-known HTTP endpoint, add manually (see below). Similarweb + Semrush: aggregator or custom server | Keyword data for `/contentforge:cf-brief` content briefs |
-| Translation | DeepL, Sarvam AI | `cf-add-integration` (npm package) or aggregator | Machine translation for `/contentforge:translate` |
+| Translation | DeepL, Sarvam AI | DeepL: the vendor-published npm package in `.mcp.json.example`. Sarvam AI: no verified connector (aggregator or custom server) | Machine translation for `/contentforge:translate` |
 | Social media | Twitter/X, LinkedIn, Instagram | `cf-add-integration` or aggregator | Direct publishing for `/contentforge:social-adapt` |
 | Analytics | Google Analytics, Google Search Console | `cf-add-integration` or aggregator | Performance data for `/contentforge:cf-analytics` and `/contentforge:cf-audit` |
-| Image generation (extras) | Stability AI, Gemini nanobanana, mcp-imagenate | The only three entries that DO ship in `.mcp.json.example` — npx/stdio, Claude Code only | Additional image gen providers — alternatives to the fal.ai / Replicate HTTP entries |
+| Image generation (extras) | Stability AI, Gemini nanobanana, Imagenate | No verified connector: the npm packages for these are community packages, so none ships. Use the fal.ai / Replicate HTTP entries | Additional image gen providers — alternatives to the fal.ai / Replicate HTTP entries |
 
 **Ahrefs and Similarweb are known to the connector registry but are not in the 16-entry HTTP catalog.** `/contentforge:cf-integrations` reports them with an add-it-yourself note:
 
@@ -89,9 +89,11 @@ Use these skills to discover and manage your integrations:
 
 ## Advanced configuration (Claude Code)
 
-`.mcp.json.example` holds three local npx/stdio image-generation servers — Stability AI, Gemini/nanobanana, and imagenate. These run in Claude Code only; Cowork cannot run stdio servers at all.
+`.mcp.json.example` holds one local npx/stdio server, DeepL's own package (`deepl-mcp-server`). It runs in Claude Code only; Cowork cannot run stdio servers at all.
 
-The former `google-sheets` and `google-drive` npx entries were **removed in July 2026** — the package names were unverifiable. Use the HTTP equivalents in `.mcp.json.connectors-reference` instead (`pipedream-google-sheets`, `pipedream-google-drive`, `composio-google-sheets`), or the platform-level Google Drive integration in Cowork.
+**Why only one.** `npx -y <name>` downloads and runs whatever is published under that name, with your API keys in its environment, and a name nobody has registered can be registered by anyone. ContentForge therefore gives a runnable command only for a package the service's vendor publishes. The list is `config/verified-npx-packages.json` (package, expected npm publisher, vendor repository); a test checks that nothing else is runnable, and a weekly check confirms each listed package still exists and still has the expected publisher. For every other service, connector setup says "no verified connector" and offers the vendor's own MCP server, an aggregator, or skipping it. Community npm packages for WordPress, HubSpot, Semrush, Confluence, Sarvam AI, Twitter/X, LinkedIn, Instagram and some image services exist, but they are unverified third parties: read the source and check the publisher before you run one, and remember it receives the credentials you give it.
+
+The former `google-sheets` and `google-drive` npx entries were **removed in July 2026** (the package names were unverifiable), and the Stability AI, nanobanana and imagenate entries in October 2026 (community packages, not the vendors'). Use the HTTP equivalents in `.mcp.json.connectors-reference` instead (`pipedream-google-sheets`, `pipedream-google-drive`, `composio-google-sheets`), or the platform-level Google Drive integration in Cowork.
 
 To enable an npx server, **merge** its entry into your `.mcp.json` (create the file if you have none; never overwrite one you already use):
 
@@ -103,6 +105,6 @@ cat .mcp.json.example
 # (manual edit, or use /contentforge:cf-add-integration)
 ```
 
-Requires Node.js, npx, and the appropriate API keys configured as environment variables. `npx -y` downloads and executes remote code — verify each package on npm (publisher, downloads, repository link) before enabling it.
+Requires Node.js, npx, and the API key configured as an environment variable. `npx -y` downloads and executes remote code, which is why ContentForge offers it only for packages the vendor publishes.
 
 Note that anything you put in `.mcp.json` connects on **every** session, in every project, not just when you run a ContentForge skill. Add only the servers you actively need.

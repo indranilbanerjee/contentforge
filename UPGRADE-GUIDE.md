@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.7 → 4.5.8 (vendor-verified connector packages)
+
+**One behaviour change, nothing migrates.** Connector setup (`/contentforge:cf-connect`, `/contentforge:cf-integrations`) now gives a runnable `npx` command only for DeepL, whose package DeepL publishes. WordPress, HubSpot CMS, Semrush, Confluence, Sarvam AI, Twitter/X, LinkedIn and Instagram are reported as "no verified connector": you get the vendor's own MCP server, an aggregator entry, or the option to skip, and no command or environment variables. `.mcp.json.example` no longer carries the Stability AI, nanobanana and imagenate entries. If you already added one of those to your own `.mcp.json`, it keeps running; it is yours to review, and `npm view <package> maintainers repository` shows who publishes it.
+
+---
+
 ## Upgrading 4.5.6 → 4.5.7 (printed commands, again)
 
 **No breaking changes, nothing migrates.** The audit recovery command that `checkpoint-manager.py` prints, and the pip install hint, paste into Git Bash and PowerShell as written, including when the Python path has a space. Nothing is executed differently.

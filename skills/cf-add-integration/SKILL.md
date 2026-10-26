@@ -56,7 +56,7 @@ Note: ContentForge ships no `.mcp.json` by design — every connector is opt-in 
 
 1. **Check verified HTTP endpoints first** — hosted HTTP MCP servers are the easiest (work in both Cowork and Claude Code, no API keys for OAuth-based ones). The plugin's catalog of verified HTTP endpoints lives in **`.mcp.json.connectors-reference`** — use the URL from that file. If the service isn't listed there, check the vendor's official documentation for an MCP endpoint before guessing. Do not use endpoint URLs from memory: unverified URLs waste the user's setup time.
 
-2. **Search npm for MCP packages** — Search for `mcp-<service-name>` or `<service-name>-mcp-server`. **Verify the package actually exists and is maintained before recommending it:** run `npm view <package-name> version` and check last-publish date and download counts. If nothing maintained exists, say so honestly.
+2. **Do not search npm for a package and do not guess a package name.** `npx -y <name>` runs whatever is published under that name with the user's API keys in its environment, and a name nobody has registered can be registered by anyone. ContentForge gives a runnable command only for packages the service's vendor publishes (`config/verified-npx-packages.json`). If the vendor has no MCP endpoint, offer an aggregator entry from `.mcp.json.connectors-reference`, or a custom server (Step 5). If the user names a specific community package themselves, say plainly that it is an **unverified third party**, run `npm view <package-name> maintainers repository time` and show them the result, and give them an entry only if they still want one: pinned to the exact version they reviewed (`<package-name>@<version>`), with environment-variable references and no values.
 
 3. **If no endpoint or package exists** — Guide the user through custom MCP server development (see Step 5).
 
@@ -77,13 +77,13 @@ Generate the exact configuration entry for `.mcp.json`:
 }
 ```
 
-**For npx connectors:**
+**For npx connectors (a vendor-published package, or one the user named and accepted as unverified):**
 ```json
 {
   "mcpServers": {
     "service-name": {
       "command": "npx",
-      "args": ["-y", "mcp-package-name"],
+      "args": ["-y", "<package-name>@<reviewed-version>"],
       "env": {
         "SERVICE_API_KEY": "${SERVICE_API_KEY}"
       },

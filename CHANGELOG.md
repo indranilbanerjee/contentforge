@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.8] - 2026-10-27
+
+### Connector setup only offers vendor-verified packages
+
+**Security**
+
+- `npx -y <name>` downloads and runs whatever is published under that name, with the credentials in its environment, and a
+  name nobody has registered can be registered by anyone. The connector catalog handed out package names for nine
+  connectors, and `.mcp.json.example` for three more. Four of those names are not registered on npm at all, and the rest are
+  community packages rather than the services' own vendors'. ContentForge now gives a runnable command only for a package
+  listed in `config/verified-npx-packages.json` (the package name, the expected npm publisher, and the vendor's
+  repository). Today that is `deepl-mcp-server`, published by DeepL.
+- WordPress, HubSpot CMS, Semrush, Confluence, Sarvam AI, Twitter/X, LinkedIn and Instagram are now "no verified
+  connector". `connector-status.py` (`setup-guide`, `check`, `status`, `list-available`) and `/contentforge:cf-connect` print
+  the options (the vendor's own MCP server where one exists, an aggregator, or skipping it) and write no command and no
+  environment variables. A registry entry that says npx for an unlisted package is treated as manual as well.
+- `.mcp.json.example` ships only the DeepL entry; the Stability AI, nanobanana and imagenate entries are removed.
+  `/contentforge:cf-add-integration` no longer searches npm or guesses a package name: a community package the user names
+  themselves is labelled an unverified third party and shown with its npm facts, and any entry is pinned to the version
+  they reviewed.
+- Prose: the retired package names are gone from `.mcp.json.connectors-reference`, and `CONNECTORS.md`, `USER-GUIDE.md`,
+  `cf-audit` and `cf-calendar` no longer describe Google Sheets, WordPress or the image servers as npx connectors.
+
+**Added**
+
+- `scripts/npm_allowlist.py`: `--check` (offline) and `--online` (npm, read-only) with a Markdown issue body. The new
+  `.github/workflows/npm-allowlist.yml` runs both every week and opens an issue naming the package when either fails.
+- `tests/test_npx_allowlist.py` (25 tests): the offline guard, planted with the 4.5.7 example file, a registry that still
+  hands out the unregistered names, and scoped, versioned and other-runner names; a recursive scan of every shipped text
+  file for `npx -y <name>`; the converted connectors give no command, package or environment variables in any action; an
+  unlisted npx entry is still treated as manual; and the weekly check against a planted 404, no versions, a changed
+  publisher or repository, a deprecated latest version and an unreachable registry. Tests 803 -> 828.
+
 ## [4.5.7] - 2026-10-12
 
 ### The audit recovery command keeps its arguments, and the install hint pastes into Git Bash and PowerShell

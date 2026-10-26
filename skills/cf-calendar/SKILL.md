@@ -347,7 +347,7 @@ Next Deadline: "AI Healthcare Trends" brief due Feb 27, 9:00 AM (Alice)
 ### Optional (HTTP)
 - **Google Calendar** — Create calendar events with reminders for production milestones. Events are color-coded by priority. Without it, the calendar is still fully functional as a text-based timeline.
 
-### Optional (npx)
+### Optional (HTTP aggregator, `.mcp.json.connectors-reference`)
 - **Google Sheets** — Import content plan from a shared Google Sheet. Export the generated calendar back to a Sheet for team access. Without it, use manual input or CSV.
 
 ### Fallback (No MCP)
@@ -393,5 +393,5 @@ None. This skill uses deterministic scheduling logic (backward timeline calculat
 ---
 
 **Agent:** None (deterministic scheduling)
-**MCP:** Google Calendar (optional, HTTP), Google Sheets (optional, npx)
+**MCP:** Google Calendar (optional, HTTP), Google Sheets (optional, via an HTTP aggregator)
 **Output:** Content calendar with timeline, assignments, conflict report, and optional calendar events
