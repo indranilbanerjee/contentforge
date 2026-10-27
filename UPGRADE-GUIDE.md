@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.10 → 4.5.11 (registry wording)
+
+**Nothing migrates.** Only the `last_updated_by` text in `scripts/model_registry.json` changes.
+
+---
+
 ## Upgrading 4.5.9 → 4.5.10 (registry mirror)
 
 **Nothing migrates.** `scripts/model_registry.json` is replaced by the full mirror of the canonical registry, so it gains the speech models and aliases and loses entries the canonical file dropped. If you pinned a model id from a dropped entry in your own script, run `python scripts/resolve_model.py --check <id>` to see its status.

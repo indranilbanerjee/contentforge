@@ -8,16 +8,16 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 30 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.5.10-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.11-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-860%2F860%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v4510)
+[![Tests](https://img.shields.io/badge/tests-863%2F863%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v4511)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.10 (October 27, 2026): the model registry gains the speech models, as pins that expire.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
+> 🆕 **Just shipped — v4.5.11 (October 27, 2026): The model registry no longer cites a file a reader cannot open, and a guard keeps public files that way.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code 2.1.292 or newer (one command, run in your terminal):
@@ -208,7 +208,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.5.10)
+## Supported surfaces (v4.5.11)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -831,6 +831,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.5.11 (2026-10-27)** — **The model registry no longer cites a file a reader cannot open, and a guard keeps public files that way.** The registry's `last_updated_by` field pointed at a patch file in a folder outside the repository; it now names the vendor pages, each entry's `docs_url` and `notes`, and `docs/MODEL-CURATOR.md`, and `tests/test_no_internal_references.py` fails if a shipped file names an internal work session or points into that folder again.
 
 **v4.5.10 (2026-10-27)** — **The model registry gains the speech models, as pins that expire.** 13 entries (OpenAI, ElevenLabs and Sarvam text-to-speech and speech-to-text), six `latest-tts-*` / `latest-stt-*` aliases and two new tiers, 85 models and 26 aliases in all. No vendor's model list tells a speech model from a chat model, so each entry carries `pinned_on` and `pin_expires`, and Digital Marketing Pro's weekly job fails when a pin expires. The registry is now a full mirror made by that repository's sync script, not a by-id update that left dropped entries behind.
 
