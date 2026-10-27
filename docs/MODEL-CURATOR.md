@@ -56,9 +56,11 @@ Behaviour when resolving:
 
 - **Current id** → returned unchanged.
 - **Deprecated / retired id** → the registered `replacement_id` is returned instead (pass `--allow-deprecated` to get the original back).
+
+**A replacement can depend on the service.** `veo-3.1-generate-preview` was shut down on the Gemini API on 2026-10-22; its replacement there is `gemini-omni-1.1-flash`, and on Vertex AI it is `veo-3.1-generate-001`, which the Gemini API does not serve. An entry like that carries `replacement_by_backend` (`{"gemini-api": "...", "vertex": "..."}`) beside `replacement_id` (the default for readers of one id). Resolve it with `--backend gemini-api` or `--backend vertex` (`backend=` in Python): the id is only ever forwarded to the named service's replacement. With no backend, or one the entry does not list, a retired or deprecated id is refused with exit 2 and both replacements are named, so a caller never lands on another service's id.
 - **Unknown id** → reported as `unknown`; you lose the deprecation safety net.
 
-Other flags: `--aliases` (list every alias and its resolution), `--registry-path` (where the loaded registry lives), `--json` (machine-readable output), and the `--vendor` / `--modality` / `--status` / `--tier` filters for `--list`.
+Other flags: `--backend NAME` (the service a request goes to, for entries whose replacement depends on it), `--aliases` (list every alias and its resolution), `--registry-path` (where the loaded registry lives), `--json` (machine-readable output), and the `--vendor` / `--modality` / `--status` / `--tier` filters for `--list`.
 
 ---
 
