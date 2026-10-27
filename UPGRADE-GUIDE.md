@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.9 → 4.5.10 (registry mirror)
+
+**Nothing migrates.** `scripts/model_registry.json` is replaced by the full mirror of the canonical registry, so it gains the speech models and aliases and loses entries the canonical file dropped. If you pinned a model id from a dropped entry in your own script, run `python scripts/resolve_model.py --check <id>` to see its status.
+
+---
+
 ## Upgrading 4.5.8 → 4.5.9 (registry, parameter scan, pinned DeepL command)
 
 **Nothing migrates.** `scripts/model_registry.json` is replaced by the refreshed copy, so an alias such as `latest-fast-anthropic` may resolve to a different model than before; run `python scripts/resolve_model.py --aliases` to see them. If you copied the DeepL entry from `.mcp.json.example` into your own `.mcp.json`, change `"deepl-mcp-server"` to `"deepl-mcp-server@1.3.14"`. `resolve_model.py --check-params` now reports a `temperature`, `top_p` or `top_k` next to any Claude model, not only Opus 4.7 and 4.8; remove them from your own scripts (the Anthropic API rejects them from version 2026-10-21).
