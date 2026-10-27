@@ -1,6 +1,17 @@
 {
-  "_description": "ContentForge Social Platform Specifications — Character limits, hashtag norms, voice guidelines, image/video specs, AI-disclosure requirements, and supported post types per platform. Used by the Social Adapter Agent (10-social-adapter) and cf-social-adapt skill. Platform limits verified July 2026; the Instagram hashtag cap re-checked 2026-10-27.",
+  "_description": "ContentForge Social Platform Specifications — Character limits, hashtag norms, voice guidelines, image/video specs, AI-disclosure requirements, and supported post types per platform. Used by the Social Adapter Agent (10-social-adapter) and cf-social-adapt skill. Every platform's verification date, review date and sources are in _provenance: a limit is only as current as its platform's entry there.",
   "_posting_times_note": "Posting-time folklore removed (July 2026); the old best_times/worst_times tables were unsourced and timezone-free. Use the brand's own platform analytics to determine posting windows.",
+  "_provenance": {
+    "_description": "One entry per platform. status: read = the platform page was read on verified_on; reported = the platform page could not be read and the figure rests on its own announcement quoted elsewhere; carried = unchanged since the July 2026 pass and not re-read since. review_by is the date a person must re-read the page; a test fails if it is more than four months after verified_on.",
+    "linkedin": {"verified_on": "2026-07", "review_by": "2026-11-30", "status": "carried", "sources": ["https://www.linkedin.com/help/linkedin"]},
+    "twitter": {"verified_on": "2026-07", "review_by": "2026-11-30", "status": "carried", "sources": ["https://help.x.com/en"]},
+    "instagram": {"verified_on": "2026-10-27", "review_by": "2026-11-30", "status": "reported", "sources": ["https://help.instagram.com/351460621611097"]},
+    "facebook": {"verified_on": "2026-07", "review_by": "2026-11-30", "status": "carried", "sources": ["https://www.facebook.com/help"]},
+    "threads": {"verified_on": "2026-10-27", "review_by": "2026-11-30", "status": "read", "sources": ["https://developers.facebook.com/docs/threads/"]},
+    "tiktok": {"verified_on": "2026-10-27", "review_by": "2026-11-30", "status": "reported", "sources": ["https://support.tiktok.com/en"]},
+    "bluesky": {"verified_on": "2026-07", "review_by": "2026-11-30", "status": "carried", "sources": ["https://docs.bsky.app/"]},
+    "youtube_shorts": {"verified_on": "2026-10-27", "review_by": "2026-11-30", "status": "read", "sources": ["https://support.google.com/youtube/answer/10059070"]}
+  },
   "linkedin": {
     "character_limit": 3000,
     "ideal_length": {
@@ -191,8 +202,9 @@
         "ratio": "9:16",
         "formats": ["MP4"],
         "max_size_mb": 250,
-        "max_duration_seconds": 180,
-        "_note": "Reels support up to 3 minutes (raised from 90s in early 2025). Stories remain 60s per card."
+        "max_duration_seconds": 1200,
+        "recommended_max_duration_seconds": 180,
+        "_note": "Instagram lets accounts record and edit reels up to 20 minutes (reported; the rollout varies by account and by upload route, and a camera-roll upload is reported at 15), and reels over 3 minutes are not recommended to new audiences, so keep a reel for reach to 180 seconds or less. Stories remain 60s per card."
       },
       "carousel": {
         "width": 1080,
@@ -330,7 +342,7 @@
   },
   "tiktok": {
     "character_limit": 2200,
-    "_limit_note": "Caption limit for video posts and photo posts. Keep the first ~100 characters hook-worthy; captions truncate in feed.",
+    "_limit_note": "Caption limit for video posts and photo posts. Keep the first ~100 characters hook-worthy; captions truncate in feed. Sources split between 2,200 and 4,000 characters and no TikTok page could be read for this check: 2,200 is the safe value until a caption is checked in the app.",
     "ideal_length": {
       "min": 80,
       "max": 300,

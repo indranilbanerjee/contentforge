@@ -250,7 +250,7 @@ New Step 7: AI Overview Optimization — structures content for Google AI Overvi
 
 v3.0.0 introduces a `scripts/` directory with Python utilities:
 
-- **`setup.py`** — Run it manually (`python scripts/setup.py`) when you want to check your install. Validates Python version, reports paths, checks `.mcp.json`. It does **not** run on its own — ContentForge has shipped an empty `hooks.json` since v3.9.0, so nothing fires at session start
+- **`setup.py`** — Run it manually (`python scripts/setup.py`, from the plugin folder) when you want to check your install. Validates Python version, reports paths, checks `.mcp.json`. It does **not** run on its own — ContentForge has shipped an empty `hooks.json` since v3.9.0, so nothing fires at session start
 - **`connector-status.py`** — Registry of 29 connectors across 14 categories. Powers `/contentforge:cf-integrations` and `/contentforge:cf-connect`
 
 **Requirements:** Python 3.10+ (the Cowork VM has 3.10)
@@ -261,7 +261,7 @@ v3.0.0 introduces a `scripts/` directory with Python utilities:
 
 After upgrading, verify everything works:
 
-1. `python scripts/setup.py` — Run it yourself; should report your Python version and resolved paths
+1. `python scripts/setup.py` (from the plugin folder) — Run it yourself; should report your Python version and resolved paths
 2. `/contentforge:cf-integrations` — A fresh install shows **0 connected** connectors: no `.mcp.json` ships, by design. Add the ones you want with `/contentforge:cf-connect <name>` from the 16-connector catalog in `.mcp.json.connectors-reference`
 3. `/contentforge:create-content` — Existing pipeline should work unchanged
 4. `/contentforge:social-adapt [article]` — Should generate social posts

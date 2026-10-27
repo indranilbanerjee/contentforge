@@ -40,7 +40,7 @@ Invoke the **contentforge skill** (`skills/contentforge/SKILL.md`) with the gath
 2. Step 0 run initialization (checkpoint-manager `init` with run metadata + pipeline-tracker `init`)
 3. Step 0.5 title curation (inline, user-confirmed, unless `--title` was passed)
 4. Phases 1–8 per the Pipeline Contract table, with orchestrator-verified gates and a checkpoint save after every gate PASS
-5. Finalization: dual-copy .docx save (run directory + `~/Documents/ContentForge/{Brand}/`), optional Drive upload, Completion Card
+5. Finalization: dual-copy .docx save (run directory + `ContentForge/{brand-slug}/{content-type}/{YYYY-MM}/` in the Documents folder), optional Drive upload, Completion Card
 
 Every gate-passed phase is checkpointed, so an interrupted run is resumable with `/contentforge:resume`.
 

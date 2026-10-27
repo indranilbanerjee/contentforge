@@ -11,7 +11,7 @@ Open-source enterprise content production system — **22 skills · 13 specialis
 [![Version](https://img.shields.io/badge/version-4.5.12-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-999%2F999%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-1013%2F1013%20passing-brightgreen.svg)](tests/)
 [![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v4512)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 

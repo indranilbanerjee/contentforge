@@ -4,7 +4,7 @@
 
 **Your AI host does the model calls.** ContentForge is a set of instructions and local scripts that run inside the agent you already use (Claude Code, Cowork, Codex, Cursor, Copilot CLI, Antigravity, Hermes Agent, OpenClaw or Grok). Prompts and outputs go to that host's model provider under that provider's own terms and privacy policy.
 
-**Where your data lives.** Brand profiles, run artifacts and lifecycle records (audits, AEO checks, telemetry) are written on your machine under `~/.claude-marketing/` (or your host's plugin data folder). Finished `.docx` files go to `~/Documents/ContentForge/` (or the folder in `CONTENTFORGE_PUBLISH_DIR`). On Cowork with Google Drive connected, they go to the Drive folder you choose.
+**Where your data lives.** Brand profiles, run artifacts and lifecycle records (audits, AEO checks, telemetry) are written on your machine under `~/.claude-marketing/` (or your host's plugin data folder). Finished `.docx` files go to a `ContentForge` folder inside your Documents folder (`~/Documents`; on Windows with OneDrive, the redirected `OneDrive\Documents` that Explorer shows), or the folder in `CONTENTFORGE_PUBLISH_DIR`. The exact path is printed after each run. On Cowork with Google Drive connected, they go to the Drive folder you choose.
 
 **Connections you choose.** The plugin ships with no connector switched on. When you connect a service yourself (for example a CMS, Google Drive, Airtable or an image provider), the data you ask it to send goes to that service under its own terms. API keys you configure stay on your machine or in your host's credential store.
 

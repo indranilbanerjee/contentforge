@@ -174,7 +174,7 @@ python "${CLAUDE_PLUGIN_ROOT}/scripts/generate-docx.py" \
 
 The `.docx` must contain: title page, full article body, sources/citations, **Appendix A (SEO Scorecard)**, **Appendix B (Quality Scorecard)**, **Appendix C (Production Details)**.
 
-**Dual-copy save:** the `.docx` is written into the run directory (`~/.claude-marketing/{brand-slug}/runs/{run_id}/`) AND copied to the user-visible folder `~/Documents/ContentForge/{Brand}/`. Always tell the user the `~/Documents/ContentForge/` path. If the brand has Google Drive configured (`tracking.backend == "google_sheets"` with a `tracking.google_drive.folder_id`), additionally upload the .docx via `drive-uploader.py`.
+**Dual-copy save:** the `.docx` is written into the run directory (`~/.claude-marketing/{brand-slug}/runs/{run_id}/`) AND copied to the user-visible folder `ContentForge/{brand-slug}/{content-type}/{YYYY-MM}/{slug}.docx` inside the user's Documents folder (`~/Documents`; on Windows with OneDrive it is the redirected `OneDrive\Documents`). Always tell the user the exact path `local-tracker.py` returns as `published_path`, not a path you worked out. If the brand has Google Drive configured (`tracking.backend == "google_sheets"` with a `tracking.google_drive.folder_id`), additionally upload the .docx via `drive-uploader.py`.
 
 Then audit, and only then finalize:
 ```bash
@@ -407,7 +407,7 @@ Pipeline: 0 loops | Guardrails: verified | Run: {run_id}
 
 Delivery:
   .docx: ✅ Generated
-  Local: ✅ ~/Documents/ContentForge/AcmeMed/AI-in-Healthcare-Emerging-Trends_v1.0.docx
+  Local: ✅ <published_path from local-tracker.py, e.g. ~/Documents/ContentForge/acmemed/article/2026-10/ai-in-healthcare-emerging-trends.docx>
   Drive: ✅ uploaded (if configured) | Tracking: ✅ updated
 
 Next: /contentforge:publish | /contentforge:social-adapt | /contentforge:translate | /contentforge:cf-variants

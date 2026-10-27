@@ -4,7 +4,7 @@
 **Target Word Count:** 600-1200 words (total)
 **Target Reading Level:** Flesch-Kincaid Grade 8-10
 **Minimum Citations:** 3-5 sources (for fact-based answers)
-**SEO Focus:** Very High (FAQ schema, long-tail keywords, featured snippets)
+**SEO Focus:** Very High (long-tail keywords, question-style headings, direct answers)
 **Tone:** Clear, helpful, concise, direct
 
 ---
@@ -134,10 +134,15 @@ Order by frequency/importance
 
 ## SEO Optimization for FAQs
 
-### FAQ Schema Markup (Critical)
-**Implementation:** Add FAQ structured data for Google rich results
+### FAQ Schema Markup (optional, structure only)
+**What to know before adding it:**
+- Google restricts FAQ *rich results* to authoritative government and health sites (since August 2023), so an ordinary brand site gets no expanded FAQ display from it.
+- Google's guide to generative AI search (last updated 2026-07-10) says structured data "isn't required for generative AI search, and there's no special schema.org markup you need to add". FAQPage markup is not a way into AI answers, featured snippets or "People Also Ask".
+- What earns those placements is the visible content: a real question as the heading, a direct answer in the first sentence under it, and the detail after.
 
-**Example Structure:**
+**When to add it anyway:** only if the site already publishes FAQPage markup, or a consumer other than Google's rich results reads it. The markup must match the visible questions and answers word for word. Add it as a structure-only extra; never promise a ranking, snippet or citation benefit for it in the deliverable.
+
+**Example structure (optional):**
 ```json
 {
   "@context": "https://schema.org",
@@ -154,14 +159,6 @@ Order by frequency/importance
   ]
 }
 ```
-
-**SEO Impact:**
-- Eligible for Featured Snippets
-- Eligible for "People Also Ask" boxes
-- Enhanced SERP display
-- Higher click-through rates
-
-> **Caveat (since 2023):** Google restricts FAQ *rich results* in the SERP to authoritative government and health sites — ordinary brand sites will rarely get the expanded FAQ display. Still implement the schema: the Q&A structure remains highly valuable for AEO/GEO (AI answer engines cite well-structured Q&A), People Also Ask targeting, and voice search.
 
 ### Keyword Strategy for FAQs
 
@@ -300,7 +297,7 @@ To ensure AI content ranks:
 - Write vague, incomplete answers
 - Assume technical knowledge
 - Make questions too long or complex
-- Skip schema markup (huge SEO miss)
+- Promise rankings, snippets or AI citations because of FAQ markup (Google says no special markup is needed)
 
 ✅ **Do:**
 - Research actual questions users ask (Google autocomplete, forums, customer support)
@@ -309,7 +306,7 @@ To ensure AI content ranks:
 - Keep answers concise but complete
 - Define technical terms
 - Make questions scannable
-- Implement FAQ schema for SEO
+- Put the real question in the heading and the direct answer in the first sentence under it
 
 ---
 

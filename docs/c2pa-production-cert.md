@@ -17,6 +17,8 @@
 
 ## Using a production cert with ContentForge
 
+From the plugin folder (the one that holds `scripts/`):
+
 ```bash
 python scripts/generate-docx.py \
     --content output/humanized.md \

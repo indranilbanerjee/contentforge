@@ -33,6 +33,8 @@ Hardcoding model strings like `claude-sonnet-4-5-20250929`, `gemini-2.0-flash`, 
 
 ## Using the resolver
 
+Run these from the plugin folder (the one that holds `scripts/`); inside a session the skills run the scripts by their absolute `${CLAUDE_PLUGIN_ROOT}` path.
+
 ```bash
 # Resolve an alias to a concrete id
 python scripts/resolve_model.py --alias latest-text-anthropic
