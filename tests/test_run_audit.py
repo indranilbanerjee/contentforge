@@ -685,6 +685,18 @@ class TestFinalizeFreshness(RunFixture):
         self.assertEqual(common.fingerprint_drift(a, a), [])
 
 
+def _card_libraries_present() -> bool:
+    """Whether THIS interpreter has what feature_card.py draws and verifies with (matplotlib and pillow)."""
+    try:
+        return all(importlib.util.find_spec(m) is not None for m in ("matplotlib", "PIL"))
+    except (ImportError, ValueError):
+        return False
+
+
+needs_card_libraries = unittest.skipUnless(
+    _card_libraries_present(), "matplotlib and pillow are not installed here; the refusal test below covers this machine")
+
+
 class TestFeatureCard(unittest.TestCase):
     def run_card(self, tmp, **kw):
         args = {"--title": "A Reasonable Title for a Card",
@@ -702,6 +714,7 @@ class TestFeatureCard(unittest.TestCase):
             self.fail(f"non-JSON (exit {proc.returncode}): "
                       f"{proc.stdout[:200]} {proc.stderr[:200]}")
 
+    @needs_card_libraries
     def test_renders_exact_og_size(self):
         with tempfile.TemporaryDirectory() as tmp:
             code, out = self.run_card(tmp)
@@ -710,6 +723,7 @@ class TestFeatureCard(unittest.TestCase):
             self.assertGreater(out["bytes"], 5000)
             self.assertTrue(Path(out["file_path"]).is_file())
 
+    @needs_card_libraries
     def test_is_honest_about_what_it_is(self):
         with tempfile.TemporaryDirectory() as tmp:
             _, out = self.run_card(tmp)
@@ -729,12 +743,32 @@ class TestFeatureCard(unittest.TestCase):
             code, _ = self.run_card(tmp, **{"--title": "x" * 200})
             self.assertEqual(code, 2)
 
+    @needs_card_libraries
     def test_deterministic_within_environment(self):
         with tempfile.TemporaryDirectory() as tmp:
             _, a = self.run_card(tmp, **{"--out": str(Path(tmp) / "a.png")})
             _, b = self.run_card(tmp, **{"--out": str(Path(tmp) / "b.png")})
             self.assertEqual(a["sha256"], b["sha256"])
 
+
+    def test_without_the_drawing_libraries_it_refuses_cleanly_and_writes_nothing(self):
+        """A machine without matplotlib or pillow got a raw traceback (and, without pillow, a card it had not verified). Run with
+        each import blocked, so this holds even where both are installed."""
+        for blocked in ("matplotlib", "PIL"):
+            with self.subTest(blocked=blocked), tempfile.TemporaryDirectory() as tmp:
+                Path(tmp, "sitecustomize.py").write_text(f"import sys\nsys.modules[{blocked!r}] = None\n", encoding="utf-8")
+                env = {**os.environ, "PYTHONPATH": tmp, "PYTHONUTF8": "1"}
+                out = Path(tmp) / "card.png"
+                proc = subprocess.run(
+                    [sys.executable, str(REPO / "scripts" / "feature_card.py"), "--title", "A Reasonable Title for a Card",
+                     "--brand-name", "Test Brand", "--primary", "#0B6E4F", "--secondary", "#DDA15E", "--out", str(out)],
+                    capture_output=True, text=True, encoding="utf-8", env=env, stdin=subprocess.DEVNULL)
+                self.assertEqual(proc.returncode, 1, proc.stderr[-300:])
+                result = json.loads(proc.stdout)
+                self.assertEqual((result["status"], result["stage"]), ("FAILED", "dependencies"))
+                self.assertIn("matplotlib" if blocked == "matplotlib" else "pillow", result["error"].lower())
+                self.assertNotIn("Traceback", proc.stderr)
+                self.assertFalse(out.exists(), "no card may be written when it cannot be verified")
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

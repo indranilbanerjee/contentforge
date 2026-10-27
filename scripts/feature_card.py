@@ -41,6 +41,7 @@ Exit codes: 0 success · 1 constraint violation (file NOT written) · 2 usage er
 
 import argparse
 import hashlib
+import importlib.util
 import json
 import pathlib
 import re
@@ -69,8 +70,20 @@ def _luminance(hex_color: str) -> float:
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
+def _missing_libraries() -> list:
+    """The drawing libraries this interpreter lacks. matplotlib draws the card and pillow verifies it off disk; checked
+    before anything is drawn, so a missing one is a clean refusal, not a traceback or an unverified file on disk."""
+    return [label for label, module in (("matplotlib", "matplotlib"), ("pillow", "PIL"))
+            if importlib.util.find_spec(module) is None]
+
+
 def render(title: str, brand_name: str, primary: str, secondary: str,
            out_path: pathlib.Path, kicker: str = None) -> dict:
+    missing = _missing_libraries()
+    if missing:
+        return {"status": "FAILED", "stage": "dependencies",
+                "error": f"{' and '.join(missing)} not installed; the feature card needs matplotlib and pillow. "
+                         f"Nothing was drawn or written."}
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt

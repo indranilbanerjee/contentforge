@@ -35,6 +35,7 @@ import json
 import os
 import sys
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import date, timedelta
 from pathlib import Path
@@ -42,57 +43,77 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from resolve_model import _find_registry, get_registry  # noqa: E402
 
+# The largest page each provider allows (their defaults are 20 and 50), and a ceiling on how many pages one list may take.
+PAGE_SIZE = 1000
+MAX_PAGES = 20
+
 
 def _http_get(url: str, headers: dict[str, str], timeout: int = 15) -> dict | None:
+    """The page as a dict, or None when the call failed in any way. No error text is kept: providers echo part of a rejected
+    key in it, and the report says only that the provider was skipped."""
     req = urllib.request.Request(url, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))
-    except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError):
+    except (OSError, ValueError):  # URLError and HTTPError are OSErrors; a bad body is a ValueError
         return None
+
+
+def _list_ids(first_url: str, headers: dict[str, str], *, items: str, id_field: str, cursor: str, next_cursor) -> set[str] | None:
+    """Every id a provider's model list reports, across all of its pages, or None.
+
+    None when any page fails or the list does not end within MAX_PAGES. A partial list is never returned: the models on the
+    missing pages would all be reported as gone, which is the alarm this script exists to raise, and a false one."""
+    ids: set[str] = set()
+    after = None
+    for page in range(MAX_PAGES):
+        url = first_url if after is None else first_url + ("&" if "?" in first_url else "?") + urllib.parse.urlencode({cursor: after})
+        data = _http_get(url, headers)
+        if not isinstance(data, dict) or (page == 0 and not data):
+            return None
+        ids |= {m.get(id_field) for m in data.get(items) or [] if isinstance(m, dict) and m.get(id_field)}
+        after = next_cursor(data)
+        if not after:
+            return ids
+    return None
 
 
 def list_anthropic() -> set[str] | None:
     key = os.environ.get("ANTHROPIC_API_KEY")
     if not key:
         return None
-    data = _http_get(
-        "https://api.anthropic.com/v1/models",
+    return _list_ids(
+        f"https://api.anthropic.com/v1/models?limit={PAGE_SIZE}",
         {"x-api-key": key, "anthropic-version": "2023-06-01"},
+        items="data", id_field="id", cursor="after_id",
+        next_cursor=lambda d: d.get("last_id") if d.get("has_more") else None,
     )
-    if not data:
-        return None
-    return {m.get("id") for m in data.get("data", []) if m.get("id")}
 
 
 def list_openai() -> set[str] | None:
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         return None
-    data = _http_get(
+    return _list_ids(
         "https://api.openai.com/v1/models",
         {"Authorization": f"Bearer {key}"},
+        items="data", id_field="id", cursor="after",
+        next_cursor=lambda d: d.get("last_id") if d.get("has_more") else None,
     )
-    if not data:
-        return None
-    return {m.get("id") for m in data.get("data", []) if m.get("id")}
 
 
 def list_gemini() -> set[str] | None:
+    """The Gemini key goes in the x-goog-api-key header, never in the URL, where proxies and server logs keep it."""
     key = os.environ.get("GEMINI_API_KEY")
     if not key:
         return None
-    data = _http_get(
-        f"https://generativelanguage.googleapis.com/v1beta/models?key={key}",
-        {},
+    ids = _list_ids(
+        f"https://generativelanguage.googleapis.com/v1beta/models?pageSize={PAGE_SIZE}",
+        {"x-goog-api-key": key},
+        items="models", id_field="name", cursor="pageToken",
+        next_cursor=lambda d: d.get("nextPageToken"),
     )
-    if not data:
-        return None
-    return {
-        m.get("name", "").replace("models/", "")
-        for m in data.get("models", [])
-        if m.get("name")
-    }
+    return None if ids is None else {i.replace("models/", "") for i in ids}
 
 
 # Registry statuses the provider is still expected to serve.

@@ -21,7 +21,7 @@ So the registry and resolver are **curation and reference tooling**, shared acro
 - **Staleness tracking** — `--registry-age` and `refresh_models.py` flag when the catalog needs a curation pass.
 - **Parameter safety linting** — `--check-params` scans a Python file for `temperature` / `top_p` / `top_k` set alongside any Claude model or `latest-*-anthropic` alias (see below).
 
-The one script that talks to a provider is `scripts/refresh_models.py`, and it only reads the public `/v1/models` catalog endpoints to report drift. It never generates content.
+The one script that talks to a provider is `scripts/refresh_models.py`, and it only reads the providers' model-list endpoints to report drift. It never generates content. Each key goes only to its own provider, in a request header and never in a URL (where proxies and server logs keep it), and every page of each list is read: Anthropic lists 20 models a page and Google 50 unless asked for more, so the script asks for 1000 and follows the cursor. A provider whose list fails on any page, or does not end within 20 pages, is reported as skipped rather than compared against a partial list.
 
 ---
 
@@ -107,9 +107,11 @@ ANTHROPIC_API_KEY=... OPENAI_API_KEY=... GEMINI_API_KEY=... python scripts/refre
 python scripts/refresh_models.py --bump-timestamp
 ```
 
-The drift report shows:
-- **NEW** — model ids the provider lists that are not in your registry (triage and add).
-- **STALE** — model ids in your registry marked `current` that the provider no longer lists.
+The drift report shows, per provider:
+- **NEW** — model ids the provider serves that are not in your registry (triage and add).
+- **ALARM** — model ids your registry marks `current`, `supported` or `preview` that the provider no longer lists.
+- **PENDING** — ids your registry marks `deprecated` or `retired` that the provider still serves (the shutdown has not landed).
+- **EXPECTED** — deprecated or retired ids the provider has stopped serving (no action).
 
 The script never auto-rewrites entries; curation is a human decision.
 

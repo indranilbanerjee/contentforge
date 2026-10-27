@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.12] - 2026-10-27
+
+### The registry refresh keeps the Gemini key out of the URL and reads every page of every model list
+
+Found on 2026-10-27 while SocialForge's copy of the same script was fixed. `scripts/refresh_models.py` is the one ContentForge script that talks to a provider, and it only reads model lists to report drift. It had two defects, both in how it asked.
+
+**Fixed**
+
+- The Gemini call was `https://generativelanguage.googleapis.com/v1beta/models?key=<key>`. A key in a URL is kept by proxies and server logs; Google's own header exists so it does not have to be. The key now travels in `x-goog-api-key`, and each of the three keys goes only in a header of its own provider's request.
+- Each list was read as one page: 20 models for Anthropic and 50 for Google unless asked for more. A drift check that sees a partial list reports every model on the missing pages as gone ("ALARM: registry says live, provider no longer lists it"), the one alarm the script exists to raise, so the report was wrong exactly when a catalogue was long. Anthropic is now asked for 1000 a page and followed through `has_more` / `last_id` (`after_id`), Google through `pageSize` and `nextPageToken`, and OpenAI's list through its cursor if it offers one (a single-page list is read once, as before).
+- A provider whose list fails on any page, or does not end within 20 pages, is now reported as skipped. It is never compared against a partial list. A reply that is not a JSON object, or has no list in it, no longer crashes the script, and a timeout while reading a reply is handled like any other failed call.
+- `docs/MODEL-CURATOR.md` described the drift report as two buckets (NEW, STALE); the script prints four (NEW, ALARM, PENDING, EXPECTED). It now says what each means, and how the keys travel and what a failed page means. `PRIVACY.md` says the same for the model-list row.
+- The 4.5.9 entry credited a finding to the checking session by name; it now says "a fresh install run from the installed copy".
+- `scripts/feature_card.py` died with a raw traceback when matplotlib was not installed, and, without pillow, left a card on disk that it had not verified. Found on a clean Python 3.10.18 during this release; it is the same on 4.5.11. It now checks both libraries before drawing anything and refuses with `{"status": "FAILED", "stage": "dependencies", ...}` and exit 1, writing nothing. `tests/test_run_audit.py` (+1): a test runs the script with each import blocked, so the refusal is checked even where both libraries are installed (run against the old script, both cases fail), and the three tests that need the libraries to draw a card skip where they are absent.
+
+**Changed**
+
+- `tests/test_no_internal_references.py` caught the name of the checking session only when it followed "the" directly, so the 4.5.9 entry, which put a qualifier between them, got through. The pattern now allows up to two words between "the" and the name (product names such as the Campaign Orchestrator and the plain words "A/B tester" and "testers" still pass), with planted cases both ways.
+
+**Added**
+
+- `tests/test_refresh_models_pages.py` (23), written before the fix. A recording stand-in for urllib's opener shows every request the script makes: no key in any URL, the Gemini key in `x-goog-api-key`, the Anthropic and OpenAI keys in their own headers, and each key sent only to its own provider; two-page fixtures for Anthropic (`has_more` / `last_id`), Google (`nextPageToken`) and OpenAI (a cursor); a failing second page, a rejected key, a timeout, an endless list and a reply that is not an object each skip the provider; an error whose text echoes all three keys leaves no key in the output; and the privacy table and curator doc are checked against the script. Run against the 4.5.11 code, 17 of the 23 fail or error (the other six are regression guards that pass either way).
+- The five hero `.skill` bundles are unchanged: none of them contains `refresh_models.py` (each holds one skill's `SKILL.md` plus its templates and config), and the existing test that rebuilds them byte for byte passes.
+
 ## [4.5.11] - 2026-10-27
 
 ### The model registry no longer cites a file a reader cannot open, and a guard keeps public files that way
@@ -40,7 +64,7 @@ From the 2026-10-27 freshness review of the speech vendors' pages, which found t
 
 ### The model registry is current, `--check-params` covers every Claude model, and the DeepL command is pinned
 
-Found by a freshness review of the vendors' own model pages on 2026-10-27 (the registry and the parameter scan) and by the fresh-install Tester the same day (the unpinned command).
+Found by a freshness review of the vendors' own model pages on 2026-10-27 (the registry and the parameter scan) and by a fresh install run from the installed copy the same day (the unpinned command).
 
 **Fixed**
 

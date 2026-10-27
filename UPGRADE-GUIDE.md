@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.11 → 4.5.12 (registry refresh)
+
+**Nothing migrates.** `scripts/refresh_models.py` sends each API key in a request header and reads every page of each provider's model list, so its drift report may now list models it used to miss (a long catalogue was cut off at the first page). If a wrapper of yours called it with a Gemini key in a URL, it no longer needs to.
+
+---
+
 ## Upgrading 4.5.10 → 4.5.11 (registry wording)
 
 **Nothing migrates.** Only the `last_updated_by` text in `scripts/model_registry.json` changes.
