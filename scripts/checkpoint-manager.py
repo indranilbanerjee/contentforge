@@ -43,8 +43,10 @@ Usage:
         -> { "run_id": "20260703-114215-ai-in-pharma", "path": "..." }
 
     python checkpoint-manager.py save --brand Acme --run-id RID --phase 3 \
-        --content-file /tmp/draft.md --extension md
+        --content-file <artifact-path> --extension md
         -> stores Phase 3 draft, updates run.json
+        (--content-file is stored byte for byte so artifact hashes stay reproducible: a leading byte-order mark in
+         the file stays in the artifact; generate-docx reads with utf-8-sig and drops it.)
 
     python checkpoint-manager.py save --brand Acme --run-id RID --phase 7 \
         --content-file review.json --extension json \
@@ -53,7 +55,9 @@ Usage:
 
     python checkpoint-manager.py loop --brand Acme --run-id RID --edge phase_7_to_5 \n        --reason "brand compliance failure in section 3"
         -> increments loop_counts["phase_7_to_5"] + total_loops, and appends a
-           loop_history entry recording why
+           loop_history entry recording why. It REFUSES (exit 1, nothing recorded) when
+           that loop would pass a cap config sets (per edge, per phase, or per run):
+           stop looping and send the piece to a human reviewer instead.
 
     python checkpoint-manager.py status --brand Acme --run-id RID
     python checkpoint-manager.py load --brand Acme --run-id RID --phase 3
@@ -74,10 +78,12 @@ Design choices:
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 import shutil
 import sys
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -129,7 +135,10 @@ RUN_ID_RE = _common.RUN_ID_RE
 
 
 def _slug(text: str, maxlen: int = 40) -> str:
-    s = re.sub(r"[^\w\s-]", "", (text or "").lower())
+    # Keep letters, digits and combining marks of any script (a bare `\w` drops the vowel signs and the virama of
+    # Devanagari, Tamil and Thai and mangles the topic), plus space, "_" and "-".
+    kept = "".join(c for c in (text or "").lower() if c in " _-" or c.isspace() or unicodedata.category(c)[0] in "LNM")
+    s = kept
     s = re.sub(r"[\s_]+", "-", s)
     s = re.sub(r"-+", "-", s).strip("-")
     return s[:maxlen] or "untitled"
@@ -165,6 +174,11 @@ def _save_manifest(brand: str, run_id: str, manifest: dict) -> None:
     _common.atomic_write_json(_run_dir(brand, run_id) / "run.json", manifest)
 
 
+# The only artifact types a phase saves. The prose promises exactly these (skills/contentforge/SKILL.md, commands/resume.md);
+# `--extension ../../x` used to be accepted and wrote outside the run directory.
+ALLOWED_EXTENSIONS = ("md", "json", "txt")
+
+
 def _artifact_name(phase: str, extension: str) -> tuple:
     """Return (filename, artifact_key) for a phase + extension.
 
@@ -172,6 +186,8 @@ def _artifact_name(phase: str, extension: str) -> tuple:
     primary artifact; a json save for those phases targets the manifest slot
     and does NOT mark the phase complete."""
     ext = extension.lstrip(".")
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError(f"extension {extension!r} is not one of {', '.join(ALLOWED_EXTENSIONS)}")
     if phase in MANIFEST_NAMES and ext == "json":
         return MANIFEST_NAMES[phase]
     return f"phase-{phase}-{PHASE_SUFFIX[phase]}.{ext}", phase
@@ -179,10 +195,20 @@ def _artifact_name(phase: str, extension: str) -> tuple:
 
 def init_run(brand: str, topic: str, content_type: str | None,
              meta: dict | None = None) -> dict:
+    _, held = _common.claim_brand_dir(brand)
+    if held:
+        return {"error": held}
     now = datetime.now(timezone.utc)
-    run_id = f"{now.strftime('%Y%m%d-%H%M%S')}-{_slug(topic)}"
+    base_id = f"{now.strftime('%Y%m%d-%H%M%S')}-{_slug(topic)}"
+    run_id, n = base_id, 1
+    while _run_dir(brand, run_id).exists():
+        # Two inits for one topic in the same second used to share an id: the second reused the first run's folder
+        # and replaced its run.json. Each run gets its own id.
+        n += 1
+        run_id = f"{base_id}-{n}"
     run_dir = _run_dir(brand, run_id)
-    run_dir.mkdir(parents=True, exist_ok=True)
+    run_dir.mkdir(parents=True, exist_ok=False)
+    _common.claim_brand_dir(brand)  # label the folder with the brand's name now that it exists
     manifest = {
         "run_id": run_id,
         "brand": brand,
@@ -212,8 +238,11 @@ def save_phase(brand: str, run_id: str, phase: str, content: str,
     if manifest is None:
         return {"error": f"no run found: brand={brand} run_id={run_id}"}
 
-    filename, artifact_key = _artifact_name(phase, extension)
-    out = _run_dir(brand, run_id) / filename
+    try:
+        filename, artifact_key = _artifact_name(phase, extension)
+        out = _common.safe_child(_run_dir(brand, run_id), filename)
+    except ValueError as exc:
+        return {"error": f"cannot save phase {phase}: {exc}"}
     # newline="" disables newline translation. Without it, Python read the
     # artifact with universal newlines (CRLF -> LF) and wrote it back through
     # os.linesep (LF -> CRLF): checkpointing a 45,087-byte Phase 7 review
@@ -261,6 +290,35 @@ def save_phase(brand: str, run_id: str, phase: str, content: str,
     }
 
 
+_AUDIT = None
+
+
+def _run_audit():
+    """run-audit.py as a module (its file name has a hyphen, so it is loaded by path)."""
+    global _AUDIT
+    if _AUDIT is None:
+        spec = importlib.util.spec_from_file_location("_cf_run_audit", Path(__file__).with_name("run-audit.py"))
+        _AUDIT = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(_AUDIT)
+    return _AUDIT
+
+
+def _loop_cap_violations(counts: dict, edge: str) -> list:
+    """What recording one more traversal of `edge` would break, by the caps config sets.
+
+    The rule is run-audit's (`loop_caps` / `loop_violations`: the smaller cap governs, per edge, per phase group and per
+    run), so a loop refused here is exactly a loop the final audit would fail. An unreadable config judges nothing."""
+    audit = _run_audit()
+    graph = audit._json(audit.CONFIG_DIR / "pipeline-graph.json")
+    scoring = audit._json(audit.CONFIG_DIR / "scoring-thresholds.json")
+    if graph is None or scoring is None:
+        return []
+    prospective = dict(counts)
+    prospective[edge] = prospective.get(edge, 0) + 1
+    per_run, per_edge = audit.loop_violations(prospective, audit.loop_caps(graph, scoring))
+    return per_run + per_edge
+
+
 def record_loop(brand: str, run_id: str, edge: str, reason: str = None) -> dict:
     """Record a feedback-edge traversal: the count, and why it happened.
 
@@ -276,6 +334,13 @@ def record_loop(brand: str, run_id: str, edge: str, reason: str = None) -> dict:
     if manifest is None:
         return {"error": f"no run found: brand={brand} run_id={run_id}"}
     counts = manifest.setdefault("loop_counts", {})
+    over = _loop_cap_violations(counts, edge)
+    if over:
+        return {"error": "loop cap reached: " + "; ".join(over) + ". This loop was NOT recorded.",
+                "edge": edge, "loop_counts": counts, "total_loops": manifest.get("total_loops", sum(counts.values())),
+                "recovery": "Do not loop again. Stop here and hand the piece to a human reviewer with the open findings: "
+                            "save the best draft, then finalize with --status blocked "
+                            "(the run-audit would fail a run recorded past its caps)."}
     counts[edge] = counts.get(edge, 0) + 1
     manifest["total_loops"] = sum(counts.values())
 
@@ -536,6 +601,16 @@ def finalize_run(brand: str, run_id: str, status: str = "completed",
                     "changed_since_audit": drift[:10],
                     "recovery": "Re-run the audit, then finalize: "
                                 + _common.script_command("run-audit.py", "--brand", brand, "--run-id", run_id)}
+        # The record proves the audit step ran on these bytes; it is not the evidence. A file written by hand with
+        # verdict CLEAN and the fresh fingerprint passed every check above, so finalize audits the run itself.
+        fresh = _run_audit().audit_run(_run_dir(brand, run_id))
+        if fresh.get("verdict") != "CLEAN":
+            fails = [c["name"] for c in fresh.get("checks", []) if c.get("result") == "FAIL"]
+            return {"error": "cannot finalize as completed: run-audit.json says CLEAN, but a fresh audit of the run as it "
+                             f"stands reports VIOLATIONS ({len(fails)} failing)",
+                    "failing_checks": fails[:10],
+                    "recovery": "Do not write run-audit.json by hand. Fix the findings and re-run run-audit.py, or finalize "
+                                "with --status blocked if the run is legitimately unpublishable as it stands."}
         manifest["audit_verdict"] = "CLEAN"
     elif status == "completed" and skip_audit:
         manifest["audit_skipped"] = True
@@ -592,7 +667,7 @@ def main() -> None:
     g = p_save.add_mutually_exclusive_group(required=True)
     g.add_argument("--content", help="Phase content (inline; use --content-file for large content)")
     g.add_argument("--content-file", help="Path to file containing phase content")
-    p_save.add_argument("--extension", default="md",
+    p_save.add_argument("--extension", default="md", choices=ALLOWED_EXTENSIONS,
                         help="File extension for the saved artifact (md / json / txt). "
                              "json on phases 3.5 and 6 targets the companion manifest slot.")
     p_save.add_argument("--pending-rework", default=None,

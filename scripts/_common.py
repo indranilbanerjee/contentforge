@@ -22,10 +22,12 @@ Path policy (canon):
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 # ── Constants ───────────────────────────────────────────────────────
@@ -76,12 +78,109 @@ def marketing_home() -> Path:
     return Path.home() / ".claude-marketing"
 
 
+# Windows device names: no file or folder can carry one, with or without an extension.
+WINDOWS_RESERVED = frozenset({"con", "prn", "aux", "nul", *(f"com{i}" for i in range(1, 10)),
+                              *(f"lpt{i}" for i in range(1, 10))})
+
+
+def _ascii_slug(text: str) -> str:
+    s = re.sub(r"[^a-z0-9]+", "-", text.lower())
+    return re.sub(r"-+", "-", s).strip("-")[:60].rstrip("-")
+
+
+def legacy_slug(name: str) -> str:
+    """The slug before 4.6.0, which dropped every non-ASCII letter ("Café" -> "caf", any Devanagari or
+    CJK name -> "brand"). Used only to find folders created under it."""
+    return _ascii_slug(name or "") or "brand"
+
+
+def safe_slug(text: str, fallback: str = "brand") -> str:
+    """A file-name-safe ASCII slug that keeps different names apart (the same function as Digital Marketing
+    Pro's _common.safe_slug; tests/test_brand_slugs.py pins the same vectors in both).
+
+    ASCII text gives exactly the old slug. Accents fold ("Café" -> "cafe"). When letters, digits or emoji
+    from another script remain (Devanagari, CJK, Arabic, Cyrillic), the ASCII part gets a six-character tag from
+    a hash of the name, so two such names never share a slug. A Windows device name gets "-<fallback>" appended."""
+    name = unicodedata.normalize("NFKC", text or "").strip()
+    folded = "".join(c for c in unicodedata.normalize("NFKD", name) if not unicodedata.combining(c))
+    slug = _ascii_slug(folded)
+    if any(not c.isascii() and unicodedata.category(c)[0] in "LNM" or unicodedata.category(c) == "So"
+           for c in folded):
+        tag = hashlib.sha256(name.casefold().encode("utf-8")).hexdigest()[:6]
+        slug = f"{slug[:53].rstrip('-') or fallback}-{tag}"
+    slug = slug or fallback
+    return f"{slug}-{fallback}" if slug in WINDOWS_RESERVED else slug
+
+
 def slugify_brand(name: str) -> str:
-    """Canonical brand slug: lowercase, non-alphanumeric runs → single hyphen,
-    trimmed, max 60 chars. Empty input yields 'brand'."""
-    s = re.sub(r"[^a-z0-9]+", "-", (name or "").lower())
-    s = re.sub(r"-+", "-", s).strip("-")
-    return s[:60].rstrip("-") or "brand"
+    """Canonical brand slug (safe_slug with the fallback "brand"). One slugifier for every script."""
+    return safe_slug(name, "brand")
+
+
+def same_brand_name(a, b) -> bool:
+    """True when two brand names are the same name (case and Unicode normal form aside)."""
+    norm = lambda s: unicodedata.normalize("NFKC", str(s or "")).strip().casefold()  # noqa: E731
+    return norm(a) == norm(b)
+
+
+BRAND_RECORD = "brand.json"
+
+
+def read_brand_record(directory: Path):
+    """The brand name a folder says it belongs to, or None (no record, or an unreadable one)."""
+    try:
+        doc = json.loads((Path(directory) / BRAND_RECORD).read_text(encoding="utf-8-sig"))
+    except (OSError, ValueError):
+        return None
+    name = doc.get("brand_name") if isinstance(doc, dict) else None
+    return name if isinstance(name, str) and name.strip() else None
+
+
+def claim_brand_dir(brand: str):
+    """(directory, None), or (None, error) when a different brand already holds this folder.
+
+    A folder remembers whose it is in brand.json. Two brands whose slugs coincide must never share a folder
+    (4.5.12 gave every Japanese, Arabic or Cyrillic brand the folder "brand"): the second one is refused, by
+    name, instead of reading the first one's rows. A folder with no record (made before 4.6.0) is claimed by
+    the first brand that names it. Creating a record never changes an existing one."""
+    directory = brand_dir(brand)
+    held = read_brand_record(directory)
+    name = (brand or "").strip()
+    if held is not None and name and not same_brand_name(held, name):
+        return None, (f"the folder {directory.name!r} already belongs to the brand {held!r}, not {name!r}: "
+                      f"use the exact name {held!r}, or give this brand its own name")
+    if held is None and name and directory.is_dir():
+        try:
+            atomic_write_json(directory / BRAND_RECORD, {"brand_name": name, "slug": directory.name})
+        except OSError:
+            pass  # a read-only folder keeps working; it just stays unlabelled
+    return directory, None
+
+
+def documents_dir(shell=None, windows=None) -> Path:
+    """The user's Documents folder. On Windows it is often redirected (OneDrive "Known Folder Move" makes it
+    %USERPROFILE%\\OneDrive\\Documents), and ~/Documents is then a second, un-synced folder that Explorer's Documents page never
+    shows. It is asked of the shell only when HOME is still the real profile folder: a sandbox or a test that points HOME elsewhere
+    must not be sent to the real user's Documents. Anywhere else, or without an answer, it is ~/Documents."""
+    home = Path.home()
+    if windows is None:
+        windows = os.name == "nt"
+    if windows:
+        if shell is None:
+            def shell(csidl):
+                try:
+                    import ctypes
+                    from ctypes import wintypes
+                    buf = ctypes.create_unicode_buffer(wintypes.MAX_PATH)
+                    if ctypes.windll.shell32.SHGetFolderPathW(None, csidl, None, 0, buf) == 0 and buf.value:
+                        return Path(buf.value)
+                except (AttributeError, ImportError, OSError):
+                    pass
+                return None
+        profile, documents = shell(40), shell(5)  # CSIDL_PROFILE, CSIDL_PERSONAL
+        if profile and documents and os.path.normcase(str(profile)) == os.path.normcase(str(home)):
+            return Path(documents)
+    return home / "Documents"
 
 
 def brand_dir(brand: str) -> Path:
@@ -103,7 +202,16 @@ def brand_dir(brand: str) -> Path:
                 return legacy
         except (OSError, ValueError):
             pass  # raw name not representable as a path component on this OS
-    return home / slugify_brand(brand)
+    slug = slugify_brand(brand)
+    # A folder made under the pre-4.6.0 slug ("Café" -> "caf"): reachable while no folder exists under the new slug,
+    # when its brand.json names this brand. An unlabelled one is taken only if its slug is not the old catch-all "brand",
+    # which held every non-Latin brand at once.
+    old = legacy_slug(brand)
+    if raw and old != slug and not (home / slug).exists() and (home / old).is_dir():
+        held = read_brand_record(home / old)
+        if (held is not None and same_brand_name(held, raw)) or (held is None and old != "brand"):
+            return home / old
+    return home / slug
 
 
 # ── Path containment ────────────────────────────────────────────────
@@ -112,7 +220,21 @@ def brand_dir(brand: str) -> Path:
 # is rejected before it can be turned into a filesystem path. The slug is built from
 # word characters (so a Japanese or Arabic topic gives a legitimate Unicode slug) and
 # hyphens; no separator, dot or colon can appear in it.
-RUN_ID_RE = re.compile(r"^\d{8}-\d{6}-[\w-]+$")
+class _RunIdShape:
+    """`RUN_ID_RE.match(value)`: truthy for {YYYYMMDD}-{HHMMSS}-{slug}, where the slug is letters, digits, combining marks,
+    "-" and "_" of any script. (A `\\w` class drops the vowel signs and the virama of Devanagari, Tamil and Thai, so a
+    correctly spelled topic produced an id the validator refused.)"""
+
+    HEAD = re.compile(r"^\d{8}-\d{6}-")
+
+    def match(self, value):
+        if not isinstance(value, str) or not self.HEAD.match(value) or len(value) == 16:
+            return None
+        ok = all(c in "-_" or unicodedata.category(c)[0] in "LNM" for c in value[16:])
+        return value if ok else None
+
+
+RUN_ID_RE = _RunIdShape()
 
 
 def is_single_component(name) -> bool:
@@ -304,6 +426,8 @@ PINNED_DEPENDENCIES = {
     "google-api-python-client": "2.192.0",
     "google-auth": "2.49.1",
     "gspread": "6.2.1",
+    "matplotlib": "3.10.9",
+    "pillow": "12.3.0",
 }
 
 # Setting this to "1" for a single run is the user's explicit consent to let

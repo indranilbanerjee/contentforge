@@ -334,10 +334,20 @@ def validate_ledger(ledger: dict) -> list:
 
 # ------------------------------------------------------------------ apply
 
+def _in_run(run_dir, name, option="--target"):
+    """The file `name` inside `run_dir`. A name is ONE file name: a separator, '..' or an absolute path exits 2.
+
+    `--target` and `--source-draft` come from the model. They used to be joined as `run_dir / name` (and an absolute path
+    was accepted), so `apply --target ../outside.md` rewrote a file outside the run."""
+    try:
+        return _common.safe_child(run_dir, name)
+    except ValueError:
+        _fail(f"{option} must be a file name inside the run directory (no path separators, '..' or absolute path): {name!r}")
+
+
 def cmd_apply(args):
     run_dir = pathlib.Path(args.run_dir).expanduser().resolve()
-    target = run_dir / args.target if not pathlib.Path(args.target).is_absolute() \
-        else pathlib.Path(args.target)
+    target = _in_run(run_dir, args.target)
     if not target.is_file():
         _fail(f"target not found: {target}")
 
@@ -354,8 +364,7 @@ def cmd_apply(args):
     baseline = None
     guard = "not_applicable"
     if args.source_draft:
-        src_path = run_dir / args.source_draft if not pathlib.Path(args.source_draft).is_absolute() \
-            else pathlib.Path(args.source_draft)
+        src_path = _in_run(run_dir, args.source_draft, "--source-draft")
         if not src_path.is_file():
             _fail(f"source draft not found: {src_path}")
         if auth is None:
@@ -446,7 +455,8 @@ def cmd_apply(args):
         "target": target.name,
         "dry_run": bool(args.dry_run),
         "authorship_guard": guard,
-        "file_changed": changed,
+        "file_changed": changed and not args.dry_run,
+        "would_change": changed,
         "sha256_before": before_sha,
         "sha256_after": _sha256(body),
         "applied": sum(1 for r in results if r["outcome"] == "applied"),
@@ -474,8 +484,7 @@ def cmd_resolve(args):
     corrections. The remedy has to update what `verify` actually checks.
     """
     run_dir = pathlib.Path(args.run_dir).expanduser().resolve()
-    target = run_dir / args.target if not pathlib.Path(args.target).is_absolute() \
-        else pathlib.Path(args.target)
+    target = _in_run(run_dir, args.target)
     if not target.is_file():
         _fail(f"target not found: {target}")
 
@@ -531,8 +540,7 @@ def cmd_resolve(args):
 
 def cmd_verify(args):
     run_dir = pathlib.Path(args.run_dir).expanduser().resolve()
-    target = run_dir / args.target if not pathlib.Path(args.target).is_absolute() \
-        else pathlib.Path(args.target)
+    target = _in_run(run_dir, args.target)
     if not target.is_file():
         _fail(f"target not found: {target}")
 
@@ -664,8 +672,7 @@ def cmd_validate(args):
                               "applied. Gate 4 requires --target.")
         _out(payload, 0)
 
-    target = run_dir / args.target if not pathlib.Path(args.target).is_absolute() \
-        else pathlib.Path(args.target)
+    target = _in_run(run_dir, args.target)
     if not target.is_file():
         _fail(f"target not found: {target}")
 

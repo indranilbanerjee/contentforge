@@ -109,7 +109,7 @@ def get_publish_dir(brand, content_type=None, override=None):
     if base:
         base = Path(base).expanduser()
     else:
-        base = Path.home() / "Documents" / "ContentForge" / _common.slugify_brand(brand)
+        base = _common.documents_dir() / "ContentForge" / _common.slugify_brand(brand)
     if content_type:
         base = base / _common.slugify_brand(content_type)
     return base
@@ -157,6 +157,9 @@ def slugify(text):
 
 def init_tracking(brand):
     """Create tracking directory structure and empty tracking.json."""
+    _, held = _common.claim_brand_dir(brand)
+    if held:
+        return {"error": held}
     tracking_dir = get_tracking_dir(brand)
     outputs_dir = tracking_dir / "outputs"
     tracking_file = tracking_dir / "tracking.json"
@@ -171,6 +174,7 @@ def init_tracking(brand):
     tracking_dir.mkdir(parents=True, exist_ok=True)
     outputs_dir.mkdir(parents=True, exist_ok=True)
     _common.atomic_write_json(tracking_file, {"records": [], "schema_version": "1.0"})
+    _common.claim_brand_dir(brand)  # label the folder with the brand's name now that it exists
 
     return {
         "status": "initialized",
@@ -187,6 +191,8 @@ def add_row(brand, data):
 
     records = store["records"]
     req_id = data.get("requirement_id") or _common.next_req_id(records)
+    if data.get("requirement_id") and any(r.get("requirement_id") == req_id for r in records):
+        return {"error": f"requirement_id {req_id} already exists; use update-row to change it"}
 
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     priority = _common.clamp_priority(data.get("priority", 3))
@@ -421,7 +427,7 @@ def mark_complete(brand, row_id, data, output_file=None, publish_dir_override=No
         "output_path": tracking_path,
         "published_path": published_path,
         "published_path_note": (
-            "This is the user-visible copy under ~/Documents/ContentForge/. "
+            f"This is the user-visible copy, in {_common.documents_dir() / 'ContentForge'}. "
             "Open this folder, not the internal tracking copy."
         ) if published_path else None,
     }

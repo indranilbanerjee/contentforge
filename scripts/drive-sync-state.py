@@ -192,6 +192,15 @@ def _run_pending_path(brand: str, run_id: str) -> Path:
     return _common.brand_dir(brand) / "runs" / run_id / "_sync-pending.json"
 
 
+def _file_name_arg(value):
+    """argparse `type` for --file: one plain file name. The agent later resolves <run dir>/<name> and uploads it, so a stored
+    "../../../x.md" would point outside the run."""
+    import argparse
+    if not _common.is_single_component(value):
+        raise argparse.ArgumentTypeError(f"{value!r} must be a file name inside the run (no path separators, '..' or drive prefix)")
+    return value
+
+
 def add_pending_upload(brand: str, run_id: str, file: str) -> dict:
     """Mark a checkpoint file as needing upload to Drive. Called by
     checkpoint-manager.py after each phase save."""
@@ -332,7 +341,7 @@ def main():
     ])
     parser.add_argument("--brand", help="brand slug or name")
     parser.add_argument("--run-id", type=_common.run_id_arg, help="run identifier")
-    parser.add_argument("--file", help="file path / name")
+    parser.add_argument("--file", type=_file_name_arg, help="a file name inside the run (no path separators or '..')")
     parser.add_argument("--drive-file-id", help="Drive file ID from MCP response")
     parser.add_argument("--drive-url", help="Drive webViewLink")
     parser.add_argument("--content-hash", help="content hash (for downloads)")

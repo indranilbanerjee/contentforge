@@ -156,6 +156,7 @@ Each row names the config key it was read from. The test resolves every key and 
 |---|---|---|
 | A manifest | run.json parses | The manifest is missing or corrupt. |
 | A manifest | completed phases are known phases | The manifest lists a phase that does not exist. |
+| A manifest | phase artifact names stay inside the run | A phase artifact name in run.json holds a path separator, `..` or an absolute path, so reading it would leave the run folder. |
 | A manifest | every completed phase has its artifact on disk | A phase is recorded complete but its file is absent. |
 | A manifest | no orphaned artifacts in a finalized run | A finalized run has artifacts for phases it never recorded. |
 | A manifest | total_loops equals the sum of loop_counts | The loop total disagrees with the per-edge counts. |

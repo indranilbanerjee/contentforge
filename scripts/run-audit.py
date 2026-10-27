@@ -435,6 +435,12 @@ def audit_run(run_dir: pathlib.Path, strict: bool = False) -> dict:
 
     # ------------------------------------------------------------- B. body
     body_name = artifacts.get("6.5", "phase-6.5-humanized.md")
+    # A name in run.json is data an earlier step wrote: it must be one file name inside the run, or the audit reads (and
+    # hands to fix-ledger) a file outside it.
+    unsafe = [f"{key}: {name!r}" for key, name in artifacts.items() if not _common.is_single_component(name)]
+    a.check("A manifest", "phase artifact names stay inside the run", not unsafe, "; ".join(unsafe))
+    if not _common.is_single_component(body_name):
+        body_name = "phase-6.5-humanized.md"
     body_path = run_dir / body_name
     body = _read(body_path) if body_path.is_file() else None
     if body is None:
