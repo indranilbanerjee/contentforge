@@ -1,0 +1,58 @@
+# Dated checks: runs the checks that can go red while nobody pushes, every week.
+#
+# A quiet repo never runs push-only tests. config/social-platform-specs.json carries a review_by date for every
+# platform, and tests/test_platform_review_dates.py fails from 30 days before the earliest one. This job runs it
+# every week, so an expiring date reaches someone without anyone running the suite. On failure it opens (or comments
+# on) one issue labelled `dated-check`.
+# Stdlib only; no secrets beyond the built-in GITHUB_TOKEN.
+name: Dated checks
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dated:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run the dated tests
+        id: dated
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          python -m unittest tests.test_platform_review_dates -v 2>&1 | tee dated-output.txt
+      - name: Open or update the dated-check issue
+        if: steps.dated.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create dated-check --color B60205 \
+            --description "A weekly dated check (a platform review date) failed" --force
+          {
+            echo "The weekly dated checks failed on $(date -u +%Y-%m-%d)."
+            echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo "A platform's review_by in config/social-platform-specs.json is within 30 days or has passed."
+            echo "Read the platform's page again, correct the limits, then move verified_on, status and review_by."
+            echo
+            echo '```'
+            tail -n 40 dated-output.txt
+            echo '```'
+          } > body.md
+          existing=$(gh issue list --label dated-check --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file body.md
+          else
+            gh issue create --title "Dated checks failed: a platform review date needs attention" \
+              --label dated-check --body-file body.md
+          fi
+          exit 1

@@ -56,8 +56,13 @@ MAX_PAGES = 20
 
 def _http_get(url: str, headers: dict[str, str], timeout: int = 15) -> dict | None:
     """The page as a dict, or None when the call failed in any way. No error text is kept: providers echo part of a rejected
-    key in it, and the report says only that the provider was skipped."""
-    req = urllib.request.Request(url, headers=headers)
+    key in it, and the report says only that the provider was skipped.
+
+    Every header goes in with add_unredirected_header. urllib copies a request's ordinary headers (the key's among them) to
+    whatever host a 30x answer names, so a key set the usual way would follow a redirect off the vendor."""
+    req = urllib.request.Request(url)
+    for name, value in headers.items():
+        req.add_unredirected_header(name, value)
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return json.loads(resp.read().decode("utf-8"))

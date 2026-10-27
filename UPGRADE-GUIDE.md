@@ -1,5 +1,18 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.12 → 4.6.0 (audit fixes)
+
+**Nothing migrates, and four behaviours are stricter.**
+
+- `checkpoint-manager.py save --extension` takes `md`, `json` or `txt`, and `fix-ledger.py` takes `--target` and `--source-draft` as file names inside the run. A wrapper of yours that passed a path now gets exit 2; pass the bare name.
+- Brand folders for names that are not plain ASCII get a six-character tag (`東京ブランド` becomes `brand-fa1e53`, `भारत Foods` becomes `foods-bb073d`). Plain ASCII names keep the slug they always had, and a folder made under the old slug is still found while no other brand claims it. If two non-ASCII brands already share the old folder, `brand` is never assumed to be either one: run `init` for each brand once and move its files across by hand. Brands with accents (`Café`) now fold to the ASCII slug (`cafe`).
+- `checkpoint-manager.py loop` exits 1 and records nothing when the edge or the run is at its cap. Stop looping and send the piece to a human reviewer, as the audit already required.
+- `finalize --status completed` runs the audit itself. A hand-written `run-audit.json` no longer finalizes a run whose real audit says VIOLATIONS.
+
+`SECURITY.md` now lists 4.6.x as supported, 4.5.x for trivially backportable fixes, and older minors as unsupported. The `cf-social-adapt.skill` upload for claude.ai changes with this release; download it from the 4.6.0 release.
+
+---
+
 ## Upgrading 4.5.11 → 4.5.12 (registry refresh)
 
 **Nothing migrates.** `scripts/refresh_models.py` sends each API key in a request header and reads every page of each provider's model list, so its drift report may now list models it used to miss (a long catalogue was cut off at the first page). If a wrapper of yours called it with a Gemini key in a URL, it no longer needs to.

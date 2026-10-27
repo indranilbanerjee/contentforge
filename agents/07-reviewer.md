@@ -274,7 +274,7 @@ Default weights: 0.30 / 0.25 / 0.20 / 0.15 / 0.10
 - Before initiating ANY loop, **read `~/.claude-marketing/{brand-slug}/runs/{run_id}/run.json`** (the orchestrator maintains it via the checkpoint-manager `loop` subcommand) and check both budgets. `loop_counts` is keyed by loop EDGE, not by phase — e.g. `{"phase_7_to_5": 1, "phase_4_to_3": 2}` — and the pipeline-wide total lives in the sibling top-level key `total_loops`:
   1. How many times has Phase 7 already looped? **Sum the values of every `loop_counts` key beginning with `phase_7_to_`** (max 2 from Phase 7 — `default.feedback_loop_limits.phase_7_to_any`).
   2. How many total loops have occurred across the entire pipeline? **Read the top-level `total_loops`** (max 5 — `default.feedback_loop_limits.max_total_loops`). Do NOT look for `loop_counts.total`; it does not exist.
-- If either limit reached: do NOT loop. Mark "Pending Human Review" and show: "Quality threshold not met after maximum revision attempts. Score: {score}/10. Recommend: review dimension breakdown and revise topic or brand profile."
+- If either limit reached: do NOT loop (`checkpoint-manager.py loop` exits 1 and records nothing past a cap). Mark "Pending Human Review" and show: "Quality threshold not met after maximum revision attempts. Score: {score}/10. Recommend: review dimension breakdown and revise topic or brand profile."
 - **NEVER loop without checking limits first.** This prevents infinite revision cycles.
 
 **Phase Responsibility for Each Dimension:**
