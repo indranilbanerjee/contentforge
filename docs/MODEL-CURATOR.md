@@ -3,7 +3,7 @@
 `scripts/model_registry.json` is the curated catalog of AI model ids for the suite, and `scripts/resolve_model.py` is the resolver that reads it. Together they answer three questions:
 
 1. "What's the current best model for X?" → `resolve("latest-fast-anthropic")` returns the concrete id.
-2. "Is this model id still good?" → `check("gemini-2.0-flash")` returns `("retired", "gemini-3.5-flash")`.
+2. "Is this model id still good?" → `check("gpt-4o")` returns `("deprecated", "gpt-6-luna")`.
 3. "What's available?" → `list_models(vendor="google", modality="image-gen")` returns the matching catalog.
 
 A single edit to `model_registry.json` propagates to everything that reads it — no grep-and-replace when a provider deprecates a model.
@@ -19,7 +19,7 @@ So the registry and resolver are **curation and reference tooling**, shared acro
 - **Documentation truth** — one place to check whether a model id named in a doc, agent file, or example is still current.
 - **Deprecation awareness** — `--check` tells you whether an id you're about to write down is `current`, `supported`, `preview`, `deprecated`, or `retired`, and what replaced it.
 - **Staleness tracking** — `--registry-age` and `refresh_models.py` flag when the catalog needs a curation pass.
-- **Parameter safety linting** — `--check-params` scans a Python file for `temperature` / `top_p` / `top_k` set alongside a Claude Opus 4.7+ target (see below).
+- **Parameter safety linting** — `--check-params` scans a Python file for `temperature` / `top_p` / `top_k` set alongside any Claude model or `latest-*-anthropic` alias (see below).
 
 The one script that talks to a provider is `scripts/refresh_models.py`, and it only reads the public `/v1/models` catalog endpoints to report drift. It never generates content.
 
@@ -39,8 +39,8 @@ python scripts/resolve_model.py --alias latest-text-anthropic
 # -> the id the registry names for that alias today
 
 # Check the status of a specific id (exit code 1 if deprecated/retired)
-python scripts/resolve_model.py --check gemini-2.0-flash
-# -> gemini-2.0-flash: retired (use gemini-3.5-flash)
+python scripts/resolve_model.py --check gpt-4o
+# -> gpt-4o: deprecated (use gpt-6-luna)
 
 # List the catalog, filtered
 python scripts/resolve_model.py --list --vendor anthropic --status current
@@ -75,19 +75,17 @@ That command is the source of truth; nothing in the docs or skills should name t
 
 ---
 
-## ⚠ Parameter compatibility — Claude Opus 4.7 and later
+## ⚠ Parameter compatibility — every Anthropic model (API version 2026-10-21)
 
-**Claude Opus 4.7 and later reject `temperature`, `top_p`, and `top_k` with HTTP 400** when set to a non-default value. The Anthropic SDK still accepts these parameters in its request types (for type-check compatibility), but the runtime returns a 400.
+**From Anthropic API version 2026-10-21, `temperature`, `top_p` and `top_k` are removed for every model:** a request that sends any of them returns HTTP 400, even at the default value. On the older 2023-06-01 version, Claude 4.7 and later already reject a non-default value (see the registry's `param_compatibility_notes.anthropic_sampling_parameters`).
 
-If a script calls Opus 4.7+ via the SDK, **omit** these parameters entirely — let the system default apply. Use prompting to guide model behavior instead.
-
-`latest-text-anthropic` resolves to a model in that range, so any code path going through that alias is in scope. Scan a file before shipping it:
+Omit all three on every Anthropic call; use prompting to guide behaviour. Plugins call Anthropic models through aliases such as `resolve_model("latest-text-anthropic")`. Scan a file before shipping it:
 
 ```bash
 python scripts/resolve_model.py --check-params scripts/some_script.py
 ```
 
-The scan is textual, not AST-based: it triggers when a file references `claude-opus-4-7` / `claude-opus-4-8` literally or uses the `latest-text-anthropic` alias, then flags every `temperature` / `top_p` / `top_k` assignment in that file. It exits 1 on any finding, so it drops straight into a pre-commit check. Expect occasional false positives when the model target is computed dynamically — that's deliberate, one extra review beats a 400 in production.
+The scan is textual, not AST-based: it triggers when a file references any `claude-…` model id or a `latest-*-anthropic` alias, then flags every `temperature` / `top_p` / `top_k` assignment in that file. It exits 1 on any finding, so it drops straight into a pre-commit check. Expect occasional false positives when the model target is computed dynamically — that's deliberate, one extra review beats a 400 in production.
 
 Source: [Claude model deprecations — API parameter deprecations](https://platform.claude.com/docs/en/about-claude/model-deprecations).
 

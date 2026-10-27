@@ -131,7 +131,7 @@ For a connector whose guide says `"transport": "npx"` (a verified package), the 
    ```json
    "deepl": {
      "command": "npx",
-     "args": ["-y", "deepl-mcp-server"],
+     "args": ["-y", "deepl-mcp-server@1.3.14"],
      "env": {
        "DEEPL_API_KEY": "${DEEPL_API_KEY}"
      }

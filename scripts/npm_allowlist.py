@@ -16,12 +16,14 @@ Every other connector is "no verified connector": the setup guide prints the opt
 Checks, both stdlib-only:
 
   --check            OFFLINE. Every runnable package found in the shipped MCP config files and in the
-                     connector registry must be in the allowlist. Exit 1 lists the ones that are not.
-  --online           NETWORK (registry.npmjs.org, read-only). Every allowlisted package must still exist,
-                     still have versions, still be published by the expected account, still point at the
-                     vendor's repository, and its latest version must not be deprecated. Exit 1 lists the
-                     failures; --report FILE writes them as JSON and as a Markdown issue body. The weekly
-                     workflow (.github/workflows/npm-allowlist.yml) runs this and opens an issue.
+                     connector registry must be in the allowlist AND be written `name@exact-version` with the
+                     version the allowlist pins. A bare name, a range or @latest fails, and so does an allowlist
+                     entry with no exact version. Exit 1 lists the ones that are not.
+  --online           NETWORK (registry.npmjs.org, read-only). Every allowlisted package must still exist, its
+                     pinned version must still exist and not be deprecated, be published by the expected account
+                     and point at the vendor's repository, and the latest version must not be deprecated. Exit 1
+                     lists the failures; --report FILE writes them as JSON and as a Markdown issue body. The
+                     weekly workflow (.github/workflows/npm-allowlist.yml) runs this and opens an issue.
 
 Usage:
     python scripts/npm_allowlist.py --check
@@ -65,8 +67,28 @@ def is_verified(name: str, allow=None) -> bool:
     return package_name(name) in (load() if allow is None else allow)
 
 
-def runnable_packages(config) -> list:
-    """(server name, package) for every entry of a parsed MCP config that executes an npm package."""
+EXACT_VERSION = re.compile(r"^\d+\.\d+\.\d+$")
+
+
+def pinned_spec(name: str, allow=None) -> str:
+    """`name@version` for an allowlisted package; KeyError for anything else, ValueError for an entry with no exact pin."""
+    entry = (load() if allow is None else allow)[name]
+    version = entry.get("version", "")
+    if not EXACT_VERSION.match(str(version)):
+        raise ValueError(f"{name}: the allowlist has no exact version ({version!r})")
+    return f"{name}@{version}"
+
+
+def allowlist_problems(allow=None) -> list:
+    """Allowlist entries that cannot be turned into a pinned command."""
+    allow = load() if allow is None else allow
+    return [f"allowlist: '{name}' has no exact version (got {entry.get('version')!r}); a command must be name@x.y.z"
+            for name, entry in allow.items() if not EXACT_VERSION.match(str(entry.get("version", "")))]
+
+
+def runnable_specs(config) -> list:
+    """(server name, spec exactly as written, e.g. `pkg@1.2.3` or a bare `pkg`) for every entry of a parsed MCP config
+    that executes an npm package."""
     found = []
 
     def walk(obj, trail=""):
@@ -77,7 +99,7 @@ def runnable_packages(config) -> list:
                 if command in RUNNERS or (command in ("pnpm", "yarn") and words[:1] == ["dlx"]):
                     names = [w for w in words if not w.startswith("-") and w != "dlx"]
                     if names:
-                        found.append((trail.strip("/") or "?", package_name(names[0])))
+                        found.append((trail.strip("/") or "?", names[0]))
             for key, value in obj.items():
                 walk(value, trail + "/" + str(key))
         elif isinstance(obj, list):
@@ -86,6 +108,34 @@ def runnable_packages(config) -> list:
 
     walk(config)
     return found
+
+
+def runnable_packages(config) -> list:
+    """(server name, package name without any version) for every entry that executes an npm package."""
+    return [(server, package_name(spec)) for server, spec in runnable_specs(config)]
+
+
+MENTION_PATTERNS = (r"\b(?:npx|bunx|pnpx)\s+(?:-y|--yes)\s+(?:-{1,2}[A-Za-z-]+\s+)*(@?[A-Za-z0-9][A-Za-z0-9_./@-]*)",
+                    r"[\"']-y[\"']\s*,\s*[\"']([^\"']+)[\"']")
+
+
+def mentioned_specs(text: str) -> list:
+    """Like mentioned_runnables, but each spec exactly as written (`pkg`, `pkg@1.2.3`, `pkg@latest`)."""
+    specs = []
+    for pattern in MENTION_PATTERNS:
+        for match in re.finditer(pattern, text):
+            spec = match.group(1)
+            if "<" in spec or ">" in spec or not re.search(r"[-/@]", spec):
+                continue
+            specs.append(spec)
+    return specs
+
+
+def unpinned_mentions(text: str, allow=None) -> list:
+    """Allowlisted packages that text tells someone to run without the exact pinned version."""
+    allow = load() if allow is None else allow
+    return [spec for spec in mentioned_specs(text)
+            if package_name(spec) in allow and spec != f"{package_name(spec)}@{allow[package_name(spec)].get('version')}"]
 
 
 def mentioned_runnables(text: str) -> list:
@@ -120,7 +170,7 @@ def registry_runnables(registry) -> list:
 def offline_problems(allow=None, config_texts=None, registry=None) -> list:
     """Runnable packages that are not in the allowlist, as readable strings. Empty means clean."""
     allow = load() if allow is None else allow
-    problems = []
+    problems = allowlist_problems(allow)
     if config_texts is None:
         config_texts = {}
         for name in CONFIG_FILES:
@@ -133,9 +183,13 @@ def offline_problems(allow=None, config_texts=None, registry=None) -> list:
         except ValueError:
             problems.append(f"{where}: not valid JSON, so its commands could not be checked")
             continue
-        for server, package in runnable_packages(parsed):
+        for server, spec in runnable_specs(parsed):
+            package = package_name(spec)
             if package not in allow:
                 problems.append(f"{where}: server '{server}' runs npm package '{package}', which is not in the vendor-verified allowlist")
+            elif spec != f"{package}@{allow[package].get('version')}":
+                problems.append(f"{where}: server '{server}' runs '{spec}', which is not pinned to the allowlisted exact version "
+                                f"'{package}@{allow[package].get('version')}'")
     for connector, package in registry_runnables(_load_registry() if registry is None else registry):
         if package not in allow:
             problems.append(f"connector registry: '{connector}' would be given a runnable command for '{package}', which is not in the allowlist")
@@ -161,15 +215,26 @@ def check_package_online(name: str, entry: dict, doc) -> list:
     latest = (doc.get("dist-tags") or {}).get("latest")
     if not versions or not latest or latest not in versions:
         return [f"{name}: no published versions (dist-tags.latest = {latest!r})"]
+    pinned = entry.get("version")
+    if not pinned or not EXACT_VERSION.match(str(pinned)):
+        return [f"{name}: the allowlist has no exact version (got {pinned!r})"]
+    if pinned not in versions:
+        return [f"{name}: the pinned version {pinned} is not on npm (it was unpublished or never existed); the command "
+                f"`npx -y {name}@{pinned}` would fail or, if the version is re-published, run different code"]
     maintainers = sorted({m.get("name", "") for m in doc.get("maintainers", []) if isinstance(m, dict)})
     expected = sorted(entry.get("npm_publishers", []))
     if not set(maintainers) & set(expected):
         problems.append(f"{name}: publisher changed. npm maintainers are {maintainers or 'none'}, expected one of {expected}")
-    repo = versions[latest].get("repository") or doc.get("repository") or {}
+    published_by = (versions[pinned].get("_npmUser") or {}).get("name")
+    if published_by and published_by not in expected:
+        problems.append(f"{name}: the pinned version {pinned} was published by '{published_by}', expected one of {expected}")
+    repo = versions[pinned].get("repository") or doc.get("repository") or {}
     repo_url = repo.get("url") if isinstance(repo, dict) else repo
     if _normalise_repo(repo_url) != _normalise_repo(entry.get("repository", "")):
         problems.append(f"{name}: repository changed. npm says {repo_url!r}, expected {entry.get('repository')!r}")
-    if versions[latest].get("deprecated"):
+    if versions[pinned].get("deprecated"):
+        problems.append(f"{name}: the pinned version {pinned} is marked deprecated: {versions[pinned]['deprecated']}; pin a newer release")
+    if latest != pinned and versions[latest].get("deprecated"):
         problems.append(f"{name}: the latest version {latest} is marked deprecated: {versions[latest]['deprecated']}")
     return problems
 

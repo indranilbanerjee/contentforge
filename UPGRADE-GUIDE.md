@@ -1,5 +1,11 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.5.8 → 4.5.9 (registry, parameter scan, pinned DeepL command)
+
+**Nothing migrates.** `scripts/model_registry.json` is replaced by the refreshed copy, so an alias such as `latest-fast-anthropic` may resolve to a different model than before; run `python scripts/resolve_model.py --aliases` to see them. If you copied the DeepL entry from `.mcp.json.example` into your own `.mcp.json`, change `"deepl-mcp-server"` to `"deepl-mcp-server@1.3.14"`. `resolve_model.py --check-params` now reports a `temperature`, `top_p` or `top_k` next to any Claude model, not only Opus 4.7 and 4.8; remove them from your own scripts (the Anthropic API rejects them from version 2026-10-21).
+
+---
+
 ## Upgrading 4.5.7 → 4.5.8 (vendor-verified connector packages)
 
 **One behaviour change, nothing migrates.** Connector setup (`/contentforge:cf-connect`, `/contentforge:cf-integrations`) now gives a runnable `npx` command only for DeepL, whose package DeepL publishes. WordPress, HubSpot CMS, Semrush, Confluence, Sarvam AI, Twitter/X, LinkedIn and Instagram are reported as "no verified connector": you get the vendor's own MCP server, an aggregator entry, or the option to skip, and no command or environment variables. `.mcp.json.example` no longer carries the Stability AI, nanobanana and imagenate entries. If you already added one of those to your own `.mcp.json`, it keeps running; it is yours to review, and `npm view <package> maintainers repository` shows who publishes it.

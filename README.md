@@ -8,16 +8,16 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 30 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.5.8-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.5.9-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-839%2F839%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v458)
+[![Tests](https://img.shields.io/badge/tests-857%2F857%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v459)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.5.8 (October 27, 2026): connector setup only offers vendor-verified packages.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
+> 🆕 **Just shipped — v4.5.9 (October 27, 2026): the model registry is current, the parameter scan covers every Claude model, and the DeepL command is pinned.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code 2.1.292 or newer (one command, run in your terminal):
@@ -208,7 +208,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.5.8)
+## Supported surfaces (v4.5.9)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -831,6 +831,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.5.9 (2026-10-27)** — **The model registry is current, the parameter scan covers every Claude model, and the DeepL command is pinned.** The registry is now a copy of the canonical one (72 models, 20 aliases; vendor pages read 2026-10-27): an alias had pointed at a model three weeks after its successor shipped, and two entries carried a release date as a shutdown date. `resolve_model.py --check-params` looked only for Claude Opus 4.7 and 4.8; from Anthropic API version 2026-10-21 `temperature`, `top_p` and `top_k` are rejected on every model, so it now flags any Claude id or `latest-*-anthropic` alias. The DeepL connector was allowlisted but shipped as a bare `deepl-mcp-server` in three places; the allowlist now pins an exact version, all three say `deepl-mcp-server@1.3.14`, and the weekly check confirms the pinned version still exists, is not deprecated and is the vendor's.
 
 **v4.5.8 (2026-10-27)** — **Connector setup only offers vendor-verified packages.** `npx -y <name>` runs whatever is published under that name with your API keys in its environment, so ContentForge now gives a runnable command only for a package the service's own vendor publishes (today, DeepL's). Every other connector says "no verified connector" and offers the vendor's own MCP server, an aggregator, or skipping it, and writes no command or credentials for a community package. The three community image-generation entries are gone from `.mcp.json.example`, a test checks that nothing runnable is outside the list, and a weekly workflow confirms each listed package still exists and still has the expected publisher. The same release trims the agent descriptions (always-on cost ~2,112 to ~1,958 tokens), caps Instagram at 5 hashtags and Threads at one topic tag, installs in one command on Claude Code 2.1.292 or newer, and warns on Python 3.10 (end of life since 2026-10-01; ContentForge moves to 3.11 once Claude's Cowork environment does, so use 3.11 or newer where you can).
 

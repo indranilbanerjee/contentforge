@@ -720,6 +720,7 @@ def setup_guide(name):
             else:
                 guide["transport"] = "npx"
                 guide["package"] = conn.get("package", "")
+                guide["package_spec"] = npm_allowlist.pinned_spec(conn["package"], VERIFIED_PACKAGES)
                 guide["env_vars"] = conn.get("env_vars", [])
                 guide["steps"] = [
                     f"1. Obtain API credentials from the {name} platform.",
@@ -730,7 +731,7 @@ def setup_guide(name):
                 guide["mcp_json_entry"] = {
                     name: {
                         "command": "npx",
-                        "args": ["-y", conn["package"]],
+                        "args": ["-y", guide["package_spec"]],
                         "env": {v: f"${{{v}}}" for v in conn["env_vars"]},
                     }
                 }

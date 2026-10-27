@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.5.9] - 2026-10-27
+
+### The model registry is current, `--check-params` covers every Claude model, and the DeepL command is pinned
+
+Found by a freshness review of the vendors' own model pages on 2026-10-27 (the registry and the parameter scan) and by the fresh-install Tester the same day (the unpinned command).
+
+**Fixed**
+
+- The model registry was three weeks old and wrong in places. It is now a copy of Digital Marketing Pro's canonical registry (3.36.2, read from Anthropic's, OpenAI's, Google's Gemini API and Vertex pages on 2026-10-27), minus the marketing-suite-only model families: 72 models and 20 aliases, up from 67 and 18. `latest-fast-anthropic` pointed at a model three weeks after its successor shipped; `gemini-2.5-flash-image` was marked "retired 2026-10-02", which was its release date (its shutdown is 2027-03-15); Gemini 2.5 was marked deprecated with a shutdown date the vendor page no longer showed; the Veo 3.0 entries fell forward to a preview id that had itself shut down. Entries now carry `shutdown_date` and `retirement_checked`; the aliases `latest-video-gemini-api` and `latest-fast-google` are new; 12 entries are gone (11 that had been retired for more than 90 days, and `gemini-omni`, which is now `gemini-omni-flash-preview`). `param_compatibility_notes` replaces `claude_opus_4_7_and_later` with `anthropic_sampling_parameters` and adds `veo_backend` (Veo 3.1 runs on Vertex AI only).
+- `resolve_model.py --check-params` only looked for Claude Opus 4.7 and 4.8. From Anthropic API version 2026-10-21 `temperature`, `top_p` and `top_k` are removed for every model, so the scan now triggers on any `claude-…` id or `latest-*-anthropic` alias in the file. A call to Haiku or Sonnet with `temperature=0.2` used to pass clean.
+- The DeepL connector was allowlisted but shipped unpinned in three places (`.mcp.json.example`, the `cf-connect` skill and the `setup-guide` output all said `deepl-mcp-server`), so the weekly check passed while every user who ran the command would have taken whatever release was newest, or a hijacked one. The allowlist entry now carries an exact `version` (1.3.14, the newest release at least 14 days old on 2026-10-27, the same rule and value as Digital Marketing Pro), all three places say `deepl-mcp-server@1.3.14`, and the setup guide builds the command from the allowlist (`package_spec`).
+- `scripts/npm_allowlist.py --check` rejects any runnable `npx` that is not `name@exact-version` for the allowlisted version (a bare name, a range, `@latest` and a different version all fail), and an allowlist entry with no exact version. `--online` also confirms the pinned version still exists, is not deprecated and was published by the vendor's account. The `docs/MODEL-CURATOR.md` examples no longer use a model id the registry dropped.
+
+**Added**
+
+- `tests/test_model_registry_dates.py` (8): the dated-registry rules from Digital Marketing Pro (a live entry past its shutdown date, an unchecked retirement floor, an alias on a deprecated id, a retired id that falls forward to a retired id, an entry kept more than 120 days after shutdown), evaluated on the day the registry says it was reviewed so this suite cannot go red because the calendar moved (the weekly dated-checks job in Digital Marketing Pro watches the clock for the canonical copy this registry is synced from); and four tests of the widened parameter scan. Run against the 4.5.8 registry and scanner, five of the eight fail.
+- `tests/test_npx_allowlist.py` grows from 25 to 35: the bare name, `@latest`, a range and a stale version planted against the offline guard, an allowlist entry without a version, prose and JSON that name the package unpinned, and a pinned version that is gone, deprecated or published by someone else against the online check. Run against the 4.5.8 example file and skill text the new guard reports both.
+
 ## [4.5.8] - 2026-10-27
 
 ### Connector setup only offers vendor-verified packages

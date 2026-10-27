@@ -1,13 +1,14 @@
 {
-  "_comment": "The ONLY npm packages ContentForge will ever tell anyone to run with npx. An entry here means the package is published by the vendor of the service itself: the npm publisher is the vendor's account and the repository is the vendor's own. Everything else is 'no verified connector': connector setup prints the options (the vendor's own MCP server, an HTTP aggregator, or skipping) and never writes a command or environment variables for it. Add a package only after checking all three of: the npm maintainer account belongs to the vendor, the repository is the vendor's, and the vendor's own documentation names this package. scripts/npm_allowlist.py checks this file offline (every runnable package must be listed) and online (every listed package still exists, still has versions, and still has the expected publisher); a weekly workflow runs the online check.",
+  "_comment": "The ONLY npm packages ContentForge will ever tell anyone to run with npx. An entry here means the package is published by the vendor of the service itself: the npm publisher is the vendor's account and the repository is the vendor's own. Everything else is 'no verified connector': connector setup prints the options (the vendor's own MCP server, an HTTP aggregator, or skipping) and never writes a command or environment variables for it. Add a package only after checking all three of: the npm maintainer account belongs to the vendor, the repository is the vendor's, and the vendor's own documentation names this package. Every entry carries an exact `version` (the newest release at least 14 days old): a command is always `name@version`, never a bare name, so a later malicious release cannot reach anyone who has not been given a new pin. scripts/npm_allowlist.py checks this file offline (every runnable package must be listed) and online (every listed package still exists, still has versions, and still has the expected publisher); a weekly workflow runs the online check.",
   "verified_on": "2026-10-27",
   "packages": {
     "deepl-mcp-server": {
       "vendor": "DeepL",
+      "version": "1.3.14",
       "npm_publishers": ["deepl-com"],
       "repository": "https://github.com/DeepL/deepl-mcp-server",
       "verified_on": "2026-10-27",
-      "evidence": "registry.npmjs.org/deepl-mcp-server: maintainer deepl-com, repository git+https://github.com/DeepL/deepl-mcp-server.git, 27 versions, first published 2025-04-30, last publish 2026-10-14 (read 2026-10-27)"
+      "evidence": "registry.npmjs.org/deepl-mcp-server: maintainer deepl-com, repository git+https://github.com/DeepL/deepl-mcp-server.git, 27 versions, first published 2025-04-30, last publish 2026-10-14 (read 2026-10-27). Pinned to 1.3.14: published 2026-10-12, so 15 days old on 2026-10-27 (1.3.15 was 12 days old); the pin is the newest release at least 14 days old"
     }
   }
 }
