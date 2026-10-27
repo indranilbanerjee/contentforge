@@ -32,15 +32,24 @@ import _common  # noqa: E402
 _common.ensure_utf8_stdout()
 
 # ── Dependencies (never installed automatically: a missing package prints the pinned command) ──
-try:
-    from pyairtable import Api
-    from pyairtable.formulas import match
-except ImportError:
-    err = _common.pip_install(["pyairtable"], label="pyairtable")
-    if err:
-        _common.finish(err)
-    from pyairtable import Api
-    from pyairtable.formulas import match
+# Imported after the arguments are parsed, so --help and a mistyped option work without the package.
+Api = match = None
+
+
+def _require_dependencies():
+    global Api, match
+    if Api is not None:
+        return
+    try:
+        from pyairtable import Api as _api
+        from pyairtable.formulas import match as _match
+    except ImportError:
+        err = _common.pip_install(["pyairtable"], label="pyairtable")
+        if err:
+            _common.finish(err)
+        from pyairtable import Api as _api
+        from pyairtable.formulas import match as _match
+    Api, match = _api, _match
 
 # ── Constants ───────────────────────────────────────────────────────
 
@@ -415,6 +424,7 @@ def main():
     parser.add_argument("--data", help="JSON string with field values")
     parser.add_argument("--attach-file", help="Path to file to attach (for mark-complete)")
     args = parser.parse_args()
+    _require_dependencies()
 
     # Authenticate
     api, err = get_api()

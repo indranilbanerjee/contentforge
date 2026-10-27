@@ -33,15 +33,24 @@ import _common  # noqa: E402
 _common.ensure_utf8_stdout()
 
 # ── Dependencies (never installed automatically: a missing package prints the pinned command) ──
-try:
-    import gspread
-    from google.oauth2.service_account import Credentials
-except ImportError:
-    err = _common.pip_install(["gspread", "google-auth"], label="Google Sheets packages")
-    if err:
-        _common.finish(err)
-    import gspread
-    from google.oauth2.service_account import Credentials
+# Imported after the arguments are parsed, so --help and a mistyped option work without the packages.
+gspread = Credentials = None
+
+
+def _require_dependencies():
+    global gspread, Credentials
+    if gspread is not None:
+        return
+    try:
+        import gspread as _gspread
+        from google.oauth2.service_account import Credentials as _credentials
+    except ImportError:
+        err = _common.pip_install(["gspread", "google-auth"], label="Google Sheets packages")
+        if err:
+            _common.finish(err)
+        import gspread as _gspread
+        from google.oauth2.service_account import Credentials as _credentials
+    gspread, Credentials = _gspread, _credentials
 
 # ── Constants ───────────────────────────────────────────────────────
 
@@ -320,6 +329,7 @@ def main():
     parser.add_argument("--brand", help="Brand filter for get-pending")
     parser.add_argument("--data", help="JSON string with field values")
     args = parser.parse_args()
+    _require_dependencies()
 
     # Authenticate
     client, err = get_client(args.credentials or default_credentials())

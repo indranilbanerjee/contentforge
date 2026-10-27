@@ -41,6 +41,12 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+for _stream in (sys.stdout, sys.stderr):  # UTF-8 output, even where a Windows pipe defaults to cp1252
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 ALLOWLIST_PATH = PLUGIN_ROOT / "config" / "verified-npx-packages.json"
 # Shipped MCP config files that can carry a runnable command.
@@ -86,9 +92,47 @@ def allowlist_problems(allow=None) -> list:
             for name, entry in allow.items() if not EXACT_VERSION.match(str(entry.get("version", "")))]
 
 
+SHELLS = {"cmd", "cmd.exe", "sh", "bash", "zsh", "powershell", "pwsh"}
+
+
+def _package_from_words(words):
+    """The package an npx-style command line runs. `--package=X`, `--package X` and `-p X` name it (the word after them is only
+    the binary to run from it, so it is NOT the package); otherwise the first word that is not a flag."""
+    words = [w for w in words if isinstance(w, str)]
+    for index, word in enumerate(words):
+        if word.startswith(("--package=", "-p=")):
+            return word.split("=", 1)[1]
+        if word in ("--package", "-p") and index + 1 < len(words):
+            return words[index + 1]
+    for word in words:
+        if not word.startswith("-") and word not in ("dlx", "exec", "x"):
+            return word
+    return None
+
+
+def _unwrap(command, words):
+    """`cmd /c npx -y X` and `sh -c "npx -y X"` run the runner through a shell: return the inner command and its words."""
+    if Path(command).name.lower() in SHELLS:
+        for index, word in enumerate(words):
+            if word.lower() in ("/c", "/k", "-c", "-command") and index + 1 < len(words):
+                inner = " ".join(words[index + 1:]).split()
+                if inner:
+                    return inner[0], inner[1:]
+    return command, words
+
+
+def _runs_a_package(command, words) -> bool:
+    base = Path(command).name.lower()
+    for suffix in (".cmd", ".exe"):
+        base = base[:-len(suffix)] if base.endswith(suffix) else base
+    return (base in RUNNERS or (base in ("pnpm", "yarn") and words[:1] == ["dlx"])
+            or (base == "npm" and words[:1] in (["exec"], ["x"])))
+
+
 def runnable_specs(config) -> list:
     """(server name, spec exactly as written, e.g. `pkg@1.2.3` or a bare `pkg`) for every entry of a parsed MCP config
-    that executes an npm package."""
+    that executes an npm package: npx, bunx, pnpx, `npm exec`, `pnpm dlx`, `yarn dlx`, with or without -y, with
+    --package/-p naming the package, and behind `cmd /c` or `sh -c`."""
     found = []
 
     def walk(obj, trail=""):
@@ -96,10 +140,11 @@ def runnable_specs(config) -> list:
             command, args = obj.get("command"), obj.get("args")
             if isinstance(command, str) and isinstance(args, list):
                 words = [a for a in args if isinstance(a, str)]
-                if command in RUNNERS or (command in ("pnpm", "yarn") and words[:1] == ["dlx"]):
-                    names = [w for w in words if not w.startswith("-") and w != "dlx"]
-                    if names:
-                        found.append((trail.strip("/") or "?", names[0]))
+                command, words = _unwrap(command, words)
+                if _runs_a_package(command, words):
+                    name = _package_from_words(words)
+                    if name:
+                        found.append((trail.strip("/") or "?", name))
             for key, value in obj.items():
                 walk(value, trail + "/" + str(key))
         elif isinstance(obj, list):
@@ -115,19 +160,33 @@ def runnable_packages(config) -> list:
     return [(server, package_name(spec)) for server, spec in runnable_specs(config)]
 
 
-MENTION_PATTERNS = (r"\b(?:npx|bunx|pnpx)\s+(?:-y|--yes)\s+(?:-{1,2}[A-Za-z-]+\s+)*(@?[A-Za-z0-9][A-Za-z0-9_./@-]*)",
-                    r"[\"']-y[\"']\s*,\s*[\"']([^\"']+)[\"']")
+PROSE_RUNNER = re.compile(r"\b(?:npx|bunx|pnpx|npm\s+(?:exec|x)|pnpm\s+dlx|yarn\s+dlx)\b([^\n`'\")\]]*)")
+ARGS_ARRAY = re.compile(r"\"args\"\s*:\s*\[([^\]]*)\]")
+YES_PAIR = re.compile(r"[\"']-y[\"']\s*,\s*[\"']([^\"']+)[\"']")
 
 
 def mentioned_specs(text: str) -> list:
-    """Like mentioned_runnables, but each spec exactly as written (`pkg`, `pkg@1.2.3`, `pkg@latest`)."""
+    """Each package spec text tells someone to run, exactly as written (`pkg`, `pkg@1.2.3`, `pkg@latest`).
+
+    Forms: `npx NAME` with or without -y, `bunx`, `pnpx`, `npm exec`, `pnpm dlx`, `yarn dlx`, `--package X` / `-p X`, and an
+    `"args": [...]` array that uses --package or -p. Placeholders (<...>) are skipped, and so is prose that merely
+    follows the command ("`npx -y` downloads ..."): a package name contains a hyphen, a slash or an @."""
+    candidates = []
+    for match in PROSE_RUNNER.finditer(text):
+        candidates.append(_package_from_words([w.strip(",.;:") for w in match.group(1).split()]))
+    for match in ARGS_ARRAY.finditer(text):
+        words = re.findall(r'"([^"]*)"', match.group(1))
+        if any(w.startswith("--package") or w == "-p" for w in words):  # the plain ["-y", NAME] pair is matched below
+            candidates.append(_package_from_words(words))
+    for match in YES_PAIR.finditer(text):
+        candidates.append(match.group(1))
     specs = []
-    for pattern in MENTION_PATTERNS:
-        for match in re.finditer(pattern, text):
-            spec = match.group(1)
-            if "<" in spec or ">" in spec or not re.search(r"[-/@]", spec):
-                continue
-            specs.append(spec)
+    for spec in candidates:
+        if not spec or "<" in spec or ">" in spec or not re.search(r"[-/@]", spec) or spec.startswith("-"):
+            continue
+        if not re.fullmatch(r"@?[A-Za-z0-9][A-Za-z0-9_./@-]*", spec):
+            continue
+        specs.append(spec)
     return specs
 
 
@@ -139,19 +198,8 @@ def unpinned_mentions(text: str, allow=None) -> list:
 
 
 def mentioned_runnables(text: str) -> list:
-    """Package names that text tells someone to run: `npx -y NAME` (or `--yes`), `bunx -y NAME`, or a `"-y", "NAME"` pair.
-
-    Placeholders (<...>) are skipped, and so is prose that merely follows the flag ("`npx -y` downloads ..."): a package
-    name contains a hyphen, a slash or an @."""
-    names = []
-    for pattern in (r"\b(?:npx|bunx|pnpx)\s+(?:-y|--yes)\s+(?:-{1,2}[A-Za-z-]+\s+)*(@?[A-Za-z0-9][A-Za-z0-9_./@-]*)",
-                    r"[\"']-y[\"']\s*,\s*[\"']([^\"']+)[\"']"):
-        for match in re.finditer(pattern, text):
-            name = match.group(1)
-            if "<" in name or ">" in name or not re.search(r"[-/@]", name):
-                continue
-            names.append(package_name(name))
-    return names
+    """Package names that text tells someone to run (see mentioned_specs for the forms)."""
+    return [package_name(spec) for spec in mentioned_specs(text)]
 
 
 def _load_registry():

@@ -45,10 +45,10 @@ log(`Scored ${valid.length} of ${urls.length} pages`)
 phase('Record the audit')
 return await agent(
   `Record this ContentForge library audit for brand "${input.brand}" using the /contentforge:audit-content skill's "Record the audit" step ` +
-  '(scripts/audit-ledger.py --action record). Pieces (JSON):\n\n' +
+  '(python "${CLAUDE_PLUGIN_ROOT}/scripts/audit-ledger.py" record --brand <brand> --file <pieces.json>). Pieces (JSON):\n\n' +
   JSON.stringify(valid, null, 2) +
   `\n\nSet aeo_history_considered to true only if the brand's aeo/checks.json existed and was read during scoring; otherwise give the string "n/a — <reason>". ` +
-  'Re-rank refresh_priority across the whole set (1..N, no ties). After recording, run the ledger\'s validate action and report its result, ' +
+  'Re-rank refresh_priority across the whole set (1..N, no ties). After recording, run the ledger\'s validate subcommand and report its result, ' +
   'the recorded file path, and the top five refresh candidates. If recording fails, report the error verbatim and do not claim the audit was recorded.',
   { label: 'record' },
 )

@@ -29,18 +29,27 @@ import _common  # noqa: E402
 _common.ensure_utf8_stdout()
 
 # ── Dependencies (never installed automatically: a missing package prints the pinned command) ──
-try:
-    from googleapiclient.discovery import build
-    from googleapiclient.http import MediaFileUpload
-    from google.oauth2.service_account import Credentials
-except ImportError:
-    err = _common.pip_install(["google-api-python-client", "google-auth"],
-                              label="Google Drive packages")
-    if err:
-        _common.finish(err)
-    from googleapiclient.discovery import build
-    from googleapiclient.http import MediaFileUpload
-    from google.oauth2.service_account import Credentials
+# Imported after the arguments are parsed, so --help and a mistyped option work without the packages.
+build = MediaFileUpload = Credentials = None
+
+
+def _require_dependencies():
+    global build, MediaFileUpload, Credentials
+    if build is not None:
+        return
+    try:
+        from googleapiclient.discovery import build as _build
+        from googleapiclient.http import MediaFileUpload as _upload
+        from google.oauth2.service_account import Credentials as _credentials
+    except ImportError:
+        err = _common.pip_install(["google-api-python-client", "google-auth"],
+                                  label="Google Drive packages")
+        if err:
+            _common.finish(err)
+        from googleapiclient.discovery import build as _build
+        from googleapiclient.http import MediaFileUpload as _upload
+        from google.oauth2.service_account import Credentials as _credentials
+    build, MediaFileUpload, Credentials = _build, _upload, _credentials
 
 # ── Constants ───────────────────────────────────────────────────────
 
@@ -392,6 +401,7 @@ def main():
     parser.add_argument("--content-type", help="Content type (article, blog, whitepaper, faq, research_paper, video_script, case_study, newsletter)")
     parser.add_argument("--assets-dir", help="Directory containing visual assets to upload")
     args = parser.parse_args()
+    _require_dependencies()
 
     # Authenticate
     service, err = get_service(args.credentials or default_credentials())

@@ -208,7 +208,7 @@ class TestAFailedOrEndlessListIsSkippedNotTruncated(unittest.TestCase):
 
         code, out, _ = run_main(Recorder(fail={"api.anthropic.com": second_page_fails}), "--json")
         report = json.loads(out)
-        self.assertEqual(report["anthropic"]["status"], "skipped (no API key or fetch failed)")
+        self.assertEqual(report["anthropic"]["status"], "skipped (fetch failed)")
         self.assertEqual(report["google"]["status"], "checked")
         self.assertEqual(report["openai"]["status"], "checked")
 

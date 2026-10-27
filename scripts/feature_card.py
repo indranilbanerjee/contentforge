@@ -77,16 +77,77 @@ def _missing_libraries() -> list:
             if importlib.util.find_spec(module) is None]
 
 
+# Families to try, in order, when matplotlib's default sans-serif has no glyph for a character (Devanagari, Tamil, CJK, Arabic, Thai).
+FALLBACK_FONTS = ("DejaVu Sans", "Noto Sans", "Noto Sans Devanagari", "Nirmala UI", "Mangal", "Segoe UI", "Arial Unicode MS",
+                  "Noto Sans CJK JP", "Noto Sans CJK SC", "Yu Gothic", "Meiryo", "Microsoft YaHei", "Malgun Gothic",
+                  "Noto Sans Arabic", "Noto Sans Thai", "Leelawadee UI", "Tahoma", "Arial")
+
+
+def _installed_fonts() -> list:
+    """(family name, file) for every font matplotlib can see."""
+    from matplotlib import font_manager
+    return sorted({(f.name, f.fname) for f in font_manager.fontManager.ttflist})
+
+
+def _covers(path: str, text: str) -> bool:
+    """True when the font file has a glyph for every visible character of `text`."""
+    from matplotlib.ft2font import FT2Font
+    try:
+        font = FT2Font(path)
+        return all(c.isspace() or font.get_char_index(ord(c)) != 0 for c in text)
+    except Exception:
+        return False
+
+
+def pick_font(text: str, installed=None, covers=None):
+    """A font family with a glyph for every character of `text`, or None. matplotlib draws a missing glyph as an empty box, so
+    a card with a Hindi title in DejaVu Sans looked finished and said nothing."""
+    installed = _installed_fonts() if installed is None else installed
+    covers = covers or _covers
+    by_name = {}
+    for name, path in installed:
+        by_name.setdefault(name, path)
+    for name in FALLBACK_FONTS:
+        if name in by_name and covers(by_name[name], text):
+            return name
+    for name, path in sorted(by_name.items()):
+        if covers(path, text):
+            return name
+    return None
+
+
+def _card_family(text: str):
+    """"sans-serif" (matplotlib's default, unchanged) when it covers the text, else a family that does, else None."""
+    from matplotlib import font_manager
+    try:
+        default = font_manager.findfont(font_manager.FontProperties(family=["sans-serif"]), fallback_to_default=False)
+    except Exception:
+        default = None
+    if default and _covers(default, text):
+        return "sans-serif"
+    return pick_font(text)
+
+
 def render(title: str, brand_name: str, primary: str, secondary: str,
            out_path: pathlib.Path, kicker: str = None) -> dict:
     missing = _missing_libraries()
     if missing:
         return {"status": "FAILED", "stage": "dependencies",
                 "error": f"{' and '.join(missing)} not installed; the feature card needs matplotlib and pillow. "
-                         f"Nothing was drawn or written."}
+                         f"Nothing was drawn or written. Install the tested versions: "
+                         f"{_common.install_command(['matplotlib', 'pillow'])}"}
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+
+    every_character = "".join(sorted(set(title + brand_name + (kicker or "").upper()) - {"\n"}))
+    family = _card_family(every_character)
+    if family is None:
+        missing = "".join(c for c in every_character if ord(c) > 127)
+        return {"status": "FAILED", "stage": "fonts",
+                "error": f"no installed font has a glyph for every character of the card text ({missing[:40]!r}); drawing it would "
+                         f"leave empty boxes. Nothing was drawn or written. Install a font for that script (for Devanagari: Noto "
+                         f"Sans Devanagari or Nirmala UI) and run again."}
 
     # Text on the primary ground must be readable; pick white or near-black by
     # measured luminance, never by guess.
@@ -105,17 +166,17 @@ def render(title: str, brand_name: str, primary: str, secondary: str,
 
     if kicker:
         ax.text(0.055, 0.87, kicker.upper(), fontsize=15, color=text_color,
-                alpha=0.85, fontweight="bold", family="sans-serif", zorder=2)
+                alpha=0.85, fontweight="bold", family=family, zorder=2)
 
     wrapped = textwrap.fill(title.strip(), width=26)
     n_lines = wrapped.count("\n") + 1
     title_size = 44 if n_lines <= 3 else (36 if n_lines == 4 else 30)
     ax.text(0.055, 0.72, wrapped, fontsize=title_size, color=text_color,
-            fontweight="bold", family="sans-serif", va="top", linespacing=1.25,
+            fontweight="bold", family=family, va="top", linespacing=1.25,
             zorder=2)
 
     ax.text(0.055, 0.09, brand_name, fontsize=17, color=text_color, alpha=0.9,
-            family="sans-serif", zorder=2)
+            family=family, zorder=2)
 
     # ---- constraints, asserted BEFORE the file exists -----------------------
     problems = []

@@ -47,6 +47,12 @@ import urllib.robotparser
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 
+for _stream in (sys.stdout, sys.stderr):  # UTF-8 output, even where a Windows pipe defaults to cp1252
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 UA = "ContentForge-BrandHarvester/1.0 (+https://github.com/indranilbanerjee/contentforge)"
 SKIP_EXTENSIONS = (".pdf", ".jpg", ".jpeg", ".png", ".gif", ".svg", ".zip", ".doc",
                    ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".mp4", ".webp", ".ico",
@@ -204,18 +210,25 @@ def same_site(root: str, url: str) -> bool:
     return _strip_www(urllib.parse.urlparse(url or "").netloc) == _strip_www(urllib.parse.urlparse(root).netloc)
 
 
-def fetch(url: str, timeout: float) -> tuple[int, str]:
+def fetch_with_reason(url: str, timeout: float) -> tuple[int, str, str]:
+    """(status, body, reason). Status 0 means nothing was fetched, and the reason says why: the guard refused a
+    non-public address or a scheme, or the network failed."""
     if not url_is_fetchable(url):
-        return 0, ""
+        return 0, "", "refused: a non-public address or a scheme that is never fetched"
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html,application/xhtml+xml,application/xml"})
     try:
         with _OPENER.open(req, timeout=timeout) as r:
             body = r.read(1_500_000)
-            return r.status, body.decode("utf-8", errors="ignore")
+            return r.status, body.decode("utf-8", errors="ignore"), ""
     except urllib.error.HTTPError as e:
-        return e.code, ""
+        return e.code, "", f"HTTP {e.code}"
     except Exception:
-        return 0, ""
+        return 0, "", "network error: the site could not be reached"
+
+
+def fetch(url: str, timeout: float) -> tuple[int, str]:
+    status, body, _ = fetch_with_reason(url, timeout)
+    return status, body
 
 
 def _norm_url(u: str) -> str:
@@ -338,7 +351,9 @@ def main() -> int:
     if not args.url:
         ap.error("either --url (crawl) or --merge-inventory (merge) is required")
 
-    root = args.url.rstrip("/")
+    root = args.url.strip().rstrip("/")
+    if re.match(r"^[A-Za-z][A-Za-z0-9+.-]*://", root) and not root.lower().startswith(("http://", "https://")):
+        ap.error(f"--url must be an http:// or https:// address (or a bare domain), not {args.url!r}")
     if not root.startswith(("http://", "https://")):
         root = "https://" + root
     result = {"domain": root, "harvested_at": datetime.now(timezone.utc).isoformat(),
@@ -378,12 +393,12 @@ def main() -> int:
     if candidates:
         result["method"] = "sitemap"
     else:
-        h_status, h_body = fetch(root + "/", args.timeout)
+        h_status, h_body, h_reason = fetch_with_reason(root + "/", args.timeout)
         if h_status == 200:
             candidates = parse_page(h_body, root + "/")["links"]
             result["method"] = "nav_fallback"
         else:
-            result["errors"].append(f"homepage fetch failed with status {h_status}")
+            result["errors"].append(f"homepage fetch failed ({h_reason or 'status ' + str(h_status)})")
 
     candidates = filter_candidates(root, candidates)
     result["pages_discovered"] = len(candidates)
@@ -414,7 +429,8 @@ def main() -> int:
     if args.output:
         with open(args.output, "w", encoding="utf-8") as f:
             f.write(out)
-    return 0
+    # Nothing verified and an error on record: an agent must not read a refused or unreachable site as an empty one.
+    return 1 if result["errors"] and not result["pages_verified"] else 0
 
 
 if __name__ == "__main__":

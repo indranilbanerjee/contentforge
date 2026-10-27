@@ -70,6 +70,14 @@ def check_google_integration():
     return status
 
 
+def parse_arguments(argv=None):
+    """The command line: no options besides --help. Parsed in the entry point, so main() can still be called in-process."""
+    import argparse
+    return argparse.ArgumentParser(
+        description="ContentForge setup check: Python version, plugin paths, connectors and Google integration. "
+                    "Prints KEY=value lines and changes nothing.").parse_args(argv)
+
+
 def main():
     errors = []
 
@@ -134,4 +142,5 @@ def main():
 
 
 if __name__ == "__main__":
+    parse_arguments()
     main()

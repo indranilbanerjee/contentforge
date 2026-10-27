@@ -1021,6 +1021,8 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
         embed_status = "sidecar-only"
         embed_manifest_id = None
         using_dev_cert = False
+        tmp_signed = None      # the copy being signed; removed below if the embed fails
+        timestamped = False    # True only when the embedded signature carries an RFC 3161 time-stamp token
         tmpdir = None  # set only when we generate a throwaway dev key; removed in the finally below
         try:
             # Generate self-signed dev cert if user didn't supply one
@@ -1090,6 +1092,8 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
                         with c2pa.Reader(docx_mime, fh) as reader:
                             r = json.loads(reader.json())
                             embed_manifest_id = r.get("active_manifest")
+                            signature = ((r.get("manifests") or {}).get(embed_manifest_id) or {}).get("signature_info") or {}
+                            timestamped = bool(signature.get("time"))
                             embed_status = "embedded-and-verified" if embed_manifest_id else "embedded"
                 except Exception:
                     embed_status = "embedded-unverified"
@@ -1098,19 +1102,35 @@ def _maybe_c2pa_sign_docx(output_path, args, title):
         except Exception as exc:
             embed_status = f"sidecar-only (embed failed: {type(exc).__name__}: {exc})"
         finally:
+            if tmp_signed is not None:
+                try:
+                    tmp_signed.unlink()   # gone already after a successful replace; a failed embed left it empty
+                except OSError:
+                    pass
             # The dev signing key is unencrypted PKCS#8. It only exists to sign this one file,
             # so it never outlives the call (Hermes review of 2026-10-04).
             if tmpdir:
                 import shutil as _shutil
                 _shutil.rmtree(tmpdir, ignore_errors=True)
 
-        return {
+        embedded = embed_status.startswith("embedded")
+        result = {
             "c2pa_signed": True,
             "c2pa_embed_status": embed_status,
+            "c2pa_embedded": embedded,
+            "c2pa_timestamped": timestamped,
             "c2pa_active_manifest_id": embed_manifest_id,
             "c2pa_sidecar": str(sidecar_path),
             "c2pa_using_dev_cert": using_dev_cert,
         }
+        problems = []
+        if not embedded:
+            problems.append("the manifest is a sidecar file, not embedded in the .docx")
+        elif not timestamped:
+            problems.append("no RFC 3161 time-stamp was obtained (the time-stamp server could not be reached)")
+        if problems:
+            result["warning"] = "; ".join(problems) + ". An EU-bound deliverable needs an embedded, time-stamped manifest."
+        return result
     except Exception as exc:
         return {"c2pa_signed": False, "c2pa_error": f"{type(exc).__name__}: {exc}"}
 

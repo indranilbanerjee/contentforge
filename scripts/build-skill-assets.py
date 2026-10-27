@@ -31,6 +31,13 @@ import sys
 import zipfile
 from pathlib import Path
 
+
+for _stream in (sys.stdout, sys.stderr):  # UTF-8 output, even where a Windows pipe defaults to cp1252
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 REPO = Path(__file__).resolve().parent.parent
 MANIFEST = REPO / "config" / "skill-assets.json"
 DIST = REPO / "dist"
