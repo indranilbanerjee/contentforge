@@ -154,7 +154,7 @@ This tells you:
 - **Version** — Read from `.claude-plugin/plugin.json`, not hardcoded in any doc.
 - **PLUGIN_ROOT** — Where the plugin is installed. All scripts reference this path.
 - **SCRIPTS_DIR** — Where Python scripts live.
-- **Python version** — Must be 3.10+ today. Python 3.10 reached end-of-life on 2026-10-01 and ContentForge will require 3.11 from the next minor release; this line warns when it runs on 3.10. Cowork VM has 3.10.12.
+- **Python version** — Must be 3.10+. Python 3.10 reached end of life on 2026-10-01. ContentForge still runs on it, and will move to 3.11 once Claude's Cowork environment does (it ran 3.10.12 when last checked); this line warns when it runs on 3.10. Use 3.11 or newer where you can.
 - **Connectors active** — How many entries are in your `.mcp.json` (none by default; the file does not exist until you add a connector).
 
 If you see errors here, check the [Troubleshooting](#21-troubleshooting) section.

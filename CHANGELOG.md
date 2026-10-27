@@ -53,10 +53,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   templates file said 8-12 for Instagram. All follow the spec now.
 - **One-command install** on Claude Code 2.1.292 or newer: `claude plugin install contentforge --marketplace
   indranilbanerjee/neels-plugins`. The two-step route stays for older versions and for use inside a session.
-- **Python 3.10 warning.** Python 3.10 reached end-of-life on 2026-10-01. `setup.py` prints `PYTHON_WARNING=...` when it runs
-  on it: ContentForge will require Python 3.11 from the next minor release. Nothing stops working yet.
-- `tests/test_always_on_budget.py` (8 tests, planted with the 4.5.7 agent descriptions and the 8-12 hashtag spec). Tests
-  828 -> 836, 0 skipped.
+- **Python 3.10 warning.** Python 3.10 reached end of life on 2026-10-01. `setup.py` prints `PYTHON_WARNING=...` when it runs
+  on it: ContentForge still runs on 3.10 and will move to 3.11 once Claude's Cowork environment does (it ran 3.10.12 when last
+  checked), so no release is promised. Use 3.11 or newer where you can. Nothing stops working.
+- `tests/test_always_on_budget.py` (11 tests, planted with the 4.5.7 agent descriptions, the 8-12 hashtag spec and the first wording of the Python
+  warning, which promised 3.11 for a named release). Tests 828 -> 839, 0 skipped.
 
 ## [4.5.7] - 2026-10-12
 

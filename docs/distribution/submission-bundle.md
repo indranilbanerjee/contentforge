@@ -94,7 +94,7 @@ ritual).
 - Codex applies instruction caps at runtime; the orchestrator skill is large.
   Validate on a current Codex build before publishing. The portable execution
   lane (SKILL.md) is the supported mode on hosts without subagent dispatch.
-- Scripts require Python 3.10+ today (3.11 from the next minor release; setup warns on 3.10); charts/cards need matplotlib + pillow
+- Scripts require Python 3.10+ (3.10 reached end of life on 2026-10-01; ContentForge moves to 3.11 once Claude's Cowork environment does, and setup warns on 3.10); charts/cards need matplotlib + pillow
   (nothing is installed automatically; a missing package prints its pinned install command).
 
 > **ChatGPT directory ZIP (checked 2026-10-04):** OpenAI's submission rules state "No app references or lifecycle hooks permitted." Our `hooks/hooks.json` is empty, but leave the `hooks/` directory out of the uploaded ZIP to remove any ambiguity. Requires a verified identity and the org permission "Apps Management Write". Source: https://developers.openai.com/plugins/deploy/submission
