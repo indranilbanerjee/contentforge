@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [4.6.1] - 2026-10-29
+
+### TikTok's caption limit rests on TikTok's own posting references
+
+- `config/social-platform-specs.json`: the TikTok note no longer waits for a caption to be checked in the app. TikTok's Content Posting API reference caps a video caption (the direct-post `title` field) at 2,200 UTF-16 runes, with hashtags and mentions counted in it. The 4,000 that other pages give is a photo post's description (a photo post's title takes 90), not a video caption. The limit stays 2,200, which fits both.
+- developers.tiktok.com does not load from India, so the figures are quoted from the search index on 2026-10-29 and the entry stays `reported`. `_provenance.tiktok` lists both references as sources, says why the entry is reported, and moves its review date to 2027-01-31.
+- A test pins the note: it names the Content Posting API and the photo description, and no longer says the number waits for an in-app check.
+- Of the five hero `.skill` bundles, only `cf-social-adapt.skill` changes, because it carries the platform specs.
+
 ## [4.6.0] - 2026-10-28
 
 ### A code audit and a fresh-install check of 4.5.12: file names stay inside the run, a key never follows a redirect, brands never share a folder, a loop past its cap is refused, and the trends text agrees with the vendors' own pages

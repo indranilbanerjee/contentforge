@@ -324,6 +324,18 @@ class TestPlatformSpecs(unittest.TestCase):
         self.assertIn("2,200", note)
         self.assertIn("4,000", note)
 
+    def test_tiktok_caption_rests_on_tiktoks_posting_reference(self):
+        # 4.6.1: TikTok's own posting references settle the split: 2,200 for a video caption, and the
+        # 4,000 elsewhere is a photo post's description. The "checked in the app" wait is over.
+        self.assertEqual(self.specs["tiktok"]["character_limit"], 2200)
+        note = self.specs["tiktok"]["_limit_note"]
+        self.assertIn("Content Posting API", note)
+        self.assertIn("photo post's description", note)
+        self.assertNotIn("checked in the app", note)
+        provenance = self.specs["_provenance"]["tiktok"]
+        self.assertIn("https://developers.tiktok.com/doc/content-posting-api-reference-direct-post", provenance["sources"])
+        self.assertEqual(provenance["status"], "reported")
+
 
 if __name__ == "__main__":
     unittest.main()
