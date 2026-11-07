@@ -1,6 +1,6 @@
 ---
-description: "Natural phrasing for cf-publish (the skill is never named) must route to it."
-tags: [trigger]
+description: "Since 4.7.0 cf-publish is started by the user only: a natural publish request must not invoke it; Claude points the user at /contentforge:publish."
+tags: [trigger, negative]
 max_turns: 1
 timeout_seconds: 240
 allowed_tools: [Read, Glob, Grep, Skill]

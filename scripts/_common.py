@@ -375,6 +375,38 @@ def fingerprint_drift(recorded: dict, current: dict) -> list:
     return drift
 
 
+# ── CLI text and JSON options ───────────────────────────────────────
+
+def arg_text(value, name: str = "--data"):
+    """The text of a command-line option given inline, as `@<path>` or as `-`.
+
+    `@<path>` reads that file (UTF-8, a BOM is dropped; `~` is expanded) and `-` reads standard
+    input. Any other value is returned as given. Skills write a payload that holds outside text
+    (titles, notes, scraped or client-supplied strings) to a file with the Write tool and pass
+    `--data @<file>`, so that text never becomes part of a shell command: a single quote inside
+    `--data '{...}'` used to close the quoting early and run the rest as shell. JSON never starts
+    with `@`, so an inline JSON value is never mistaken for a path. Raises ValueError when the
+    file cannot be read."""
+    if value is None:
+        return None
+    if value == "-":
+        return sys.stdin.read()
+    if isinstance(value, str) and value.startswith("@"):
+        path = Path(value[1:]).expanduser()
+        try:
+            return path.read_text(encoding="utf-8-sig")
+        except OSError as exc:
+            raise ValueError(f"{name}: cannot read {path}: {exc}") from exc
+    return value
+
+
+def json_arg(value, name: str = "--data"):
+    """Parse a JSON command-line option given inline, as `@<path>` or as `-` (see arg_text).
+
+    Raises ValueError (json.JSONDecodeError is one) for unreadable files and invalid JSON."""
+    return json.loads(arg_text(value, name))
+
+
 # ── CLI result handling ─────────────────────────────────────────────
 
 def finish(result) -> "None":

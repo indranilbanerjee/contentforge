@@ -658,7 +658,7 @@ def main() -> None:
     p_init.add_argument("--tone", default=None, help="Requested tone (stored in run.json meta)")
     p_init.add_argument("--meta", default=None,
                         help='JSON object merged into run.json "meta" (keys here win over the '
-                             'individual flags), e.g. \'{"keyword": "ai in pharma"}\'')
+                             'individual flags), inline, as @<file> or as - (stdin)')
 
     p_save = sub.add_parser("save", help="Save the output of a phase")
     p_save.add_argument("--brand", required=True)
@@ -671,7 +671,8 @@ def main() -> None:
                         help="File extension for the saved artifact (md / json / txt). "
                              "json on phases 3.5 and 6 targets the companion manifest slot.")
     p_save.add_argument("--pending-rework", default=None,
-                        help='JSON: {"target_phase": "5", "feedback": "..."} — records that the pipeline must loop back')
+                        help='JSON {"target_phase": "5", "feedback": "..."}, inline, as @<file> or as - (stdin): '
+                             'records that the pipeline must loop back')
 
     p_loop = sub.add_parser("loop", help="Record a feedback-loop traversal (e.g. phase_7_to_5)")
     p_loop.add_argument("--brand", required=True)
@@ -725,7 +726,7 @@ def main() -> None:
                 "tone": args.tone,
             }.items() if v is not None}
             if args.meta:
-                extra = json.loads(args.meta)
+                extra = _common.json_arg(args.meta, "--meta")
                 if not isinstance(extra, dict):
                     raise ValueError("--meta must be a JSON object")
                 meta.update(extra)
@@ -742,7 +743,7 @@ def main() -> None:
                     content = fh.read()
             pending_rework = None
             if args.pending_rework:
-                pending_rework = json.loads(args.pending_rework)
+                pending_rework = _common.json_arg(args.pending_rework, "--pending-rework")
             result = save_phase(args.brand, args.run_id, args.phase, content,
                                 args.extension, pending_rework=pending_rework)
         elif args.action == "loop":

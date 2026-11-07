@@ -6,9 +6,9 @@ The latest minor release of ContentForge receives security fixes. Older minor ve
 
 | Version | Supported |
 |---------|-----------|
-| 4.6.x   | ✅ |
-| 4.5.x   | ⚠️ Security fixes only when trivially backportable |
-| < 4.5   | ❌ Please upgrade |
+| 4.7.x   | ✅ |
+| 4.6.x   | ⚠️ Security fixes only when trivially backportable |
+| < 4.6   | ❌ Please upgrade |
 
 ## Reporting a Vulnerability
 

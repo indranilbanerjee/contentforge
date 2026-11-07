@@ -345,7 +345,7 @@ def main():
     parser.add_argument("--drive-file-id", help="Drive file ID from MCP response")
     parser.add_argument("--drive-url", help="Drive webViewLink")
     parser.add_argument("--content-hash", help="content hash (for downloads)")
-    parser.add_argument("--data", help="JSON payload for write-config")
+    parser.add_argument("--data", help="JSON payload for write-config, inline, as @<file> or as - (stdin)")
     args = parser.parse_args()
 
     if args.action == "read-config":
@@ -355,8 +355,8 @@ def main():
             result = {"error": "--data required (JSON)"}
         else:
             try:
-                result = write_cowork_config(json.loads(args.data))
-            except json.JSONDecodeError as e:
+                result = write_cowork_config(_common.json_arg(args.data, "--data"))
+            except ValueError as e:
                 result = {"error": f"invalid JSON in --data: {e}"}
     elif args.action == "profile-needs-upload":
         result = profile_needs_upload(args.brand) if args.brand else {"error": "--brand required"}

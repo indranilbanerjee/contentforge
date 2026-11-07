@@ -1,5 +1,16 @@
 # ContentForge Upgrade Guide
 
+## Upgrading 4.6.1 → 4.7.0 (security review)
+
+**Nothing migrates. Two behaviours change.**
+
+- Claude no longer starts a publish by itself. Type `/contentforge:publish` (or `/contentforge:cf-publish`); a plain "push this live" gets a pointer to the command. The preview now lists every outbound link and flags the ones that are neither on the brand's domain nor in the run's verified sources.
+- The tracker, drive-sync and checkpoint scripts also read a JSON option from a file (`--data @payload.json`) or from standard input (`--data -`). Inline JSON still works for your own scripts; the plugin's instructions no longer use it.
+
+`SECURITY.md` now lists 4.7.x as supported and 4.6.x for trivially backportable fixes. All five `.skill` uploads for claude.ai change with this release; download them from the 4.7.0 release.
+
+---
+
 ## Upgrading 4.5.12 → 4.6.0 (audit fixes)
 
 **Nothing migrates, and four behaviours are stricter.**

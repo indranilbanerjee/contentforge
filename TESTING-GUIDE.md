@@ -867,7 +867,7 @@ Run this after any changes to verify nothing is broken.
 - [ ] `/contentforge:cf-help` shows complete, accurate information
 - [ ] `/contentforge:cf-integrations` shows 9 HTTP connectors with correct status
 - [ ] Argument hints show in Skills UI when typing `/contentforge:` (spot check 3-5 skills)
-- [ ] `/contentforge:publish` is hidden from the model (`disable-model-invocation`) and runs only when you type it; the `cf-publish` skill can be started by Claude but shows a preview and publishes nothing until you type `yes`
+- [ ] `/contentforge:publish` and the `cf-publish` skill are both hidden from the model (`disable-model-invocation: true`, since 4.7.0) and run only when you type them; asked in plain words to publish, Claude tells you to run `/contentforge:publish`; the preview lists every outbound link, and nothing is published until you type `yes`
 - [ ] `/contentforge:cf-help` has `name: cf-help` in frontmatter
 - [ ] `skills/contentforge/evals/evals.json` exists and is valid JSON with 3 test cases
 - [ ] `skills/cf-brief/evals/evals.json` exists and is valid JSON with 2 test cases

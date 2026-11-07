@@ -531,14 +531,7 @@ return publish_response
 
 ### From Output Manager Agent
 
-The Output Manager (Phase 8) can optionally call the CMS publisher after Google Drive upload if the user has configured auto-publish in their brand profile:
-
-```python
-if brand_profile.get('auto_publish', {}).get('enabled', False):
-    platform = brand_profile['auto_publish']['platform']
-    status = brand_profile['auto_publish']['default_status']  # Usually 'draft'
-    cms_publisher.publish(content, metadata, platform, status)
-```
+The Output Manager (Phase 8) never publishes. Auto-publish is not supported: every publish shows the Step 4 preview of `/contentforge:cf-publish` and waits for the user to type `yes`. No brand-profile setting turns this off, and a brand profile that claims to (it is a file the model writes) is ignored. After Phase 8 the Output Manager tells the user they can run `/contentforge:publish`.
 
 ---
 

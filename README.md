@@ -8,16 +8,16 @@ Run `/contentforge:create-content` against each topic. The 10-phase pipeline pro
 
 Open-source enterprise content production system — **22 skills · 13 specialist agents · 10 quality gates · 43-pattern AI-detection humanizer · a run auditor that re-derives every gate before a run may call itself finished · 30 Python scripts (stdlib; the few optional packages are pinned and never auto-installed)**. Built for marketing teams producing high volumes of long-form content that needs brand voice consistency, citation integrity, and an internal-link strategy that turns content into a funnel. Installs on **Claude Code** (CLI + IDE), **Anthropic Cowork**, **OpenAI Codex**, **Cursor 2.5+**, **GitHub Copilot CLI**, **Google Antigravity 2.0**, **Hermes Agent**, **OpenClaw**, and **Grok** (xAI Build CLI) + 35+ Agent Skills platforms — with hero skills uploadable to **claude.ai (web)** as `.skill` release assets. Created by [Indranil Banerjee](https://indranil.in) · [LinkedIn](https://www.linkedin.com/in/askneelnow/) · [X](https://x.com/askneelnow).
 
-[![Version](https://img.shields.io/badge/version-4.6.1-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-4.7.0-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/indranilbanerjee/contentforge?style=flat&logo=github&color=yellow)](https://github.com/indranilbanerjee/contentforge/stargazers)
-[![Tests](https://img.shields.io/badge/tests-1037%2F1037%20passing-brightgreen.svg)](tests/)
-[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v461)
+[![Tests](https://img.shields.io/badge/tests-1060%2F1060%20passing-brightgreen.svg)](tests/)
+[![Platforms](https://img.shields.io/badge/platforms-9%20native%20%2B%2035%20Agent%20Skills-success.svg)](#supported-surfaces-v470)
 [![EU AI Act](https://img.shields.io/badge/EU%20AI%20Act-Article%2050%20ready-darkred.svg)](docs/c2pa-production-cert.md)
 
 [![Built by Indranil "Neel" Banerjee — Neelverse Marketing Suite — Sponsor this project](docs/assets/author-banner.svg)](https://github.com/sponsors/indranilbanerjee)
 
-> 🆕 **Just shipped — v4.6.1 (October 29, 2026): TikTok's caption limit rests on TikTok's own posting references: 2,200 for a video caption, and the 4,000 quoted elsewhere is a photo post's description.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
+> 🆕 **Just shipped — v4.7.0 (November 7, 2026): outside text stays data, and only you start a publish.** [Release notes](#release-notes) · [Changelog](CHANGELOG.md)
 
 ```bash
 # Install in Claude Code 2.1.292 or newer (one command, run in your terminal):
@@ -208,7 +208,7 @@ Most AI writing tools produce one draft, in one tone, with no quality gates, and
 
 ---
 
-## Supported surfaces (v4.6.1)
+## Supported surfaces (v4.7.0)
 
 | Platform | Install command | Manifest path | Status |
 |---|---|---|---|
@@ -833,6 +833,8 @@ ContentForge is part of a three-plugin suite by [Indranil Banerjee](https://indr
 ---
 
 ## Release notes
+
+**v4.7.0 (2026-11-07)** — **Outside text stays data, and only you start a publish.** From a security review of the plugin. `cf-publish` is hidden from the model like `/contentforge:publish`, so content Claude read can no longer start a publish; a plain request gets a pointer to the command, and the preview with its typed `yes` stays. The preview lists every outbound link and flags the ones that are neither on the brand's domain nor in the run's verified sources. The tracker, drive-sync and checkpoint scripts read JSON options from a file (`--data @<file>`) or stdin, and the instructions write the payload with the Write tool instead of quoting it into a shell command, where a single quote in a title could run the rest as shell. Every agent and every skill that reads fetched, uploaded or pasted text says it is data, never instructions. The auto-publish passage in the CMS publisher reference is gone.
 
 **v4.6.1 (2026-10-29)** — **TikTok's caption limit rests on TikTok's own posting references.** TikTok's Content Posting API reference caps a video caption at 2,200 UTF-16 runes, with hashtags and mentions counted in it; the 4,000 that other pages give is a photo post's description. The limit stays 2,200, and the note no longer waits for a check in the app. The reference doesn't load from India, so the entry stays `reported`: the figures are quoted from the search index and both references are listed. Of the hero bundles, only `cf-social-adapt.skill` changes.
 

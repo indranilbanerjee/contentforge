@@ -842,8 +842,9 @@ class TestNoImplicitStdinReads(unittest.TestCase):
     prompts unless the caller passed an explicit flag; `getpass.getuser()` (the user NAME) is not a read."""
     CALLS = {"input", "getpass.getpass"}
     ATTRS = {"sys.stdin.read", "sys.stdin.readline", "sys.stdin.readlines", "sys.stdin.buffer.read", "sys.stdin.buffer.readline"}
-    # Where an explicit flag gates the read; every other script has none.
-    ALLOWED = set()
+    # Where an explicit flag gates the read; every other script has none. _common.arg_text reads stdin only when an
+    # option's value is `-` (4.7.0: `--data -` keeps outside text out of the shell command).
+    ALLOWED = {"_common.py"}
 
     @classmethod
     def findings(cls, source: str, name: str = "x.py") -> list:

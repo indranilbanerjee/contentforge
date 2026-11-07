@@ -327,7 +327,7 @@ def main():
                         help="Path to service account JSON (default: <marketing-home>/google-credentials.json)")
     parser.add_argument("--row-id", help="Requirement ID for row operations")
     parser.add_argument("--brand", help="Brand filter for get-pending")
-    parser.add_argument("--data", help="JSON string with field values")
+    parser.add_argument("--data", help="JSON object with field values, inline, as @<file> or as - (stdin)")
     args = parser.parse_args()
     _require_dependencies()
 
@@ -346,8 +346,8 @@ def main():
     data = {}
     if args.data:
         try:
-            data = json.loads(args.data)
-        except json.JSONDecodeError as e:
+            data = _common.json_arg(args.data, "--data")
+        except ValueError as e:
             _common.finish({"error": f"Invalid JSON in --data: {e}"})
 
     # Dispatch

@@ -441,7 +441,7 @@ def main():
                         choices=["init", "add-row", "get-pending", "get-row", "update-row", "mark-complete"])
     parser.add_argument("--brand", required=True, help="Brand name")
     parser.add_argument("--row-id", help="Requirement ID for row operations")
-    parser.add_argument("--data", help="JSON string with field values")
+    parser.add_argument("--data", help="JSON object with field values, inline, as @<file> or as - (stdin)")
     parser.add_argument("--output-file", help="Path to output file to copy (required for mark-complete)")
     parser.add_argument("--publish-dir", default=None,
                         help="Override the user-visible publish directory (default: "
@@ -454,8 +454,8 @@ def main():
     data = {}
     if args.data:
         try:
-            data = json.loads(args.data)
-        except json.JSONDecodeError as e:
+            data = _common.json_arg(args.data, "--data")
+        except ValueError as e:
             _common.finish({"error": f"Invalid JSON in --data: {e}"})
 
     # Dispatch
